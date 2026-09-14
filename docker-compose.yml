@@ -1,0 +1,119 @@
+﻿version: "3.8"
+
+# ─────────────────────────────────────────────────────────────
+#  OSRM Routing Stack - Egypt
+#  Profiles: car | bicycle | motorcycle (custom)
+#
+#  STEP 1 - Pre-process OSM data (run once per profile):
+#    docker compose run --rm osrm-preprocess-car
+#    docker compose run --rm osrm-preprocess-bicycle
+#    docker compose run --rm osrm-preprocess-motorcycle
+#
+#  STEP 2 - Start routing servers:
+#    docker compose up -d osrm-car osrm-bicycle osrm-motorcycle
+#
+#  API Endpoints:
+#    Car:        http://localhost:5001/route/v1/driving/{lon1},{lat1};{lon2},{lat2}
+#    Bicycle:    http://localhost:5002/route/v1/cycling/{lon1},{lat1};{lon2},{lat2}
+#    Motorcycle: http://localhost:5003/route/v1/driving/{lon1},{lat1};{lon2},{lat2}
+# ─────────────────────────────────────────────────────────────
+
+x-osrm-image: &osrm-image
+  image: ghcr.io/project-osrm/osrm-backend:latest
+
+x-osrm-volumes: &osrm-volumes
+  - ./data:/data
+
+services:
+
+  # ── Pre-processing services (run once, then remove) ────────
+
+  osrm-preprocess-car:
+    <<: *osrm-image
+    volumes: *osrm-volumes
+    command: >
+      bash -c "
+        echo '=== Extracting Car profile ===' &&
+        osrm-extract -p /opt/car.lua /data/egypt-260913.osm.pbf &&
+        echo '=== Partitioning ===' &&
+        osrm-partition /data/egypt-260913.osrm &&
+        echo '=== Customizing ===' &&
+        osrm-customize /data/egypt-260913.osrm &&
+        echo '=== Car pre-processing DONE ==='
+      "
+    profiles: [preprocess-car]
+
+  osrm-preprocess-bicycle:
+    <<: *osrm-image
+    volumes:
+      - ./data:/data
+    command: >
+      bash -c "
+        echo '=== Extracting Bicycle profile ===' &&
+        osrm-extract -p /opt/bicycle.lua /data/egypt-260913.osm.pbf -o /data/egypt-bicycle.osrm &&
+        echo '=== Partitioning ===' &&
+        osrm-partition /data/egypt-bicycle.osrm &&
+        echo '=== Customizing ===' &&
+        osrm-customize /data/egypt-bicycle.osrm &&
+        echo '=== Bicycle pre-processing DONE ==='
+      "
+    profiles: [preprocess-bicycle]
+
+  # Uses our custom motorcycle.lua from ./profiles/
+  osrm-preprocess-motorcycle:
+    <<: *osrm-image
+    volumes:
+      - ./data:/data
+      - ./profiles:/profiles
+    command: >
+      bash -c "
+        echo '=== Extracting Motorcycle profile (custom) ===' &&
+        osrm-extract -p /profiles/motorcycle.lua /data/egypt-260913.osm.pbf -o /data/egypt-motorcycle.osrm &&
+        echo '=== Partitioning ===' &&
+        osrm-partition /data/egypt-motorcycle.osrm &&
+        echo '=== Customizing ===' &&
+        osrm-customize /data/egypt-motorcycle.osrm &&
+        echo '=== Motorcycle pre-processing DONE ==='
+      "
+    profiles: [preprocess-motorcycle]
+
+  # ── Routing server services ─────────────────────────────────
+
+  osrm-car:
+    <<: *osrm-image
+    volumes: *osrm-volumes
+    ports:
+      - "5001:5000"
+    command: >
+      osrm-routed
+        --algorithm mld
+        --max-table-size 10000
+        --max-matching-size 1000
+        /data/egypt-260913.osrm
+    restart: unless-stopped
+
+  osrm-bicycle:
+    <<: *osrm-image
+    volumes: *osrm-volumes
+    ports:
+      - "5002:5000"
+    command: >
+      osrm-routed
+        --algorithm mld
+        --max-table-size 10000
+        --max-matching-size 1000
+        /data/egypt-bicycle.osrm
+    restart: unless-stopped
+
+  osrm-motorcycle:
+    <<: *osrm-image
+    volumes: *osrm-volumes
+    ports:
+      - "5003:5000"
+    command: >
+      osrm-routed
+        --algorithm mld
+        --max-table-size 10000
+        --max-matching-size 1000
+        /data/egypt-motorcycle.osrm
+    restart: unless-stopped

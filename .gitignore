@@ -1,0 +1,13 @@
+﻿# ── OSRM processed data files (generated locally by setup.ps1) ──
+data/*.osrm
+data/*.osrm.*
+
+# ── Raw OSM source file (too large for git, download from Geofabrik) ──
+data/*.osm.pbf
+data/*.pbf
+
+# ── Keep the data directory itself ──
+!data/.gitkeep
+
+# ── Reference profile (auto-generated, not needed in repo) ──
+profiles/_car_reference.lua
