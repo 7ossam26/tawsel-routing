@@ -4,15 +4,23 @@
 
 Write-Host "=== OSRM Egypt Routing Stack ===" -ForegroundColor Cyan
 
-$carReady        = Test-Path "data\egypt-260913.osrm"
-$bicycleReady    = Test-Path "data\egypt-bicycle.osrm"
-$motorcycleReady = Test-Path "data\egypt-motorcycle.osrm"
+# Modern OSRM writes no bare ".osrm" file - only ".osrm.*" parts.
+# .osrm.cell_metrics is the last artifact osrm-customize produces, so its
+# presence means the full extract -> partition -> customize chain finished.
+$carReady        = Test-Path "data\egypt-260913.osrm.cell_metrics"
+$bicycleReady    = Test-Path "data\egypt-bicycle.osrm.cell_metrics"
+$motorcycleReady = Test-Path "data\egypt-motorcycle.osrm.cell_metrics"
 
 # ── Pre-process only if needed ──────────────────────────────────
 
 if (-not $carReady -or -not $bicycleReady -or -not $motorcycleReady) {
   Write-Host "`nFirst-time setup detected. Pulling OSRM image..." -ForegroundColor Yellow
   docker pull ghcr.io/project-osrm/osrm-backend:latest
+
+  # osrm-routed memory-maps the .osrm.* files. Rewriting them under a live
+  # server corrupts its view and the process dies on the next request.
+  Write-Host "Stopping any running servers before rebuilding data..." -ForegroundColor Yellow
+  docker compose stop osrm-car osrm-bicycle osrm-motorcycle
 }
 
 if (-not $carReady) {
