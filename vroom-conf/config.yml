@@ -1,0 +1,30 @@
+cliArgs:
+  geometry: true # retrieve route geometry from OSRM (-g)
+  planmode: false
+  threads: 4
+  explore: 5
+  limit: '10mb'
+  logdir: '/conf'
+  logsize: '100M'
+  maxlocations: 1000
+  maxvehicles: 200
+  override: true
+  path: ''
+  port: 3000
+  router: 'osrm'
+  timeout: 300000
+  baseurl: '/'
+
+# Hosts are the docker-compose SERVICE names on the tawsel-routing_default
+# network, so the port is OSRM's internal 5000 - not the host-side 5001/5002/5003.
+routingServers:
+  osrm:
+    car:
+      host: 'osrm-car'
+      port: '5000'
+    bike:
+      host: 'osrm-bicycle'
+      port: '5000'
+    motorcycle:
+      host: 'osrm-motorcycle'
+      port: '5000'

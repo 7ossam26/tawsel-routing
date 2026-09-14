@@ -11,3 +11,6 @@ data/*.pbf
 
 # ── Reference profile (auto-generated, not needed in repo) ──
 profiles/_car_reference.lua
+
+# ── VROOM runtime logs (config.yml IS tracked, the log is not) ──
+vroom-conf/access.log
