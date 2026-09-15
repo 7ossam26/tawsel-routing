@@ -1,6 +1,4 @@
-﻿version: "3.8"
-
-# ─────────────────────────────────────────────────────────────
+﻿# ─────────────────────────────────────────────────────────────
 #  OSRM Routing Stack - Egypt
 #  Profiles: car | bicycle | motorcycle (custom)
 #
@@ -12,10 +10,14 @@
 #  STEP 2 - Start routing servers:
 #    docker compose up -d osrm-car osrm-bicycle osrm-motorcycle
 #
+#  STEP 3 - Geocoding (one-time ~60 min / ~13 GB import, see the nominatim service):
+#    docker compose up -d nominatim
+#
 #  API Endpoints:
 #    Car:        http://localhost:5001/route/v1/driving/{lon1},{lat1};{lon2},{lat2}
 #    Bicycle:    http://localhost:5002/route/v1/cycling/{lon1},{lat1};{lon2},{lat2}
 #    Motorcycle: http://localhost:5003/route/v1/driving/{lon1},{lat1};{lon2},{lat2}
+#    Geocoding:  http://localhost:8080/search?q={address}&format=jsonv2&countrycodes=eg
 # ─────────────────────────────────────────────────────────────
 
 x-osrm-image: &osrm-image
@@ -117,3 +119,73 @@ services:
         --max-matching-size 1000
         /data/egypt-motorcycle.osrm
     restart: unless-stopped
+
+  # ── Geocoding: address <-> coordinates ──────────────────────
+  #
+  #  One-time Egypt import: ~60 min and ~13 GB, measured on this machine.
+  #  (Set FREEZE: "true" to drop the osm2pgsql slim tables at the end and get
+  #  several GB back - at the cost of never being able to run `nominatim
+  #  replication`. It can also be done later: `nominatim freeze`.)
+  #
+  #  The image's start.sh touches
+  #  /var/lib/postgresql/16/main/import-finished inside the named volume on
+  #  success and skips the import on every later start. That marker file - not
+  #  "docker ps says Up" - is the only honest answer to "is it imported?".
+  #
+  #    docker compose up -d nominatim      # first run: starts the import
+  #    docker compose logs -f nominatim    # watch it
+  #    docker compose start nominatim      # every run after that (seconds)
+  #
+  nominatim:
+    image: mediagis/nominatim:5.3
+    container_name: nominatim-egypt
+    ports:
+      - "8080:8080"
+    volumes:
+      # NOT :ro - init.sh runs `chown -R nominatim:nominatim /nominatim` under
+      # `bash -ex`, and chown on a read-only mount returns EROFS, aborting the import.
+      - ./data:/nominatim/data
+      - nominatim-data:/var/lib/postgresql/16/main
+    environment:
+      PBF_PATH: /nominatim/data/egypt-260913.osm.pbf
+      NOMINATIM_PASSWORD: tawsel_local_dev
+      IMPORT_WIKIPEDIA: "false"
+      IMPORT_TIGER_ADDRESSES: "false"
+      FREEZE: "false"
+      WARMUP_ON_STARTUP: "false"
+
+      # The image ships Postgres tuning for a big server: maintenance_work_mem=10GB,
+      # effective_cache_size=24GB, autovacuum_work_mem=2GB. Docker Engine here has
+      # 11.5 GB. Parallel index builds at those settings OOM-kill Postgres, and with
+      # the image's `synchronous_commit = off` that leaves a corrupt WAL - which is
+      # what killed the first import attempt. These values fit 11.5 GB.
+      POSTGRES_SHARED_BUFFERS: 2GB
+      POSTGRES_MAINTENANCE_WORK_MEM: 1GB
+      POSTGRES_AUTOVACUUM_WORK_MEM: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 7GB
+      POSTGRES_WORK_MEM: 50MB
+      THREADS: "8"          # default is nproc (16 here); 8 halves peak memory pressure
+
+    # PostgreSQL parallel index builds use /dev/shm. Docker's 64 MB default causes
+    # "could not resize shared memory segment" mid-import.
+    shm_size: 1gb
+
+    # Deliberately "no", unlike the OSRM services. osrm-routed can genuinely crash and
+    # benefits from unless-stopped. A failing Nominatim import under a restart policy
+    # re-runs the import in a loop, each pass writing garbage until the disk fills.
+    # Safe to switch to unless-stopped once import-finished exists.
+    restart: "no"
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 90m     # must exceed the import wall time, which measured ~62 min
+                            # here - at 60m the container flapped to "unhealthy" just
+                            # before finishing. "unhealthy" during the import is normal.
+
+volumes:
+  nominatim-data:
+    name: nominatim-data    # keep the bare name; without this Compose would create
+                            # "tawsel-routing_nominatim-data"

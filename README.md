@@ -4,6 +4,7 @@ Offline routing + fleet optimization stack for Egypt.
 
 - **OSRM** — road routing for **car**, **bicycle**, and **motorcycle** profiles
 - **VROOM** — vehicle routing optimization (multi-stop, capacity, time windows) on top of OSRM
+- **Nominatim** — geocoding: address ⇄ coordinates, Egypt only
 
 Runs entirely on your machine via Docker. No external APIs, no internet at runtime, no per-request billing.
 
@@ -11,26 +12,33 @@ Runs entirely on your machine via Docker. No external APIs, no internet at runti
 
 ```
                     ┌──────────────────────────────┐
-  your app ───────► │  VROOM      localhost:3000   │  "visit these 40 stops
-                    │  (optimizer)                 │   with 3 vehicles"
-                    └──────────────┬───────────────┘
-                                   │ asks for travel times
-                                   │ (internal docker network)
-             ┌─────────────────────┼─────────────────────┐
-             ▼                     ▼                     ▼
-      ┌─────────────┐       ┌─────────────┐       ┌─────────────┐
-      │  osrm-car   │       │osrm-bicycle │       │osrm-motorcy.│
-      │   :5000     │       │   :5000     │       │   :5000     │
-      └─────────────┘       └─────────────┘       └─────────────┘
-       host :5001            host :5002            host :5003
+             ┌────► │  VROOM      localhost:3000   │  "visit these 40 stops
+             │      │  (optimizer)                 │   with 3 vehicles"
+             │      └──────────────┬───────────────┘
+  your app ──┤                     │ asks for travel times
+             │                     │ (internal docker network)
+             │      ┌──────────────┼─────────────────────┐
+             │      ▼              ▼                     ▼
+             │ ┌─────────────┐ ┌─────────────┐    ┌─────────────┐
+             │ │  osrm-car   │ │osrm-bicycle │    │osrm-motorcy.│
+             │ │   :5000     │ │   :5000     │    │   :5000     │
+             │ └─────────────┘ └─────────────┘    └─────────────┘
+             │  host :5001      host :5002         host :5003
+             │
+             │      ┌──────────────────────────────┐
+             └────► │  Nominatim  localhost:8080   │  "where is
+                    │  (geocoder)                  │   12 Tahrir St?"
+                    └──────────────────────────────┘
 ```
 
-Use **OSRM directly** for a single A→B route. Use **VROOM** when you need to decide the order of many stops or split work across vehicles.
+Use **OSRM directly** for a single A→B route. Use **VROOM** when you need to decide the order of many stops or split work across vehicles. Use **Nominatim** to turn an address into coordinates before handing them to either.
+
+Nominatim is a **sibling, not a dependency** — VROOM and OSRM never call it. It's your app's job to geocode first, then route. And when you do, remember Nominatim hands back `lat`/`lon` while OSRM and VROOM want `[lon, lat]`. See [Gotchas](#gotchas).
 
 ## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
-- ~10 GB free disk space
+- ~10 GB free disk space for OSRM, plus **~13 GB** for the Nominatim database
 - Use **PowerShell**, not Git Bash — see [Gotchas](#gotchas)
 
 ## Quick Start
@@ -74,11 +82,25 @@ Both flags matter. `--network` puts VROOM on the same network as OSRM so it can 
 
 > Already created it once? Don't re-run this — `docker start vroom` is enough. See [Gotchas](#gotchas).
 
-### 4. Verify
+### 4. Start Nominatim (geocoding)
 
 ```powershell
-docker compose ps          # 3 OSRM containers, all Up
-docker ps --filter name=vroom   # vroom, Up (healthy)
+docker compose up -d nominatim
+docker compose logs -f nominatim
+```
+
+**First run takes about an hour and needs ~13 GB** — measured at 62 min on a 16-core / 11.5 GB-Docker machine. It builds a PostgreSQL database from the same Egypt PBF that OSRM uses. Let it finish; an interrupted import cannot be resumed and leaves a volume you have to delete. The container reports `unhealthy` throughout — that's expected until the import completes.
+
+Unlike OSRM and VROOM, this service is in `docker-compose.yml` with everything it needs (`shm_size`, the Postgres memory limits, the network) already set — there are no flags to remember.
+
+> Already imported? Don't re-run the import — `docker compose start nominatim` is enough, and takes seconds. `setup.ps1` detects this for you.
+
+### 5. Verify
+
+```powershell
+docker compose ps                # 3 OSRM + nominatim, all Up
+docker ps --filter name=vroom    # vroom, Up (healthy)
+Invoke-RestMethod "http://localhost:8080/status?format=json"   # status = 0
 ```
 
 ## API — OSRM (single route)
@@ -141,6 +163,44 @@ VROOM returns the optimal visit order, arrival times, distance, and the route po
 
 Vehicles take `capacity: [10]`, `time_window: [0, 36000]`, and `skills: [1,2]` to match against job `skills`. Times are **seconds from the start of the vehicle's window**, not clock times.
 
+## API — Nominatim (geocoding)
+
+| Caller | Base URL |
+|---|---|
+| Your app, browser, Postman on Windows | `http://localhost:8080` |
+| Another container on `tawsel-routing_default` | `http://nominatim:8080` |
+
+Same internal-vs-published split as OSRM — see the port gotcha below. Nominatim 5 serves everything at the root, with no `/nominatim` prefix.
+
+| Endpoint | Shape |
+|---|---|
+| `/status?format=json` | `{"status":0,"message":"OK",...}`. Anything but `0` means the database isn't usable. |
+| `/search` | `?q=<free text>&format=jsonv2&countrycodes=eg&limit=5&addressdetails=1` |
+| `/search` (structured) | `?street=&city=&postalcode=&format=jsonv2` — **cannot be combined with `q`** |
+| `/reverse` | `?lat=30.0444&lon=31.2357&format=jsonv2&zoom=18&addressdetails=1` |
+
+Paste straight into a browser:
+
+```
+http://localhost:8080/search?q=Tahrir+Square,+Cairo&format=jsonv2&countrycodes=eg&limit=3
+```
+
+**Always pass `countrycodes=eg`.** Without it, "Nasr City" can match outside Egypt or rank badly. For delivery work, narrow it further with `viewbox=<minlon,maxlat,maxlon,minlat>&bounded=1` around your service area.
+
+There's no rate limit here — this is your own instance, so the public Nominatim 1 req/s policy doesn't apply. Batch freely.
+
+### Geocode → route
+
+Nominatim returns `lat` and `lon` as separate **strings**. OSRM and VROOM want `[lon, lat]` as **numbers**. Every handoff needs an explicit flip:
+
+```powershell
+$a = Invoke-RestMethod "http://localhost:8080/search?q=Tahrir+Square,+Cairo&format=jsonv2&countrycodes=eg&limit=1"
+$b = Invoke-RestMethod "http://localhost:8080/search?q=Cairo+International+Airport&format=jsonv2&countrycodes=eg&limit=1"
+
+Invoke-RestMethod "http://localhost:5001/route/v1/driving/$($a.lon),$($a.lat);$($b.lon),$($b.lat)?overview=false" |
+  Select-Object -ExpandProperty routes | Select-Object distance, duration
+```
+
 ## Testing
 
 A sample payload lives at [test-vrp.json](test-vrp.json).
@@ -201,6 +261,41 @@ docker ps -a --filter name=vroom
 
 `Up` means it's already running — you're done, don't touch it. `Created` or `Exited` means it's stale; `docker rm vroom` then re-run the create command.
 
+**Egyptian results come back in Arabic, and the PowerShell 5.1 console renders them blank.** `display_name` for Cairo is `القاهرة, مصر`, and `Format-Table` shows an empty column — which looks exactly like "no results". It isn't: the strings are intact, the console just can't draw them. Check the length rather than trusting your eyes:
+
+```powershell
+$r = Invoke-RestMethod "http://localhost:8080/search?q=Cairo&format=jsonv2&countrycodes=eg&limit=3"
+$r.Count                                    # 3
+$r | Select-Object lat, lon, type           # renders fine - no Arabic
+$r[0].display_name.Length                   # 13, not 0
+```
+
+Use `Out-File -Encoding utf8` or a UTF-8 terminal (Windows Terminal) if you need to read the names. Add `accept-language=en` to get Latin-script names where OSM has them — many Egyptian places only have Arabic.
+
+**Nominatim returns `lat`/`lon`; OSRM and VROOM want `lon,lat`.** The same trap as above, arriving from the other direction. Nominatim's JSON also gives you both as *strings*, so parse before you compute. A route that comes back `NoRoute` right after a successful geocode is almost always this.
+
+**`docker ps` cannot tell you whether the import finished.** The container reports `Up` the moment gunicorn binds to 8080, which happens whether or not the database behind it is complete. The real signal is a marker file the image writes only on success:
+
+```powershell
+docker run --rm --entrypoint sh -v nominatim-data:/v mediagis/nominatim:5.3 `
+  -c "test -f /v/import-finished && echo IMPORTED || echo INCOMPLETE"
+```
+
+That marker is also what makes restarts cheap — on every later start the image sees it and skips straight to serving, so `docker compose start nominatim` takes seconds, not 45 minutes.
+
+**A half-imported Postgres volume can't be repaired or resumed.** If an import is interrupted, Postgres is left with an unreplayable write-ahead log and every subsequent start dies the same way:
+
+```
+PANIC:  could not locate a valid checkpoint record
+pg_ctl: server did not start in time
+```
+
+There is no fix but starting over — `nominatim import` always begins with `createdb`, so it can't pick up where it left off. `docker compose rm -sf nominatim; docker volume rm nominatim-data`, then re-import.
+
+**Nominatim's `restart` policy is `"no"` on purpose.** The OSRM services use `unless-stopped` because `osrm-routed` can genuinely crash and should come back. Nominatim must not: if an import fails under a restart policy, Docker re-runs the *whole import* in a loop, each pass writing gigabytes into the volume until the disk fills. Once `import-finished` exists, switching to `unless-stopped` is safe.
+
+**The image's Postgres defaults assume a much bigger machine.** `mediagis/nominatim:5.3` ships `maintenance_work_mem = 10GB` and `effective_cache_size = 24GB`. Docker Desktop here gets ~11.5 GB total, and the import defaults to `nproc` threads building indexes in parallel — which OOM-kills Postgres, and with the image's `synchronous_commit = off` that's exactly how you get the corrupt volume above. `docker-compose.yml` overrides these via `POSTGRES_*` env vars and pins `THREADS: "8"`. Check `docker info --format "{{.MemTotal}}"` before raising them.
+
 ## Project Structure
 
 ```
@@ -210,17 +305,21 @@ tawsel-routing/
 │   └── motorcycle.lua      # Custom motorcycle routing profile
 ├── vroom-conf/
 │   └── config.yml          # VROOM → OSRM backend mapping (in git)
-├── docker-compose.yml      # Orchestrates the 3 OSRM instances
+├── docker-compose.yml      # Orchestrates the 3 OSRM instances + Nominatim
 ├── setup.ps1               # One-command OSRM setup & start
 ├── test-vrp.json           # Sample VROOM payload
 └── README.md
 ```
 
+The Nominatim database lives in a docker-managed named volume, `nominatim-data` (**~13 GB**) — not in `data/`, and not visible to `du` on the project folder. It survives `docker compose down` but **not** `docker compose down -v`.
+
+Need that space back? `docker exec nominatim-egypt sudo -u nominatim nominatim freeze` drops the osm2pgsql slim tables for a few GB. It's one-way — after freezing, refreshing the data means a full re-import.
+
 ## Common tasks
 
 ```powershell
 # Start everything (after a reboot)
-.\setup.ps1
+.\setup.ps1              # starts OSRM + Nominatim (skips work already done)
 docker start vroom
 
 # Stop everything
@@ -233,6 +332,21 @@ docker logs -f vroom
 # Apply a vroom-conf/config.yml change  (edits are inert until restart —
 # the entrypoint copies the file into the image on startup)
 docker restart vroom
+
+# Is Nominatim actually imported?  ("Up" doesn't answer this)
+docker run --rm --entrypoint sh -v nominatim-data:/v mediagis/nominatim:5.3 `
+  -c "test -f /v/import-finished && echo IMPORTED || echo INCOMPLETE"
+```
+
+### Re-importing Nominatim
+
+Only needed for a newer PBF, or to recover a half-imported volume. Takes ~60 min; there is no incremental path back from a broken import.
+
+```powershell
+docker compose rm -sf nominatim
+docker volume rm nominatim-data
+docker compose up -d nominatim
+docker compose logs -f nominatim
 ```
 
 ### Re-processing a profile
@@ -257,4 +371,11 @@ docker restart vroom
 | `unassigned` > 0 | Constraints too tight, or a stop is unreachable | Relax capacity/time windows; check the point snaps to a road via `/nearest` |
 | Route returns `NoRoute` | Coordinate outside Egypt, or lat/lon swapped | Remember: **lon first** |
 | Jobs returned in input order | Not optimizing — check VROOM reached OSRM | `docker logs vroom` |
+| `PANIC: could not locate a valid checkpoint record` | Postgres volume corrupted by an interrupted import | Not repairable. `docker compose rm -sf nominatim; docker volume rm nominatim-data`, then re-import |
+| `/status` returns non-zero, or refuses, while the container is `Up` | gunicorn is serving but the import never finished | Check for the `import-finished` marker — see [Gotchas](#gotchas) |
+| Import dies with `No space left on device` | The Docker disk hit the host's free space | `wsl -d docker-desktop -e df -h /mnt/docker-desktop-disk`, free space on C:, re-import |
+| Import dies with `Killed` / `Cannot allocate memory` | Postgres OOM — memory settings above what Docker has | Lower `POSTGRES_MAINTENANCE_WORK_MEM` and `THREADS` in `docker-compose.yml` |
+| `could not resize shared memory segment` during import | `shm_size` missing or too small | `shm_size: 1gb` on the nominatim service |
+| `/search` returns `[]` for a real Egyptian address | Missing `countrycodes=eg`, or the address genuinely isn't in OSM | Add `countrycodes=eg`; try a nearby landmark |
+| Geocode succeeds but routing it fails | `lat`/`lon` handed to OSRM unflipped | OSRM wants `lon,lat` — see [Geocode → route](#geocode--route) |
 ```
