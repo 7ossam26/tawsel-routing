@@ -336,16 +336,67 @@ OSM data vintage: **2026-09-13**. The filename is hardcoded in six places in
 
 ### OSRM preprocessed artifacts (on-disk, in `data/`, git-ignored)
 
-| Profile | Files | Size |
-|---|---|---|
-| car (`egypt-260913.osrm.*`) | 26 | 2.57 GB |
-| bicycle (`egypt-bicycle.osrm.*`) | 26 | 2.41 GB |
-| motorcycle (`egypt-motorcycle.osrm.*`) | 26 | 2.58 GB |
-| **Total `data/`** | | **~7.7 GB** |
+| Profile | Base name | Files | Size |
+|---|---|---|---|
+| car | `egypt-260913.osrm.*` | 26 | 2.57 GB |
+| bicycle | `egypt-bicycle.osrm.*` | 26 | 2.41 GB |
+| motorcycle | `egypt-motorcycle.osrm.*` | 26 | 2.58 GB |
+| *(subtotal, OSRM artifacts)* | | *78* | *7.56 GB* |
+| **Total `data/`** (+ PBF + `.gitkeep`) | | **80** | **7.73 GB** |
+
+Note the car profile reuses the **source filename** as its base (`egypt-260913.osrm.*`) while the
+other two use explicit names — an inconsistency that trips people up when globbing.
+
+Structure of `data/` — the significant files only (each profile has 26 artifacts; the four largest
+per profile are shown, the rest are small indexes and lookup tables):
+
+```
+data/
+├── .gitkeep                                  # the only tracked item here
+├── egypt-260913.osm.pbf              170 MB  # SOURCE - Geofabrik Egypt extract, all 3 profiles
+│                                             # and Nominatim read this one file
+│
+├── egypt-260913.osrm.cell_metrics    782 MB  # CAR profile (base name = source name)
+├── egypt-260913.osrm.geometry        375 MB
+├── egypt-260913.osrm.mldgr           279 MB
+├── egypt-260913.osrm.ebg             271 MB
+├── egypt-260913.osrm.{+22 more}              # edges, names, partition, restrictions, ...
+│
+├── egypt-bicycle.osrm.geometry       403 MB  # BICYCLE profile
+├── egypt-bicycle.osrm.mldgr          351 MB
+├── egypt-bicycle.osrm.ebg            344 MB
+├── egypt-bicycle.osrm.cell_metrics   288 MB
+├── egypt-bicycle.osrm.{+22 more}
+│
+├── egypt-motorcycle.osrm.cell_metrics 787 MB # MOTORCYCLE profile (custom motorcycle.lua)
+├── egypt-motorcycle.osrm.geometry     376 MB
+├── egypt-motorcycle.osrm.mldgr        279 MB
+├── egypt-motorcycle.osrm.ebg          271 MB
+└── egypt-motorcycle.osrm.{+22 more}
+```
+
+The full 26-suffix set per profile, for reference:
+
+```
+cell_metrics  cells  cnbg  cnbg_to_ebg  datasource_names  ebg  ebg_nodes  edges  enw
+fileIndex  geometry  icd  maneuver_overrides  mldgr  names  nbg_nodes  partition
+properties  ramIndex  restrictions  timestamp  tld  tls  turn_duration_penalties
+turn_penalties_index  turn_weight_penalties
+```
 
 Built by an `osrm-extract` → `osrm-partition` → `osrm-customize` chain, ~10–15 min per profile.
-`*.osrm.cell_metrics` is the last artifact written and is used as the "profile is built" sentinel.
-Note there is **no bare `.osrm` file** in modern OSRM — only `.osrm.*` parts.
+
+**Three things about these files that matter operationally:**
+
+- **`*.osrm.cell_metrics` is the "profile is built" sentinel.** It is the last artifact
+  `osrm-customize` writes, so `setup.ps1` tests for its presence to decide whether to skip
+  preprocessing.
+- **There is no bare `.osrm` file** in modern OSRM — only `.osrm.*` parts. Commands still refer to
+  `/data/egypt-260913.osrm` as a *prefix*, not a real file.
+- **`osrm-routed` memory-maps these files.** Rewriting them while a server is running corrupts its
+  view and the process dies on the next request — while `docker compose ps` still reports "Up".
+  `*.osrm.ebg` is only consumed by partition/customize, not by the running server, so it is the
+  one safe ~900 MB to delete across the three profiles if disk gets tight.
 
 ### Nominatim database
 
@@ -387,6 +438,30 @@ c6ca003 update setup
 
 **Eight tracked files** (this report is a ninth, untracked at time of writing).
 **There is no application source code, no package.json, no .env, no src/.**
+
+```
+tawsel-routing/
+├── docker-compose.yml          # 3 OSRM servers + 3 preprocess jobs + Nominatim
+├── setup.ps1                   # idempotent startup; -ImportNominatim opts into the import
+├── README.md                   # operating manual (quick start, API, Gotchas, Troubleshooting)
+├── STACK-CONTEXT.md            # this document
+├── test-vrp.json               # sample VROOM payload: 1 car, 3 Cairo jobs
+├── .gitignore
+│
+├── profiles/
+│   ├── motorcycle.lua          # custom OSRM motorcycle profile (13 KB, TRACKED)
+│   └── _car_reference.lua      # stock car.lua, kept for diffing (git-ignored)
+│
+├── vroom-conf/
+│   ├── config.yml              # VROOM -> OSRM mapping (TRACKED - see section 4)
+│   └── access.log              # VROOM runtime log (git-ignored)
+│
+└── data/                       # ~7.7 GB, entirely git-ignored except .gitkeep
+    └── (see section 7)
+```
+
+Everything outside `data/` totals well under 100 KB. The repo is configuration only — all bulk is
+generated locally or lives in a Docker volume.
 
 | Path | Role |
 |---|---|
