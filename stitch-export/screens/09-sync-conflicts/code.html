@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>توصيل - تطبيق المندوب</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;font-family:'Cairo',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary-fixed-variant": "#004b73", "on-primary-fixed": "#111c2d", "surface-container-lowest": "#ffffff", "surface-container-highest": "#e0e3e5", "secondary-fixed": "#cce5ff", "on-secondary-container": "#00476e", "tertiary-fixed": "#dbe1ff", "tertiary-container": "#002367", "on-secondary-fixed": "#001d31", "tertiary": "#00113b", "on-background": "#191c1e", "inverse-surface": "#2d3133", "error": "#ba1a1a", "on-error-container": "#93000a", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed-variant": "#003ea8", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "primary-fixed": "#d8e3fb", "inverse-primary": "#bcc7de", "surface-dim": "#d8dadc", "on-error": "#ffffff", "secondary-fixed-dim": "#93ccff", "on-tertiary-container": "#5f8aff", "on-primary": "#ffffff", "on-primary-container": "#8590a6", "surface-container-high": "#e6e8ea", "surface-container-low": "#f2f4f6", "tertiary-fixed-dim": "#b4c5ff", "on-secondary": "#ffffff", "on-surface": "#191c1e", "on-primary-fixed-variant": "#3c475a", "surface-bright": "#f7f9fb", "secondary-container": "#5bb8fe", "surface-variant": "#e0e3e5", "primary-fixed-dim": "#bcc7de", "surface-tint": "#545f73", "primary-container": "#1e293b", "surface-container": "#eceef0", "on-surface-variant": "#45474c", "background": "#f7f9fb", "surface": "#f7f9fb", "secondary": "#006398", "primary": "#091426", "on-tertiary-fixed": "#00174b", "outline-variant": "#c5c6cd", "outline": "#75777d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "gutter": "1rem", "space-xxs": "0.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "space-2xl": "3rem", "gutter-mobile": "0.75rem", "margin-mobile": "1rem", "space-xs": "0.375rem", "space-xl": "2rem", "margin": "1rem" }, "fontFamily": { "headline-sm": ["Cairo"], "display-lg-mobile": ["Cairo"], "label-lg": ["Cairo"], "label-md": ["Cairo"], "display-lg": ["Cairo"], "body-sm": ["Cairo"], "label-sm": ["Cairo"], "body-md": ["Cairo"], "title-md": ["Cairo"], "metric-display": ["Cairo"], "body-lg": ["Cairo"], "headline-lg": ["Cairo"], "headline-md": ["Cairo"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }], "display-lg-mobile": ["26px", { "lineHeight": "36px", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "18px", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "44px", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "16px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "500" }], "title-md": ["16px", { "lineHeight": "26px", "fontWeight": "700" }], "metric-display": ["28px", { "lineHeight": "36px", "fontWeight": "800" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "500" }], "headline-lg": ["24px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-md": ["20px", { "lineHeight": "30px", "fontWeight": "700" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs"><div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">local_shipping</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-primary tracking-tight leading-none">توصيل</span><span class="font-label-sm text-label-sm text-secondary leading-tight">كابتن الميدان</span></div></div><div class="flex items-center gap-space-xs"><div class="flex items-center gap-space-xxs px-space-xs py-1 rounded-full bg-surface-container-high"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">متصل ومحدث</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full px-margin-mobile space-y-space-md">
+<!-- Connection & Header Status Banner -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md mt-space-sm space-y-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[24px]">sync_saved_locally</span>
+</div>
+<div class="flex flex-col">
+<h1 class="font-headline-sm text-headline-sm text-on-surface">حالة المزامنة والبيانات المحلية</h1>
+<span class="font-body-sm text-body-sm text-on-surface-variant">تحديث السجل الحي للهاتف</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xxs bg-surface-container-high px-space-xs py-1 rounded-full">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm text-on-surface">متصل (WiFi/4G)</span>
+</div>
+</div>
+<!-- Micro Diagnostic Metrics Strip -->
+<div class="grid grid-cols-3 gap-space-xs pt-space-xs">
+<div class="flex flex-col items-center justify-center p-space-xs rounded-lg bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">المخزن محلياً</span>
+<span class="font-title-md text-title-md text-on-surface">5 حركات</span>
+</div>
+<div class="flex flex-col items-center justify-center p-space-xs rounded-lg bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">التعارضات</span>
+<span class="font-title-md text-title-md text-error">1 تعارض</span>
+</div>
+<div class="flex flex-col items-center justify-center p-space-xs rounded-lg bg-surface-container-low text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">آخر مطابقة</span>
+<span class="font-title-md text-title-md text-secondary">منذ دقيقتين</span>
+</div>
+</div>
+</div>
+<!-- Filter Pill Navigation (Interactive Segmented Control) -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1" id="filter-container">
+<button class="filter-tab shrink-0 h-10 px-space-md rounded-full font-label-md text-label-md transition-colors bg-primary text-on-primary shadow-sm flex items-center gap-1" data-filter="all" type="button">
+<span>الكل</span>
+<span class="px-1.5 py-0.5 rounded-full bg-primary-container text-on-primary text-[10px]">5</span>
+</button>
+<button class="filter-tab shrink-0 h-10 px-space-md rounded-full font-label-md text-label-md transition-colors bg-surface-container text-on-surface-variant flex items-center gap-1" data-filter="conflict" type="button">
+<span class="material-symbols-outlined text-[16px] text-error">warning</span>
+<span>تحتاج مراجعة</span>
+<span class="px-1.5 py-0.5 rounded-full bg-error-container text-on-error-container text-[10px]">1</span>
+</button>
+<button class="filter-tab shrink-0 h-10 px-space-md rounded-full font-label-md text-label-md transition-colors bg-surface-container text-on-surface-variant flex items-center gap-1" data-filter="pending" type="button">
+<span>في انتظار المزامنة</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px]">2</span>
+</button>
+<button class="filter-tab shrink-0 h-10 px-space-md rounded-full font-label-md text-label-md transition-colors bg-surface-container text-on-surface-variant flex items-center gap-1" data-filter="synced" type="button">
+<span>تمت بنجاح</span>
+<span class="px-1.5 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant text-[10px]">2</span>
+</button>
+</div>
+<!-- Status Cards Feed -->
+<div class="flex flex-col space-y-space-md" id="cards-container">
+<!-- 1. HIGH PRIORITY CONFLICT CARD -->
+<div class="log-card flex flex-col bg-surface-container-lowest rounded-xl shadow-md p-space-md space-y-space-sm relative overflow-hidden" data-category="conflict">
+<div class="absolute top-0 right-0 left-0 h-1.5 bg-error"></div>
+<!-- Card Top Info -->
+<div class="flex items-start justify-between gap-space-xs pt-1">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">priority_high</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">أوردر #11 • خالد منصور</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">حي المعادي - شارع النصر</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm shrink-0">
+<span class="material-symbols-outlined text-[14px]">alt_route</span>
+          تعارض في خط السير
+        </span>
+</div>
+<!-- Conflict Narrative Box -->
+<div class="flex flex-col bg-surface-container-low rounded-lg p-space-sm space-y-space-xxs">
+<div class="flex items-center gap-space-xxs text-error">
+<span class="material-symbols-outlined text-[18px]">report</span>
+<span class="font-label-md text-label-md">سبب التعارض المكتشف</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+          سجلتَ حالة <strong class="font-bold">«تم التسليم مع استلام نقدية 320 ج.م»</strong> دون اتصال بالإنترنت (09:30 ص)، بينما قام المنسق المركزي بإلغاء الأوردر على النظام المركزي (09:32 ص) أثناء انقطاع الشبكة.
+        </p>
+</div>
+<!-- Verified Data snapshot -->
+<div class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-surface-container-highest">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface">صورة توقيع المستلم + الكود محفوظة</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">09:30 ص</span>
+</div>
+<!-- Conflict Action Buttons -->
+<div class="flex flex-col gap-space-xs pt-1">
+<button class="w-full h-12 rounded-lg bg-error text-on-error font-label-lg text-label-lg shadow-sm flex items-center justify-center gap-space-xs active:scale-[0.99] transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+<span>مراجعة مع المنسق واعتماد إثبات التسليم</span>
+</button>
+<button class="w-full h-10 rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs active:bg-surface-container-highest" type="button">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+<span>معاينة سند التسليم المحفوظ محلياً</span>
+</button>
+</div>
+</div>
+<!-- 2. PENDING SYNC CARD A -->
+<div class="log-card flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md space-y-space-sm" data-category="pending">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">أوردر #8 • م. حسام الدين</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">المقطم - الهضبة الوسطى</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 font-label-sm text-label-sm shrink-0">
+<span class="material-symbols-outlined text-[14px] animate-spin">sync</span>
+          في انتظار المزامنة
+        </span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm py-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">payments</span>
+<span>المبلغ المحصل: <strong class="font-title-md text-title-md text-on-surface">450 ج.م</strong></span>
+</div>
+<span class="font-label-sm text-label-sm">تم التحديث: 09:44 ص</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="flex-1 h-12 rounded-lg bg-secondary text-on-secondary font-label-lg text-label-lg flex items-center justify-center gap-1 active:scale-[0.99] transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">cached</span>
+<span>إعادة المحاولة الآن</span>
+</button>
+<button class="h-12 px-space-md rounded-lg bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- 3. PENDING SYNC CARD B (GPS Location Batch) -->
+<div class="log-card flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md space-y-space-xs" data-category="pending">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">pin_drop</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface">سجل مسار التحرك (GPS Breadcrumbs)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">14 نقطة تتبع جغرافية في وضع عدم الاتصال</span>
+</div>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 font-label-sm text-label-sm">
+          مؤجل تلقائياً
+        </span>
+</div>
+</div>
+<!-- 4. SYNCED CARD A -->
+<div class="log-card flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md space-y-space-xs" data-category="synced">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">أوردر #6 • نهى سامي</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">التجمع الخامس - النرجس</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-label-sm shrink-0">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+          تمت المزامنة
+        </span>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant pt-1 border-t-0 bg-surface-container-low px-space-xs py-1.5 rounded">
+<span>رمز العملية: SYNC-EG-99218</span>
+<span>الاعتماد: 09:15 ص</span>
+</div>
+</div>
+<!-- 5. SYNCED CARD B -->
+<div class="log-card flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-md space-y-space-xs" data-category="synced">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">أوردر #4 • كريم عبد الحميد</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">مدينة نصر - عباس العقاد</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-label-sm shrink-0">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+          تمت المزامنة
+        </span>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant pt-1 border-t-0 bg-surface-container-low px-space-xs py-1.5 rounded">
+<span>رمز العملية: SYNC-EG-99104</span>
+<span>الاعتماد: 08:42 ص</span>
+</div>
+</div>
+</div>
+<!-- Security & Storage Guarantee Callout -->
+<div class="flex items-start gap-space-xs p-space-md rounded-xl bg-surface-container-high">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+      جميع العمليات مسجلة ومشفرة محلياً على هاتفك. لن يتم حذف أي حركة تسليم أو مبلغ COD نهائياً قبل استلام إشعار تأكيد المطابقة التامة من الخادم المركزي.
+    </p>
+</div>
+<!-- Sticky Operational Command Pad -->
+<div class="sticky bottom-2 inset-x-0 flex flex-col gap-space-xs pt-space-xs z-10">
+<button class="w-full h-[52px] rounded-xl bg-primary text-on-primary font-headline-sm text-headline-sm shadow-md flex items-center justify-center gap-space-xs active:scale-[0.98] transition-transform" id="sync-all-btn" type="button">
+<span class="material-symbols-outlined text-[22px]" id="sync-icon">cloud_sync</span>
+<span>مزامنة فورية لكافة العمليات المعلقة (2)</span>
+</button>
+<a class="w-full h-[48px] rounded-xl bg-surface-container-lowest text-primary font-title-md text-title-md shadow-sm flex items-center justify-center gap-space-xs active:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+<span>العودة للرحلة النشطة (شاشة الميدان)</span>
+</a>
+</div>
+</div>
+<script>
+  // Simple filter tab interactions
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const cards = document.querySelectorAll('.log-card');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Update Tab Styles
+      filterTabs.forEach(t => {
+        t.classList.remove('bg-primary', 'text-on-primary');
+        t.classList.add('bg-surface-container', 'text-on-surface-variant');
+      });
+      tab.classList.add('bg-primary', 'text-on-primary');
+      tab.classList.remove('bg-surface-container', 'text-on-surface-variant');
+
+      const filterValue = tab.getAttribute('data-filter');
+
+      // Filter Cards
+      cards.forEach(card => {
+        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Micro-interaction for sync button
+  const syncBtn = document.getElementById('sync-all-btn');
+  const syncIcon = document.getElementById('sync-icon');
+  if (syncBtn && syncIcon) {
+    syncBtn.addEventListener('click', () => {
+      syncIcon.classList.add('animate-spin');
+      syncBtn.querySelector('span:last-child').textContent = 'جارٍ إرسال البيانات للخادم...';
+      setTimeout(() => {
+        syncIcon.classList.remove('animate-spin');
+        syncBtn.querySelector('span:last-child').textContent = 'اكتملت المزامنة بنجاح!';
+        syncBtn.classList.replace('bg-primary', 'bg-secondary');
+      }, 1400);
+    });
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/95 backdrop-blur-xl shadow-[0_-2px_10px_rgba(0,0,0,0.05)]" data-active-classes="text-secondary font-bold"><div class="flex justify-around items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] w-16 h-16 text-on-surface-variant transition-colors" data-path="trips" href="#"><span class="material-symbols-outlined text-[24px]">route</span><span class="font-label-md text-label-md mt-1">رحلاتي</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] w-16 h-16 text-on-surface-variant transition-colors" data-path="active-stop" href="#"><span class="material-symbols-outlined text-[24px]">package_2</span><span class="font-label-md text-label-md mt-1">الأوردر الحالي</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] w-16 h-16 transition-colors text-secondary font-bold" data-path="sync-status" href="#"><span class="material-symbols-outlined text-[24px]">sync</span><span class="font-label-md text-label-md mt-1">المزامنة</span></a><a class="flex flex-col items-center justify-center min-w-[48px] min-h-[48px] w-16 h-16 text-on-surface-variant transition-colors" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">badge</span><span class="font-label-md text-label-md mt-1">حسابي</span></a></div></nav></body></html>

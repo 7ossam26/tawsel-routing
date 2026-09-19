@@ -1,0 +1,33 @@
+{
+  "number": 7,
+  "id": "dff9a66b5a3c4fcdb44e27b31a2e421c",
+  "directory": "screens/07-location-review",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "DESKTOP",
+  "height": "2376",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDY2YTA1YWMwNDRmNGI3YWUyMTg3YTQzEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/dff9a66b5a3c4fcdb44e27b31a2e421c/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/dff9a66b5a3c4fcdb44e27b31a2e421c",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1UBVvvLUXO7yQyDDlTJPn0WsuG7qAHKx61i5dubuKGl4V9tIx4lTyGcytpvsYQ6iCD7s8ps7uBou5swUisEeKdfnMHNEy932T6ldX5A71B31j5dUq-HrPnOEwD-ohCIDBQQXfRTofUczLALoSWGls2RMLiDB0vN-GesWLjU3a1EpxCuOGgUppl_epEU2WndCM-qz6wz-KgQQkCJlLH9H5Xh2Xe_VfjWeNIsa_MgbYDFW4rOdtgeTx2uaW_O",
+    "name": "projects/16661174340563199513/screens/dff9a66b5a3c4fcdb44e27b31a2e421c/fileEntries/screenshot"
+  },
+  "title": "توصيل - مراجعة وتأكيد اللوكيشن (Screen 7)",
+  "width": "2560",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1UBVvvLUXO7yQyDDlTJPn0WsuG7qAHKx61i5dubuKGl4V9tIx4lTyGcytpvsYQ6iCD7s8ps7uBou5swUisEeKdfnMHNEy932T6ldX5A71B31j5dUq-HrPnOEwD-ohCIDBQQXfRTofUczLALoSWGls2RMLiDB0vN-GesWLjU3a1EpxCuOGgUppl_epEU2WndCM-qz6wz-KgQQkCJlLH9H5Xh2Xe_VfjWeNIsa_MgbYDFW4rOdtgeTx2uaW_O=s0",
+    "format": "Png",
+    "width": 2560,
+    "height": 2376,
+    "bytes": 1272221,
+    "sha256": "5697af5a1525b94662b840fde46da69d7524789f369a4c0f787da7c66f72ea64"
+  },
+  "downloadedCode": {
+    "bytes": 28838,
+    "sha256": "ddb73f099a256bf62d9dfff521b0b0e3f6b89b0179db24e682c41ae0c0980763"
+  }
+}

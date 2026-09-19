@@ -1,0 +1,33 @@
+{
+  "number": 2,
+  "id": "c51dd41ed3f74ceab7226835d38b75df",
+  "directory": "screens/02-stop-details",
+  "image": "screen.jpg",
+  "code": "code.html",
+  "deviceType": "DESKTOP",
+  "height": "2048",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyYjMzMTMwMWQwMjNiZGFmYTNiM2E4YjA2EgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/files/15488003403023288847"
+  },
+  "name": "projects/16661174340563199513/screens/c51dd41ed3f74ceab7226835d38b75df",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1Uv7A3Cu_-_hqruMJW3iYj9FnvHWGSOyLV4Rvp67-NWsmtlFeKJNyPOYXpIMdCMsE10eARtqsStjyNZhPJIsWCBgcZjtgcmoNRbGHrSBC2OBwRKix_iGbICl6wTPAX-yMA_quSdm860BlHHwDIp0Dd5dGCzTSY_f4utvvAt-sosX7wPhH4JCUVVgMrM6B6oii_Keb-aHASBPOWFCdbfafpSjyL9fpkYHZTfeadIaRsRvLUSvfkmV6pm8g3P",
+    "name": "projects/16661174340563199513/files/8729816994107313170"
+  },
+  "title": "توصيل - تفاصيل الوقفة والتنفيذ (Screen 2)",
+  "width": "2560",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1Uv7A3Cu_-_hqruMJW3iYj9FnvHWGSOyLV4Rvp67-NWsmtlFeKJNyPOYXpIMdCMsE10eARtqsStjyNZhPJIsWCBgcZjtgcmoNRbGHrSBC2OBwRKix_iGbICl6wTPAX-yMA_quSdm860BlHHwDIp0Dd5dGCzTSY_f4utvvAt-sosX7wPhH4JCUVVgMrM6B6oii_Keb-aHASBPOWFCdbfafpSjyL9fpkYHZTfeadIaRsRvLUSvfkmV6pm8g3P=s0",
+    "format": "Jpeg",
+    "width": 1647,
+    "height": 1107,
+    "bytes": 71819,
+    "sha256": "628a748f7ec392c871dc719eff13a4e20f18d41dd0713eb7c80d0daaccf7613b"
+  },
+  "downloadedCode": {
+    "bytes": 18597,
+    "sha256": "567b2d2b5e16d4f6686a2f84ef8e8d6a7ce9f93c2121316ff8b28f8df7fa4ef5"
+  }
+}

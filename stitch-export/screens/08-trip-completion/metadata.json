@@ -1,0 +1,33 @@
+{
+  "number": 8,
+  "id": "3c394f6e10df494fb82013f630a439d3",
+  "directory": "screens/08-trip-completion",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "MOBILE",
+  "height": "2672",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDY3ZjA1NDUwNDVhZGNiMzg4MGQ5NDk3EgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/3c394f6e10df494fb82013f630a439d3/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/3c394f6e10df494fb82013f630a439d3",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1WWlMnycP1dgQorYkngPqY6ABu0IoSgttABT4MVKqQOVKMIfMsOXnoeycwLj8LHJh8T5Zb43tphdI93bTTd0M8vUCtWs16GpuM8xJWbcowDCiaVfTZA61uxb-NjwflFHBlO6udx82RgS3ftwpzn3SihfB4fwf7CsPzR9Sid9IuMr1cBq_M29KgMFVuh7KaE3wMrv24VGatWMpdrPvKgCpo6sKZqpRkOfylJOM5HJhwatLCnNtYAHC1_o-4",
+    "name": "projects/16661174340563199513/screens/3c394f6e10df494fb82013f630a439d3/fileEntries/screenshot"
+  },
+  "title": "توصيل - ملخص إتمام الرحلة (Screen 8)",
+  "width": "780",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1WWlMnycP1dgQorYkngPqY6ABu0IoSgttABT4MVKqQOVKMIfMsOXnoeycwLj8LHJh8T5Zb43tphdI93bTTd0M8vUCtWs16GpuM8xJWbcowDCiaVfTZA61uxb-NjwflFHBlO6udx82RgS3ftwpzn3SihfB4fwf7CsPzR9Sid9IuMr1cBq_M29KgMFVuh7KaE3wMrv24VGatWMpdrPvKgCpo6sKZqpRkOfylJOM5HJhwatLCnNtYAHC1_o-4=s0",
+    "format": "Png",
+    "width": 780,
+    "height": 2672,
+    "bytes": 465133,
+    "sha256": "cd8f158bd58faf06795f812b1bee3b2b6f8db8a55a12f86a1e92da1dcb33976e"
+  },
+  "downloadedCode": {
+    "bytes": 21305,
+    "sha256": "9010b3faaf3d5811c24f2b57180c433337f09191b4687336535fb71f6be52e49"
+  }
+}

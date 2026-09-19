@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_blank" name="shell-type"/><title>توصيل</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;font-family:'Cairo',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary-fixed-variant": "#004b73", "on-primary-fixed": "#111c2d", "surface-container-lowest": "#ffffff", "surface-container-highest": "#e0e3e5", "secondary-fixed": "#cce5ff", "on-secondary-container": "#00476e", "tertiary-fixed": "#dbe1ff", "tertiary-container": "#002367", "on-secondary-fixed": "#001d31", "tertiary": "#00113b", "on-background": "#191c1e", "inverse-surface": "#2d3133", "error": "#ba1a1a", "on-error-container": "#93000a", "inverse-on-surface": "#eff1f3", "on-tertiary-fixed-variant": "#003ea8", "error-container": "#ffdad6", "on-tertiary": "#ffffff", "primary-fixed": "#d8e3fb", "inverse-primary": "#bcc7de", "surface-dim": "#d8dadc", "on-error": "#ffffff", "secondary-fixed-dim": "#93ccff", "on-tertiary-container": "#5f8aff", "on-primary": "#ffffff", "on-primary-container": "#8590a6", "surface-container-high": "#e6e8ea", "surface-container-low": "#f2f4f6", "tertiary-fixed-dim": "#b4c5ff", "on-secondary": "#ffffff", "on-surface": "#191c1e", "on-primary-fixed-variant": "#3c475a", "surface-bright": "#f7f9fb", "secondary-container": "#5bb8fe", "surface-variant": "#e0e3e5", "primary-fixed-dim": "#bcc7de", "surface-tint": "#545f73", "primary-container": "#1e293b", "surface-container": "#eceef0", "on-surface-variant": "#45474c", "background": "#f7f9fb", "surface": "#f7f9fb", "secondary": "#006398", "primary": "#091426", "on-tertiary-fixed": "#00174b", "outline-variant": "#c5c6cd", "outline": "#75777d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "gutter": "1rem", "space-xxs": "0.25rem", "space-lg": "1.5rem", "space-sm": "0.5rem", "space-2xl": "3rem", "gutter-mobile": "0.75rem", "margin-mobile": "1rem", "space-xs": "0.375rem", "space-xl": "2rem", "margin": "1rem" }, "fontFamily": { "headline-sm": ["Cairo"], "display-lg-mobile": ["Cairo"], "label-lg": ["Cairo"], "label-md": ["Cairo"], "display-lg": ["Cairo"], "body-sm": ["Cairo"], "label-sm": ["Cairo"], "body-md": ["Cairo"], "title-md": ["Cairo"], "metric-display": ["Cairo"], "body-lg": ["Cairo"], "headline-lg": ["Cairo"], "headline-md": ["Cairo"] }, "fontSize": { "headline-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }], "display-lg-mobile": ["26px", { "lineHeight": "36px", "fontWeight": "800" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "700" }], "label-md": ["12px", { "lineHeight": "18px", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "44px", "fontWeight": "800" }], "body-sm": ["13px", { "lineHeight": "20px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "16px", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "500" }], "title-md": ["16px", { "lineHeight": "26px", "fontWeight": "700" }], "metric-display": ["28px", { "lineHeight": "36px", "fontWeight": "800" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "500" }], "headline-lg": ["24px", { "lineHeight": "34px", "fontWeight": "700" }], "headline-md": ["20px", { "lineHeight": "30px", "fontWeight": "700" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen pt-safe pb-safe"><main class="flex flex-col relative w-full bg-surface min-h-screen"><div class="flex flex-col w-full pb-safe">
+<!-- Interactive State Toggle Bar (For Prototype Verification) -->
+<div class="px-gutter-mobile pt-space-sm pb-space-xs">
+<div class="bg-surface-container-high p-space-xxs rounded-xl flex items-center justify-between text-center gap-space-xs shadow-sm">
+<button class="flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 bg-surface-container-lowest text-on-surface font-headline-sm shadow-sm flex items-center justify-center gap-space-xs" id="tab-valid-state" onclick="setScreenState('valid')" type="button">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified_user</span>
+<span>بيانات جاهزة</span>
+</button>
+<button class="flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 text-on-surface-variant flex items-center justify-center gap-space-xs" id="tab-error-state" onclick="setScreenState('error')" type="button">
+<span class="material-symbols-outlined text-error text-[18px]">sync_problem</span>
+<span>تعذر التحقق / أوفلاين</span>
+</button>
+</div>
+</div>
+<div class="px-gutter-mobile space-y-space-md mt-space-xs">
+<!-- Brand Identity Header -->
+<div class="flex flex-col items-center text-center pt-space-xs pb-space-xxs">
+<div class="w-14 h-14 rounded-xl bg-primary-container text-surface-container-lowest flex items-center justify-center shadow-md mb-space-xs">
+<span class="material-symbols-outlined text-[32px] text-secondary-container" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary font-bold tracking-tight">توصيل</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mt-space-xxs">
+        منظومة إدارة وتوزيع خطوط السير الميدانية والتسليم الذكي
+      </p>
+</div>
+<!-- Offline / Sync Warning Banner (Controlled via state switcher) -->
+<div class="hidden p-space-md rounded-xl bg-error-container text-on-error-container shadow-sm transition-all duration-300" id="sync-warning-banner">
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-error text-on-error flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">cloud_off</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-title-md text-title-md text-on-error-container font-bold">تعذر مطابقة الحساب سحابياً</h4>
+<p class="font-body-sm text-body-sm text-on-error-container mt-space-xxs opacity-90 leading-relaxed">
+            تعذر الاتصال بخادم التوجيه المركزي. يمكنك المتابعة في «وضع العمل غير المتصل» باستخدام آخر جلسة مسجلة على هذا الجهاز.
+          </p>
+<div class="mt-space-xs flex items-center gap-space-sm">
+<button class="py-space-xxs px-space-sm rounded-lg bg-error text-on-error font-label-sm text-label-sm" type="button">
+              إعادة المحاولة فوراً
+            </button>
+<span class="font-label-sm text-label-sm text-on-error-container opacity-80">آخر مزامنة: منذ ساعتين</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Operational Role Selection -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface">الدور التشغيلي المستهدف</label>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-fixed px-space-xs py-space-xxs rounded">صلاحيات ميدانية</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xxs">
+<!-- Driver Card -->
+<label class="flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-primary-container text-surface-container-lowest shadow-sm select-none" id="role-driver-label">
+<input checked="" class="sr-only" name="operator_role" onchange="updateRoleSelector('driver')" type="radio" value="driver"/>
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest/15 flex items-center justify-center mb-space-xxs text-secondary-container">
+<span class="material-symbols-outlined text-[24px]">sports_motorsports</span>
+</div>
+<span class="font-title-md text-title-md font-bold text-surface-container-lowest">مندوب ميداني</span>
+<span class="font-label-sm text-label-sm text-surface-container-highest opacity-90">Driver / تسليم مباشر</span>
+</label>
+<!-- Dispatcher Card -->
+<label class="flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container text-on-surface select-none" id="role-dispatcher-label">
+<input class="sr-only" name="operator_role" onchange="updateRoleSelector('dispatcher')" type="radio" value="dispatcher"/>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center mb-space-xxs text-on-surface-variant">
+<span class="material-symbols-outlined text-[24px]">alt_route</span>
+</div>
+<span class="font-title-md text-title-md font-bold text-on-surface">منسق حركة</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hub Dispatcher</span>
+</label>
+</div>
+</div>
+<!-- Credentials Authentication Form -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-md">
+<!-- Identifier Field -->
+<div class="space-y-space-xs">
+<label class="block font-label-lg text-label-lg text-on-surface" for="identifier-input">
+          كود المندوب أو اسم المستخدم
+        </label>
+<div class="relative flex items-center">
+<input class="w-full h-[52px] pr-12 pl-12 rounded-xl bg-surface-container-low text-on-surface font-body-lg text-body-lg placeholder:text-on-surface-variant/60 focus:outline-none focus:bg-surface-container-lowest transition-colors" id="identifier-input" placeholder="مثال: D-8821 أو رقم الموبايل" type="text" value="D-8821"/>
+<span class="material-symbols-outlined absolute right-space-sm text-on-surface-variant pointer-events-none text-[22px]">badge</span>
+<button class="absolute left-space-xxs w-[44px] h-[44px] flex items-center justify-center rounded-lg text-secondary hover:bg-secondary-fixed/40 transition-colors" title="مسح الكود ضوئياً" type="button">
+<span class="material-symbols-outlined text-[22px]">qr_code_scanner</span>
+</button>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant pr-space-xxs">
+          مُعرّف المندوب الممنوح من إدارة التوزيع اللوجستي.
+        </p>
+</div>
+<!-- Password Field -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="block font-label-lg text-label-lg text-on-surface" for="password-input">
+            كلمة المرور
+          </label>
+<button class="font-label-md text-label-md text-secondary hover:underline" type="button">
+            نسيت كلمة السر؟
+          </button>
+</div>
+<div class="relative flex items-center">
+<input class="w-full h-[52px] pr-12 pl-12 rounded-xl bg-surface-container-low text-on-surface font-body-lg text-body-lg placeholder:text-on-surface-variant/60 focus:outline-none focus:bg-surface-container-lowest transition-colors tracking-widest" id="password-input" placeholder="أدخل كلمة المرور" type="password" value="••••••••••••"/>
+<span class="material-symbols-outlined absolute right-space-sm text-on-surface-variant pointer-events-none text-[22px]">lock</span>
+<button class="absolute left-space-xxs w-[44px] h-[44px] flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface transition-colors" id="toggle-pwd-btn" onclick="togglePasswordVisibility()" title="إظهار / إخفاء" type="button">
+<span class="material-symbols-outlined text-[22px]" id="pwd-icon">visibility_off</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xxs pr-space-xxs text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">info</span>
+<span class="font-label-sm text-label-sm">حساب مشفر ومخصص للمناديب ومنسقي العمليات المعتمدين</span>
+</div>
+</div>
+<!-- Workspace Chooser Component -->
+<div class="pt-space-xs space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface">مساحة العمل التشغيلية (Hub / Warehouse)</label>
+<span class="font-label-sm text-label-sm text-on-surface-variant">مركز التجمع النشط</span>
+</div>
+<div class="space-y-space-xs">
+<!-- Almaza Hub Card (Selected) -->
+<div class="p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container flex items-center justify-between shadow-sm" id="hub-card-1" onclick="selectHub(1)">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-surface-container-lowest flex items-center justify-center" id="hub-icon-1">
+<span class="material-symbols-outlined text-[22px] text-secondary-container">hub</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-title-md text-title-md font-bold text-on-surface">هب ألماظة - شرق القاهرة</span>
+<span class="font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed px-space-xxs py-0.5 rounded">رئيسي</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">محور النزهة، مصر الجديدة • 34 مسار نشط اليوم</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary" id="hub-check-1">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</div>
+<!-- 10th of Ramadan Hub Card (Alternate) -->
+<div class="p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container-low flex items-center justify-between" id="hub-card-2" onclick="selectHub(2)">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center" id="hub-icon-2">
+<span class="material-symbols-outlined text-[22px]">warehouse</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-title-md text-title-md font-bold text-on-surface">هب العاشر من رمضان</span>
+<span class="font-label-sm text-label-sm bg-surface-container-highest text-on-surface-variant px-space-xxs py-0.5 rounded">فرعي</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">المنطقة الصناعية B3 • شحنات التوزيع الخارجي</p>
+</div>
+</div>
+<div class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-transparent" id="hub-check-2">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- PWA Offline Session & Trust Indicators -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-start gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-container flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">offline_bolt</span>
+</div>
+<div class="flex-1">
+<h5 class="font-title-md text-title-md text-on-surface font-bold">حفظ الجلسة للعمل بدون اتصال (PWA Offline)</h5>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xxs leading-relaxed">
+            يقوم التطبيق بتشفير قائمة التسليمات والتوقيعات محلياً في ذاكرة الجهاز الآمنة، وتتم المزامنة تلقائياً بمجرد عودة تغطية الشبكة.
+          </p>
+</div>
+</div>
+<div class="p-space-xs rounded-lg bg-surface-container flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">security</span>
+<span>تشفير من طرف لطرف وفق معايير الحماية اللوجستية</span>
+</div>
+<span class="font-mono text-on-primary-container">V4.8.2</span>
+</div>
+</div>
+<!-- Primary Action Area -->
+<div class="pt-space-xs space-y-space-xs pb-space-md">
+<button class="w-full h-[52px] bg-primary text-on-primary rounded-xl font-title-md text-title-md font-bold shadow-md active:bg-primary-container transition-transform active:scale-[0.99] flex items-center justify-center gap-space-sm" id="submit-auth-btn" onclick="handleAuthAction()" type="button">
+<span class="material-symbols-outlined text-[22px]">login</span>
+<span>تسجيل الدخول ومتابعة العمل</span>
+</button>
+<!-- Secondary Help Action -->
+<div class="flex items-center justify-center gap-space-md pt-space-xs">
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary flex items-center gap-space-xxs" type="button">
+<span class="material-symbols-outlined text-[16px]">help_center</span>
+<span>الدعم الفني والعمليات</span>
+</button>
+<span class="text-surface-container-highest">•</span>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-secondary flex items-center gap-space-xxs" type="button">
+<span class="material-symbols-outlined text-[16px]">policy</span>
+<span>سياسة الخصوصية والاستخدام</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // State switcher between Valid Ready and Offline/Error
+  function setScreenState(state) {
+    const validBtn = document.getElementById('tab-valid-state');
+    const errorBtn = document.getElementById('tab-error-state');
+    const banner = document.getElementById('sync-warning-banner');
+    const submitBtn = document.getElementById('submit-auth-btn');
+    const identInput = document.getElementById('identifier-input');
+
+    if (state === 'error') {
+      // Toggle button classes
+      validBtn.className = "flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 text-on-surface-variant flex items-center justify-center gap-space-xs";
+      errorBtn.className = "flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 bg-error-container text-on-error-container font-headline-sm shadow-sm flex items-center justify-center gap-space-xs";
+      
+      banner.classList.remove('hidden');
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[22px]">cached</span>
+        <span>دخول بوضع عدم الاتصال (Offline)</span>
+      `;
+      submitBtn.classList.remove('bg-primary');
+      submitBtn.classList.add('bg-primary-container');
+    } else {
+      validBtn.className = "flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 bg-surface-container-lowest text-on-surface font-headline-sm shadow-sm flex items-center justify-center gap-space-xs";
+      errorBtn.className = "flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 text-on-surface-variant flex items-center justify-center gap-space-xs";
+      
+      banner.classList.add('hidden');
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[22px]">login</span>
+        <span>تسجيل الدخول ومتابعة العمل</span>
+      `;
+      submitBtn.classList.remove('bg-primary-container');
+      submitBtn.classList.add('bg-primary');
+    }
+  }
+
+  // Toggle Password Masking
+  function togglePasswordVisibility() {
+    const pwdInput = document.getElementById('password-input');
+    const pwdIcon = document.getElementById('pwd-icon');
+    if (pwdInput.type === 'password') {
+      pwdInput.type = 'text';
+      pwdIcon.textContent = 'visibility';
+      pwdInput.classList.remove('tracking-widest');
+    } else {
+      pwdInput.type = 'password';
+      pwdIcon.textContent = 'visibility_off';
+      pwdInput.classList.add('tracking-widest');
+    }
+  }
+
+  // Role Selector Switcher
+  function updateRoleSelector(role) {
+    const driverLabel = document.getElementById('role-driver-label');
+    const dispatcherLabel = document.getElementById('role-dispatcher-label');
+
+    if (role === 'driver') {
+      driverLabel.className = "flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-primary-container text-surface-container-lowest shadow-sm select-none";
+      driverLabel.querySelector('.material-symbols-outlined').parentElement.className = "w-10 h-10 rounded-full bg-surface-container-lowest/15 flex items-center justify-center mb-space-xxs text-secondary-container";
+      driverLabel.querySelector('.font-title-md').className = "font-title-md text-title-md font-bold text-surface-container-lowest";
+      driverLabel.querySelector('.font-label-sm').className = "font-label-sm text-label-sm text-surface-container-highest opacity-90";
+
+      dispatcherLabel.className = "flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container text-on-surface select-none";
+      dispatcherLabel.querySelector('.material-symbols-outlined').parentElement.className = "w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center mb-space-xxs text-on-surface-variant";
+      dispatcherLabel.querySelector('.font-title-md').className = "font-title-md text-title-md font-bold text-on-surface";
+      dispatcherLabel.querySelector('.font-label-sm').className = "font-label-sm text-label-sm text-on-surface-variant";
+    } else {
+      dispatcherLabel.className = "flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-primary-container text-surface-container-lowest shadow-sm select-none";
+      dispatcherLabel.querySelector('.material-symbols-outlined').parentElement.className = "w-10 h-10 rounded-full bg-surface-container-lowest/15 flex items-center justify-center mb-space-xxs text-secondary-container";
+      dispatcherLabel.querySelector('.font-title-md').className = "font-title-md text-title-md font-bold text-surface-container-lowest";
+      dispatcherLabel.querySelector('.font-label-sm').className = "font-label-sm text-label-sm text-surface-container-highest opacity-90";
+
+      driverLabel.className = "flex flex-col items-center justify-center p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container text-on-surface select-none";
+      driverLabel.querySelector('.material-symbols-outlined').parentElement.className = "w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center mb-space-xxs text-on-surface-variant";
+      driverLabel.querySelector('.font-title-md').className = "font-title-md text-title-md font-bold text-on-surface";
+      driverLabel.querySelector('.font-label-sm').className = "font-label-sm text-label-sm text-on-surface-variant";
+    }
+  }
+
+  // Workspace Hub Selection
+  function selectHub(hubId) {
+    const card1 = document.getElementById('hub-card-1');
+    const card2 = document.getElementById('hub-card-2');
+    const check1 = document.getElementById('hub-check-1');
+    const check2 = document.getElementById('hub-check-2');
+    const icon1 = document.getElementById('hub-icon-1');
+    const icon2 = document.getElementById('hub-icon-2');
+
+    if (hubId === 1) {
+      card1.className = "p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container flex items-center justify-between shadow-sm";
+      check1.className = "w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary";
+      icon1.className = "w-10 h-10 rounded-lg bg-primary-container text-surface-container-lowest flex items-center justify-center";
+
+      card2.className = "p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container-low flex items-center justify-between";
+      check2.className = "w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-transparent";
+      icon2.className = "w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center";
+    } else {
+      card2.className = "p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container flex items-center justify-between shadow-sm";
+      check2.className = "w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary";
+      icon2.className = "w-10 h-10 rounded-lg bg-primary-container text-surface-container-lowest flex items-center justify-center";
+
+      card1.className = "p-space-sm rounded-xl cursor-pointer transition-all bg-surface-container-low flex items-center justify-between";
+      check1.className = "w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-transparent";
+      icon1.className = "w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center";
+    }
+  }
+
+  // Tactile click feedback on action
+  function handleAuthAction() {
+    const btn = document.getElementById('submit-auth-btn');
+    btn.classList.add('scale-[0.98]', 'opacity-90');
+    setTimeout(() => {
+      btn.classList.remove('scale-[0.98]', 'opacity-90');
+    }, 150);
+  }
+</script></main></body></html>

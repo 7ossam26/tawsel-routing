@@ -1,0 +1,33 @@
+{
+  "number": 5,
+  "id": "0a46baa0b55645088f06fbba66bddfd0",
+  "directory": "screens/05-driver-daily-trips",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "MOBILE",
+  "height": "2774",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDM4Nzg0MTkwNGU3NTgzMjYyMGI1MDFhEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/0a46baa0b55645088f06fbba66bddfd0/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/0a46baa0b55645088f06fbba66bddfd0",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1XNfjPgE8_S0PGGq8EKHm95M7MzLLl2BeaxkOW8PH_kMDosZGaGePJ0x_S4JnwMqV5gXFxQwNWVglNwJsO9er1nj9vbe6pRR-m1YCvuPj9fSni08281achPmSjMBTq8pM9Ix7p8-ni66NVSKsCbKYs513Xh1-lD5rHyiS6BlLO8_9kTUpe7btn4j450ihXDoxnVvYsAK4PG1XyBx61pofsnWqO6NmrncyX2OdAZFI-FqpluP8z_4uD3troD",
+    "name": "projects/16661174340563199513/screens/0a46baa0b55645088f06fbba66bddfd0/fileEntries/screenshot"
+  },
+  "title": "توصيل - رحلات اليوم للمندوب (Screen 5)",
+  "width": "780",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1XNfjPgE8_S0PGGq8EKHm95M7MzLLl2BeaxkOW8PH_kMDosZGaGePJ0x_S4JnwMqV5gXFxQwNWVglNwJsO9er1nj9vbe6pRR-m1YCvuPj9fSni08281achPmSjMBTq8pM9Ix7p8-ni66NVSKsCbKYs513Xh1-lD5rHyiS6BlLO8_9kTUpe7btn4j450ihXDoxnVvYsAK4PG1XyBx61pofsnWqO6NmrncyX2OdAZFI-FqpluP8z_4uD3troD=s0",
+    "format": "Png",
+    "width": 780,
+    "height": 2774,
+    "bytes": 218561,
+    "sha256": "3148bfe7877532bf73f2daf5d0458d5814a145a3710508959939dc7b34d08df8"
+  },
+  "downloadedCode": {
+    "bytes": 22096,
+    "sha256": "8542558c35d989af98d6f79ef9819e126c07750f8d5ef5c88472fa2fdffe2717"
+  }
+}

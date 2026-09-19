@@ -1,0 +1,33 @@
+{
+  "number": 6,
+  "id": "c8ec135a704d4720a044cfcd263fe2df",
+  "directory": "screens/06-route-preparation",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "DESKTOP",
+  "height": "2478",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDNhYTZkNDMwNDRmNGI3YWUyMTg3YTQzEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/c8ec135a704d4720a044cfcd263fe2df/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/c8ec135a704d4720a044cfcd263fe2df",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1UKnByNgX2G7Mk6aJII4YY4ng45Q2KHxwtki02x13EqhQCPT8_UUrb8KEuurkxK4Oa08KuTtNosuLLD5BEs0B1GfXK_fDltEeNOd6uOsxS9FxzTIM12zEPIr7W7l1knZigcSzrR4aULJM97aZwledncD1FXN_YK7le2R6D5dUkwhJIc7JrCIjbv6qMzx1-3NNXquTDNrCUPwiE3VjBSrQkg3Fnv1gmCQnmURtjKcRDeH3klWowe1WxyAbH9",
+    "name": "projects/16661174340563199513/screens/c8ec135a704d4720a044cfcd263fe2df/fileEntries/screenshot"
+  },
+  "title": "توصيل - تجهيز وتعديل خط السير (Screen 6)",
+  "width": "2560",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1UKnByNgX2G7Mk6aJII4YY4ng45Q2KHxwtki02x13EqhQCPT8_UUrb8KEuurkxK4Oa08KuTtNosuLLD5BEs0B1GfXK_fDltEeNOd6uOsxS9FxzTIM12zEPIr7W7l1knZigcSzrR4aULJM97aZwledncD1FXN_YK7le2R6D5dUkwhJIc7JrCIjbv6qMzx1-3NNXquTDNrCUPwiE3VjBSrQkg3Fnv1gmCQnmURtjKcRDeH3klWowe1WxyAbH9=s0",
+    "format": "Png",
+    "width": 2560,
+    "height": 2478,
+    "bytes": 542774,
+    "sha256": "400e40f0d7d278376141c467ba7b00dcb4493becce972e16b8bb5f2bef47fb17"
+  },
+  "downloadedCode": {
+    "bytes": 36510,
+    "sha256": "cc2a6e73f74ee30e1f2906f06336d28b17c8daafad82de73400fe989cf71c6ac"
+  }
+}

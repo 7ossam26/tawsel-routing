@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="ar" dir="rtl" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توصيل - مساحة عمل الموزع المكتبي (Dispatcher Workspace)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" class="">
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col antialiased" style="font-family: Cairo, sans-serif !important;">
+
+  <!-- Desktop Top Navigation Bar -->
+  <header class="bg-white border-b border-slate-200 px-8 py-3.5 flex items-center justify-between shadow-sm shrink-0 z-30">
+    <div class="flex items-center gap-8">
+      <!-- Tawsel Brand Wordmark -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-slate-900 text-amber-400 font-black text-lg flex items-center justify-center shadow-sm">
+          ت
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-2">
+            <span class="font-black text-lg text-slate-900 tracking-tight leading-none">توصيل</span>
+            <span class="text-[11px] bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-md border border-slate-200">الديسباتشر المكتبي</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-medium mt-0.5">لوحة تنسيق ومتابعة خطوط السير اليومية</span>
+        </div>
+      </div>
+
+      <!-- Mode Switcher (Planning vs. Monitoring) -->
+      <nav class="flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200 gap-1">
+        <button onclick="setWorkspaceMode('monitoring')" id="tabMonitoring" class="px-4 py-2 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-sm border border-slate-200/80 flex items-center gap-2 transition"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>متابعة المناديب والرحلات</button>
+        <button onclick="setWorkspaceMode('planning')" id="tabPlanning" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-2 transition"><svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>تخطيط وتوزيع الخطوط</button>
+      </nav>
+    </div>
+
+    <!-- Active Operational Hub Context & Sync Timestamp -->
+    <div class="flex items-center gap-5 text-xs">
+      <div class="hidden md:flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl"><span class="text-slate-400 font-medium">المركز اللوجستي:</span><span class="font-bold text-slate-900">المخزن الرئيسي / هب ألماظة - شرق القاهرة</span></div>
+
+      <div class="flex items-center gap-2 text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-xl font-mono text-xs"><svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="font-medium">آخر تحديث: <strong class="text-slate-900 font-bold">09:42:15</strong></span></div>
+
+      <!-- Dispatcher User Profile -->
+      <div class="flex items-center gap-3 border-r border-slate-200 pr-5">
+        <div class="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shadow-sm ring-2 ring-slate-100">
+          أم
+        </div>
+        <div class="hidden lg:block text-right"><div class="font-bold text-slate-900 text-xs">أحمد مراد</div><div class="text-[11px] text-slate-500 font-medium">مشرف تشغيل ومتابعة مناديب</div></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Split Content Area (1440x900 Canvas optimized) -->
+  <main class="flex-1 flex overflow-hidden relative">
+
+    <!-- Left Sidebar: Trips Context Switcher (Compact List) -->
+    <aside class="w-80 bg-white border-l border-slate-200 flex flex-col shrink-0 shadow-sm">
+      <div class="p-4 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-xs text-slate-900">رحلات ومناديب اليوم</span>
+          <span class="bg-blue-100 text-blue-700 text-[11px] font-bold px-2 py-0.5 rounded-full">4 رحلات</span>
+        </div>
+        <button class="text-blue-600 text-xs font-bold hover:underline hover:text-blue-800 transition">+ خط سير جديد</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto custom-scroll p-3.5 space-y-3">
+        <!-- Trip 1 (Active Selected: Cairo Trip with 18 stops) -->
+        <div class="p-4 bg-blue-50/80 rounded-2xl border-2 border-blue-500 shadow-sm cursor-pointer transition-all">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-xs font-black text-slate-950 block">رحلة النزهة والتجمع</span>
+              <span class="text-[11px] font-mono text-blue-700 font-semibold">كود الرحلة: #8941</span>
+            </div>
+            <span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200 shrink-0">شغالة دلوقتي</span>
+          </div>
+          <div class="text-xs text-slate-700 mt-2.5 flex items-center gap-2 bg-white/80 p-2 rounded-xl border border-blue-100">
+            <span class="font-bold text-slate-900">محمود حسن</span>
+            <span class="text-slate-400">•</span>
+            <span class="text-slate-600 text-[11px]">فان دايو 04</span>
+          </div>
+          <div class="mt-3 pt-2 border-t border-blue-200/60">
+            <div class="flex justify-between text-[11px] font-bold text-slate-700 mb-1.5">
+              <span class="">6 من 18 أوردر اتسلّموا</span>
+              <span class="text-blue-700 font-black">33%</span>
+            </div>
+            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex gap-0.5 p-0.5">
+              <div class="bg-emerald-500 h-full rounded-full" style="width: 33%"></div>
+              <div class="bg-red-500 h-full rounded-full" style="width: 6%"></div>
+              <div class="bg-amber-400 h-full rounded-full" style="width: 6%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trip 2 -->
+        <div class="p-4 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 shadow-sm cursor-pointer transition">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold text-slate-900 block">خط المعادي وحلوان</span>
+              <span class="text-[11px] font-mono text-slate-500">#8942</span>
+            </div>
+            <span class="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">بيوزّع حالياً</span>
+          </div>
+          <div class="text-xs text-slate-600 mt-2.5 flex items-center justify-between">
+            <span class="">المندوب: <strong class="text-slate-800">طارق سليم</strong></span>
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono font-bold text-[11px]">22 أوردر</span>
+          </div>
+        </div>
+
+        <!-- Trip 3 -->
+        <div class="p-4 bg-white hover:bg-slate-50 rounded-2xl border border-slate-200 shadow-sm cursor-pointer transition">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold text-slate-900 block">خط المهندسين والدقي</span>
+              <span class="text-[11px] font-mono text-slate-500">#8943</span>
+            </div>
+            <span class="text-[11px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full border border-amber-200">مسودة تجهيز</span>
+          </div>
+          <div class="text-xs text-slate-500 mt-2.5 flex items-center justify-between">
+            <span class="text-slate-600 font-medium">المندوب: <span class="text-amber-700 font-semibold">لسه ما اتعينش</span></span>
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono font-bold text-[11px]">14 أوردر</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center/Main: Map Canvas (MapLibre Style with Planned Route Geometry) -->
+    <section class="flex-1 relative bg-slate-200 overflow-hidden flex flex-col">
+      
+      <!-- Operational Monitoring Top Floating Bar -->
+      <div class="absolute top-5 inset-x-6 z-20 flex justify-between items-center pointer-events-none gap-4">
+        <div class="bg-white/95 backdrop-blur-md px-5 py-3 rounded-2xl border border-slate-300 shadow-xl pointer-events-auto flex items-center gap-6">
+          <div>
+            <div class="text-[11px] text-slate-500 font-bold mb-0.5">خط السير المعتمد</div>
+            <div class="font-black text-sm text-slate-950 flex items-center gap-2">
+              <span class="">محمود حسن</span>
+              <span class="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-md">18 أوردر متوزعين</span>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-xl font-bold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> سلّم: 6</div>
+            <div class="flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-3 py-1.5 rounded-xl font-bold"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> مرتجع / تعذر: 1</div>
+            <div class="flex items-center gap-1.5 bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 rounded-xl font-bold"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> باقي معاه: 11 أوردر</div>
+          </div>
+        </div>
+
+        <div class="bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-300 shadow-lg pointer-events-auto text-xs text-slate-700 font-semibold flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="">بيانات معتمدة ومحدثة من السيستم (بدون GPS مباشر)</span>
+        </div>
+      </div>
+
+      <!-- Map Pattern Container -->
+      <div class="w-full h-full relative" style="background-color: #e2e8f0; background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px); background-size: 24px 24px;">
+        
+        <!-- Large Cairo Route SVG -->
+        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 900 650" fill="none">
+          <!-- Main arterial roads -->
+          <path d="M50,450 C200,420 400,380 600,200 S850,150 900,120" stroke="#cbd5e1" stroke-width="16"></path>
+          <path d="M50,450 C200,420 400,380 600,200 S850,150 900,120" stroke="#ffffff" stroke-width="10"></path>
+
+          <path d="M250,50 L320,300 L500,580" stroke="#cbd5e1" stroke-width="12"></path>
+          <path d="M250,50 L320,300 L500,580" stroke="#ffffff" stroke-width="8"></path>
+
+          <!-- Planned Route Geometry (Fixed destination sequence, no moving car marker) -->
+          <path d="M120,400 L210,340 L310,310 L410,250 L470,220 L580,180 L720,140" stroke="#2563eb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 6"></path>
+
+          <!-- Pins on Map -->
+          <!-- Delivered Pins (1 to 6) -->
+          <circle cx="120" cy="400" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"></circle>
+          <circle cx="210" cy="340" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"></circle>
+          <circle cx="310" cy="310" r="12" fill="#059669" stroke="#ffffff" stroke-width="3"></circle>
+
+          <!-- Failed Pin (Stop 7) -->
+          <circle cx="410" cy="250" r="12" fill="#dc2626" stroke="#ffffff" stroke-width="3"></circle>
+          <text x="406" y="254" fill="#ffffff" font-size="11" font-weight="bold">7</text>
+
+          <!-- NEXT PLANNED STOP (Stop 8) Highlighted -->
+          <circle cx="470" cy="220" r="22" fill="#f59e0b" fill-opacity="0.3" class="animate-pulse"></circle>
+          <circle cx="470" cy="220" r="14" fill="#d97706" stroke="#ffffff" stroke-width="3"></circle>
+          <text x="466" y="225" fill="#ffffff" font-size="13" font-weight="bold">8</text>
+
+          <!-- Future stops (9, 10, 11) -->
+          <circle cx="580" cy="180" r="11" fill="#475569" stroke="#ffffff" stroke-width="2.5"></circle>
+          <text x="576" y="184" fill="#ffffff" font-size="10" font-weight="bold">9</text>
+
+          <circle cx="720" cy="140" r="11" fill="#475569" stroke="#ffffff" stroke-width="2.5"></circle>
+          <text x="714" y="144" fill="#ffffff" font-size="10" font-weight="bold">10</text>
+        </svg>
+
+        <!-- Destination 8 Callout Overlay on Map -->
+        <div class="absolute top-[170px] left-[390px] bg-slate-950 text-white p-3.5 rounded-2xl shadow-2xl border-2 border-amber-400 flex flex-col gap-2 max-w-xs z-20">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center shadow-sm">8</span>
+              <span class="font-black text-xs text-amber-300 tracking-tight">الأوردر اللي عليه الدور</span>
+            </div>
+            <span class="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-md font-bold">النزهة</span>
+          </div>
+          <div class="text-xs font-bold text-white leading-snug">حسام الدين عبد الرحمن</div>
+          <div class="text-[11px] text-slate-300 bg-slate-800/90 px-2.5 py-1.5 rounded-lg border border-slate-700/60 font-medium flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="">في انتظار وصول المندوب للموقع والتسليم</span>
+          </div>
+        </div>
+
+        <!-- Map attribution -->
+        <div class="absolute bottom-2 left-4 text-[10px] text-slate-400 bg-white/70 px-2 py-0.5 rounded">بيانات الخرائط الذاتية مصر | نظام الإحداثيات المعتمد</div>
+      </div>
+    </section>
+
+    <!-- Right Sidebar: Structured Trip / Stop Execution & Planning Panel -->
+    <aside class="w-96 bg-white border-r border-slate-200 flex flex-col shrink-0 shadow-xl z-20">
+      
+      <!-- Panel Header with Active Mode Context -->
+      <div class="p-5 border-b border-slate-200 bg-slate-50/50">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 id="panelTitle" class="font-black text-slate-950 text-sm">تفاصيل خط السير وأوردرات المندوب</h2>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5">المسار المعتمد لليوم</p>
+          </div>
+          <span class="text-xs font-black text-blue-700 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200">18 أوردر</span>
+        </div>
+
+        <!-- Planning Mode Controls (Initially hidden or toggled) -->
+        <div id="planningControls" class="hidden space-y-3 pt-3 border-t border-slate-200">
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              </div></div></div></div></aside>
+
+  </main>
+
+  <script>
+    function setWorkspaceMode(mode) {
+      const tabMonitoring = document.getElementById('tabMonitoring');
+      const tabPlanning = document.getElementById('tabPlanning');
+      const planningControls = document.getElementById('planningControls');
+      const monitoringSummary = document.getElementById('monitoringSummary');
+      const panelTitle = document.getElementById('panelTitle');
+
+      if (mode === 'planning') {
+        tabPlanning.className = "px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-sm border border-slate-200/80 flex items-center gap-1.5 transition";
+        tabMonitoring.className = "px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition";
+        planningControls.classList.remove('hidden');
+        monitoringSummary.classList.add('hidden');
+        panelTitle.innerText = "تخطيط ومراجعة مسار الرحلة";
+      } else {
+        tabMonitoring.className = "px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-900 shadow-sm border border-slate-200/80 flex items-center gap-1.5 transition";
+        tabPlanning.className = "px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 flex items-center gap-1.5 transition";
+        planningControls.classList.add('hidden');
+        monitoringSummary.classList.remove('hidden');
+        panelTitle.innerText = "تفاصيل الرحلة والوقائع المجدولة";
+      }
+    }
+
+    function simulateOptimize() {
+      const btn = document.getElementById('btnOptimize');
+      btn.innerHTML = `<span>جاري تحسين المسار عبر المحرك...</span>`;
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = `<span>✓ تم تحسين المسار (وفر 4.8 كم)</span>`;
+        btn.className = "flex-1 h-9 bg-emerald-600 text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5";
+        document.getElementById('draftNotice').innerHTML = `<span class="text-emerald-800 font-bold">تم فحص جميع الإحداثيات وهي جاهزة للنشر.</span>`;
+        document.getElementById('draftNotice').className = "p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-[11px] text-emerald-800 flex items-center justify-between";
+      }, 1200);
+    }
+  </script>
+
+
+
+</body></html>

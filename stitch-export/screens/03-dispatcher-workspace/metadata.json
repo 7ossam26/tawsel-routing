@@ -1,0 +1,33 @@
+{
+  "number": 3,
+  "id": "71ae553e941a4312a5bef12d1da8712a",
+  "directory": "screens/03-dispatcher-workspace",
+  "image": "screen.jpg",
+  "code": "code.html",
+  "deviceType": "DESKTOP",
+  "height": "2048",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyYjM2YmJlYmUwOTY4OGZjN2VmMzc0ZjQzEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/files/8982686414476916706"
+  },
+  "name": "projects/16661174340563199513/screens/71ae553e941a4312a5bef12d1da8712a",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1XcFPXnQXgPvTmpj5Qjwe64Y6Q2V6CR9SbOMMVXKymM3FI0gEG7SQ3MyeZtJWQYya4O3hkZmu3WPsz2c5D12dbcj5HiCrl2Kvn3E64iV3N_SCwIZa7jVQaptLZ7kn2fv-VZqvur_G_QJQ1YuarlJb5OW-uBSrdBXAyFnqVcrIeTtZEBf20hfMadsX_xacsr_r0v_23JriiDDKO_baduS1-bizqbXjHg9KB0k2F6DS_2Od3ZpTukycGF83gC",
+    "name": "projects/16661174340563199513/files/1728442667888712629"
+  },
+  "title": "توصيل - مساحة عمل الموزع المكتبي (Screen 3)",
+  "width": "2560",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1XcFPXnQXgPvTmpj5Qjwe64Y6Q2V6CR9SbOMMVXKymM3FI0gEG7SQ3MyeZtJWQYya4O3hkZmu3WPsz2c5D12dbcj5HiCrl2Kvn3E64iV3N_SCwIZa7jVQaptLZ7kn2fv-VZqvur_G_QJQ1YuarlJb5OW-uBSrdBXAyFnqVcrIeTtZEBf20hfMadsX_xacsr_r0v_23JriiDDKO_baduS1-bizqbXjHg9KB0k2F6DS_2Od3ZpTukycGF83gC=s0",
+    "format": "Jpeg",
+    "width": 1647,
+    "height": 580,
+    "bytes": 43828,
+    "sha256": "d1aea94456fd89b3d252b25177969554b17cf8d5bb47339afe35a3141bd6eb9b"
+  },
+  "downloadedCode": {
+    "bytes": 18852,
+    "sha256": "6bfe11c444b5bce8ad3f995ecd35537285b5cb5363f13a2ecc27f136d6eba182"
+  }
+}

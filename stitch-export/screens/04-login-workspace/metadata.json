@@ -1,0 +1,33 @@
+{
+  "number": 4,
+  "id": "4d692192b93241c2ac5792e97d1bd7cd",
+  "directory": "screens/04-login-workspace",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "MOBILE",
+  "height": "2370",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDM0Yzc1NDkwNDRmN2VhNmIxMzQ4YzhlEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/4d692192b93241c2ac5792e97d1bd7cd/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/4d692192b93241c2ac5792e97d1bd7cd",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1Xq6MMlpDfM7aueTQ25xJCN6kp44zz1GtoiF34P-Xhb9PieTEIKpLueNWqDQ8UgSUjdnVL3RD9omi0kbSoA0tfanDTdug66nIt86zHvB2IkJUK0knkAs8IdPObMoJBNrRzSHgtqzamEtM8ErYFI-hTQrc1cWbl2usu6kazulMvKD4t6tgg7WZQiW3tH6b5Ln-33x1jFhVUM1lSIR7NaXIbxLDz0RyRcNqA3flu7khKANBXMX1nwqQ5k6UhL",
+    "name": "projects/16661174340563199513/screens/4d692192b93241c2ac5792e97d1bd7cd/fileEntries/screenshot"
+  },
+  "title": "توصيل - تسجيل الدخول ومساحة العمل (Screen 4)",
+  "width": "780",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1Xq6MMlpDfM7aueTQ25xJCN6kp44zz1GtoiF34P-Xhb9PieTEIKpLueNWqDQ8UgSUjdnVL3RD9omi0kbSoA0tfanDTdug66nIt86zHvB2IkJUK0knkAs8IdPObMoJBNrRzSHgtqzamEtM8ErYFI-hTQrc1cWbl2usu6kazulMvKD4t6tgg7WZQiW3tH6b5Ln-33x1jFhVUM1lSIR7NaXIbxLDz0RyRcNqA3flu7khKANBXMX1nwqQ5k6UhL=s0",
+    "format": "Png",
+    "width": 780,
+    "height": 2370,
+    "bytes": 176082,
+    "sha256": "682b88559660f1b6b4fd0c67a310b775c8884c4b3eafe0e2ff9ffcf10eb8ca3e"
+  },
+  "downloadedCode": {
+    "bytes": 26157,
+    "sha256": "91c7097c99bfe485c8c96b5676b9827aebd1ccd6445624019d9f258afd445e70"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "number": 9,
+  "id": "b4cfe4329fb144cfbb83c314402bb943",
+  "directory": "screens/09-sync-conflicts",
+  "image": "screen.png",
+  "code": "code.html",
+  "deviceType": "MOBILE",
+  "height": "3400",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyZDY1MjY4MGQwNDRmNmNhZTY1MDBiNWZlEgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/screens/b4cfe4329fb144cfbb83c314402bb943/fileEntries/html"
+  },
+  "name": "projects/16661174340563199513/screens/b4cfe4329fb144cfbb83c314402bb943",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1VHxToHRGLzfJ0vWw9beZ4PHTUug9cvPyTiJn-A4VnrNsbGlNlwFMhIIAmb0lNQ54UbKHRnJEqVoiGAt_rgQQZt8-Qx3hMxsuQkdFyBo-0U6hSxw8xtbTtujKrsm37GNw9C3tzesgrkq2oVlSV8DbZBVOxxTEZ-721ECbbugeE2F3B2GHx2lTPrTmvm823A7b6Rg8x9NBaTupxy3xncxdlFudQCvwhIvLaiy4dMhOwJ9Imcg98nAsezKj4",
+    "name": "projects/16661174340563199513/screens/b4cfe4329fb144cfbb83c314402bb943/fileEntries/screenshot"
+  },
+  "title": "توصيل - سجل المزامنة وحل التعارضات (Screen 9)",
+  "width": "780",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1VHxToHRGLzfJ0vWw9beZ4PHTUug9cvPyTiJn-A4VnrNsbGlNlwFMhIIAmb0lNQ54UbKHRnJEqVoiGAt_rgQQZt8-Qx3hMxsuQkdFyBo-0U6hSxw8xtbTtujKrsm37GNw9C3tzesgrkq2oVlSV8DbZBVOxxTEZ-721ECbbugeE2F3B2GHx2lTPrTmvm823A7b6Rg8x9NBaTupxy3xncxdlFudQCvwhIvLaiy4dMhOwJ9Imcg98nAsezKj4=s0",
+    "format": "Png",
+    "width": 780,
+    "height": 3400,
+    "bytes": 268894,
+    "sha256": "054f4529cee986ea2c2691630acc6b19dd9b7c4f3ac3d0fbe4aa3b902e30d9d9"
+  },
+  "downloadedCode": {
+    "bytes": 23249,
+    "sha256": "2390d8eee8445024e9d033d11c571158131232eccb4fe313185ac58508093f6a"
+  }
+}

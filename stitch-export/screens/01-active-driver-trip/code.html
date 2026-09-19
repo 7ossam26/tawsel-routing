@@ -1,0 +1,149 @@
+<!DOCTYPE html><html lang="ar" dir="rtl" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>توصيل - رحلة السائق النشطة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .map-pattern {
+      background-color: #e9ecef;
+      background-image: 
+        radial-gradient(#d1d5db 1px, transparent 1px),
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 20px 20px, 60px 60px, 60px 60px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>* { font-family: 'Cairo', sans-serif !important; }</style></head>
+<body class="bg-slate-900 text-slate-800 antialiased flex justify-center items-center min-h-screen p-0 sm:p-4" style="font-family: Cairo, sans-serif !important;">
+
+  <!-- Mobile Frame Container 390x844 -->
+  <div class="relative w-full max-w-[390px] h-[844px] bg-slate-50 overflow-hidden shadow-2xl rounded-none sm:rounded-[44px] border-0 sm:border-[8px] border-slate-800 flex flex-col justify-between">
+
+    <!-- Top Status Bar & Connectivity Header -->
+    <div class="absolute top-0 inset-x-0 z-30 pt-2 pb-3 px-4 bg-gradient-to-b from-slate-900/80 via-slate-900/50 to-transparent text-white pointer-events-none">
+      <div class="flex justify-between items-center text-xs font-semibold px-2 mb-2">
+        <span class="tracking-wider">09:41</span>
+        <div class="flex items-center gap-1.5">
+          <span class="text-[10px] bg-emerald-500/90 text-white px-2 py-0.5 rounded-full font-medium flex items-center gap-1 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> متصل - كله متزامن</span>
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25l1.41 1.41 1.64-1.64C9.07 19.26 10.49 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Operational App Header -->
+    <div class="absolute top-10 inset-x-4 z-20 flex flex-col gap-2.5 pointer-events-auto"><div class="bg-white px-4 py-3 rounded-2xl shadow-lg border border-slate-200/80 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-lg shadow-sm shrink-0">ت</div><div class="flex flex-col gap-1"><div class="flex items-center gap-2"><h1 class="font-bold text-slate-900 text-sm tracking-normal">رحلة مدينة نصر والتجمع</h1><span class="text-[10px] font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md border border-blue-200 whitespace-nowrap">TR-8941#</span></div><p class="text-xs text-slate-600 font-medium">المندوب: كابتن محمود حسن (عربية ڤان 04)</p></div></div><button onclick="toggleSyncNotification()" class="w-9 h-9 rounded-xl hover:bg-slate-100 text-slate-700 transition active:scale-95 flex items-center justify-center border border-slate-200 shrink-0" title="تحديث يدوي"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button></div><div class="grid grid-cols-4 gap-2 text-center text-xs font-semibold bg-white p-2 rounded-2xl border border-slate-200/80 shadow-md"><div class="bg-slate-50 py-1.5 px-1 rounded-xl border border-slate-200/70 flex flex-col gap-0.5"><span class="block text-[10px] text-slate-600 font-medium">إجمالي اليوم</span><span class="text-slate-900 text-xs font-bold">18 أوردر</span></div><div class="bg-emerald-50 py-1.5 px-1 rounded-xl border border-emerald-200 text-emerald-800 flex flex-col gap-0.5"><span class="block text-[10px] text-emerald-700 font-medium">تم التسليم</span><span class="text-xs font-bold">سلّمت 6</span></div><div class="bg-amber-50 py-1.5 px-1 rounded-xl border border-amber-200 text-amber-900 flex flex-col gap-0.5"><span class="block text-[10px] text-amber-700 font-medium">باقي معاك</span><span class="text-xs font-bold">11 أوردر</span></div><div class="bg-red-50 py-1.5 px-1 rounded-xl border border-red-200 text-red-700 flex flex-col gap-0.5"><span class="block text-[10px] text-red-600 font-medium">ما استلمش</span><span class="text-xs font-bold">1 مرتجع</span></div></div></div>
+
+    <!-- Map Area (Simulated High-Fidelity MapLibre Canvas) -->
+    <div class="relative w-full h-[470px] map-pattern overflow-hidden flex items-center justify-center">
+      <!-- Road & Waterway SVG Overlay -->
+      <svg class="absolute inset-0 w-full h-full stroke-slate-300" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Cairo Ring Road & Streets simulation -->
+        <path d="M-50,150 Q120,90 220,180 T420,130" stroke="#cbd5e1" stroke-width="12"></path>
+        <path d="M-50,150 Q120,90 220,180 T420,130" stroke="#f1f5f9" stroke-width="8"></path>
+
+        <path d="M120,-30 L160,280 L290,480" stroke="#cbd5e1" stroke-width="8"></path>
+        <path d="M120,-30 L160,280 L290,480" stroke="#ffffff" stroke-width="5"></path>
+
+        <!-- Planned Delivery Geometry Route (Dark Slate with Blue Highlights) -->
+        <path id="routePath" d="M80,310 L155,270 L210,210 L225,185 L310,130" stroke="#2563eb" stroke-width="4" stroke-dasharray="6 4"></path>
+      </svg>
+
+      <!-- Water feature/River simulation -->
+      <div class="absolute -left-10 top-0 w-24 h-full bg-blue-100/60 rounded-r-3xl border-r-2 border-blue-200 pointer-events-none"></div>
+
+      <!-- Map Pins (Delivered 6, Failed 7, NEXT 8 highlighted, Remaining 9, 10) -->
+      <!-- Stop 6: Delivered (Green) -->
+      <div class="absolute top-[290px] left-[70px] flex flex-col items-center">
+        <div class="w-6 h-6 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shadow-md border-2 border-white ring-1 ring-emerald-300">
+          ✓
+        </div>
+        <span class="bg-white/90 text-slate-600 text-[9px] px-1 rounded shadow-sm mt-0.5">وقفة 6</span>
+      </div>
+
+      <!-- Stop 7: Failed (Red) -->
+      <div class="absolute top-[255px] left-[145px] flex flex-col items-center">
+        <div class="w-6 h-6 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center shadow-md border-2 border-white">
+          7
+        </div>
+        <span class="bg-white/90 text-red-600 text-[9px] px-1 rounded shadow-sm mt-0.5">تعذر</span>
+      </div>
+
+      <!-- Stop 8: NEXT PLANNED STOP (Prominent Orange/Amber Glowing Pin) -->
+      <div class="absolute top-[175px] left-[200px] flex flex-col items-center z-10 animate-bounce cursor-pointer">
+        <div class="relative">
+          <div class="w-10 h-10 rounded-full bg-amber-500 text-white text-sm font-bold flex items-center justify-center shadow-xl border-2 border-white ring-4 ring-amber-300/60">
+            8
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-600 border border-white"></span>
+          </span>
+        </div>
+        <div class="bg-slate-900 text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded-full shadow-lg mt-1 border border-amber-400/40 whitespace-nowrap">الأوردر اللي عليه الدور</div>
+      </div>
+
+      <!-- Stop 9: Upcoming Planned (Slate) -->
+      <div class="absolute top-[120px] left-[300px] flex flex-col items-center opacity-85">
+        <div class="w-6 h-6 rounded-full bg-slate-700 text-white text-[11px] font-bold flex items-center justify-center shadow border-2 border-white">
+          9
+        </div>
+        <span class="bg-white/90 text-slate-600 text-[9px] px-1 rounded shadow-sm mt-0.5">شارع التسعين</span>
+      </div>
+
+      <!-- Map Floating Utilities -->
+      <div class="absolute left-3 top-36 flex flex-col gap-2 z-10">
+        <button class="w-10 h-10 bg-white rounded-xl shadow-md border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-lg active:bg-slate-100" title="تكبير">+</button>
+        <button class="w-10 h-10 bg-white rounded-xl shadow-md border border-slate-200 text-slate-700 flex items-center justify-center font-bold text-lg active:bg-slate-100" title="تصغير">−</button>
+        <button class="w-10 h-10 bg-white rounded-xl shadow-md border border-slate-200 text-slate-700 flex items-center justify-center active:bg-slate-100" title="إعادة التمركز للمسار الكامل">
+          <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+        </button>
+      </div>
+
+      <!-- MapLibre Attribution Watermark -->
+      <div class="absolute bottom-[235px] left-3 bg-white/80 backdrop-blur-sm text-[8px] text-slate-500 px-1.5 py-0.5 rounded border border-slate-200">
+        © MapLibre | بيانات OSM مصر
+      </div>
+    </div>
+
+    <!-- Ergonomic Bottom Sheet (Persistent & Expandable) -->
+    <div id="bottomSheet" class="relative z-20 bg-white rounded-t-[28px] shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border-t border-slate-200 flex flex-col h-[385px] transition-all duration-300"><div class="pt-3 pb-2 px-5 flex flex-col items-center cursor-pointer select-none" onclick="toggleSheet()"><div class="w-12 h-1.5 bg-slate-300 rounded-full mb-2.5"></div><div class="w-full flex items-center justify-between text-xs px-0.5"><span class="font-bold text-slate-900 text-sm">ترتيب تسليمات الرحلة (18 أوردر)</span><span class="text-[11px] text-slate-500 font-medium">آخر تحديث: 09:39 ص</span></div></div><div class="p-3.5 mx-4 mt-1 bg-amber-50/50 rounded-2xl border-2 border-amber-400 shadow-sm flex flex-col gap-2.5"><div class="flex items-start justify-between"><div class="flex items-center gap-3"><span class="w-8 h-8 rounded-xl bg-amber-500 text-white font-bold text-sm flex items-center justify-center shadow-sm shrink-0">8</span><div class="flex flex-col gap-0.5"><div class="flex items-center gap-2"><span class="text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md">الأوردر اللي عليه الدور</span><span class="text-[10px] text-slate-600 font-medium">أوردر ملابس</span></div><h2 class="font-bold text-slate-900 text-sm leading-normal">م. حسام الدين عبد الرحمن</h2></div></div><div class="text-left font-mono shrink-0"><span class="text-xs font-bold text-slate-900 block">~ 12 دقيقة</span><span class="text-[10px] text-slate-600 font-medium">حوالي 3.4 كم</span></div></div><p class="text-xs text-slate-700 line-clamp-1 bg-white px-2.5 py-1.5 rounded-xl border border-amber-200 flex items-center gap-2"><svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg><span class="font-medium">عمارة 44، شارع النصر، قدام مستشفى النزهة الدولي - الدور الرابع شقة 8</span></p><a href="#screen-2" class="w-full h-12 bg-slate-900 hover:bg-slate-800 text-amber-400 font-bold rounded-xl flex items-center justify-between px-4 text-sm shadow-md active:scale-[0.99] transition"><div class="flex items-center gap-2.5"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg><span class="">تفاصيل الأوردر ورقم العميل</span></div><span class="text-xs bg-slate-800 text-slate-200 font-medium px-2.5 py-1 rounded-lg border border-slate-700">جاهز للبدء</span></a></div><div class="flex-1 overflow-y-auto px-4 py-3 space-y-2.5 no-scrollbar"><div class="text-[11px] font-bold text-slate-600 px-1 uppercase tracking-wider">سجل تسليمات خط السير</div><div class="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between shadow-sm opacity-90"><div class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center border border-emerald-300 shrink-0">✓</span><div class="flex flex-col gap-0.5"><div class="text-xs font-bold text-slate-900 line-through">د. نرمين الشريف</div><div class="text-[11px] text-slate-600">ميدان الحجاز، مصر الجديدة</div></div></div><span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 shrink-0">تم التسليم 09:22 ص</span></div><div class="p-3 bg-white rounded-xl border border-red-200 flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-red-100 text-red-700 font-bold text-xs flex items-center justify-center border border-red-300 shrink-0">7</span><div class="flex flex-col gap-0.5"><div class="text-xs font-bold text-slate-900">أحمد وجدي كمال</div><div class="text-[11px] text-red-600 font-medium">العميل ماردش على التليفون (محاولة تانية)</div></div></div><span class="text-[10px] font-semibold text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-200 shrink-0">ما استلمش / مؤجل</span></div><div class="p-3 bg-amber-50/70 rounded-xl border-2 border-amber-400 flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-amber-500 text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0">8</span><div class="flex flex-col gap-0.5"><div class="text-xs font-bold text-slate-900 flex items-center gap-1.5">حسام الدين عبد الرحمن <span class="text-[10px] text-amber-800 font-bold bg-amber-200/80 px-1.5 py-0.5 rounded">(اللي عليه الدور)</span></div><div class="text-[11px] text-slate-700">شارع النصر، النزهة الجديدة</div></div></div><span class="text-[10px] font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300 shrink-0">التسليم الجاي</span></div><div class="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-300 shrink-0">9</span><div class="flex flex-col gap-0.5"><div class="text-xs font-bold text-slate-900">سارة فؤاد جلال</div><div class="text-[11px] text-slate-600">التجمع الخامس، حي اللوتس ش 14</div></div></div><span class="text-[10px] text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">في الانتظار</span></div><div class="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between shadow-sm"><div class="flex items-center gap-3"><span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-300 shrink-0">10</span><div class="flex flex-col gap-0.5"><div class="text-xs font-bold text-slate-900">شركة آفاق للاستيراد (مكتب الاستلام)</div><div class="text-[11px] text-slate-600">شارع التسعين الشمالي، مول بريميوم</div></div></div><span class="text-[10px] text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">في الانتظار</span></div></div></div>
+  </div>
+
+  <script>
+    function toggleSheet() {
+      const sheet = document.getElementById('bottomSheet');
+      if (sheet.classList.contains('h-[385px]')) {
+        sheet.classList.remove('h-[385px]');
+        sheet.classList.add('h-[650px]');
+      } else {
+        sheet.classList.remove('h-[650px]');
+        sheet.classList.add('h-[385px]');
+      }
+    }
+    function toggleSyncNotification() {
+      alert('تم تحديث بيانات خط السير بنجاح من خادم توصيل.');
+    }
+  </script>
+
+
+
+
+
+
+
+</body></html>

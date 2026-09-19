@@ -1,0 +1,33 @@
+{
+  "number": 1,
+  "id": "3d3f4e407ee74b11b2e047e0a61a6dfb",
+  "directory": "screens/01-active-driver-trip",
+  "image": "screen.jpg",
+  "code": "code.html",
+  "deviceType": "DESKTOP",
+  "height": "2048",
+  "htmlCode": {
+    "downloadUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ8Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpbCiVodG1sXzAwMDY1YmQyYjNhMDI0ZTMwMjNiYzA1MmEwMWUwMTE2EgsSBxC23qeEigcYAZIBJAoKcHJvamVjdF9pZBIWQhQxNjY2MTE3NDM0MDU2MzE5OTUxMw&filename=&opi=89354086",
+    "mimeType": "text/html",
+    "name": "projects/16661174340563199513/files/13040126406994258825"
+  },
+  "name": "projects/16661174340563199513/screens/3d3f4e407ee74b11b2e047e0a61a6dfb",
+  "screenshot": {
+    "downloadUrl": "https://lh3.googleusercontent.com/aida/AEtjO1Vpc6t3HzugL3irWPnGvpimjNujt3IZ8HKzUeJ7wc1yr1_LZEUR_oqIQFasRFlHpmGra3aEsVKR9kqpaCVcQzwnFKtXbw0_k1ud1znXcGnUuvvpR93QWiPBspiPRVDbyXvgaToZ8GcW2yCFrRTOVb_7FxqGspABTc__LeWj2x6JHcnIQFVzuzTjOJp2wYd5mqa5xMLnP3MsFl4AgHk55H60Av9kwSLF-1Jz_8BhtgszTzPEn-fAlFM4Ya56",
+    "name": "projects/16661174340563199513/files/3680523305246633411"
+  },
+  "title": "توصيل - رحلة السائق النشطة (Screen 1)",
+  "width": "2560",
+  "downloadedScreenshot": {
+    "url": "https://lh3.googleusercontent.com/aida/AEtjO1Vpc6t3HzugL3irWPnGvpimjNujt3IZ8HKzUeJ7wc1yr1_LZEUR_oqIQFasRFlHpmGra3aEsVKR9kqpaCVcQzwnFKtXbw0_k1ud1znXcGnUuvvpR93QWiPBspiPRVDbyXvgaToZ8GcW2yCFrRTOVb_7FxqGspABTc__LeWj2x6JHcnIQFVzuzTjOJp2wYd5mqa5xMLnP3MsFl4AgHk55H60Av9kwSLF-1Jz_8BhtgszTzPEn-fAlFM4Ya56=s0",
+    "format": "Jpeg",
+    "width": 1647,
+    "height": 1107,
+    "bytes": 79215,
+    "sha256": "b482d7f77a796f1118041db97e8506553d9fb0d58e0211712505a12460d4d354"
+  },
+  "downloadedCode": {
+    "bytes": 17470,
+    "sha256": "a7dadff1e9cf6f1c9744f7daf8885a8a3e4032901ddddaad53d1171970243858"
+  }
+}

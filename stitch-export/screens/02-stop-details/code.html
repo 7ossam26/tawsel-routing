@@ -1,0 +1,234 @@
+<!DOCTYPE html><html lang="ar" dir="rtl" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>توصيل - تفاصيل الوقفة 8 والتنفيذ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" class="">
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-800 antialiased flex justify-center items-center min-h-screen p-0 sm:p-4">
+
+  <!-- Mobile Frame Container 390x844 -->
+  <div class="relative w-full max-w-[390px] h-[844px] bg-slate-50 overflow-hidden shadow-2xl rounded-none sm:rounded-[44px] border-0 sm:border-[8px] border-slate-800 flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <div class="bg-white border-b border-slate-200 px-4 pt-4 pb-3 flex items-center justify-between shrink-0 shadow-sm z-20">
+      <div class="flex items-center gap-2">
+        <a href="#" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition active:scale-95" title="الرجوع للرحلة">
+          <svg class="w-5 h-5 rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+        <div>
+          <div class="flex items-center gap-1.5"><h1 class="font-bold text-slate-900 text-base">أوردر 8 من 18</h1><span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 font-bold">بوليصة: PKG-9402-EG</span></div>
+          <p class="text-[11px] text-slate-500">خط سير مصر الجديدة والتجمع</p>
+        </div>
+      </div>
+
+      <!-- Sync Status Pill (Toggleable Online / Offline demo) -->
+      <button onclick="toggleOfflineMode()" id="syncBadge" class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full flex items-center gap-1 shadow-sm transition">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span id="syncText" class="">النت شغال ومحدّث</span>
+      </button>
+    </div>
+
+    <!-- Scrollable Detail Body -->
+    <div class="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+      <!-- Offline Notice Banner (Dynamic state) -->
+      <div id="offlineBanner" class="hidden p-4 bg-amber-500/10 border-2 border-amber-400 rounded-2xl flex items-start gap-3 text-amber-900 shadow-sm">
+        <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <div>
+          <div class="font-bold text-xs text-amber-950">وضع العمل دون اتصال (Offline)</div>
+          <div class="text-[11px] text-amber-900 leading-relaxed mt-1">سيتم حفظ إجراء التسليم محلياً على هاتفك، وسيظهر "في انتظار المزامنة" حتى عودة التغطية تلقائياً.</div>
+        </div>
+      </div>
+
+      <!-- Destination Map Thumbnail & External Navigation Action -->
+      <div class="bg-white rounded-2xl border border-slate-300/80 overflow-hidden shadow-sm">
+        <div class="relative h-32 bg-slate-200 flex items-center justify-center overflow-hidden">
+          <!-- Simplified Map graphic -->
+          <div class="absolute inset-0 bg-slate-100 opacity-90" style="background-image: radial-gradient(#94a3b8 1px, transparent 1px); background-size: 16px 16px;"></div>
+          <!-- Route Line -->
+          <svg class="absolute inset-0 w-full h-full stroke-blue-500" fill="none" stroke-width="4">
+            <path d="M40,90 Q180,40 230,50" stroke-dasharray="4 3"></path>
+          </svg>
+          <div class="z-10 flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-md border border-slate-200">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span class="text-xs font-bold text-slate-900 font-mono tracking-tight">30.1124° N, 31.3418° E</span>
+          </div>
+        </div>
+
+        <!-- 48px Navigation Handoff Button -->
+        <div class="p-3 bg-slate-50 border-t border-slate-100 flex gap-2">
+          <a href="https://maps.google.com" target="_blank" class="flex-1 h-12 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl font-bold text-slate-900 text-xs flex items-center justify-center gap-2 shadow-sm active:scale-[0.99] transition">
+            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path></svg>
+            افتح اللوكيشن على الخريطة (Google Maps / Waze)
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipient & Shipment Info Card with generous internal padding, crisp contrast, and high readability -->
+      <div class="bg-white rounded-2xl border border-slate-300/80 p-5 shadow-sm space-y-4">
+        <!-- Recipient details header -->
+        <div class="flex items-center justify-between pb-3.5 border-b border-slate-200/70 gap-3">
+          <div class="flex-1 min-w-0">
+            <span class="text-[11px] font-bold text-slate-500 block mb-0.5">بيانات العميل المستلم</span>
+            <div class="font-bold text-slate-950 text-base leading-snug truncate">الباشمهندس حسام الدين عبد الرحمن</div>
+          </div>
+          <a href="tel:01000000000" class="h-12 px-3.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-2 border-emerald-300/90 rounded-xl font-bold text-xs flex items-center gap-2 transition active:scale-95 shrink-0 shadow-sm">
+            <svg class="w-4 h-4 text-emerald-700" fill="currentColor" viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.45-5.15-3.76-6.59-6.59l1.97-1.57c.28-.28.37-.68.25-1.02A11.36 11.36 0 0 1 8.5 4.31a.99.99 0 0 0-1-.99H4.01a.99.99 0 0 0-1 .99c0 9.38 7.63 17.01 17 17.01.55 0 1-.45 1-1v-3.49a.99.99 0 0 0-1-.99z"></path></svg>
+            <span dir="ltr" class="font-mono font-bold text-slate-900">010 **** 8219</span>
+            <span class="text-[10px] bg-emerald-700 text-white px-1.5 py-0.5 rounded font-bold mr-1 shadow-sm">اتصل الآن</span>
+          </a>
+        </div>
+
+        <!-- Detailed Address with high contrast and relaxed leading -->
+        <div class="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200">
+          <span class="text-[11px] font-bold text-slate-500 block mb-1.5">العنوان التفصيلي والعلامة المميزة:</span>
+          <p class="text-xs text-slate-950 font-bold leading-relaxed">
+            محافظة القاهرة - النزهة الجديدة - عمارة 44 شارع النصر متفرع من جوزيف تيتو، قدام مستشفى النزهة الدولي، الدور الرابع، شقة 8.
+          </p>
+        </div>
+
+        <!-- Customer Note with rich amber styling and roomy padding -->
+        <div class="bg-amber-50/90 border-2 border-amber-300 rounded-xl p-3.5 flex items-start gap-2.5 shadow-sm">
+          <svg class="w-5 h-5 text-amber-700 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div class="text-xs text-amber-950 leading-relaxed">
+            <span class="font-bold block text-amber-900 mb-0.5">ملاحظة هامة من العميل:</span>
+            ياريت ترن عليا أول ما توصل عند البوابة، وماتسيبش الأوردر مع أمن العمارة خالص.
+          </div>
+        </div>
+
+        <!-- COD / Payment Badge with deep contrast -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between">
+          <span class="text-xs text-slate-700 font-bold">مطلوب تحصيل كاش:</span>
+          <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-300 shadow-sm">لا يوجد (مدفوع فيزا)</span>
+        </div>
+      </div>
+
+      <!-- Execution State Panel with enhanced touch targets and breathing space -->
+      <div class="bg-white rounded-2xl border-2 border-slate-300 p-5 shadow-sm space-y-4" id="actionPanel">
+        
+        <!-- State A: Awaiting Explicit Start -->
+        <div id="startStep" class="space-y-3.5">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-bold text-slate-900">حالة الأوردر:</span>
+            <span class="text-[11px] font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-300">لسه ما بدأتش التسليم</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed font-medium">أول ما توصل عند العمارة دوس على "وصلت عند العميل" علشان نبلغه ونفتحلك خطوات التسليم وتحديث حالة الشحنة.</p>
+          <button onclick="startStopExecution()" class="w-full h-13 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-md active:scale-[0.99] transition py-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            وصلت عند العميل (ابدأ التسليم)
+          </button>
+        </div>
+
+        <!-- State B: Focused Outcome Selection (Appears after explicit start) -->
+        <div id="outcomeStep" class="hidden space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+              <span class="text-xs font-bold text-blue-900">الوقفة جارية الآن</span>
+            </div>
+            <span class="text-[11px] text-slate-500 font-mono font-bold">بدأت: 09:42 ص</span>
+          </div>
+
+          <!-- Primary Outcome Button: Big touch target Delivered -->
+          <button onclick="confirmDelivery()" class="w-full h-13 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 text-sm shadow-md active:scale-[0.99] transition py-3">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            تم التسليم بنجاح
+          </button>
+
+          <!-- Differentiated Failure / Skip Action Buttons -->
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <button onclick="openFailureModal('unreachable')" class="h-12 bg-slate-50 hover:bg-red-50 border border-slate-300 hover:border-red-200 text-slate-800 hover:text-red-700 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+              <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              تعذر التسليم
+            </button>
+            <button onclick="openFailureModal('reschedule')" class="h-12 bg-slate-50 hover:bg-amber-50 border border-slate-300 hover:border-amber-200 text-slate-800 hover:text-amber-800 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              طلب تأجيل العميل
+            </button>
+          </div>
+        </div>
+
+        <!-- State C: Confirmed Outcome Success Feedback -->
+        <div id="successStep" class="hidden p-4 bg-emerald-50 border-2 border-emerald-300 rounded-xl space-y-3">
+          <div class="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+            <svg class="w-5 h-5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            <span id="confirmationTitle" class="">تم تسجيل تسليم الوقفة 8</span>
+          </div>
+          <p id="confirmationSyncStatus" class="text-xs text-emerald-800 leading-relaxed">
+            تمت المزامنة وتأكيد الإجراء فورياً على خادم توصيل.
+          </p>
+          <div class="pt-3 border-t border-emerald-200 flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-800">الوقفة التالية المخططة:</span>
+            <span class="text-xs font-bold text-slate-950 bg-white px-2.5 py-1 rounded border border-emerald-300 shadow-sm">وقفة 9 - سارة فؤاد</span>
+          </div>
+          <button onclick="window.location.reload()" class="w-full h-12 bg-slate-950 text-white rounded-xl font-bold text-xs mt-2 active:scale-95 transition shadow-sm">
+            الانتقال إلى الوقفة 9
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom App Navigation Bar -->
+    <div class="bg-white border-t border-slate-200 px-6 py-2.5 flex justify-around items-center shrink-0 z-20"><a href="#" class="flex flex-col items-center gap-1 text-slate-900 font-bold text-[10px]"><svg class="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg><span class="">أوردراتي</span></a><a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 text-[10px]"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg><span class="">التسليمات (18)</span></a><a href="#" class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600 text-[10px]"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="">حسابي / المندوب</span></a></div>
+
+  </div>
+
+  <script>
+    let isOffline = false;
+
+    function toggleOfflineMode() {
+      isOffline = !isOffline;
+      const syncBadge = document.getElementById('syncBadge');
+      const syncText = document.getElementById('syncText');
+      const offlineBanner = document.getElementById('offlineBanner');
+
+      if (isOffline) {
+        syncBadge.className = "text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-300 px-2 py-1 rounded-full flex items-center gap-1 shadow-sm transition";
+        syncBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>في انتظار المزامنة (محلي)</span>`;
+        offlineBanner.classList.remove('hidden');
+      } else {
+        syncBadge.className = "text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full flex items-center gap-1 shadow-sm transition";
+        syncBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>متصل بالشبكة</span>`;
+        offlineBanner.classList.add('hidden');
+      }
+    }
+
+    function startStopExecution() {
+      document.getElementById('startStep').classList.add('hidden');
+      document.getElementById('outcomeStep').classList.remove('hidden');
+    }
+
+    function confirmDelivery() {
+      document.getElementById('outcomeStep').classList.add('hidden');
+      document.getElementById('successStep').classList.remove('hidden');
+
+      const statusEl = document.getElementById('confirmationSyncStatus');
+      if (isOffline) {
+        statusEl.innerHTML = '<span class="text-amber-800 font-bold">⚠️ تم الحفظ محلياً على الجهاز. في انتظار المزامنة عند توفر الشبكة (الموزع يرى آخر حالة مؤكدة).</span>';
+      } else {
+        statusEl.innerText = 'تمت المزامنة وتأكيد التسليم بنجاح مع سيرفر توصيل المركزي.';
+      }
+    }
+
+    function openFailureModal(type) {
+      const reason = prompt('يرجى تحديد سبب تعذر التسليم (مثال: لا يوجد رد على الهاتف / العنوان غير دقيق / رفض الاستلام):', 'العميل لم يجب على الاتصال');
+      if (reason) {
+        document.getElementById('outcomeStep').classList.add('hidden');
+        document.getElementById('successStep').classList.remove('hidden');
+        document.getElementById('confirmationTitle').innerText = 'تم تسجيل تعذر التسليم للوقفة 8';
+        document.getElementById('confirmationSyncStatus').innerText = 'السبب المسجل: ' + reason;
+      }
+    }
+  </script>
+
+
+
+</body></html>
