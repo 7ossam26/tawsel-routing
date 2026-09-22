@@ -1,5 +1,22 @@
 # Field and status mapping — canonical foundation
 
+## P13 stored draft/job/forecast mapping — 23 September 2026
+
+| Tawsel field | Consumer meaning / ownership |
+| --- | --- |
+| `PlanningJob.jobId`, `status` | Stable durable poll identity and actual calculation state across API/worker restart; no ERP receipt reversal |
+| `blockedReason`, `error`, `nextAttemptAt`, `leaseExpiresAt` | Explicit missing input, safe provider failure and recovery timing; not fabricated success |
+| `supersededByJobId` | Current replacement work after inputs changed; old result cannot become effective |
+| `inputRevision`, `settingsRevision`, `executionRevision`, `manualRevision`, `locationInputRevision` | Separate monotonic generations; fingerprint includes current choices plus per-member source/assignment/pin revisions |
+| `planId`, `revision`, `state=draft`, `policyValidated=false` | Stored normalized candidate, not policy-approved active round; P14/P15 own those transitions |
+| `current`, `inputCurrent` | Last stored draft pointer and whether its source inputs still match; neither authorizes departure |
+| `forecastId`, `workloadId`, `timeOrigin`, `kind=planning-estimate` | Immutable estimate identity/scope/UTC anchor, not an actual start or first-start baseline |
+| member `taskId`, `attemptId`, `dispatchCycleId` | Shipment, stable initial visit identity and B2B cycle, kept distinct; attempt allocation is not arrival |
+| `assigned/unassigned/excluded`, expected times | Preserve coverage and missing predictions; partial whole-workload finish and unassigned/excluded stop times are null |
+| `plan.revisionPublished` | Atomic source-scoped identity notice with candidate status; no mixed-source task list, delivery or application assertion |
+
+`planningStatus` in existing intake/location reads now uses the durable latest job. Existing `planningEligible` remains an admission/pin fact, not proof of optimizer success. No ERP financial/inventory/physical-holder state changes through planning. See [wire semantics and locking handoff](../planning-jobs.md), [schema](../../contracts/planning.schema.json), [evidence](../phase-13-evidence.md).
+
 ## P10 shipment/intake mapping — implemented and locally verified
 
 [Canonical payloads](../../contracts/b2b-intake.schema.json), [wire operations/revision rules](../b2b-intake.md), [public consumer](consumer-quickstart.md) and [PostgreSQL/HTTP evidence](../phase-10-evidence.md) define this implemented slice. Other execution/return/transport rows remain designed. Real vendor field names remain unchosen.

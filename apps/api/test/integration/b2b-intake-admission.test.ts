@@ -133,7 +133,8 @@ describe('P10 ERP intake and atomic admission on PostgreSQL',()=>{
     const fresh=createDatabasePool(db.config);
     try {
       expect((await new B2bIntakeService(fresh).get(`Bearer ${source.token}`,items[0]!.externalId)).state).toBe('held');
-      expect((await fresh.query('SELECT status FROM tawsel.intake_replan_intents')).rows).toEqual([{status:'pending'}]);
+      expect((await fresh.query(`SELECT i.status,j.status AS job_status FROM tawsel.intake_replan_intents i
+        JOIN tawsel.planning_jobs j USING(tenant_id,job_id)`)).rows).toEqual([{status:'linked',job_status:'pending'}]);
       expect((await fresh.query('SELECT business_status FROM tawsel.command_identities WHERE action_id=$1',[command.actionId])).rows[0].business_status).toBe('accepted');
       expect((await fresh.query('SELECT count(*)::int n FROM tawsel.outbox_intents WHERE action_id=$1',[command.actionId])).rows[0].n).toBeGreaterThan(0);
     } finally {await fresh.end();}

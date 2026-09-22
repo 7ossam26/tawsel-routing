@@ -9,14 +9,16 @@ import { executeCommandInTransaction, type ActionEnvelope } from '../commands/ke
 import { lockInvariants } from '../commands/locks.js';
 import type { Transaction } from '../db/transaction.js';
 import { Nominatim, LocationError } from './geocoder.js';
+import { enqueuePlanning } from '../planning/queue.js';
 
 type Snapshot=components['schemas']['LocationExecutionSnapshot'];
 type Confirm=components['schemas']['LocationConfirm'];
 type Pin=components['schemas']['LocationPin'];
-interface Row extends ResourceScope {task_id:string;source_revision:string;departure_at:Date|null;recipient_name:string;kind:'personal'|'company';original:Snapshot['original'];dispatch_cycle_id:string|null;state:string|null;earliest_at:Date|null;location_revision:string|null;pin_source_revision:string|null;latitude:number|null;longitude:number|null;provenance:Pin['provenance']|null;confirmed_by:string|null;confirmed_at:Date|null;planning_revision:string|null}
+interface Row extends ResourceScope {task_id:string;source_revision:string;departure_at:Date|null;recipient_name:string;kind:'personal'|'company';original:Snapshot['original'];dispatch_cycle_id:string|null;state:string|null;earliest_at:Date|null;location_revision:string|null;pin_source_revision:string|null;latitude:number|null;longitude:number|null;provenance:Pin['provenance']|null;confirmed_by:string|null;confirmed_at:Date|null;planning_revision:string|null;planning_job_status:Snapshot['planningStatus']|null}
 const editPolicy: ResourcePolicy=[{capability:'location.review',ownership:'assigned-branches'},{capability:'execution.own',ownership:'own-driver'},{capability:'correction.own',ownership:'own-driver'}];
 const readPolicy: ResourcePolicy=[...editPolicy,{capability:'monitor.read',ownership:'assigned-branches'}];
-const select=`SELECT t.*,l.revision AS location_revision,l.source_revision AS pin_source_revision,l.latitude,l.longitude,l.provenance,l.confirmed_by,l.confirmed_at,p.revision AS planning_revision
+const select=`SELECT t.*,l.revision AS location_revision,l.source_revision AS pin_source_revision,l.latitude,l.longitude,l.provenance,l.confirmed_by,l.confirmed_at,p.revision AS planning_revision,
+ (SELECT j.status FROM tawsel.planning_states ps JOIN tawsel.planning_jobs j ON j.tenant_id=ps.tenant_id AND j.job_id=ps.latest_job_id WHERE ps.tenant_id=t.tenant_id AND ps.driver_id=t.driver_id) AS planning_job_status
  FROM tawsel.location_tasks t LEFT JOIN tawsel.task_locations l USING(tenant_id,task_id)
  LEFT JOIN tawsel.location_planning_inputs p ON p.tenant_id=t.tenant_id AND p.driver_id=t.driver_id`;
 const ajv=new Ajv2020({strict:true}); (addFormats as unknown as (a:Ajv2020)=>void)(ajv);
@@ -29,7 +31,7 @@ function view(a:AccessSession,r:Row):Snapshot {
  const current=r.location_revision && r.pin_source_revision===r.source_revision;
  const pin:Pin|null=current?{coordinates:{latitude:r.latitude!,longitude:r.longitude!},provenance:r.provenance!,confirmedBy:r.confirmed_by,confirmedAt:r.confirmed_at!.toISOString(),sourceRevision:Number(r.source_revision)}
  :!r.location_revision&&r.original.kind==='confirmed-pin'?{coordinates:r.original.coordinates,provenance:{kind:'source-confirmed'},confirmedBy:null,confirmedAt:null,sourceRevision:Number(r.source_revision)}:null;
- return {taskId:r.task_id,recipientName:r.recipient_name??'',original:r.original,sourceRevision:Number(r.source_revision),locationRevision:Number(r.location_revision??0),pin,locationReadiness:pin?'confirmed':'needs-resolution',editable:editable(a,r),planningInputRevision:Number(r.planning_revision??0),planningStatus:r.planning_revision?'pending':'not-requested'};
+ return {taskId:r.task_id,recipientName:r.recipient_name??'',original:r.original,sourceRevision:Number(r.source_revision),locationRevision:Number(r.location_revision??0),pin,locationReadiness:pin?'confirmed':'needs-resolution',editable:editable(a,r),planningInputRevision:Number(r.planning_revision??0),planningStatus:r.planning_job_status??(r.planning_revision?'pending':'not-requested')};
 }
 async function load(tx:Transaction,tenant:string,id:string){return (await tx.query<Row>(`${select} WHERE t.tenant_id=$1 AND t.task_id=$2`,[tenant,id])).rows[0];}
 const scope=(a:AccessSession,r:Row)=>`${a.context.tenantId}/${a.context.sourceId}/${r.task_id}/${r.source_revision}`;
@@ -72,7 +74,7 @@ export class Locations {
        if(count.rows[0].n>50)throw new LocationError('capacity_exceeded',409,'خط السير ممتلئ؛ لم يُحفظ هذا التعديل.');
       }
       await tx.query(`INSERT INTO tawsel.location_planning_inputs (tenant_id,driver_id,revision) VALUES ($1,$2,1) ON CONFLICT(tenant_id,driver_id) DO UPDATE SET revision=location_planning_inputs.revision+1`,[r.tenant_id,r.driver_id]);
-      await tx.query(`INSERT INTO tawsel.intake_replan_intents (tenant_id,driver_id,source_id,action_id) VALUES ($1,$2,$3,$4)`,[r.tenant_id,r.driver_id,a.context.sourceId,command.actionId]);
+      await enqueuePlanning(tx,r.tenant_id,r.driver_id,a.context.sourceId,command.actionId);
      }
      const location=view(a,(await load(tx,r.tenant_id,r.task_id))!);
      await tx.query(`INSERT INTO tawsel.location_history VALUES ($1,$2,$3,$4,$5,$6)`,[r.tenant_id,r.task_id,revision,location,a.context.sourceId,command.actionId]);

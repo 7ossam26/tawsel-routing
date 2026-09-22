@@ -11,7 +11,8 @@
     "examples/provision-company.ts",
     "README.md",
     "src/intake.ts",
-    "src/locations.ts"
+    "src/locations.ts",
+    "src/planning.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

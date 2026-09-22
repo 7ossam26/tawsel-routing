@@ -48,3 +48,7 @@ On 23 September 2026 local time, all nine live calls failed `unavailable`; Docke
 Provider API baselines consulted: [OSRM v5.27.1](https://raw.githubusercontent.com/Project-OSRM/osrm-backend/v5.27.1/docs/http.md), [VROOM v1.15.0](https://raw.githubusercontent.com/VROOM-Project/vroom/v1.15.0/docs/API.md). No new library or image was installed. Existing Engine setup, config, Lua and mounts remain unchanged.
 
 P13 can rely on typed validated adapters, cancellation/error handling and normalized schema/client models. It must add durable jobs, snapshots/fingerprints and stale-result protection. P14 must implement urgency groups, earliest-time eligibility, protected current stop, stitching and full route/endpoint validation. Priority alone cannot establish urgent-first ordering. No active round publication, manual fallback UI, queue, dataset refresh or next phase was executed. [Ordered evidence](phase-12-evidence.md).
+
+## P13 follow-through (23 September 2026)
+
+The P13 [durable worker and API](planning-jobs.md) now use these adapters outside claim/publication transactions, store candidate drafts/forecasts and fence expired leases/obsolete inputs. Browser planning interfaces are implemented; P14 route-policy validation and P15 activation remain separate. Current live probe again failed all nine calls; fixture routes are not live Engine evidence.

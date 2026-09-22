@@ -1,5 +1,13 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## Phase 13 planning consumers
+
+Run `npm run planning:demo` for a disposable real-PostgreSQL demonstration with explicitly labelled HTTP Engine fixtures. `.local/phase-13-demo.json` contains inspected committed job/plan/forecast/replan-intent rows; the demo removes its test database. `npm run test:planning` proves process kill/recovery, delayed stale results and publication atomicity. `npm run test:erp:planning` runs public-only schema-example semantics; the same checker runs on actual stored plans. No real road-route or external-ERP delivery proof is substituted by these fixtures.
+
+Copy `packages/api-client/src/planning.ts` with generated `schema.d.ts` for a human same-origin session consumer. Instantiate `new PlanningClient('personal')` or `'company'`, call `plans(driverId)` for settings revision/latest job, submit a canonical `planning.saveDraft` envelope, retain it until acceptance is known, then poll `job(result.response.body.job.jobId)`. `requestPreview`/`requestReplan` use the same command method. Reuse the exact action ID after unknown delivery. An intentional retry after terminal failure is a new command; old history remains queryable. [Full command fields, statuses and runbook](../planning-jobs.md).
+
+ERP bearer consumers continue using source intake/assignment APIs. `planningStatus=complete` is a provider candidate, never active start or completed delivery. `plan.revisionPublished` is only a pending source-scoped notice in this phase. Browser-session planning transport is verified over real HTTP after API restart with a signed issuer fixture; native ERP UI, production issuer/Engine, signed sender and independent event receiver remain later verification.
+
 ## Phase 10 public intake consumer
 
 The reproducible no-setup consumer proof is npm run db:local:start, then npm run intake:demo. It uses real isolated PostgreSQL and HTTP, copying only public client/types/conformance code into a separate working directory/process. Source/user projections are labelled fixtures; Engine/issuer login/native ERP UI are not exercised. The isolated database is removed at completion, and the private command journal remains in the printed temporary directory. [Exact behavior and limitations](../b2b-intake.md), [actual run evidence](../phase-10-evidence.md).

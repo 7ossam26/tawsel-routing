@@ -90,10 +90,14 @@ test('B2B branch staff before departure, assigned driver afterward; source stays
  for(const event of events.rows)expect(locationConforms('ConfirmedEvent',event.payload)).toBe(true);
 });
 test('database failure after pin and planning writes rolls back the entire confirmation',async()=>{
+ const beforeJobs=(await db.pool.query('SELECT * FROM tawsel.planning_jobs ORDER BY job_id')).rows;
+ const beforeIntents=(await db.pool.query('SELECT * FROM tawsel.intake_replan_intents ORDER BY action_id')).rows;
  await db.pool.query("CREATE FUNCTION public.fail_location() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'test history failure'; END $$");
  await db.pool.query('CREATE TRIGGER fail_location AFTER INSERT ON tawsel.location_history FOR EACH ROW EXECUTE FUNCTION public.fail_location()');
  await expect(service.confirm(principals.personal,command(payload()))).rejects.toThrow('test history failure');
- for(const table of ['task_locations','location_history','location_planning_inputs','intake_replan_intents'])expect((await db.pool.query(`SELECT count(*)::int n FROM tawsel.${table}`)).rows[0].n).toBe(0);
+ for(const table of ['task_locations','location_history','location_planning_inputs'])expect((await db.pool.query(`SELECT count(*)::int n FROM tawsel.${table}`)).rows[0].n).toBe(0);
+ expect((await db.pool.query('SELECT * FROM tawsel.planning_jobs ORDER BY job_id')).rows).toEqual(beforeJobs);
+ expect((await db.pool.query('SELECT * FROM tawsel.intake_replan_intents ORDER BY action_id')).rows).toEqual(beforeIntents);
  expect((await service.get(principals.personal,id)).original.addressText).toBe('التحرير القاهرة');
 });
 test('real controlled HTTP provider timeout, malformed coordinates and cache eviction retain confirmed location',async()=>{

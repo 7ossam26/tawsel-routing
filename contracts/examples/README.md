@@ -1,5 +1,7 @@
 # Canonical foundation examples
 
+P13 `p13-*` examples cover explicit planning settings, revisioned snapshots/commands, durable job status, partial candidate forecasts and source-scoped draft notice. Invalid examples reject invented GPS provenance, missing attempt identity, false active/policy claims, invalid revisions/statuses and impossible running/completed status fields. These are canonical data examples; PostgreSQL/HTTP/process acceptance evidence is in [Phase 13](../../docs/phase-13-evidence.md).
+
 P10 p10-* entries now cover closed snapshot/prepare/receive/withdraw/reassign/urgency envelopes, explicit prepaid and exact partial-prepaid allocations, typed event intent and capacity/allocation/stale errors. Invalid examples cover fractional pieces, missing due/splitting permission, ambiguous deposits, mixed currency and unasserted receipt. Schemas own shape; connected PostgreSQL tests additionally enforce exact sums, scope, revision and capacity. [Public consumer demo](../../docs/b2b-intake.md) executes real HTTP; examples alone are not acceptance evidence.
 
 

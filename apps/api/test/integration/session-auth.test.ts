@@ -10,18 +10,24 @@ import { hash, randomToken, seal } from '../../src/auth/crypto.js';
 import { conforms } from '../../src/auth/schemas.js';
 import { Sessions } from '../../src/auth/service.js';
 import type { AuthConfig } from '../../src/auth/config.js';
+import { PlanningClient } from '../../../../packages/api-client/src/planning.js';
+import { command as planningCommand, providerFixture, settings } from '../support/planning-fixture.js';
+import { runPlanningOnce } from '../../src/planning/worker.js';
+import { planningConforms } from '../../src/planning/models.js';
+import type { components } from '@tawsel/api-client';
 
 describe('session HTTP handlers with real PostgreSQL and labelled signed issuer fixture', () => {
   let db: Awaited<ReturnType<typeof createTestDatabase>>;
   let issuer: Awaited<ReturnType<typeof issuerFixture>>;
   let app: ReturnType<typeof buildApp>;
   let service: Sessions;
+  let config: AuthConfig;
   const browser = randomToken(), origin = 'http://localhost:5173';
   const headers = { origin, 'x-csrf-token': browser };
   beforeAll(async () => {
     db = await createTestDatabase(); issuer = await issuerFixture(); await prepareAccessFixture(db.pool, `${issuer.origin}/company`);
     await db.pool.query("INSERT INTO tawsel.company_login_codes VALUES ('LOCAL',$1,'Fixture')", [ids.tenant]);
-    const config: AuthConfig = { origin, encryptionKey: Buffer.alloc(32, 8), sessionSeconds: 28800,
+    config = { origin, encryptionKey: Buffer.alloc(32, 8), sessionSeconds: 28800,
       issuers: { company: { issuer: `${issuer.origin}/company`, clientId: 'tawsel-web', clientSecret: 'fixture-secret' }, personal: { issuer: `${issuer.origin}/personal`, clientId: 'tawsel-web', clientSecret: 'fixture-secret' } } };
     app = buildApp(createDatabasePool(db.config), config); service = new Sessions(db.pool, config);
     await app.ready();
@@ -67,6 +73,41 @@ describe('session HTTP handlers with real PostgreSQL and labelled signed issuer 
     expect((await app.inject({url:'/api/v1/routing/profiles',cookies})).statusCode).toBe(400);
     const personal=await login('personal');
     expect((await app.inject({url:'/api/v1/routing/profiles?kind=personal',cookies:personal})).statusCode).toBe(200);
+  });
+  test('P13: generated client polls durable actual status over HTTP after API restart, with real session and CSRF',async()=>{
+    const cookies=await login('personal');
+    const context=(await app.inject({url:'/api/session/context?kind=personal',cookies})).json().access;
+    const envelope=(op:string,payload:Record<string,unknown>)=>{
+      const c=planningCommand(op,payload);
+      c.context={...c.context,kind:'device',tenantId:context.tenantId,accountId:context.sourceId,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1};return c;
+    };
+    const create=await app.inject({method:'POST',url:'/api/v1/independent/tasks',headers,cookies:{...cookies,[browserCookie]:browser},payload:envelope('task.createIndependent',{recipientName:'عميل اختبار',recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.05,longitude:31.24}}})});
+    expect(create.statusCode,create.body).toBe(201);
+    const command=envelope('planning.saveDraft',{driverId:context.driverId,expectedSettingsRevision:0,settings}) as components['schemas']['PlanningSaveDraftCommand'];
+    const path='/api/v1/planning/commands/planning.saveDraft?kind=personal';
+    expect((await app.inject({method:'POST',url:path,cookies,payload:command})).statusCode).toBe(403);
+    let base=await app.listen({host:'127.0.0.1',port:0});
+    const jar=new Map(Object.entries(cookies));
+    const fetcher:typeof fetch=async(input,init)=>{
+      const h=new Headers(init?.headers);h.set('cookie',[...jar].map(([k,v])=>`${k}=${v}`).join('; '));h.set('origin',origin);
+      const r=await fetch(new URL(String(input),base),{...init,headers:h});
+      for(const cookie of r.headers.getSetCookie()){const pair=cookie.split(';')[0]!,at=pair.indexOf('=');jar.set(pair.slice(0,at),pair.slice(at+1));}return r;
+    };
+    const client=new PlanningClient('personal',fetcher),provider=await providerFixture();
+    try {
+      const accepted=await client.command(command),job=(accepted.response!.body as unknown as components['schemas']['PlanningDraftResult']).job;
+      expect(job.status).toBe('pending');expect(await client.command(command)).toEqual(accepted);
+      expect((await fetch(new URL(`/api/v1/planning/jobs/${job.jobId}?kind=personal`,base))).status).toBe(401);
+      await app.close();app=buildApp(createDatabasePool(db.config),config);await app.ready();base=await app.listen({host:'127.0.0.1',port:0});
+      expect((await client.job(job.jobId)).status).toBe('pending');
+      await runPlanningOnce(db.pool,provider.engine);
+      expect(await client.job(job.jobId)).toMatchObject({status:'complete',attempts:1});
+      const history=await client.plans(context.driverId);
+      expect(planningConforms('Plans',history)).toBe(true);expect(history.items[0]!.forecast.members).toHaveLength(1);
+      expect(history.latestJob!.jobId).toBe(job.jobId);
+      const forged={...command,actionId:randomUUID(),payload:{...command.payload,driverId:ids.driver,expectedSettingsRevision:1}};
+      await expect(client.command(forged)).rejects.toMatchObject({status:404});
+    }finally{await provider.close();}
   });
   test('A: company selection cannot grant outsider membership', async () => {
     expect((await post('company', { code: 'LOCAL' })).statusCode).toBe(200);

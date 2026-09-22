@@ -28,8 +28,8 @@ export const principals = {
   integration: { kind: 'integration' as const, integrationId: ids.integration }
 };
 
-export async function prepareAccessFixture(pool: Pool, issuer = principals.staff.issuer) {
-  await migrate(pool);
+export async function prepareAccessFixture(pool: Pool, issuer = principals.staff.issuer, migrationDirectory?: URL) {
+  await migrate(pool, migrationDirectory);
   for (const [tenant, kind] of [[ids.tenant, 'company'], [ids.otherTenant, 'company'], [ids.personalTenant, 'personal']]) {
     await pool.query('INSERT INTO tawsel.tenant_keys VALUES ($1)', [tenant]);
     await pool.query('INSERT INTO tawsel.tenants (tenant_id,kind) VALUES ($1,$2)', [tenant, kind]);

@@ -2,9 +2,9 @@
 
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
-## Application workspace, identity and intake (through Phase 12)
+## Application workspace, identity, intake and planning (through Phase 13)
 
-The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; P11 adds scoped location confirmation, a private Nominatim adapter and real self-hosted Cairo maps ([demo and limits](docs/locations-and-maps.md)). P12 adds typed OSRM/VROOM adapters and authenticated profile metadata ([boundary and demo](docs/engine-boundary.md)). Live Engine services are unavailable locally; durable planning/execution, offline workers and signed ERP delivery remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
+The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; P11 adds scoped location confirmation, a private Nominatim adapter and real self-hosted Cairo maps ([demo and limits](docs/locations-and-maps.md)). P12 adds typed OSRM/VROOM adapters and authenticated profile metadata ([boundary and demo](docs/engine-boundary.md)). P13 adds [durable planning jobs and immutable forecast revisions](docs/planning-jobs.md), with PostgreSQL restart/stale-result proof. Live Engine services remain unavailable locally; complete route policy, active execution, offline workers and signed ERP delivery remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
 
 The production account shell now supports real local company login, independent phone registration, verified-email recovery and separate sessions through Keycloak and PostgreSQL. Follow [identity setup and demo](docs/identity.md) before starting the API; it requires the dedicated database, generated issuer configuration and local email sink. See [Phase 07 evidence](docs/phase-07-evidence.md) for actual checks and remaining limits.
 
@@ -19,7 +19,7 @@ Open `http://localhost:5173` for the exact identity callback origin, the fixture
 
 ## Contract foundation (Phase 02)
 
-The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account, P08 provisioning and P09/P10 independent/source intake paths are available locally. Later planning/execution/returns and signed event delivery remain designed; no real ERP connector is implemented.
+The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account, P08 provisioning and P09/P10 independent/source intake paths are available locally. P13 planning/status/forecast reads are also available locally; later route policy/execution/returns and signed event delivery remain designed; no real ERP connector is implemented.
 
 ```powershell
 npm ci

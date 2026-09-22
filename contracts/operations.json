@@ -457,46 +457,59 @@
       "id": "planning.saveDraft",
       "family": "planning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "planning.manage",
-      "description": "Save preview inputs: origin, vehicle, endpoint, service/time requirements; no start."
+      "description": "Save preview inputs: origin, vehicle, endpoint, service/time requirements; no start.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.saveDraft",
+      "payloadSchema": "./planning.schema.json#/$defs/SaveDraft"
     },
     {
       "id": "planning.requestPreview",
       "family": "planning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "planning.manage",
-      "description": "Queue durable asynchronous planning from coherent input revisions."
+      "description": "Queue durable asynchronous planning from coherent input revisions.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.requestPreview",
+      "payloadSchema": "./planning.schema.json#/$defs/Request"
     },
     {
       "id": "planning.getJob",
       "family": "planning",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "planning.manage",
-      "description": "Read queued/running/complete/partial/failed/obsolete result."
+      "description": "Read queued/running/complete/partial/failed/obsolete result.",
+      "method": "GET",
+      "path": "/api/v1/planning/jobs/{jobId}"
     },
     {
       "id": "planning.getPlan",
       "family": "planning",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "planning.manage",
-      "description": "Read plan ID, route revision, order, pending/manual status and forecasts."
+      "description": "Read plan ID, route revision, order, pending/manual status and forecasts.",
+      "method": "GET",
+      "path": "/api/v1/planning/drivers/{driverId}/plans"
     },
     {
       "id": "planning.requestReplan",
       "family": "planning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "planning.manage",
-      "description": "Request optimization without clearing current or undoing accepted facts."
+      "description": "Request optimization without clearing current or undoing accepted facts.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.requestReplan",
+      "payloadSchema": "./planning.schema.json#/$defs/Request"
     },
     {
       "id": "planning.setManualOrder",
@@ -511,10 +524,10 @@
       "id": "planning.publishRevision",
       "family": "planning",
       "kind": "internal-work",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "internal",
-      "description": "Publish only current fingerprint, preserving protected current and first forecast; start publishes atomically in P15."
+      "description": "Fence lease and input fingerprint under driver lock; atomically store immutable candidate draft, forecast and source-scoped intent. No policy approval or round start."
     },
     {
       "id": "round.start",
@@ -1187,10 +1200,11 @@
       "id": "plan.revisionPublished",
       "family": "planning",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "recipient-scope",
-      "description": "Current valid plan publication, manual/optimized and forecast scope identified."
+      "description": "Durable notice of stored draft/forecast identity, scoped per source without other sources' workload. policyValidated=false; signed delivery remains P25.",
+      "payloadSchema": "./planning.schema.json#/$defs/PublishedEvent"
     },
     {
       "id": "round.started",

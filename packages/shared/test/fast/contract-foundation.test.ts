@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -99,7 +99,8 @@ describe('canonical public contract foundation (schema evidence, not business ex
     expect(available.every((entry: { family: string; id: string; ownerPhase: number }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth'
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
       || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
-      || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id)))).toBe(true);
+      || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
+      || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
   });
 
@@ -139,6 +140,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     for (const [path, content] of first) expect(await readFile(resolve(root, path), 'utf8'), path).toBe(content);
     const client = first.get('packages/api-client/src/schema.d.ts')!;
     expect(client).not.toMatch(/from ["'](?:@tawsel\/(?:domain|shared)|.*apps\/api)/);
-    expect(first.get('docs/reference/public-contract.md')).toContain('Later domain HTTP operations/events remain designed and unavailable.');
+    expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores candidate drafts, not policy-approved active rounds.');
+    expect(first.get('docs/reference/public-contract.md')).toContain('later execution and signed event delivery remain unavailable/unimplemented.');
   });
 });

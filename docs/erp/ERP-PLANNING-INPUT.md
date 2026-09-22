@@ -1,5 +1,13 @@
 # ERP planning input — designed foundation
 
+## P13 durable planning boundary — 23 September 2026
+
+P13 now implements revisioned human planning commands, durable job polling and immutable candidate/forecast history. [Exact APIs and trigger semantics](../planning-jobs.md), [canonical schema](../../contracts/planning.schema.json), [ordered evidence](../phase-13-evidence.md). Service-owned receipt remains accepted even if calculation fails. Intake and location `planningStatus` now reports `pending`, `running`, `complete`, `partial`, `failed` or `superseded` (or `not-requested`). `complete` means provider coverage, not policy approval, departure, delivery or ERP application.
+
+ERP source/assignment/urgency/pin changes enqueue in their existing atomic transaction. Browser `PlanningClient` uses session + CSRF; the ERP bearer token does not impersonate a planning actor or expose other sources' route contacts. P13 persists task/attempt/cycle/revision/workload identity and anchored estimates now. First-start baseline belongs to P15; complete validation/manual fallback belongs to P14.
+
+`plan.revisionPublished` is now a source-scoped **pending outbound intent** with draft/forecast IDs, candidate status and `policyValidated:false`. No mixed-source members are included. Signing/delivery is P25, independent receiver/application proof P26/P27. The public-only `tests/erp-conformance/planning.ts` checks semantics from canonical examples and actual P13 DB/API output; no real vendor connector or live Engine success is implied.
+
 ## P10 source intake boundary now available locally
 
 The implemented public slice now covers source snapshots, upcoming preparation, definitive receipt with atomic remaining-stop admission, predeparture source/priority changes, withdrawal/reassignment and source-scoped reads/result recovery. Follow [the intake contract/demo](../b2b-intake.md), [shipment mapping](field-and-status-mapping.md) and [evidence](../phase-10-evidence.md). This extends P08 and does not grant ERP access to personal P09 endpoints. P13 planning, P15 departure, P17 outcomes, P21–22 returns, P25 transport and P26–27 native two-way ERP still remain their own phases.

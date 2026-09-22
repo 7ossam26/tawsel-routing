@@ -1,11 +1,11 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — identity, intake and confirmed locations
+  title: Tawsel public contract — identity, intake, locations and durable planning
   version: 0.1.0
-  description: P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP
-    snapshots/receipt/admission and P11 confirmed locations/maps are locally implemented. Live private Nominatim
-    is currently unavailable. Later execution, planning and signed delivery remain
-    designed. No production or real ERP compatibility claim.
+  description: P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning
+    are locally implemented. Planning stores provider candidate drafts and forecasts, without route-policy approval
+    or round start. Live private Nominatim and Engine evidence remains unavailable. Later execution and signed
+    delivery remain designed. No production or real ERP compatibility claim.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -1683,9 +1683,11 @@ paths:
   /api/v1/routing/profiles:
     get:
       operationId: routing.getVehicleProfiles
-      tags: [Routing]
+      tags:
+        - Routing
       summary: Read supported application modes; availability is not checked.
-      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No provider URLs or runtime-health claim.
+      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No
+        provider URLs or runtime-health claim.
       security:
         - personalSession: []
         - companySession: []
@@ -1695,22 +1697,278 @@ paths:
           required: true
           schema:
             type: string
-            enum: [personal, company]
+            enum:
+              - personal
+              - company
       responses:
-        '200':
+        "200":
           description: Supported modes, not live verification.
           content:
             application/json:
               schema:
                 $ref: ./routing.schema.json#/$defs/Profiles
-        '400':
+        "400":
           description: Invalid account selection or query.
-        '401':
+        "401":
           description: Session missing or expired.
-        '403':
+        "403":
           description: Current capability denied.
-        '503':
+        "503":
           description: Identity dependency unavailable.
+  /api/v1/planning/commands/planning.saveDraft:
+    post:
+      operationId: planning.saveDraft
+      tags:
+        - Planning
+      summary: Save or request a revisioned planning candidate
+      security: &a12
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - &a13
+          name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanningSaveDraftCommand"
+      responses:
+        "202":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "409":
+          description: Revision or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+  /api/v1/planning/commands/planning.requestPreview:
+    post:
+      operationId: planning.requestPreview
+      tags:
+        - Planning
+      summary: Save or request a revisioned planning candidate
+      security: *a12
+      parameters:
+        - *a13
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanningRequestPreviewCommand"
+      responses:
+        "202":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "409":
+          description: Revision or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+  /api/v1/planning/commands/planning.requestReplan:
+    post:
+      operationId: planning.requestReplan
+      tags:
+        - Planning
+      summary: Save or request a revisioned planning candidate
+      security: *a12
+      parameters:
+        - *a13
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanningRequestReplanCommand"
+      responses:
+        "202":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "409":
+          description: Revision or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+  /api/v1/planning/jobs/{jobId}:
+    get:
+      operationId: planning.getJob
+      tags:
+        - Planning
+      summary: Read persisted planning status
+      security: *a12
+      parameters:
+        - *a13
+        - name: jobId
+          in: path
+          required: true
+          schema: &a14
+            $ref: common.schema.json#/$defs/Uuid
+      responses:
+        "200":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningJob"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+  /api/v1/planning/drivers/{driverId}/plans:
+    get:
+      operationId: planning.getPlan
+      tags:
+        - Planning
+      summary: Read immutable draft and forecast history
+      security: *a12
+      parameters:
+        - *a13
+        - name: driverId
+          in: path
+          required: true
+          schema: *a14
+        - name: beforeRevision
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+      responses:
+        "200":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanningPlans"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
 components:
   schemas:
     Uuid:
@@ -1971,6 +2229,38 @@ components:
       $ref: ./routing.schema.json#/$defs/Failure
     RoutingProfiles:
       $ref: ./routing.schema.json#/$defs/Profiles
+    PlanningStatus:
+      $ref: ./planning.schema.json#/$defs/Status
+    PlanningSettings:
+      $ref: ./planning.schema.json#/$defs/Settings
+    PlanningSaveDraft:
+      $ref: ./planning.schema.json#/$defs/SaveDraft
+    PlanningRequest:
+      $ref: ./planning.schema.json#/$defs/Request
+    PlanningMember:
+      $ref: ./planning.schema.json#/$defs/Member
+    PlanningInput:
+      $ref: ./planning.schema.json#/$defs/Input
+    PlanningJob:
+      $ref: ./planning.schema.json#/$defs/Job
+    PlanningDraftResult:
+      $ref: ./planning.schema.json#/$defs/DraftResult
+    PlanningForecastMember:
+      $ref: ./planning.schema.json#/$defs/ForecastMember
+    PlanningForecast:
+      $ref: ./planning.schema.json#/$defs/Forecast
+    PlanningPlan:
+      $ref: ./planning.schema.json#/$defs/Plan
+    PlanningPlans:
+      $ref: ./planning.schema.json#/$defs/Plans
+    PlanningPublishedEvent:
+      $ref: ./planning.schema.json#/$defs/PublishedEvent
+    PlanningSaveDraftCommand:
+      $ref: ./planning.schema.json#/$defs/SaveDraftCommand
+    PlanningRequestPreviewCommand:
+      $ref: ./planning.schema.json#/$defs/RequestPreviewCommand
+    PlanningRequestReplanCommand:
+      $ref: ./planning.schema.json#/$defs/RequestReplanCommand
   securitySchemes:
     companySession:
       type: apiKey
@@ -2003,3 +2293,5 @@ tags:
     description: Explicit execution pins and private geocoding.
   - name: Routing
     description: Authenticated application profile metadata; provider routing remains internal.
+  - name: Planning
+    description: Durable asynchronous candidates and preserved forecasts; no round activation.

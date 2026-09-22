@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07 browser sessions, P08 ERP provisioning, P09 independent intake and P10 ERP snapshots/receipt are implemented locally.** See [identity setup and browser quickstart](../identity.md), [P07 evidence](../phase-07-evidence.md), [P08 service provisioning](../erp/consumer-quickstart.md) and [P09 evidence](../phase-09-evidence.md). Later domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores candidate drafts, not policy-approved active rounds. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -4931,10 +4931,17 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
       "type": "boolean"
     },
     "planningStatus": {
+      "type": "string",
       "enum": [
         "not-requested",
-        "pending"
-      ]
+        "pending",
+        "running",
+        "complete",
+        "partial",
+        "failed",
+        "superseded"
+      ],
+      "description": "Actual latest durable calculation state; complete is a provider candidate, not an active round or policy guarantee."
     },
     "locationReadiness": {
       "enum": [
@@ -5411,10 +5418,17 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
       "maximum": 9007199254740991
     },
     "planningStatus": {
+      "type": "string",
       "enum": [
+        "not-requested",
         "pending",
-        "not-requested"
-      ]
+        "running",
+        "complete",
+        "partial",
+        "failed",
+        "superseded"
+      ],
+      "description": "Actual latest durable calculation state; complete is a provider candidate, not an active round or policy guarantee."
     }
   },
   "required": [
@@ -6098,6 +6112,1221 @@ Validated provider candidate only, not a published or policy-verified route, arr
 }
 ```
 
+### PlanningStatus
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Status)
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "pending",
+    "running",
+    "complete",
+    "partial",
+    "failed",
+    "superseded"
+  ]
+}
+```
+
+### PlanningSettings
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Settings)
+
+Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is a forecast anchor, not a round start. Branch endpoint pin is explicitly selected and scoped; P14 validates its route policy.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "routing.schema.json#/$defs/Mode"
+    },
+    "origin": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "manual-pin"
+        },
+        "coordinates": {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        }
+      },
+      "required": [
+        "kind",
+        "coordinates"
+      ],
+      "additionalProperties": false
+    },
+    "endpoint": {
+      "$ref": "routing.schema.json#/$defs/Endpoint",
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "branch"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "branchId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "plannedStartAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "mode",
+    "origin",
+    "endpoint",
+    "plannedStartAt"
+  ],
+  "additionalProperties": false,
+  "description": "Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is a forecast anchor, not a round start. Branch endpoint pin is explicitly selected and scoped; P14 validates its route policy."
+}
+```
+
+### PlanningSaveDraft
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/SaveDraft)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedSettingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "settings": {
+      "$ref": "#/$defs/Settings"
+    }
+  },
+  "required": [
+    "driverId",
+    "expectedSettingsRevision",
+    "settings"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningRequest
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Request)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedSettingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "driverId",
+    "expectedSettingsRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningMember
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Member)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "integrationId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "coordinates": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "priority": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    },
+    "earliestAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "departureAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reservationState": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "eligible": {
+      "type": "boolean"
+    },
+    "exclusionReason": {
+      "anyOf": [
+        {
+          "enum": [
+            "not-held",
+            "location-unresolved",
+            "future",
+            "not-reserved",
+            "resolved-or-paused"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "serviceEstimateSeconds": {
+      "const": 600
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "dispatchCycleId",
+    "branchId",
+    "integrationId",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "coordinates",
+    "priority",
+    "earliestAt",
+    "departureAt",
+    "reservationState",
+    "eligible",
+    "exclusionReason",
+    "serviceEstimateSeconds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningInput
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Input)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "tenantId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "accountKind": {
+      "enum": [
+        "personal",
+        "company"
+      ]
+    },
+    "inputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "settingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "executionRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "manualRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "currentTarget": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "taskId": {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            "attemptId": {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "taskId",
+            "attemptId",
+            "revision"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "locationInputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "settings": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Settings"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Member"
+      }
+    }
+  },
+  "required": [
+    "version",
+    "tenantId",
+    "driverId",
+    "accountKind",
+    "inputRevision",
+    "settingsRevision",
+    "executionRevision",
+    "manualRevision",
+    "currentTarget",
+    "locationInputRevision",
+    "settings",
+    "members"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningJob
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Job)
+
+Durable calculation state. complete means complete provider candidate, not policy-approved route or active round. Superseded work never becomes current. Poll by stable jobId after API/worker restart.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "jobId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "status": {
+      "$ref": "#/$defs/Status"
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "settingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "blockedReason": {
+      "anyOf": [
+        {
+          "enum": [
+            "settings-required",
+            "no-eligible-work",
+            "capacity-exceeded"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "leaseExpiresAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextAttemptAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "routing.schema.json#/$defs/Failure"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "planId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "supersededByJobId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "jobId",
+    "driverId",
+    "status",
+    "fingerprint",
+    "settingsRevision",
+    "blockedReason",
+    "attempts",
+    "leaseExpiresAt",
+    "nextAttemptAt",
+    "error",
+    "planId",
+    "supersededByJobId",
+    "createdAt",
+    "finishedAt"
+  ],
+  "additionalProperties": false,
+  "description": "Durable calculation state. complete means complete provider candidate, not policy-approved route or active round. Superseded work never becomes current. Poll by stable jobId after API/worker restart.",
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "running"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "leaseExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "pending",
+              "complete",
+              "partial",
+              "failed",
+              "superseded"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "leaseExpiresAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "pending",
+              "running"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "null"
+          },
+          "finishedAt": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "complete",
+              "partial"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error": {
+            "type": "null"
+          },
+          "blockedReason": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "failed",
+              "superseded"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "null"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningDraftResult
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/DraftResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "settingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "job": {
+      "$ref": "#/$defs/Job"
+    }
+  },
+  "required": [
+    "settingsRevision",
+    "job"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningForecastMember
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/ForecastMember)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "membership": {
+      "enum": [
+        "assigned",
+        "unassigned",
+        "excluded"
+      ]
+    },
+    "exclusionReason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "position": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedArrivalAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedCompletionAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "dispatchCycleId",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "membership",
+    "exclusionReason",
+    "position",
+    "expectedArrivalAt",
+    "expectedCompletionAt"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "membership": {
+            "const": "assigned"
+          }
+        },
+        "required": [
+          "membership"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedArrivalAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expectedCompletionAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "else": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "null"
+          },
+          "expectedArrivalAt": {
+            "type": "null"
+          },
+          "expectedCompletionAt": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningForecast
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Forecast)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "forecastId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workloadId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "kind": {
+      "const": "planning-estimate"
+    },
+    "timeOrigin": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expectedFinishAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ForecastMember"
+      }
+    }
+  },
+  "required": [
+    "forecastId",
+    "workloadId",
+    "kind",
+    "timeOrigin",
+    "expectedFinishAt",
+    "members"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningPlan
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Plan)
+
+Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen revision at first start. No baseline is overwritten.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "jobId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "fingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "state": {
+      "const": "draft"
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "inputCurrent": {
+      "type": "boolean"
+    },
+    "policyValidated": {
+      "const": false
+    },
+    "candidate": {
+      "$ref": "routing.schema.json#/$defs/OptimizationResult"
+    },
+    "input": {
+      "$ref": "#/$defs/Input"
+    },
+    "forecast": {
+      "$ref": "#/$defs/Forecast"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "planId",
+    "jobId",
+    "driverId",
+    "revision",
+    "fingerprint",
+    "state",
+    "current",
+    "inputCurrent",
+    "policyValidated",
+    "candidate",
+    "input",
+    "forecast",
+    "createdAt"
+  ],
+  "additionalProperties": false,
+  "description": "Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen revision at first start. No baseline is overwritten.",
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "candidate": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "partial"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        }
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "forecast": {
+            "type": "object",
+            "properties": {
+              "expectedFinishAt": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "type": "object",
+        "properties": {
+          "forecast": {
+            "type": "object",
+            "properties": {
+              "expectedFinishAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningPlans
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Plans)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Plan"
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latestJob": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Job"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "settingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "items",
+    "nextCursor",
+    "latestJob",
+    "settingsRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningPublishedEvent
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/PublishedEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "jobId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "forecastId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workloadId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "state": {
+      "const": "draft"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "policyValidated": {
+      "const": false
+    }
+  },
+  "required": [
+    "jobId",
+    "planId",
+    "driverId",
+    "revision",
+    "forecastId",
+    "workloadId",
+    "state",
+    "status",
+    "policyValidated"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningSaveDraftCommand
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/SaveDraftCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "planning.saveDraft"
+        },
+        "payload": {
+          "$ref": "#/$defs/SaveDraft"
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningRequestPreviewCommand
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/RequestPreviewCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "planning.requestPreview"
+        },
+        "payload": {
+          "$ref": "#/$defs/Request"
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningRequestReplanCommand
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/RequestReplanCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "planning.requestReplan"
+        },
+        "payload": {
+          "$ref": "#/$defs/Request"
+        }
+      }
+    }
+  ]
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -6212,6 +7441,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | routing-bicycle-input | routing.schema.json#/$defs/OptimizationInput | valid foundation shape |
 | routing-unreachable-table | routing.schema.json#/$defs/TableResult | valid foundation shape |
 | routing-profile-metadata | routing.schema.json#/$defs/Profiles | valid foundation shape |
+| p13-settings | planning.schema.json#/$defs/Settings | valid foundation shape |
+| p13-input | planning.schema.json#/$defs/Input | valid foundation shape |
+| p13-pending | planning.schema.json#/$defs/Job | valid foundation shape |
+| p13-partial | planning.schema.json#/$defs/Plan | valid foundation shape |
+| p13-save-draft | planning.schema.json#/$defs/SaveDraftCommand | valid foundation shape |
+| p13-request | planning.schema.json#/$defs/RequestReplanCommand | valid foundation shape |
+| p13-publication-event | planning.schema.json#/$defs/PublishedEvent | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -6282,5 +7518,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | routing-gps-origin | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
 | routing-provider-label | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
 | routing-positional-coordinate | routing.schema.json#/$defs/OptimizationInput | invalid (type) |
+| p13-fake-active | planning.schema.json#/$defs/Plan | invalid (const) |
+| p13-fake-policy | planning.schema.json#/$defs/Plan | invalid (const) |
+| p13-gps-origin | planning.schema.json#/$defs/Settings | invalid (const) |
+| p13-missing-attempt | planning.schema.json#/$defs/Input | invalid (required) |
+| p13-fake-status | planning.schema.json#/$defs/Job | invalid (enum) |
+| p13-negative-revision | planning.schema.json#/$defs/SaveDraftCommand | invalid (minimum) |
+| p13-impossible-complete | planning.schema.json#/$defs/Job | invalid (type) |
+| p13-impossible-running | planning.schema.json#/$defs/Job | invalid (type) |
 
 [Canonical example data](../../contracts/examples/README.md)

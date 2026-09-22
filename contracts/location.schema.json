@@ -248,10 +248,17 @@
           "maximum": 9007199254740991
         },
         "planningStatus": {
+          "type": "string",
           "enum": [
+            "not-requested",
             "pending",
-            "not-requested"
-          ]
+            "running",
+            "complete",
+            "partial",
+            "failed",
+            "superseded"
+          ],
+          "description": "Actual latest durable calculation state; complete is a provider candidate, not an active round or policy guarantee."
         }
       },
       "required": [

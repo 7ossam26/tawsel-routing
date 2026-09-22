@@ -11,6 +11,7 @@ import { b2bIntakeRoutes } from './b2b-intake/routes.js';
 import { locationRoutes } from './locations/routes.js';
 import { mapAssetRoutes } from './locations/assets.js';
 import { routingRoutes } from './engine/routes.js';
+import { planningRoutes } from './planning/routes.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -35,6 +36,7 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && auth) app.register(async scope => { await b2cIntakeRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await locationRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await routingRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await planningRoutes(scope, database, auth); });
   if (database && provisioning) app.register(async scope => { await provisioningRoutes(scope, database, provisioning, writeProjection); });
   if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
 

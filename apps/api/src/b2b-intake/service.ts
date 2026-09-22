@@ -7,6 +7,7 @@ import { lockInvariants } from '../commands/locks.js';
 import { withTransaction, type Transaction } from '../db/transaction.js';
 import { authenticateService, identityView, type ServiceBinding } from '../provisioning/credentials.js';
 import { record } from '../provisioning/service.js';
+import { enqueuePlanning } from '../planning/queue.js';
 import { SourceError, validateCommand, type Operation, type Snapshot, type Task, type AssignmentReference } from './schema.js';
 
 const policy = (capability: 'intake.prepare' | 'assignment.manage'): ResourcePolicy => [{ capability, ownership: 'assigned-branches' }];
@@ -16,13 +17,14 @@ export interface TaskRow extends ResourceScope {
   task_id: string; external_id: string; source_revision: string; payload: Snapshot; payload_hash: string;
   dispatch_cycle_id: string; source_dispatch_cycle_id: string; assignment_revision: string; assignment_hash: string | null;
   state: Task['state']; driver_external_id: string | null; received_at: Date | null; departure_at: Date | null;
-  reserved: boolean; planning_pending: boolean; execution_confirmed: boolean;
+  reserved: boolean; planning_pending: boolean; planning_job_status: Task['planningStatus'] | null; execution_confirmed: boolean;
 }
 const select = `SELECT t.*,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
  c.state,c.driver_id,c.driver_external_id,c.received_at,c.departure_at,
  CASE WHEN l.task_id IS NOT NULL THEN l.source_revision=t.source_revision ELSE s.payload->'destination'->>'kind'='confirmed-pin' END AS execution_confirmed,
  EXISTS(SELECT 1 FROM tawsel.driver_planned_stops p WHERE p.tenant_id=t.tenant_id AND p.dispatch_cycle_id=c.dispatch_cycle_id AND p.driver_id=c.driver_id AND p.state='remaining') AS reserved,
- EXISTS(SELECT 1 FROM tawsel.intake_replan_intents p WHERE p.tenant_id=t.tenant_id AND p.driver_id=c.driver_id AND p.source_id=t.integration_id) AS planning_pending
+ EXISTS(SELECT 1 FROM tawsel.intake_replan_intents p WHERE p.tenant_id=t.tenant_id AND p.driver_id=c.driver_id AND p.source_id=t.integration_id) AS planning_pending,
+ (SELECT j.status FROM tawsel.planning_states ps JOIN tawsel.planning_jobs j ON j.tenant_id=ps.tenant_id AND j.job_id=ps.latest_job_id WHERE ps.tenant_id=t.tenant_id AND ps.driver_id=c.driver_id) AS planning_job_status
  FROM tawsel.b2b_tasks t JOIN tawsel.b2b_source_snapshots s USING (tenant_id,task_id,source_revision)
  JOIN tawsel.b2b_dispatch_cycles c USING (tenant_id,task_id)
  LEFT JOIN tawsel.task_locations l USING (tenant_id,task_id)`;
@@ -39,7 +41,7 @@ export function view(row: TaskRow): Task {
     sourceDispatchCycleId: row.source_dispatch_cycle_id, sourceRevision: Number(row.source_revision), assignmentRevision: Number(row.assignment_revision),
     state: row.state, driverId: row.driver_id, driverExternalId: row.driver_external_id, receivedAt: row.received_at?.toISOString() ?? null,
     editable: row.departure_at === null, planningEligible: row.state === 'held' && row.reserved,
-    planningStatus: row.state === 'held' && row.planning_pending ? 'pending' : 'not-requested',
+    planningStatus: row.state === 'held' ? row.planning_job_status ?? (row.planning_pending ? 'pending' : 'not-requested') : 'not-requested',
     locationReadiness: row.execution_confirmed ? 'confirmed' : 'needs-resolution', snapshot: row.payload };
 }
 export function rejection(command: ActionEnvelope, error: SourceError): Decision {
@@ -142,8 +144,7 @@ async function ensureCapacity(tx:Transaction,b:ServiceBinding,drivers:string[]) 
   }
 }
 async function queueReplan(tx:Transaction,b:ServiceBinding,command:ActionEnvelope,drivers:string[]) {
-  for(const id of [...new Set(drivers)].sort()) await tx.query(`INSERT INTO tawsel.intake_replan_intents (tenant_id,driver_id,source_id,action_id)
-    VALUES ($1,$2,$3,$4) ON CONFLICT DO NOTHING`,[b.tenantId,id,b.integrationId,command.actionId]);
+  for(const id of [...new Set(drivers)].sort()) await enqueuePlanning(tx,b.tenantId,id,b.integrationId,command.actionId);
 }
 async function assignmentCommand(tx:Transaction,b:ServiceBinding,access:AccessSession,command:ActionEnvelope):Promise<Decision> {
   const p=command.payload as {driverExternalId:string;items:AssignmentReference[];receiptAsserted?:boolean};

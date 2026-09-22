@@ -63,7 +63,12 @@
     "test:engine": "vitest run --project fast apps/api/test/fast/engine-adapters.test.ts",
     "engine:demo": "node --import tsx scripts/engine-demo.ts",
     "engine:live": "node --import tsx scripts/engine-demo.ts --live",
-    "test:erp:routing": "node --import tsx tests/erp-conformance/routing.ts"
+    "test:erp:routing": "node --import tsx tests/erp-conformance/routing.ts",
+    "test:planning": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/planning-jobs.test.ts apps/api/test/integration/planning-publication.test.ts",
+    "planning:worker": "node --env-file-if-exists=.env.database.local --env-file-if-exists=.env --import tsx scripts/planning-worker.ts",
+    "planning:worker:once": "npm run planning:worker -- --once",
+    "planning:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/planning-demo.ts",
+    "test:erp:planning": "node --import tsx tests/erp-conformance/planning.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

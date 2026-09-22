@@ -825,10 +825,17 @@
           "type": "boolean"
         },
         "planningStatus": {
+          "type": "string",
           "enum": [
             "not-requested",
-            "pending"
-          ]
+            "pending",
+            "running",
+            "complete",
+            "partial",
+            "failed",
+            "superseded"
+          ],
+          "description": "Actual latest durable calculation state; complete is a provider candidate, not an active round or policy guarantee."
         },
         "locationReadiness": {
           "enum": [
