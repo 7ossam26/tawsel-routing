@@ -27,3 +27,5 @@ coverage/
 .playwright-cli/
 output/playwright/phase-01-rtl-mobile.png
 output/phase-03-research/
+output/playwright/phase-04-report/
+output/playwright/phase-04-results/

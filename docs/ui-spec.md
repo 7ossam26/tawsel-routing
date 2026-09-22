@@ -1,6 +1,6 @@
 # Tawsel UI specification
 
-Version 1 — 22 September 2026. **Specified; owner review pending.** P03 defines the design and actions. No production UI journey or browser usability is verified here. The current application is still the P01 foundation shell. [Phase evidence](phase-03-evidence.md) distinguishes prerequisite tests, document checks, manual state walkthrough and future browser/owner evidence.
+Version 1 — 22 September 2026. **Representative P04 fixture implemented and browser-checked; owner review pending.** P03 defines the design/actions and [the P04 review](ui-review.md) records the bounded runtime evidence. Production journeys remain the P01 foundation shell; the driver/desktop review is development-only and no business operation is implemented. [P03 evidence](phase-03-evidence.md) and [P04 evidence](phase-04-evidence.md) keep specification, fixture, browser and owner evidence distinct.
 
 Authority: [master plan](../master-plan.md), latest [decision map](phases/decision-map.md) through D-112 and [state foundation](tracking-and-consistency.md). Scope includes R-55/R-56/R-57 and follow-through R-63/R-64/R-65. D-102 makes screenshots visual references; D-103/D-107 select the stack; D-106 requires driver clarity; D-109 limits this work to P03. Superseded call counters, staff correction and offline-start proposals stay removed.
 
@@ -76,7 +76,7 @@ For each form: label → field → concise hint or error. On submit focus the fi
 
 ### Acceptance copy cases
 
-These are **designed review cases**, not executed fixtures. J01–J07 form a B2B driver paper walkthrough with two received, pinned stops; the first contains three EGP100 pieces plus EGP50 outstanding shipping. S cases branch from it or name their independent-account variant explicitly. For the equivalent B2C walkthrough, use the separate independent login and a simple optional amount, with no line items, splitting or branch-return UI. “لا يوجد / لا شيء” below means no corresponding message should clutter the rendered ready state. Operation IDs identify intent for implementers; never display them to drivers. Copy may be shortened after actual owner review while preserving meaning.
+These began as designed review cases. P04 now executes the representative J01–J07 presentation/stages plus S01/S03/S04/S07/S09/S10/S11/S13-like fixture states as documented in [ui-review.md](ui-review.md); this is not connected command evidence. The first stop contains three EGP100 pieces plus EGP50 outstanding shipping. Other S cases remain specifications for their owning phases. For the equivalent B2C walkthrough, use the separate independent login and a simple optional amount, with no line items, splitting or branch-return UI. “لا يوجد / لا شيء” below means no corresponding message should clutter the rendered ready state. Operation IDs identify intent for implementers; never display them to drivers. Copy may be shortened after actual owner review while preserving meaning.
 
 | Case | State | Purpose / visible Arabic intent | Next action / operation | Missing input / direct recovery | Awaited fact / visible waiting | Required observable transition |
 | --- | --- | --- | --- | --- | --- | --- |

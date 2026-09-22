@@ -7,7 +7,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'fast',
-          include: ['apps/**/test/fast/**/*.test.ts', 'packages/**/test/fast/**/*.test.ts']
+          include: ['apps/**/test/fast/**/*.test.{ts,tsx}', 'packages/**/test/fast/**/*.test.{ts,tsx}']
         }
       },
       {

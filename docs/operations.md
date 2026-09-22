@@ -1,17 +1,17 @@
 # Tawsel application operations
 
-This runbook covers the Phase 01 web/API workspace. It does not operate the retained Nominatim/OSRM/VROOM Engine. Engine setup remains in the root `README.md` and `setup.ps1`.
+This runbook covers the Phase 01 web/API workspace and Phase 04 development-only review fixture. It does not operate the retained Nominatim/OSRM/VROOM Engine. Engine setup remains in the root `README.md` and `setup.ps1`.
 
 ## What exists now
 
 | Process | Local address | Responsibility |
 | --- | --- | --- |
-| Web | `http://127.0.0.1:5173` | Arabic RTL workspace shell only |
+| Web | `http://127.0.0.1:5173` | Arabic RTL workspace shell; developer fixture under `/__fixtures/driver-review` |
 | API | `http://127.0.0.1:3001` | Workspace liveness at `GET /health` only |
 
 The API health payload reports `scope=workspace` and `engine=not-checked`. It is not routing readiness and does not imply a delivery, database, identity, worker, ERP, or Engine capability.
 
-The web bundle self-hosts Cairo `400`, `600`, `700`, and `800` through `@fontsource/cairo`; it makes no runtime request to Google Fonts. The source license is retained at `docs/licenses/Cairo-OFL-1.1.txt`. Paragraphs use 400, secondary/status text 600, labels 700, and primary headings 800, with `font-synthesis: none` to prevent faux bold.
+The web bundle self-hosts Cairo `400`, `600`, `700`, and `800` through `@fontsource/cairo`; it makes no runtime request to Google Fonts. The source license is retained at `docs/licenses/Cairo-OFL-1.1.txt`. Paragraphs use 400, secondary/status text 600, labels 700, and primary headings 800, with `font-synthesis: none` to prevent faux bold. Locally packaged Lucide icons and Radix Dialog retain their ISC/MIT notices under `docs/licenses/`.
 
 PostgreSQL, Keycloak/OIDC, an application worker, the mock ERP, MapLibre/PMTiles assets, and routing adapters are future phase additions. No application database, migration, user account, delivery endpoint, or background job exists yet.
 
@@ -20,6 +20,7 @@ PostgreSQL, Keycloak/OIDC, an application worker, the mock ERP, MapLibre/PMTiles
 - Node.js `>=24.11.0 <25` (Node 24 LTS); exercised with `v24.19.0`.
 - npm `>=11.1.0 <12`; exercised with `11.1.0`.
 - Exact JavaScript dependency versions are in `package.json` and `package-lock.json`.
+- Repository-scoped `.npmrc` uses legacy peer resolution because the pinned `openapi-typescript 7.13.0` still declares TypeScript 5.x while its checked generator is retained with TypeScript 6.0.2. Do not remove that setting until the generator declares compatible peers and the contract drift suite passes after an upgrade.
 
 This range is the common supported overlap of the pinned Vite 8, Vitest 5, Fastify 5, and lint/type tooling. CI uses Node `24.19.0` and the lockfile via `npm ci`.
 
@@ -66,6 +67,8 @@ Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5173/
 Invoke-RestMethod http://127.0.0.1:3001/health
 ```
 
+For the labelled fixture review, open `/__fixtures/driver-review`; add `?view=login` or `?view=desktop` for those surfaces. The yellow banner is mandatory evidence that the data are fixed. No click invokes the API or records a business result. Vite production output tree-shakes the fixture module, exposes no fixture navigation and runs a marker scan during `npm run build`.
+
 Expected health response:
 
 ```json
@@ -82,6 +85,7 @@ Stop both processes with `Ctrl+C` in the terminal that runs `npm run dev`. Do no
 | `npm run test` | Watch both Vitest projects locally |
 | `npm run test:fast` | One-shot configuration/unit selection |
 | `npm run test:integration` | One-shot real HTTP-boundary selection |
+| `npm run test:browser:ui` | Playwright fixture behavior/screenshots at required representative viewports |
 | `npm run test:ci` | One-shot complete Vitest run |
 | `npm run lint` | ESLint source checks |
 | `npm run typecheck` | Strict TypeScript checks across all workspaces |

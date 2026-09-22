@@ -1,6 +1,6 @@
 # Tawsel visual system
 
-Specification v1, 22 September 2026. Status: **specified, awaiting owner review**. P04 implements and renders representative components; this document does not establish usability. [Action/state specification](docs/ui-spec.md), [original reference audit](docs/ui-reference-audit.md), [component source review](docs/ui-component-research.md).
+Specification v1, 22 September 2026. Status: **representative P04 components rendered and browser-checked; owner review pending**. This remains the shared visual contract, while [the actual early review](docs/ui-review.md) records what was and was not verified. [Action/state specification](docs/ui-spec.md), [original reference audit](docs/ui-reference-audit.md), [component source review](docs/ui-component-research.md).
 
 The product is Arabic RTL delivery work. Preserve the reference family: Cairo, navy actions, blue accents, light surfaces, clear recipient cards and related map/list views. Decisions define actions and permissions. B2C has a simpler content model than B2B; both use the same visual system. Do not reproduce screenshot frames or create new modules from decorative controls.
 
@@ -120,4 +120,4 @@ Use 120ms color/focus feedback, up to 180ms panel fade; maximum 250ms where a se
 
 ## Acceptance gate
 
-Apply [ui-spec visual acceptance](docs/ui-spec.md#visual-acceptance) at 360×800, 390×844, 1366×768 and 1440×900, then zoom/long-text/safe-area cases. P04 must provide actual screenshots, keyboard/touch findings and a labelled fixture preview; owner approval remains separate from automated results. New UI defects revise these tokens/patterns before broad UI implementation.
+Apply [ui-spec visual acceptance](docs/ui-spec.md#visual-acceptance) at 360×800, 390×844, 1366×768 and 1440×900, then zoom/long-text/safe-area cases. P04 supplied actual Chromium screenshots, keyboard/focus findings and a labelled fixture preview in [ui-review.md](docs/ui-review.md); physical touch/safe-area evidence and owner approval remain separate. New UI defects revise these tokens/patterns before broad UI implementation.

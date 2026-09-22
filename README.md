@@ -2,9 +2,9 @@
 
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
-## Application workspace (Phase 01)
+## Application workspace and representative UI (Phases 01 and 04)
 
-The application currently provides an Arabic RTL React/Vite shell and a Fastify workspace-health route. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1) so Arabic text does not depend on a runtime font CDN or synthetic bold. It does **not** yet provide delivery tasks, identity, application persistence, workers, ERP integration, maps, or routing adapters.
+The application provides an Arabic RTL React/Vite shell, a Fastify workspace-health route and a clearly labelled development-only fixture for early driver/selected-driver review. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1) so Arabic text does not depend on a runtime font CDN or synthetic bold. The fixture does **not** provide delivery tasks, identity, application persistence, workers, ERP integration, real maps or routing adapters, and it is excluded from production navigation and fixture JavaScript output.
 
 Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
 
@@ -13,7 +13,7 @@ Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173` and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, individual checks, CI behavior, and troubleshooting.
+Open `http://127.0.0.1:5173`, the fixture at `http://127.0.0.1:5173/__fixtures/driver-review`, and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, preview routes, individual checks, CI behavior, and troubleshooting; [the UI review](docs/ui-review.md) records actual findings and limits.
 
 ## Contract foundation (Phase 02)
 
