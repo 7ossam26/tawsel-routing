@@ -24,4 +24,6 @@ Read in this order:
 
 Today’s repeatable check is `npm ci` then `npm run contracts:demo`, `npm run test:contracts`, and `npm run typecheck -w @tawsel/api-client`. These use published-shape artifacts locally, without Tawsel database/domain imports. They establish schema/client consistency, **not external HTTP interoperability or transaction durability**. The [handoff deliverables plan](../planning/erp-handoff-deliverables.md) defines the later proof.
 
+P03 adds [designed UI action coverage](../ui-actions.md), including explicit external/native ERP surfaces and distinct waiting/receipt/acceptance/application labels. It changes no public payloads. `python -X utf8 scripts/check-ui-spec.py check` verifies document coverage from the repository root (Python 3.12 used); it is not the missing external consumer conformance suite. P26/P27 still own that quickstart and proof; none is fabricated here.
+
 Connector ownership may be the ERP vendor/agency, Tawsel or both. Begin with discovery of the ERP’s supported API/webhook/authentication/stable-ID/import-export mechanisms. Source-code/database access is not required; a vendor with no suitable interface may need cooperation or an adapter. Compatibility targets Tawsel’s released protocol, not any ERP’s internal schema or an automatic promise to support every ERP.

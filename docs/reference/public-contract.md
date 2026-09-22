@@ -4,7 +4,7 @@ Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contrac
 
 **No business HTTP operation is implemented or released.** The foundation exports shared types only; there are no callable paths, server URL, credentials or working business examples. Workspace `/health` is excluded.
 
-[State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
+[State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 

@@ -1,6 +1,10 @@
-# ERP planning input — Phase 02 designed foundation
+# ERP planning input — designed foundation
 
 This is reusable input for a **separate** real ERP/connector project under D-111/D-112. Tawsel currently implements only the Phase 01 shell/workspace health boundary and Phase 02 schema/reference/client tooling. Delivery execution, source provisioning, database transactions, signed events and external receiver behavior are designed, not implemented or verified. Consult [current evidence](../implementation-status.md), not a planning status as proof.
+
+Phase 03 adds the [UI/action specification](../ui-spec.md) and [complete operation-to-surface mapping](../ui-actions.md), without changing this public protocol. The native ERP owns A06–A08 preparation/assignment, A29 actual subset receipt/disposition, A31 redispatch and A43 identity administration. Their Tawsel counterparts are upcoming/received read views, source-branch request/status and departed read-only monitoring—not duplicate commercial/warehouse editors. The mock UI in P27 must demonstrate that same external boundary.
+
+Connector-facing feedback must distinguish source command pending/accepted/rejected, return offered/actually received/disposed, and Tawsel business acceptance/event delivery receipt/ERP application. An end-day badge never means cash settled or goods received. Staff cannot correct a departed driver outcome; a received conflict can only follow the owning-driver bounded correction/adoption rules. A stale monitoring view labels its last successful update and cannot infer unsent phone actions. These are designed UX requirements for consuming existing contracts; no new status enum or endpoint is introduced.
 
 ## Responsibility and compatibility target
 

@@ -29,6 +29,17 @@ npm run check
 
 Generation updates `packages/api-client/src/schema.d.ts`, `docs/reference/public-contract.md` and `docs/contract-coverage.md`; CI rejects drift. See [Phase 02 evidence](docs/phase-02-evidence.md) for limits and the Phase 03 handoff. The retained Engine tutorial below is a provider-level example: Tawsel's application contract uses 600-second default customer service and complete route validation; an empty VROOM violations array alone does not prove it satisfies Tawsel's rules.
 
+## Visual and action specification (Phase 03)
+
+The Phase 03 [visual system](DESIGN.md), [UI/action specification](docs/ui-spec.md), [reference/control audit](docs/ui-reference-audit.md) and [evidence](docs/phase-03-evidence.md) are now specified and document-checked, with owner review pending. They add no runtime screens or business endpoints. Reproduce the source/operation/state coverage check and paper walkthrough with Python 3.12:
+
+```powershell
+python -X utf8 scripts/check-ui-spec.py check
+python -X utf8 scripts/check-ui-spec.py demo
+```
+
+Phase 04 implements the representative fixture UI from those artifacts; it has not started.
+
 ## Retained Engine
 
 The Engine remains available independently:

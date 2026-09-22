@@ -2,7 +2,7 @@
 
 Updated: 21 September 2026
 
-Status: operational discovery consolidated; stack, meaningful Vitest and very simple driver UX accepted. D-109 requires smaller self-contained tasks. D-110 adds the recommended Codex model/reasoning setting per phase; D-111 requires concrete ERP planning/integration handoff files and explicit responsible phases; D-112 locks the ERP-agnostic public-contract boundary and connector ownership. Master-plan revision 7 and package revision 3 contain 42 prompts, 65 requirement groups and D-01–D-112 traceability. The prior 11-phase package is archived. Phases 01–02 are implemented and locally verified within their workspace/schema foundation scope; Phases 03–42 remain unstarted. All business APIs/events remain designed, with evidence in docs/phase-02-evidence.md.
+Status: operational discovery consolidated; stack, meaningful Vitest and very simple driver UX accepted. D-109 requires smaller self-contained tasks. D-110 adds the recommended Codex model/reasoning setting per phase; D-111 requires concrete ERP planning/integration handoff files and explicit responsible phases; D-112 locks the ERP-agnostic public-contract boundary and connector ownership. Master-plan revision 7 and package revision 3 contain 42 prompts, 65 requirement groups and D-01–D-112 traceability. The prior 11-phase package is archived. Phases 01–02 are implemented and locally verified within their workspace/schema foundation scope; Phase 03 is specified and document-verified with owner review pending (docs/phase-03-evidence.md); Phases 04–42 remain unstarted. All business APIs/events remain designed, with evidence in docs/phase-02-evidence.md.
 
 ## 1. Sources and precedence
 

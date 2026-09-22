@@ -4,6 +4,19 @@ All business mappings below are **designed**. Common shapes/examples are schema-
 
 ## Identity, fields and state authority
 
+Phase 03's [action map](../ui-actions.md) and [Arabic state cases](../ui-spec.md#acceptance-copy-cases) add presentation traceability only. Preserve separate fields rather than serializing a translated badge as a new ERP status:
+
+| UI label intent | Existing canonical fact | Connector consequence |
+| --- | --- | --- |
+| محفوظ على الهاتف | Local action plus pending projection, not yet server evidence | Not visible in a server-only ERP projection; no accepted shipment status inferred. |
+| وصل السجل إلى توصيل | EvidenceStatus `received`; business result may be `pending`, `rejected` or `review-required` | Keep evidence acknowledgement separate from applied execution facts. |
+| تم تأكيد النتيجة في توصيل | BusinessStatus `accepted` | Does not mean the recipient ERP received or applied the event. |
+| بانتظار تأكيد الفرع | Offered return request, no actual received subset yet | Native ERP confirms physical subset with trusted actor; request does not create stock. |
+| أكد الفرع استلام قطعة | Accepted subset receipt; separate unresolved held pieces | Map actual receipt quantity only; disposal and financial settlement are different facts. |
+| انتهى يوم العمل | Explicit workday closure with held carryover | Never translate into all delivered, all returned or cash remitted. |
+
+No canonical wire field/status, example or client type changes in P03. Product routes are browser paths, not public API endpoint specifications; feature owners complete schemas in their assigned phases. Vendor-specific mapping remains unknown until connector discovery.
+
 | Entity / public fields | Source versus Tawsel identity and authority | Required/optional/null, revision and state rules | Command / event / authoritative read; owner | Real ERP mapping |
 | --- | --- | --- | --- | --- |
 | Tenant/company, integration | Tawsel UUIDs bound to a source company by authorized bootstrap; source tenant/integration references never self-authorize | Tenant+integration required for source references; same external ID in another scope is independent | `integration.bindSource`, `integration.getConfiguration`; P08 | **Unknown** company/source IDs |
