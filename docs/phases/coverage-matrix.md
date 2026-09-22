@@ -535,7 +535,7 @@ Initial engineering requirements without a numbered discovery answer remain trac
 | Family | Contract/runtime owners | Important integration and evidence |
 | --- | --- | --- |
 | Local workspace liveness (non-domain, non-ERP) | [P01](01-workspace-test-harness.md) implemented `GET /health` | Reports only `scope=workspace` and `engine=not-checked`; [evidence](../phase-01-evidence.md). P38 still owns operational health/readiness. |
-| Shared IDs/errors/action/envelope/versioning | [P02](02-state-contract-foundation.md) canonical foundation | Feature owner completes schemas before handlers; [P42](42-final-contract-readiness-handoff.md) drift audit |
+| Shared IDs/errors/action/envelope/versioning | [P02](02-state-contract-foundation.md) common foundation implemented and schema-verified | [Evidence](../phase-02-evidence.md); feature owner completes exact schemas before handlers; [P42](42-final-contract-readiness-handoff.md) drift audit |
 | Sessions/account/recovery | [P07](07-oidc-login-recovery-sessions.md) | [P35](35-offline-auth-updates-ux.md) queue-aware exit/reauth |
 | Tenancy/capabilities/provisioning | [P06](06-tenant-capabilities-isolation.md), [P08](08-erp-provisioning-actor-binding.md) | [P27](27-native-mock-erp-source.md) native source UI, every resource phase extends enforcement |
 | B2C task / ERP task snapshot/prepared/received/admission | [P09](09-b2c-task-intake.md), [P10](10-b2b-intake-admission.md) | [P15](15-round-start-departure-lock.md) departure race, [P27](27-native-mock-erp-source.md) source outbox, [P28](28-online-preparation-journeys.md) UI |
@@ -551,7 +551,7 @@ Initial engineering requirements without a numbered discovery answer remain trac
 | Report/filter/snapshot/export/download | [P36](36-workday-timing-reports.md), [P37](37-authorized-excel-export.md) | [P41](41-device-owner-pilot-review.md) connected pilot |
 | Owner diagnostics/health | [P38](38-diagnostics-freshness-capacity.md) | [P39](39-deployment-migration-release.md) target deployment |
 
-The exact operation/event IDs live in docs/contract-coverage.md created by P02. No feature phase may substitute a private UI-only endpoint or count a designed schema as an implemented handler.
+The exact operation/event IDs live in [docs/contract-coverage.md](../contract-coverage.md), generated from [contracts/operations.json](../../contracts/operations.json) in P02. All business entries are designed and unavailable; only workspace health is verified locally. No feature phase may substitute a private UI-only endpoint or count a designed schema as an implemented handler.
 
 ## Visual references and required extensions
 
@@ -621,7 +621,7 @@ P41 walks through the product/device evidence and P42 audits the final mapping. 
 | Artifact | Creation / maintenance responsibility |
 | --- | --- |
 | README.md / .env.example / workspace and CI | 01; updated every implemented configuration phase |
-| contracts/openapi.yaml / contracts/events / contracts/examples / generated reference/client | 02 common foundation and complete operation inventory; each owning feature phase completes its precise schemas before handlers |
+| contracts/openapi.yaml / contracts/events / contracts/examples / generated reference/client | 02 common foundation verified; generated docs/reference/public-contract.md and packages/api-client/src/schema.d.ts, plus contracts/operations.json inventory; each owning feature phase completes precise schemas before handlers |
 | docs/contract-coverage.md | 02; exact operation/event designed/implemented/verified status updated every feature phase |
 | docs/tracking-and-consistency.md | 02 complete state/invariant design; 05–26 and 33–35 maintain as-built details |
 | DESIGN.md / docs/ui-spec.md | 03; reused/updated by all UI phases without invented nine-page restriction |

@@ -1,0 +1,788 @@
+[
+  {
+    "id": "piece--1",
+    "schema": "common.schema.json#/$defs/PieceCount",
+    "valid": false,
+    "keyword": "minimum",
+    "data": -1
+  },
+  {
+    "id": "piece-1.5",
+    "schema": "common.schema.json#/$defs/PieceCount",
+    "valid": false,
+    "keyword": "type",
+    "data": 1.5
+  },
+  {
+    "id": "piece-2",
+    "schema": "common.schema.json#/$defs/PieceCount",
+    "valid": false,
+    "keyword": "type",
+    "data": "2"
+  },
+  {
+    "id": "piece-9007199254740992",
+    "schema": "common.schema.json#/$defs/PieceCount",
+    "valid": false,
+    "keyword": "maximum",
+    "data": 9007199254740992
+  },
+  {
+    "id": "positive-piece-zero",
+    "schema": "common.schema.json#/$defs/PositivePieceCount",
+    "valid": false,
+    "keyword": "minimum",
+    "data": 0
+  },
+  {
+    "id": "money-fraction",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "amountMinor": 250.5,
+      "currency": "EGP",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-decimal-string",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "amountMinor": "250.00",
+      "currency": "EGP",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-negative",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "minimum",
+    "data": {
+      "amountMinor": -1,
+      "currency": "EGP",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-unsafe-integer",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "maximum",
+    "data": {
+      "amountMinor": 9007199254740992,
+      "currency": "EGP",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-missing-currency",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "amountMinor": 25000,
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-invalid-currency",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "pattern",
+    "data": {
+      "amountMinor": 25000,
+      "currency": "egp",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "money-egp-wrong-exponent",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "amountMinor": 25000,
+      "currency": "EGP",
+      "exponent": 3
+    }
+  },
+  {
+    "id": "uuid-not-uuid",
+    "schema": "common.schema.json#/$defs/Uuid",
+    "valid": false,
+    "keyword": "format",
+    "data": "shipment-001"
+  },
+  {
+    "id": "source-missing-scope",
+    "schema": "common.schema.json#/$defs/SourceReference",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "externalId": "shipment-001"
+    }
+  },
+  {
+    "id": "revision-zero",
+    "schema": "common.schema.json#/$defs/Revision",
+    "valid": false,
+    "keyword": "minimum",
+    "data": 0
+  },
+  {
+    "id": "time-local-offset",
+    "schema": "common.schema.json#/$defs/UtcInstant",
+    "valid": false,
+    "keyword": "pattern",
+    "data": "2026-09-22T13:00:00+03:00"
+  },
+  {
+    "id": "time-invalid-date",
+    "schema": "common.schema.json#/$defs/UtcInstant",
+    "valid": false,
+    "keyword": "format",
+    "data": "2026-02-30T10:00:00Z"
+  },
+  {
+    "id": "pin-outside-latitude",
+    "schema": "common.schema.json#/$defs/Coordinates",
+    "valid": false,
+    "keyword": "maximum",
+    "data": {
+      "latitude": 91,
+      "longitude": 31
+    }
+  },
+  {
+    "id": "action-future-envelope",
+    "schema": "action-envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "schemaVersion": "2.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "operationId": "outcome.recordPartial",
+      "context": {
+        "kind": "device",
+        "tenantId": "10000000-0000-4000-8000-000000000001",
+        "accountId": "10000000-0000-4000-8000-000000000003",
+        "deviceId": "10000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "baseVersions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "dependsOnActionIds": [
+        "10000000-0000-4000-8000-000000000039"
+      ],
+      "observation": {
+        "observedAt": "2026-09-22T09:58:00Z",
+        "clock": {
+          "quality": "uncertain"
+        }
+      },
+      "payload": {
+        "deliveredPieces": 2,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "action-future-payload",
+    "schema": "action-envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "operationId": "outcome.recordPartial",
+      "context": {
+        "kind": "device",
+        "tenantId": "10000000-0000-4000-8000-000000000001",
+        "accountId": "10000000-0000-4000-8000-000000000003",
+        "deviceId": "10000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "baseVersions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "dependsOnActionIds": [
+        "10000000-0000-4000-8000-000000000039"
+      ],
+      "observation": {
+        "observedAt": "2026-09-22T09:58:00Z",
+        "clock": {
+          "quality": "uncertain"
+        }
+      },
+      "payload": {
+        "deliveredPieces": 2,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "action-missing-device-generation",
+    "schema": "action-envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "operationId": "outcome.recordPartial",
+      "context": {
+        "kind": "device",
+        "tenantId": "10000000-0000-4000-8000-000000000001",
+        "accountId": "10000000-0000-4000-8000-000000000003",
+        "deviceId": "10000000-0000-4000-8000-000000000004",
+        "deviceSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "baseVersions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "dependsOnActionIds": [
+        "10000000-0000-4000-8000-000000000039"
+      ],
+      "observation": {
+        "observedAt": "2026-09-22T09:58:00Z",
+        "clock": {
+          "quality": "uncertain"
+        }
+      },
+      "payload": {
+        "deliveredPieces": 2,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "action-extra-authority",
+    "schema": "action-envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "operationId": "outcome.recordPartial",
+      "context": {
+        "kind": "device",
+        "tenantId": "10000000-0000-4000-8000-000000000001",
+        "accountId": "10000000-0000-4000-8000-000000000003",
+        "deviceId": "10000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "baseVersions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "dependsOnActionIds": [
+        "10000000-0000-4000-8000-000000000039"
+      ],
+      "observation": {
+        "observedAt": "2026-09-22T09:58:00Z",
+        "clock": {
+          "quality": "uncertain"
+        }
+      },
+      "payload": {
+        "deliveredPieces": 2,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      },
+      "adminOverride": true
+    }
+  },
+  {
+    "id": "action-duplicate-dependency",
+    "schema": "action-envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "uniqueItems",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "operationId": "outcome.recordPartial",
+      "context": {
+        "kind": "device",
+        "tenantId": "10000000-0000-4000-8000-000000000001",
+        "accountId": "10000000-0000-4000-8000-000000000003",
+        "deviceId": "10000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "baseVersions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "dependsOnActionIds": [
+        "10000000-0000-4000-8000-000000000039",
+        "10000000-0000-4000-8000-000000000039"
+      ],
+      "observation": {
+        "observedAt": "2026-09-22T09:58:00Z",
+        "clock": {
+          "quality": "uncertain"
+        }
+      },
+      "payload": {
+        "deliveredPieces": 2,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "evidence-received-not-accepted",
+    "schema": "evidence-receipt.v1.schema.json",
+    "valid": false,
+    "keyword": "not",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "receiptId": "10000000-0000-4000-8000-000000000070",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "evidenceStatus": "received",
+      "businessStatus": "pending",
+      "receivedAt": "2026-09-22T10:00:00Z",
+      "committedAt": "2026-09-22T10:00:00Z"
+    }
+  },
+  {
+    "id": "evidence-accepted-without-commit",
+    "schema": "evidence-receipt.v1.schema.json",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "receiptId": "10000000-0000-4000-8000-000000000070",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "evidenceStatus": "received",
+      "businessStatus": "accepted",
+      "receivedAt": "2026-09-22T10:00:00Z"
+    }
+  },
+  {
+    "id": "evidence-not-erp-applied",
+    "schema": "evidence-receipt.v1.schema.json",
+    "valid": false,
+    "keyword": "enum",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "receiptId": "10000000-0000-4000-8000-000000000070",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "evidenceStatus": "received",
+      "businessStatus": "applied",
+      "receivedAt": "2026-09-22T10:00:00Z"
+    }
+  },
+  {
+    "id": "evidence-review-without-problem",
+    "schema": "evidence-receipt.v1.schema.json",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "receiptId": "10000000-0000-4000-8000-000000000070",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "evidenceStatus": "received",
+      "businessStatus": "review-required",
+      "receivedAt": "2026-09-22T10:00:00Z"
+    }
+  },
+  {
+    "id": "event-unsupported-version",
+    "schema": "events/envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "schemaVersion": "9.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "10000000-0000-4000-8000-000000000050",
+      "eventType": "outcome.recorded",
+      "eventKind": "transition",
+      "tenantId": "10000000-0000-4000-8000-000000000001",
+      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "aggregate": {
+        "type": "task",
+        "id": "10000000-0000-4000-8000-000000000010",
+        "recipientSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "correlation": {
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "sourceReference": {
+          "tenantId": "10000000-0000-4000-8000-000000000001",
+          "integrationId": "10000000-0000-4000-8000-000000000002",
+          "externalId": "shipment-001"
+        }
+      },
+      "committedAt": "2026-09-22T10:00:00Z",
+      "payload": {
+        "outcomeId": "10000000-0000-4000-8000-000000000060"
+      }
+    }
+  },
+  {
+    "id": "event-sequence-zero",
+    "schema": "events/envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "minimum",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "10000000-0000-4000-8000-000000000050",
+      "eventType": "outcome.recorded",
+      "eventKind": "transition",
+      "tenantId": "10000000-0000-4000-8000-000000000001",
+      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "aggregate": {
+        "type": "task",
+        "id": "10000000-0000-4000-8000-000000000010",
+        "recipientSequence": 0
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "correlation": {
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "sourceReference": {
+          "tenantId": "10000000-0000-4000-8000-000000000001",
+          "integrationId": "10000000-0000-4000-8000-000000000002",
+          "externalId": "shipment-001"
+        }
+      },
+      "committedAt": "2026-09-22T10:00:00Z",
+      "payload": {
+        "outcomeId": "10000000-0000-4000-8000-000000000060"
+      }
+    }
+  },
+  {
+    "id": "event-missing-recipient",
+    "schema": "events/envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "10000000-0000-4000-8000-000000000050",
+      "eventType": "outcome.recorded",
+      "eventKind": "transition",
+      "tenantId": "10000000-0000-4000-8000-000000000001",
+      "aggregate": {
+        "type": "task",
+        "id": "10000000-0000-4000-8000-000000000010",
+        "recipientSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "correlation": {
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "sourceReference": {
+          "tenantId": "10000000-0000-4000-8000-000000000001",
+          "integrationId": "10000000-0000-4000-8000-000000000002",
+          "externalId": "shipment-001"
+        }
+      },
+      "committedAt": "2026-09-22T10:00:00Z",
+      "payload": {
+        "outcomeId": "10000000-0000-4000-8000-000000000060"
+      }
+    }
+  },
+  {
+    "id": "event-snapshot-without-revision",
+    "schema": "events/envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "10000000-0000-4000-8000-000000000050",
+      "eventType": "outcome.recorded",
+      "eventKind": "replacement-snapshot",
+      "tenantId": "10000000-0000-4000-8000-000000000001",
+      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "aggregate": {
+        "type": "task",
+        "id": "10000000-0000-4000-8000-000000000010",
+        "recipientSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "correlation": {
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "sourceReference": {
+          "tenantId": "10000000-0000-4000-8000-000000000001",
+          "integrationId": "10000000-0000-4000-8000-000000000002",
+          "externalId": "shipment-001"
+        }
+      },
+      "committedAt": "2026-09-22T10:00:00Z",
+      "payload": {
+        "outcomeId": "10000000-0000-4000-8000-000000000060"
+      }
+    }
+  },
+  {
+    "id": "event-transition-not-snapshot",
+    "schema": "events/envelope.v1.schema.json",
+    "valid": false,
+    "keyword": "not",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "10000000-0000-4000-8000-000000000050",
+      "eventType": "outcome.recorded",
+      "eventKind": "transition",
+      "tenantId": "10000000-0000-4000-8000-000000000001",
+      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "aggregate": {
+        "type": "task",
+        "id": "10000000-0000-4000-8000-000000000010",
+        "recipientSequence": 4
+      },
+      "resources": {
+        "taskId": "10000000-0000-4000-8000-000000000010",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
+        "assignmentId": "10000000-0000-4000-8000-000000000012",
+        "workdayId": "10000000-0000-4000-8000-000000000013",
+        "tripId": "10000000-0000-4000-8000-000000000014",
+        "planId": "10000000-0000-4000-8000-000000000015",
+        "stopId": "10000000-0000-4000-8000-000000000016",
+        "attemptId": "10000000-0000-4000-8000-000000000017"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "resourceRevision": 1,
+        "outcomeRevision": 1,
+        "assignmentGeneration": 1,
+        "routeRevision": 2,
+        "deviceGeneration": 1,
+        "snapshotRevision": 5
+      },
+      "correlation": {
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "sourceReference": {
+          "tenantId": "10000000-0000-4000-8000-000000000001",
+          "integrationId": "10000000-0000-4000-8000-000000000002",
+          "externalId": "shipment-001"
+        }
+      },
+      "committedAt": "2026-09-22T10:00:00Z",
+      "payload": {
+        "outcomeId": "10000000-0000-4000-8000-000000000060"
+      },
+      "snapshotRevision": 8
+    }
+  },
+  {
+    "id": "unknown-null-is-not-zero",
+    "schema": "common.schema.json#/$defs/Money",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "amountMinor": null,
+      "currency": "EGP",
+      "exponent": 2
+    }
+  },
+  {
+    "id": "conflict-must-be-409",
+    "schema": "common.schema.json#/$defs/Problem",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "type": "urn:tawsel:problem:idempotency_conflict",
+      "title": "Action identity already has a different payload",
+      "status": 400,
+      "code": "idempotency_conflict",
+      "correlationId": "10000000-0000-4000-8000-000000000041",
+      "actionId": "10000000-0000-4000-8000-000000000040",
+      "retryable": false
+    }
+  },
+  {
+    "id": "location-has-no-destination",
+    "schema": "common.schema.json#/$defs/LocationSnapshot",
+    "valid": false,
+    "keyword": "anyOf",
+    "data": {
+      "provenance": "source"
+    }
+  }
+]

@@ -1,6 +1,6 @@
 # ERP handoff deliverables and proof plan
 
-Package revision 3 · D-111, amended by D-112 · Planning only; the integration deliverables below remain future phase work.
+Package revision 3 · D-111, amended by D-112. P02 common schema/tooling and designed planning/mapping foundations are now available in the [ERP index](../erp/README.md), with [local evidence](../phase-02-evidence.md). Business integration, independent consumer proof and final release packaging remain future phase work.
 
 This document makes the future ERP handoff explicit. It is an implementation obligation, not an as-built integration certificate. The files below are future deliverables until their owner phase creates substantive, tested content. The final bundle must let an implementer plan and build the real shipping ERP without this chat.
 

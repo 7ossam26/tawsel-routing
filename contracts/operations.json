@@ -1,0 +1,1331 @@
+{
+  "schemaVersion": "1.0.0",
+  "description": "Canonical operation ownership catalog. Designed rows are unavailable; method/path/payload/auth binding finalized by owner before implementation.",
+  "operations": [
+    {
+      "id": "session.resolveCompany",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Resolve company code to safe login context; company selection grants no authority."
+    },
+    {
+      "id": "account.registerIndependent",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Register a separate B2C phone/password identity with recovery email."
+    },
+    {
+      "id": "account.verifyRecoveryEmail",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Complete recovery-email verification; no SMS claim."
+    },
+    {
+      "id": "session.beginLogin",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Begin OIDC authorization code / PKCE login."
+    },
+    {
+      "id": "session.completeLogin",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Validate OIDC callback and establish independent Tawsel session."
+    },
+    {
+      "id": "session.getContext",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Read subject, tenant, branches and effective capabilities."
+    },
+    {
+      "id": "session.refresh",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Refresh authenticated backend session; no tokens in URLs."
+    },
+    {
+      "id": "account.getStatus",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Read own activation/recovery state."
+    },
+    {
+      "id": "account.beginRecovery",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Initiate email recovery without account enumeration."
+    },
+    {
+      "id": "account.completeRecovery",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Consume verified recovery proof through the issuer."
+    },
+    {
+      "id": "session.logout",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "End session; P35 adds durable pending-action/account-switch guards."
+    },
+    {
+      "id": "device.getContext",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Read active round and execution generation on any signed-in phone."
+    },
+    {
+      "id": "integration.bindSource",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Bootstrap authorized tenant/integration binding and supported protocol versions."
+    },
+    {
+      "id": "integration.rotateCredential",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Rotate scoped command credential with explicit overlap/recovery."
+    },
+    {
+      "id": "integration.disableSource",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Disable source credentials without erasing audit or queued evidence."
+    },
+    {
+      "id": "integration.getConfiguration",
+      "family": "integration-provisioning",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Read authorized source configuration without secret disclosure."
+    },
+    {
+      "id": "branch.provision",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply versioned branch identity/location reference."
+    },
+    {
+      "id": "branch.disable",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply explicit versioned branch disable without deleting custody history."
+    },
+    {
+      "id": "role.defineCapabilities",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply versioned ERP role capability definition."
+    },
+    {
+      "id": "user.provision",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Bind ERP user reference to trusted issuer subject; no copied passwords."
+    },
+    {
+      "id": "user.setRole",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Assign exactly one role per company user."
+    },
+    {
+      "id": "user.setCapabilityExceptions",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply inherit/allow/deny overrides without bypassing resource scope."
+    },
+    {
+      "id": "user.setBranchMemberships",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Version branch membership; common effective capabilities across branches."
+    },
+    {
+      "id": "user.disable",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Revoke access without resurrecting via stale source revision."
+    },
+    {
+      "id": "driver.provisionReference",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply minimal execution driver/vehicle profile reference."
+    },
+    {
+      "id": "provisioning.getStatus",
+      "family": "integration-provisioning",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Read application acceptance and separate issuer reconciliation state."
+    },
+    {
+      "id": "task.createIndependent",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Create own simple B2C name/phone/destination/optional collection."
+    },
+    {
+      "id": "task.reviseIndependent",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Correct own eligible B2C task with revision guards."
+    },
+    {
+      "id": "task.getIndependent",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Inspect own persisted B2C task."
+    },
+    {
+      "id": "task.listIndependent",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "List own intake/preparation work with bounded pagination."
+    },
+    {
+      "id": "intake.submitSnapshot",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Accept generic source task/order/contact/location/content/policy revision."
+    },
+    {
+      "id": "intake.prepare",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Prepare upcoming work without driver receipt/custody."
+    },
+    {
+      "id": "assignment.receiveBatch",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Definitive ERP receipt assertion with all-or-none 50-stop admission."
+    },
+    {
+      "id": "assignment.withdraw",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Withdraw before departure; race start without mandatory reason/handover."
+    },
+    {
+      "id": "assignment.reassignBeforeDeparture",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Change predeparture driver and assignment generation; no live transfer."
+    },
+    {
+      "id": "intake.setUrgencyBeforeDeparture",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "ERP priority update only before execution lock."
+    },
+    {
+      "id": "intake.getBatchResult",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Recover entire accepted/rejected batch and uncertain response."
+    },
+    {
+      "id": "location.searchCandidates",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Scoped Nominatim candidates with provenance; never GPS/accuracy percentage."
+    },
+    {
+      "id": "location.getSnapshot",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 11,
+      "capability": "monitor.read",
+      "description": "Read original address and separate confirmed execution pin/revision."
+    },
+    {
+      "id": "location.confirmPin",
+      "family": "locations",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Authorized predeparture confirmation or assigned-driver execution correction."
+    },
+    {
+      "id": "map.getAssetConfiguration",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 11,
+      "capability": "authenticated",
+      "description": "Read configured self-hosted style/archive/attribution; no invented map coverage."
+    },
+    {
+      "id": "routing.getVehicleProfiles",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 12,
+      "capability": "planning.manage",
+      "description": "Expose supported car/motorcycle/bicycle application modes."
+    },
+    {
+      "id": "routing.computeRoadRoute",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "designed",
+      "ownerPhase": 12,
+      "capability": "internal",
+      "description": "Private OSRM adapter with metre/second units; no public provider payload."
+    },
+    {
+      "id": "routing.optimize",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "designed",
+      "ownerPhase": 12,
+      "capability": "internal",
+      "description": "Private VROOM adapter validates all task IDs, unassigned work and time origin."
+    },
+    {
+      "id": "planning.saveDraft",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Save preview inputs: origin, vehicle, endpoint, service/time requirements; no start."
+    },
+    {
+      "id": "planning.requestPreview",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Queue durable asynchronous planning from coherent input revisions."
+    },
+    {
+      "id": "planning.getJob",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Read queued/running/complete/partial/failed/obsolete result."
+    },
+    {
+      "id": "planning.getPlan",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Read plan ID, route revision, order, pending/manual status and forecasts."
+    },
+    {
+      "id": "planning.requestReplan",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Request optimization without clearing current or undoing accepted facts."
+    },
+    {
+      "id": "planning.setManualOrder",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 14,
+      "capability": "planning.manage",
+      "description": "Explicit eligible manual first/remaining route when needed; same constraints."
+    },
+    {
+      "id": "planning.publishRevision",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "internal",
+      "description": "Publish only current fingerprint, preserving protected current and first forecast; start publishes atomically in P15."
+    },
+    {
+      "id": "round.start",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "description": "Online synchronized start: one round/day/device, departure lock and first forecast."
+    },
+    {
+      "id": "current.selectHeading",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicitly select/change eligible target; protect arrived work until resolved."
+    },
+    {
+      "id": "current.recordArrival",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicit arrival and physical-origin evidence; never inferred from outcome."
+    },
+    {
+      "id": "outcome.recordFull",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Full result with exact permitted collection and coherent progress/outbox."
+    },
+    {
+      "id": "outcome.recordPartial",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "B2B whole pieces only; rejected remainder is held return-required."
+    },
+    {
+      "id": "outcome.recordRefusal",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Refusal with shipping collection or explicit unpaid-shipping exception."
+    },
+    {
+      "id": "outcome.recordNoAnswer",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Simple no-answer; no call counters or implied fee refusal/arrival."
+    },
+    {
+      "id": "task.deferWhole",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Defer untouched whole work to earliest time; no narrow appointment guarantee."
+    },
+    {
+      "id": "task.retryWhole",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Same-driver eligible untouched whole held return work, new attempt, before receipt."
+    },
+    {
+      "id": "task.setDriverUrgency",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Assigned-driver urgency after departure; protect current/earliest eligibility."
+    },
+    {
+      "id": "round.end",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "End round explicitly with held unfinished work preserved."
+    },
+    {
+      "id": "workday.end",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Close open workday/active round after resolving or pausing current; carry held work."
+    },
+    {
+      "id": "device.takeOver",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Online same-driver takeover increments generation, preserves former-device evidence."
+    },
+    {
+      "id": "outcome.correct",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 23,
+      "capability": "correction.own",
+      "description": "Driver appends correction in open day before dependent receipt/redispatch."
+    },
+    {
+      "id": "evidence.adoptCompatible",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 23,
+      "capability": "correction.own",
+      "description": "Current owner adopts eligible former-device evidence under correction bounds."
+    },
+    {
+      "id": "return.listSourceBranchGroups",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Group held return-required portions by originating branch."
+    },
+    {
+      "id": "return.requestHandover",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Driver offers source-branch pieces; request is not receipt/stock."
+    },
+    {
+      "id": "return.getRequest",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "monitor.read",
+      "description": "Scoped request, offered/received/unresolved subsets and revisions."
+    },
+    {
+      "id": "return.confirmSubsetReceipt",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native ERP trusted actor confirms actually received requested subset."
+    },
+    {
+      "id": "return.recordDisposition",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "return.dispose",
+      "description": "ERP loss/damage disposition distinct from physical receipt and inventory."
+    },
+    {
+      "id": "branch.interruptRound",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "execution.own",
+      "description": "Pause heading sequence and enter source-branch service within same round/capacity."
+    },
+    {
+      "id": "branch.resumeRound",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "execution.own",
+      "description": "Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate."
+    },
+    {
+      "id": "dispatch.createFromReceipt",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "assignment.manage",
+      "description": "Redispatch only confirmed branch-received goods in new cycle/assignment."
+    },
+    {
+      "id": "monitoring.getDriverSnapshot",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent current/next/progress/held/prepared/ownership snapshot, conditional refresh."
+    },
+    {
+      "id": "monitoring.getTripSnapshot",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Scoped coherent trip/forecast view; redact unauthorized source details."
+    },
+    {
+      "id": "monitoring.getTaskHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Task/cycle/attempt/effective outcome plus original correction history."
+    },
+    {
+      "id": "monitoring.getWorkdayHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Explicit day/round history with carryover and timestamps."
+    },
+    {
+      "id": "integration.getExecutionProjection",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Recipient-scoped task/trip/assignment projection excluding other integrations."
+    },
+    {
+      "id": "action.getResult",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 5,
+      "capability": "authenticated",
+      "description": "Recover scoped stable idempotency/business result after unknown response."
+    },
+    {
+      "id": "evidence.receiveFormerDevice",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Durably receive old-generation evidence without accepting execution."
+    },
+    {
+      "id": "sync.submitActions",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Dependency-ordered replay batch with per-action result, original identity/version."
+    },
+    {
+      "id": "sync.getEvidenceReceipt",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Recover durable received/rejected/review evidence without implying acceptance."
+    },
+    {
+      "id": "sync.listConflicts",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Read preserved conflicts and currently permitted resolution choices."
+    },
+    {
+      "id": "integration.configureWebhook",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Authorize callback destination and recipient network restrictions."
+    },
+    {
+      "id": "integration.rotateSigningKey",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Rotate integration-scoped webhook secret/key ID with overlap."
+    },
+    {
+      "id": "integration.getDeliveryStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Read outbound pending/sending/received/failed independently of application."
+    },
+    {
+      "id": "integration.retryDelivery",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Controlled retry retaining committed event identity."
+    },
+    {
+      "id": "integration.replayEvents",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Scoped aggregate sequence replay with explicit retained-window/expired status."
+    },
+    {
+      "id": "integration.getReconciliationSnapshot",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Scoped authoritative checkpoint/snapshot recovery after gaps/expired replay."
+    },
+    {
+      "id": "integration.reportAppliedCheckpoint",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Authenticated receiver reports separately durable applied/failed state."
+    },
+    {
+      "id": "integration.getAppliedCheckpoint",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Read receiver processing checkpoint without inferring it from HTTP receipt."
+    },
+    {
+      "id": "consumer.receiveSignedEvent",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "External ERP callback: verify, durable inbox, then acknowledge receipt."
+    },
+    {
+      "id": "consumer.applyInboxEvent",
+      "family": "sync-recovery",
+      "kind": "internal-work",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "ERP-local atomic projection plus processed marker, deduplication and gap recovery."
+    },
+    {
+      "id": "source.deliverCommandIntent",
+      "family": "sync-recovery",
+      "kind": "internal-work",
+      "lifecycle": "designed",
+      "ownerPhase": 27,
+      "capability": "external-consumer",
+      "description": "ERP-local native change plus command outbox, durable pending/accepted/rejected status."
+    },
+    {
+      "id": "source.getCommandStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 27,
+      "capability": "external-consumer",
+      "description": "Native mock ERP reads its own durable source command status; not a Tawsel endpoint."
+    },
+    {
+      "id": "report.getWorkday",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "Authorized workday results/quantities/collection with explicit denominators/currency."
+    },
+    {
+      "id": "report.getRoundTiming",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "Initial/revised forecast versus matching actual observations and uncertainty."
+    },
+    {
+      "id": "report.requestExcelExport",
+      "family": "reporting",
+      "kind": "http-command",
+      "lifecycle": "designed",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Create authorized export bound to same filter/snapshot/timezone as report."
+    },
+    {
+      "id": "report.getExportStatus",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Read pending/ready/failed/expired export status."
+    },
+    {
+      "id": "report.downloadExport",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Reauthorize and download text-safe Excel artifact before expiry."
+    },
+    {
+      "id": "diagnostics.getHealth",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 38,
+      "capability": "diagnostics.read",
+      "description": "Separate readiness/database/worker/Engine/integration health; scoped operational evidence."
+    },
+    {
+      "id": "diagnostics.getCapacityAndFreshness",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "lifecycle": "designed",
+      "ownerPhase": 38,
+      "capability": "diagnostics.read",
+      "description": "Measured latency/lag/load/queue/lease/resource view with stated conditions."
+    },
+    {
+      "id": "ui.callRecipient",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open dialer; no call count, contact outcome or movement event."
+    },
+    {
+      "id": "ui.messageRecipient",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open WhatsApp; no execution transition."
+    },
+    {
+      "id": "ui.openNavigation",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open external navigation; does not set heading/arrival."
+    },
+    {
+      "id": "ui.filterAndInspect",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 3,
+      "capability": "local",
+      "description": "Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs."
+    },
+    {
+      "id": "ui.prepareDraft",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 28,
+      "capability": "local",
+      "description": "Enter unsaved forms/pin/route input; saving uses intake/location/planning operations."
+    },
+    {
+      "id": "ui.captureOfflineAction",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Atomic local journal and pending projection for allowed downloaded started work."
+    },
+    {
+      "id": "ui.requestPersistentStorage",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Request browser storage persistence and report actual availability."
+    },
+    {
+      "id": "ui.retrySynchronization",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 34,
+      "capability": "local",
+      "description": "Trigger authenticated replay using original action identities."
+    },
+    {
+      "id": "ui.reauthenticateSameAccount",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Preserve queue and invoke session login for its owning account."
+    },
+    {
+      "id": "ui.switchAccount",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Block unsynchronized exit; otherwise use safe logout/login, no identity merge."
+    },
+    {
+      "id": "ui.applySafeUpdate",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Apply versioned shell/storage update only at safe pending-work boundary."
+    },
+    {
+      "id": "ui.downloadStartedWork",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "designed",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Store authorized snapshots/geometry for confirmed round; not offline new-round start."
+    },
+    {
+      "id": "provisioning.changed",
+      "family": "integration-provisioning",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 8,
+      "capability": "recipient-scope",
+      "description": "Versioned branch/user/role/membership/driver-reference acceptance."
+    },
+    {
+      "id": "task.snapshotAccepted",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Stable generic source task snapshot revision accepted."
+    },
+    {
+      "id": "task.independentCreated",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "recipient-scope",
+      "description": "Own B2C task recorded; no ERP recipient unless separately authorized."
+    },
+    {
+      "id": "task.independentRevised",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 9,
+      "capability": "recipient-scope",
+      "description": "Own B2C task revision; preserve prior audit."
+    },
+    {
+      "id": "assignment.prepared",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Upcoming preparation, no possession."
+    },
+    {
+      "id": "assignment.received",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Definitive batch received/admitted; not prepared."
+    },
+    {
+      "id": "assignment.withdrawn",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture removal."
+    },
+    {
+      "id": "assignment.reassigned",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture generation change."
+    },
+    {
+      "id": "task.urgencyChanged",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18."
+    },
+    {
+      "id": "location.pinConfirmed",
+      "family": "locations",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 11,
+      "capability": "recipient-scope",
+      "description": "Execution pin/provenance revision, source address retained."
+    },
+    {
+      "id": "plan.revisionPublished",
+      "family": "planning",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 13,
+      "capability": "recipient-scope",
+      "description": "Current valid plan publication, manual/optimized and forecast scope identified."
+    },
+    {
+      "id": "round.started",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 15,
+      "capability": "recipient-scope",
+      "description": "Accepted start/departure/owner and baseline forecast."
+    },
+    {
+      "id": "current.headingSelected",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 16,
+      "capability": "recipient-scope",
+      "description": "Explicit selection/change, not a next suggestion."
+    },
+    {
+      "id": "current.arrivalRecorded",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 16,
+      "capability": "recipient-scope",
+      "description": "Explicit observed arrival; time provenance retained."
+    },
+    {
+      "id": "outcome.recorded",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 17,
+      "capability": "recipient-scope",
+      "description": "Full/partial/refused/no-answer with quantity/collection transition."
+    },
+    {
+      "id": "task.deferred",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Untouched whole work earliest-time change."
+    },
+    {
+      "id": "task.retryAdmitted",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "New attempt on eligible whole held work; preserve prior outcome."
+    },
+    {
+      "id": "round.ended",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 19,
+      "capability": "recipient-scope",
+      "description": "Ended round, held work unchanged unless explicitly transitioned."
+    },
+    {
+      "id": "workday.ended",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 19,
+      "capability": "recipient-scope",
+      "description": "Explicit day closure/carryover; not automatic midnight."
+    },
+    {
+      "id": "device.executionTransferred",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 20,
+      "capability": "recipient-scope",
+      "description": "New device generation within same driver/round."
+    },
+    {
+      "id": "evidence.received",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 20,
+      "capability": "recipient-scope",
+      "description": "Evidence-only durable receipt; not business acceptance."
+    },
+    {
+      "id": "return.requested",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Offered pieces only, never stock/received."
+    },
+    {
+      "id": "return.subsetReceived",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Actual confirmed source-branch subset transition."
+    },
+    {
+      "id": "return.dispositionRecorded",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Loss/damage separate from receipt."
+    },
+    {
+      "id": "branch.roundInterrupted",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Visible branch segment with retained customer sequence."
+    },
+    {
+      "id": "branch.roundResumed",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Confirmed claimed subsets and retained work resume."
+    },
+    {
+      "id": "dispatch.createdFromReceipt",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "New dispatch cycle linked to prior confirmed receipt."
+    },
+    {
+      "id": "outcome.corrected",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 23,
+      "capability": "recipient-scope",
+      "description": "Append-only correction; consumers keep original transition identity."
+    },
+    {
+      "id": "evidence.adoptionResolved",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 23,
+      "capability": "recipient-scope",
+      "description": "Compatible adoption/correction result, or durable rejected review."
+    },
+    {
+      "id": "progress.snapshot",
+      "family": "monitoring-history",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "recipient-scope",
+      "description": "Replacement scoped snapshot; never erases missing business events."
+    },
+    {
+      "id": "integration.applicationReported",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "recipient-scope",
+      "description": "Receiver application checkpoint evidence separate from receipt."
+    },
+    {
+      "id": "workspace.getHealth",
+      "family": "workspace",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 1,
+      "capability": "public",
+      "description": "Existing GET /health: scope=workspace, engine=not-checked; not the public integration API.",
+      "path": "/health",
+      "method": "GET"
+    }
+  ]
+}

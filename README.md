@@ -15,6 +15,22 @@ npm run dev
 
 Open `http://127.0.0.1:5173` and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, individual checks, CI behavior, and troubleshooting.
 
+## Contract foundation (Phase 02)
+
+The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) now define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally; **all business APIs/events remain designed and unavailable**. No delivery handler, ERP connector or database is added.
+
+```powershell
+npm ci
+npm run contracts:demo
+npm run test:contracts
+npm run contracts:generate  # after changing canonical schemas/catalog/examples
+npm run check
+```
+
+Generation updates `packages/api-client/src/schema.d.ts`, `docs/reference/public-contract.md` and `docs/contract-coverage.md`; CI rejects drift. See [Phase 02 evidence](docs/phase-02-evidence.md) for limits and the Phase 03 handoff. The retained Engine tutorial below is a provider-level example: Tawsel's application contract uses 600-second default customer service and complete route validation; an empty VROOM violations array alone does not prove it satisfies Tawsel's rules.
+
+## Retained Engine
+
 The Engine remains available independently:
 
 - **OSRM** — road routing for **car**, **bicycle**, and **motorcycle** profiles

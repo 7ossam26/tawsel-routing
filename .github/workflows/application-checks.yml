@@ -11,6 +11,13 @@ on:
       - 'tsconfig.base.json'
       - 'eslint.config.js'
       - 'vitest.config.ts'
+      - 'contracts/**'
+      - 'scripts/contracts.mjs'
+      - 'docs/contract-coverage.md'
+      - 'docs/reference/**'
+      - 'docs/phases/**'
+      - 'redocly.yaml'
+      - '.gitattributes'
   pull_request:
     paths:
       - '.github/workflows/application-checks.yml'
@@ -21,6 +28,13 @@ on:
       - 'tsconfig.base.json'
       - 'eslint.config.js'
       - 'vitest.config.ts'
+      - 'contracts/**'
+      - 'scripts/contracts.mjs'
+      - 'docs/contract-coverage.md'
+      - 'docs/reference/**'
+      - 'docs/phases/**'
+      - 'redocly.yaml'
+      - '.gitattributes'
 
 permissions:
   contents: read

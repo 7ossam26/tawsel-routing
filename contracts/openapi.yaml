@@ -1,0 +1,92 @@
+openapi: 3.1.1
+info:
+  title: Tawsel public contract foundation — designed, unavailable
+  version: 0.1.0
+  description: >-
+    Phase 02 common protocol schemas only. No public business HTTP operation is implemented
+    or released. Empty paths are deliberate. GET /health is workspace-only and excluded.
+    Operation ownership is documented in docs/contract-coverage.md; each owning phase
+    completes its schemas before adding handlers. Schema IDs use a reserved .invalid
+    namespace for offline resolution, not a hosted API or schema service.
+  license:
+    name: Private development contract; no public release
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+x-lifecycle: designed
+x-owner-phase: 2
+paths: {}
+components:
+  schemas:
+    Uuid:
+      $ref: ./common.schema.json#/$defs/Uuid
+    SchemaVersion:
+      $ref: ./common.schema.json#/$defs/SchemaVersion
+    Revision:
+      $ref: ./common.schema.json#/$defs/Revision
+    Generation:
+      $ref: ./common.schema.json#/$defs/Generation
+    Sequence:
+      $ref: ./common.schema.json#/$defs/Sequence
+    PieceCount:
+      $ref: ./common.schema.json#/$defs/PieceCount
+    PositivePieceCount:
+      $ref: ./common.schema.json#/$defs/PositivePieceCount
+    UtcInstant:
+      $ref: ./common.schema.json#/$defs/UtcInstant
+    ExternalId:
+      $ref: ./common.schema.json#/$defs/ExternalId
+    OperationId:
+      $ref: ./common.schema.json#/$defs/OperationId
+    SourceReference:
+      $ref: ./common.schema.json#/$defs/SourceReference
+    Money:
+      $ref: ./common.schema.json#/$defs/Money
+    Coordinates:
+      $ref: ./common.schema.json#/$defs/Coordinates
+    ContactSnapshot:
+      $ref: ./common.schema.json#/$defs/ContactSnapshot
+    LocationSnapshot:
+      $ref: ./common.schema.json#/$defs/LocationSnapshot
+    TimeWindow:
+      $ref: ./common.schema.json#/$defs/TimeWindow
+    DeliveryRequirements:
+      $ref: ./common.schema.json#/$defs/DeliveryRequirements
+    DeliverySnapshot:
+      $ref: ./common.schema.json#/$defs/DeliverySnapshot
+    ResourceContext:
+      $ref: ./common.schema.json#/$defs/ResourceContext
+    Versions:
+      $ref: ./common.schema.json#/$defs/Versions
+    ClockEvidence:
+      $ref: ./common.schema.json#/$defs/ClockEvidence
+    Observation:
+      $ref: ./common.schema.json#/$defs/Observation
+    DeviceContext:
+      $ref: ./common.schema.json#/$defs/DeviceContext
+    IntegrationContext:
+      $ref: ./common.schema.json#/$defs/IntegrationContext
+    CommandContext:
+      $ref: ./common.schema.json#/$defs/CommandContext
+    EvidenceStatus:
+      $ref: ./common.schema.json#/$defs/EvidenceStatus
+    BusinessStatus:
+      $ref: ./common.schema.json#/$defs/BusinessStatus
+    DeliveryStatus:
+      $ref: ./common.schema.json#/$defs/DeliveryStatus
+    ApplicationStatus:
+      $ref: ./common.schema.json#/$defs/ApplicationStatus
+    ErrorCode:
+      $ref: ./common.schema.json#/$defs/ErrorCode
+    Problem:
+      $ref: ./common.schema.json#/$defs/Problem
+    Capability:
+      $ref: ./common.schema.json#/$defs/Capability
+    PageRequest:
+      $ref: ./common.schema.json#/$defs/PageRequest
+    PageInfo:
+      $ref: ./common.schema.json#/$defs/PageInfo
+    ActionEnvelope:
+      $ref: ./action-envelope.v1.schema.json
+    EvidenceReceipt:
+      $ref: ./evidence-receipt.v1.schema.json
+    EventEnvelope:
+      $ref: ./events/envelope.v1.schema.json

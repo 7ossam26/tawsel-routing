@@ -1,0 +1,8 @@
+extends:
+  - minimal
+rules:
+  struct: error
+  no-unresolved-refs: error
+  no-unused-components: off
+  # Foundation has no public HTTP paths or deployment URL. Do not invent one.
+  no-empty-servers: off

@@ -7,7 +7,7 @@ Planning HEAD: `3d6291697fb0baeb69215237bf1d09dbf6d1d9cd`.
 
 The owner requested smaller self-contained implementation tasks after reviewing the broad 11-phase package.
 The [current package](phases/README.md) contains 42 sequential prompts, a 65-requirement catalog, complete D-01–D-112 traceability, per-phase model/reasoning recommendations, explicit ERP handoff deliverables and a review checklist.
-**Phase 01 is implemented and locally verified.** It adds the bounded web/API/shared workspace, locally bundled Cairo typography, meaningful configuration and real-HTTP tests, locked dependencies, CI, non-destructive setup, and operations evidence. It does not add delivery behavior, an application database, identity, worker, routing adapter, public ERP contract, or deployment. Phases 02–42 have not started.
+**Phases 01 and 02 are implemented and locally verified within their bounded scope.** Phase 01 provides the web/API/shared workspace, Cairo typography and real-HTTP/configuration harness. Phase 02 adds validated common schemas/envelopes/examples, generated public types/reference, state/integration/ERP planning documents and exhaustive designed operation ownership. There are no business handlers, application database, identity, worker, routing adapter, deployed business API or real ERP connector. Phases 03–42 have not started.
 
 The [old package/ledger](phases-archive-v1/implementation-status-at-supersession.md) remains historical. Its earlier structure/link/hash validation does not establish the adequacy of its broad task boundaries, and is not evidence for the replacement's runtime behavior.
 
@@ -45,7 +45,7 @@ Each row records implementation, verification and owner review separately. None 
 | Phase | Implementation | Verification | Owner review / evidence |
 | --- | --- | --- | --- |
 | [01 — Runnable workspace and test harness](phases/01-workspace-test-harness.md) | Implemented 22 Sep 2026 | Local checks pass; Engine runtime unavailable and not required | Awaiting owner review; [evidence](phase-01-evidence.md) |
-| [02 — State vocabulary and canonical contract foundation](phases/02-state-contract-foundation.md) | Not started | Not run | No implementation result yet |
+| [02 — State vocabulary and canonical contract foundation](phases/02-state-contract-foundation.md) | Implemented 22 Sep 2026 | A/B/C passed; schemas/tooling verified, business operations designed | Awaiting owner review; [evidence](phase-02-evidence.md) |
 | [03 — Visual system and requirement-driven action specification](phases/03-design-action-specification.md) | Not started | Not run | No implementation result yet |
 | [04 — Shared components and early simple-UX review](phases/04-representative-ui-review.md) | Not started | Not run | No implementation result yet |
 | [05 — PostgreSQL migrations and atomic command kernel](phases/05-postgres-atomic-command-kernel.md) | Not started | Not run | No implementation result yet |
@@ -110,7 +110,7 @@ No new live host inventory, deployed Engine/profile/dataset verification, produc
 Operational targets remain unverified, and the detailed numerical defaults remain engineering proposals where the master plan labels them as such.
 
 There is no released application, finalized implemented contract boundary or real shipping ERP connector yet.
-The next execution prompt is [Phase 02 — state vocabulary and canonical contract foundation](phases/02-state-contract-foundation.md). It may rely only on the paths and commands listed in the Phase 01 handoff below.
+The next execution prompt is [Phase 03 — visual system and action specification](phases/03-design-action-specification.md). It may rely on the verified workspace and Phase 02 foundation listed below, while treating every future business operation as designed.
 
 ## 22 September 2026 — Phase 01 execution
 
@@ -123,3 +123,14 @@ Starting HEAD: `eacf6b3fa596a845b4290c6f3ad471b39551e8d8`. Full checkpoint logs 
 - Actual runtime: Node `v24.19.0`, npm `11.1.0`, TypeScript `6.0.2`, Vite `8.3.0`, React `19.3.0`, `@fontsource/cairo 5.3.0`, Fastify `5.12.5`, Vitest `5.0.1`. Recommended model/effort was `gpt-5.6-sol`/`high`; the agent runtime exposed only GPT-5, not the exact picker variant or effort, so the latter are not asserted.
 - Preserved boundaries: Engine Compose/startup/profile/VROOM config and Stitch exports were unchanged. No database/volume/import command ran. No ERP planning interface exists yet, so ERP mapping/consumer documents are unaffected and remain Phase 02+ deliverables.
 - Handoff to Phase 02: rely on root `npm ci`, `npm run dev`, `npm run test:fast`, `npm run test:integration`, `npm run check`; workspace paths `apps/web`, `apps/api`, `packages/shared`; required `.env.example`; API port 3001; and the stable non-domain `GET /health` behavior. Do not treat workspace health as routing readiness or as a released public contract.
+
+## 22 September 2026 — Phase 02 execution
+
+Starting HEAD `3aec78ff91b27fdf17e34405eebdf5d62394986c`. Ordered evidence is in [phase-02-evidence.md](phase-02-evidence.md). Requested model/effort `gpt-6-astra`/`xhigh`; runtime exposes GPT-6 but exact picker variant/effort are unavailable and not inferred.
+
+- Prerequisite: real Phase 01 `npm run test:ci` passed 2 files / 9 tests; no repair.
+- Checkpoint A: canonical state/authority/invariant tables and two-of-three-piece manual design walk passed. No business handler or database guarantee is claimed. Full-capacity interruption proof remains P22.
+- Checkpoint B: OpenAPI/common/envelope schemas, 60 valid and 35 invalid examples, portable generated client/reference and explicit Ajv 2020-12 tooling. Contract suite passed 105 tests; OpenAPI lint and consumer typecheck passed. Initial strictRequired error was fixed; no database/worker guarantee inferred.
+- Checkpoint C: 147 explicit owned operations/events/local actions (31 event types); all master-plan families reviewed, only workspace health verified as a route. ERP start-here/planning/mapping and integration guide distinguish designed behavior, connector responsibilities and unknown real-ERP choices. `npm run test:contracts` passed 108 tests; `npm run contracts:demo` passed. Complete `npm run check` passed audit, lint, OpenAPI/generated checks, typechecks, 117 tests in 3 files and all builds. Final review added LF generation attributes and CI contract path coverage; clean `npm ci` passed with zero vulnerabilities.
+- Exact versions, initial failures/fixes, acceptance mapping, changed paths and final verification are recorded in the [phase evidence](phase-02-evidence.md). Model picker variant/effort remain unavailable; no setting is inferred from the prompt. No UI/DB/worker/Engine/device/real-ERP verification is claimed.
+- Phase 03 may rely on `docs/tracking-and-consistency.md`, `contracts/common.schema.json`, versioned envelopes/examples, `contracts/operations.json`, `docs/contract-coverage.md`, `docs/reference/public-contract.md`, generated `packages/api-client/src/schema.d.ts`, `docs/integration-guide.md` and the three `docs/erp/` foundation documents. Reproduce with `npm ci`, `npm run contracts:demo`, `npm run test:contracts`, `npm run check`. Preserve Cairo/RTL baseline and use the catalog's explicit actions and exclusions; complete feature schemas in their owning phases before handlers. No Phase 03 work executed, owner approval inferred, commit/push or publication performed.

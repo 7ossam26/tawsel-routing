@@ -16,10 +16,15 @@
   "scripts": {
     "audit": "npm audit --audit-level=high",
     "build": "npm run build -w @tawsel/shared && npm run build -w @tawsel/api && npm run build -w @tawsel/web",
-    "check": "npm run audit && npm run lint && npm run typecheck && npm run test:ci && npm run build",
+    "check": "npm run audit && npm run lint && npm run contracts:lint && npm run contracts:check && npm run typecheck && npm run test:ci && npm run build",
+    "contracts:lint": "redocly lint contracts/openapi.yaml",
+    "contracts:generate": "node scripts/contracts.mjs generate",
+    "contracts:check": "node scripts/contracts.mjs check",
+    "contracts:demo": "node scripts/contracts.mjs demo",
+    "test:contracts": "vitest run --project fast packages/shared/test/fast/contract-foundation.test.ts",
     "dev": "npm run build -w @tawsel/shared && concurrently --kill-others-on-fail --names api,web --prefix-colors green,blue \"npm run dev -w @tawsel/api\" \"npm run dev -w @tawsel/web\"",
     "lint": "eslint .",
-    "typecheck": "npm run build -w @tawsel/shared && npm run typecheck -w @tawsel/api && npm run typecheck -w @tawsel/web",
+    "typecheck": "npm run build -w @tawsel/shared && npm run typecheck -w @tawsel/api && npm run typecheck -w @tawsel/web && npm run typecheck -w @tawsel/api-client",
     "test": "npm run build -w @tawsel/shared && vitest",
     "test:fast": "npm run build -w @tawsel/shared && vitest run --project fast",
     "test:integration": "npm run build -w @tawsel/shared && vitest run --project integration",
@@ -27,12 +32,17 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@redocly/cli": "2.54.0",
     "@types/node": "24.13.6",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "concurrently": "9.2.4",
     "eslint": "10.0.3",
     "globals": "17.12.0",
+    "openapi-typescript": "7.13.0",
     "typescript": "6.0.2",
     "typescript-eslint": "8.70.1",
-    "vitest": "5.0.1"
+    "vitest": "5.0.1",
+    "yaml": "2.9.1"
   }
 }
