@@ -9,6 +9,11 @@ import { conforms, type Snapshot } from '../../src/b2b-intake/schema.js';
 import type { ActionEnvelope, WriteStage } from '../../src/commands/kernel.js';
 import { B2bIntakeService } from '../../src/b2b-intake/service.js';
 import { deferred, observeDatabaseBlock } from '../support/barriers.js';
+import { RoutingEngine } from '../../src/engine/index.js';
+import { loadEngineConfig } from '../../src/engine/config.js';
+import { engineInput } from '../support/engine-fixtures.js';
+import { createServer } from 'node:http';
+import { once } from 'node:events';
 
 describe('P10 ERP intake and atomic admission on PostgreSQL',()=>{
   let db:Awaited<ReturnType<typeof createTestDatabase>>,app:ReturnType<typeof buildApp>;
@@ -115,11 +120,22 @@ describe('P10 ERP intake and atomic admission on PostgreSQL',()=>{
     const command=receive(items.map(i=>({...i,assignmentRevision:2,expectedAssignmentRevision:1})));
     const result=await post(command); expect(result.statusCode,result.body).toBe(200);
     expect(result.json().response.body.tasks.every((t:{state:string;receivedAt:string;planningEligible:boolean;planningStatus:string})=>t.state==='held'&&!!t.receivedAt&&t.planningEligible&&t.planningStatus==='pending')).toBe(true);
-    // Fresh independent pool after acceptance: no Engine is connected or running.
+    // P12: real controlled HTTP failure AFTER the actual receipt commit. This is
+    // not a mock transaction and the adapter has no authority to undo receipt.
+    const provider=createServer((_req,res)=>{res.statusCode=503;res.end('Engine down');});
+    provider.listen(0,'127.0.0.1');await once(provider,'listening');
+    const address=provider.address();if(!address||typeof address==='string')throw new Error('listen');
+    try {
+      const engine=new RoutingEngine({...loadEngineConfig({}),vroom:`http://127.0.0.1:${address.port}`});
+      await expect(engine.optimize(engineInput)).rejects.toMatchObject({code:'http_error',provider:'vroom'});
+    } finally {provider.closeAllConnections();await new Promise<void>(resolve=>provider.close(()=>resolve()));}
+    // Fresh independent pool after acceptance and dependency failure.
     const fresh=createDatabasePool(db.config);
     try {
       expect((await new B2bIntakeService(fresh).get(`Bearer ${source.token}`,items[0]!.externalId)).state).toBe('held');
       expect((await fresh.query('SELECT status FROM tawsel.intake_replan_intents')).rows).toEqual([{status:'pending'}]);
+      expect((await fresh.query('SELECT business_status FROM tawsel.command_identities WHERE action_id=$1',[command.actionId])).rows[0].business_status).toBe('accepted');
+      expect((await fresh.query('SELECT count(*)::int n FROM tawsel.outbox_intents WHERE action_id=$1',[command.actionId])).rows[0].n).toBeGreaterThan(0);
     } finally {await fresh.end();}
     expect((await post(command)).json()).toEqual(result.json());
     expect((await post({...command,actionId:randomUUID()})).statusCode).toBe(200);

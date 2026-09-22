@@ -59,7 +59,11 @@
     "maps:assets": "node scripts/maps-assets.mjs",
     "test:locations": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/location-provenance.test.ts",
     "test:browser:locations": "playwright test -c playwright.locations.config.ts",
-    "locations:demo": "node --env-file=.env.database.local --import tsx scripts/location-browser-server.ts"
+    "locations:demo": "node --env-file=.env.database.local --import tsx scripts/location-browser-server.ts",
+    "test:engine": "vitest run --project fast apps/api/test/fast/engine-adapters.test.ts",
+    "engine:demo": "node --import tsx scripts/engine-demo.ts",
+    "engine:live": "node --import tsx scripts/engine-demo.ts --live",
+    "test:erp:routing": "node --import tsx tests/erp-conformance/routing.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

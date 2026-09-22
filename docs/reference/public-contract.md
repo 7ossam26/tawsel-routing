@@ -5457,6 +5457,647 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### RoutingMode
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Mode)
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "car",
+    "motorcycle",
+    "bicycle"
+  ]
+}
+```
+
+### RoutingOrigin
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Origin)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "last-confirmed-stop",
+        "manual-pin",
+        "branch-pin"
+      ]
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    }
+  },
+  "required": [
+    "kind",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingEndpoint
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Endpoint)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "last-customer"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "fixed"
+        },
+        "coordinates": {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        }
+      },
+      "required": [
+        "kind",
+        "coordinates"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "branch"
+        },
+        "branchId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "coordinates": {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        },
+        "serviceEstimateSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        }
+      },
+      "required": [
+        "kind",
+        "branchId",
+        "coordinates",
+        "serviceEstimateSeconds"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### RoutingJob
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Job)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    },
+    "serviceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400,
+      "description": "Optional customer service estimate; adapter applies 600 seconds when omitted."
+    }
+  },
+  "required": [
+    "taskId",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingOptimizationInput
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/OptimizationInput)
+
+Internal normalized planning boundary; not an available HTTP operation. Origin must be resolved from authoritative physical confirmation or explicit pin by the caller. Default customer service is 600 seconds. Relative timing starts at zero; urgency/earliest availability/stitched policy are validated above the adapter in P14.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "accountKind": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "company"
+      ]
+    },
+    "origin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "endpoint": {
+      "$ref": "#/$defs/Endpoint"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Job"
+      },
+      "minItems": 1,
+      "maxItems": 50
+    }
+  },
+  "required": [
+    "mode",
+    "accountKind",
+    "origin",
+    "endpoint",
+    "tasks"
+  ],
+  "additionalProperties": false,
+  "description": "Internal normalized planning boundary; not an available HTTP operation. Origin must be resolved from authoritative physical confirmation or explicit pin by the caller. Default customer service is 600 seconds. Relative timing starts at zero; urgency/earliest availability/stitched policy are validated above the adapter in P14."
+}
+```
+
+### RoutingRouteInput
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/RouteInput)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Coordinates"
+      },
+      "minItems": 2,
+      "maxItems": 52
+    }
+  },
+  "required": [
+    "mode",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingTableInput
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/TableInput)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Coordinates"
+      },
+      "minItems": 1,
+      "maxItems": 52
+    }
+  },
+  "required": [
+    "mode",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingLeg
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Leg)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "durationSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "distanceMetres": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "durationSeconds",
+    "distanceMetres"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingRouteResult
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/RouteResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "status": {
+      "const": "complete"
+    },
+    "geometrySource": {
+      "const": "osrm-road"
+    },
+    "geometry": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Coordinates"
+      },
+      "minItems": 2,
+      "maxItems": 100000
+    },
+    "durationSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "distanceMetres": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "legs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Leg"
+      },
+      "minItems": 1,
+      "maxItems": 51
+    }
+  },
+  "required": [
+    "mode",
+    "status",
+    "geometrySource",
+    "geometry",
+    "durationSeconds",
+    "distanceMetres",
+    "legs"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingTableCell
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/TableCell)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "reachable"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "distanceMetres": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "status",
+        "durationSeconds",
+        "distanceMetres"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "unreachable"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### RoutingTableResult
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/TableResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/TableCell"
+        },
+        "minItems": 1,
+        "maxItems": 52
+      },
+      "minItems": 1,
+      "maxItems": 52
+    }
+  },
+  "required": [
+    "mode",
+    "status",
+    "cells"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingVisit
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Visit)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    },
+    "arrivalOffsetSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "travelDurationSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "distanceMetres": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "serviceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "waitingSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "taskId",
+    "coordinates",
+    "arrivalOffsetSeconds",
+    "travelDurationSeconds",
+    "distanceMetres",
+    "serviceEstimateSeconds",
+    "waitingSeconds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingOptimizationResult
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/OptimizationResult)
+
+Validated provider candidate only, not a published or policy-verified route, arrival, receipt, outcome or actual dwell time. No optimizer geometry is promoted as a verified road route; request OSRM route separately.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "partial"
+      ]
+    },
+    "policyValidated": {
+      "const": false
+    },
+    "visits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Visit"
+      },
+      "minItems": 0,
+      "maxItems": 50
+    },
+    "unassignedTaskIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+      },
+      "minItems": 0,
+      "maxItems": 50
+    },
+    "travelDurationSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "distanceMetres": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "customerServiceEstimateSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "branchServiceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "waitingSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "finishOffsetSeconds": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endpoint": {
+      "$ref": "#/$defs/Endpoint"
+    }
+  },
+  "required": [
+    "mode",
+    "status",
+    "policyValidated",
+    "visits",
+    "unassignedTaskIds",
+    "travelDurationSeconds",
+    "distanceMetres",
+    "customerServiceEstimateSeconds",
+    "branchServiceEstimateSeconds",
+    "waitingSeconds",
+    "finishOffsetSeconds",
+    "endpoint"
+  ],
+  "additionalProperties": false,
+  "description": "Validated provider candidate only, not a published or policy-verified route, arrival, receipt, outcome or actual dwell time. No optimizer geometry is promoted as a verified road route; request OSRM route separately."
+}
+```
+
+### RoutingFailure
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Failure)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "enum": [
+        "invalid_input",
+        "invalid_config",
+        "busy",
+        "timeout",
+        "cancelled",
+        "unavailable",
+        "http_error",
+        "provider_error",
+        "invalid_response",
+        "no_route",
+        "no_table"
+      ]
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "osrm",
+        "vroom",
+        "boundary"
+      ]
+    }
+  },
+  "required": [
+    "code",
+    "provider"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoutingProfiles
+
+[Canonical definition](../../contracts/routing.schema.json#/$defs/Profiles)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "modes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Mode"
+      },
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true
+    },
+    "defaultCustomerServiceSeconds": {
+      "type": "integer",
+      "const": 600
+    },
+    "liveVerification": {
+      "type": "string",
+      "const": "not-checked"
+    }
+  },
+  "required": [
+    "modes",
+    "defaultCustomerServiceSeconds",
+    "liveVerification"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -5568,6 +6209,9 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p10-error-stale_revision | common.schema.json#/$defs/Problem | valid foundation shape |
 | p10-received-event-intent | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
 | location-valid-confirmation | location.schema.json#/$defs/Confirm | valid foundation shape |
+| routing-bicycle-input | routing.schema.json#/$defs/OptimizationInput | valid foundation shape |
+| routing-unreachable-table | routing.schema.json#/$defs/TableResult | valid foundation shape |
+| routing-profile-metadata | routing.schema.json#/$defs/Profiles | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -5635,5 +6279,8 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p10-mixed-currency | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (const) |
 | p10-unasserted-receipt | b2b-intake.schema.json#/$defs/ReceiveBatch | invalid (const) |
 | location-invalid-confirmation | location.schema.json#/$defs/Confirm | invalid (maximum) |
+| routing-gps-origin | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
+| routing-provider-label | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
+| routing-positional-coordinate | routing.schema.json#/$defs/OptimizationInput | invalid (type) |
 
 [Canonical example data](../../contracts/examples/README.md)

@@ -52,6 +52,22 @@ describe('session HTTP handlers with real PostgreSQL and labelled signed issuer 
     expect(row.session_hash).not.toBe(cookies[sessionCookie('company')]);
     expect(row.token_cipher).not.toContain('refresh');
   });
+  test('P12: profile read requires real session and live capability, hides all provider configuration',async()=>{
+    expect((await app.inject({url:'/api/v1/routing/profiles?kind=company'})).statusCode).toBe(401);
+    const cookies=await login();
+    const response=await app.inject({url:'/api/v1/routing/profiles?kind=company',cookies});
+    expect(response.statusCode,response.body).toBe(200);
+    expect(response.json()).toEqual({modes:['car','motorcycle','bicycle'],defaultCustomerServiceSeconds:600,liveVerification:'not-checked'});
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(response.body).not.toMatch(/https?:|5001|5002|5003|vroom|osrm/);
+    await db.pool.query("DELETE FROM tawsel.role_capabilities WHERE role_id=$1 AND capability='execution.own'",[ids.driverRole]);
+    try {expect((await app.inject({url:'/api/v1/routing/profiles?kind=company',cookies})).statusCode).toBe(403);}
+    finally {await db.pool.query("INSERT INTO tawsel.role_capabilities VALUES ($1,$2,'execution.own',true)",[ids.tenant,ids.driverRole]);}
+    expect((await app.inject({url:'/api/v1/routing/profiles?kind=company&url=http://untrusted',cookies})).statusCode).toBe(400);
+    expect((await app.inject({url:'/api/v1/routing/profiles',cookies})).statusCode).toBe(400);
+    const personal=await login('personal');
+    expect((await app.inject({url:'/api/v1/routing/profiles?kind=personal',cookies:personal})).statusCode).toBe(200);
+  });
   test('A: company selection cannot grant outsider membership', async () => {
     expect((await post('company', { code: 'LOCAL' })).statusCode).toBe(200);
     issuer.state.subject = 'outsider';

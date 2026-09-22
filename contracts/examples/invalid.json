@@ -1679,5 +1679,92 @@
       }
     },
     "keyword": "maximum"
+  },
+  {
+    "id": "routing-gps-origin",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "bicycle",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "gps",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "routing-provider-label",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "bike",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "routing-positional-coordinate",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "bicycle",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": [
+          31.2357,
+          30.0444
+        ]
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "type"
   }
 ]

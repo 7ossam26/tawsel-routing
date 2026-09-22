@@ -1680,6 +1680,37 @@ paths:
           description: Revision or lifecycle conflict
         "503":
           description: Geocoder unavailable; retain current input and pin
+  /api/v1/routing/profiles:
+    get:
+      operationId: routing.getVehicleProfiles
+      tags: [Routing]
+      summary: Read supported application modes; availability is not checked.
+      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No provider URLs or runtime-health claim.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [personal, company]
+      responses:
+        '200':
+          description: Supported modes, not live verification.
+          content:
+            application/json:
+              schema:
+                $ref: ./routing.schema.json#/$defs/Profiles
+        '400':
+          description: Invalid account selection or query.
+        '401':
+          description: Session missing or expired.
+        '403':
+          description: Current capability denied.
+        '503':
+          description: Identity dependency unavailable.
 components:
   schemas:
     Uuid:
@@ -1910,6 +1941,36 @@ components:
       $ref: ./location.schema.json#/$defs/Snapshot
     LocationConfirmedEvent:
       $ref: ./location.schema.json#/$defs/ConfirmedEvent
+    RoutingMode:
+      $ref: ./routing.schema.json#/$defs/Mode
+    RoutingOrigin:
+      $ref: ./routing.schema.json#/$defs/Origin
+    RoutingEndpoint:
+      $ref: ./routing.schema.json#/$defs/Endpoint
+    RoutingJob:
+      $ref: ./routing.schema.json#/$defs/Job
+    RoutingOptimizationInput:
+      $ref: ./routing.schema.json#/$defs/OptimizationInput
+    RoutingRouteInput:
+      $ref: ./routing.schema.json#/$defs/RouteInput
+    RoutingTableInput:
+      $ref: ./routing.schema.json#/$defs/TableInput
+    RoutingLeg:
+      $ref: ./routing.schema.json#/$defs/Leg
+    RoutingRouteResult:
+      $ref: ./routing.schema.json#/$defs/RouteResult
+    RoutingTableCell:
+      $ref: ./routing.schema.json#/$defs/TableCell
+    RoutingTableResult:
+      $ref: ./routing.schema.json#/$defs/TableResult
+    RoutingVisit:
+      $ref: ./routing.schema.json#/$defs/Visit
+    RoutingOptimizationResult:
+      $ref: ./routing.schema.json#/$defs/OptimizationResult
+    RoutingFailure:
+      $ref: ./routing.schema.json#/$defs/Failure
+    RoutingProfiles:
+      $ref: ./routing.schema.json#/$defs/Profiles
   securitySchemes:
     companySession:
       type: apiKey
@@ -1940,3 +2001,5 @@ tags:
     description: Source-authoritative snapshots, prepared/held distinction and atomic remaining-stop admission.
   - name: Locations
     description: Explicit execution pins and private geocoding.
+  - name: Routing
+    description: Authenticated application profile metadata; provider routing remains internal.

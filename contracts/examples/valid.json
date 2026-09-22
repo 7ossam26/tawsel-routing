@@ -2089,5 +2089,78 @@
         }
       }
     }
+  },
+  {
+    "id": "routing-bicycle-input",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": true,
+    "data": {
+      "mode": "bicycle",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "routing-unreachable-table",
+    "schema": "routing.schema.json#/$defs/TableResult",
+    "valid": true,
+    "data": {
+      "mode": "bicycle",
+      "status": "partial",
+      "cells": [
+        [
+          {
+            "status": "reachable",
+            "durationSeconds": 0,
+            "distanceMetres": 0
+          },
+          {
+            "status": "unreachable"
+          }
+        ],
+        [
+          {
+            "status": "unreachable"
+          },
+          {
+            "status": "reachable",
+            "durationSeconds": 0,
+            "distanceMetres": 0
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "id": "routing-profile-metadata",
+    "schema": "routing.schema.json#/$defs/Profiles",
+    "valid": true,
+    "data": {
+      "modes": [
+        "car",
+        "motorcycle",
+        "bicycle"
+      ],
+      "defaultCustomerServiceSeconds": 600,
+      "liveVerification": "not-checked"
+    }
   }
 ]

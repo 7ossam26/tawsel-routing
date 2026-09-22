@@ -428,28 +428,30 @@
       "id": "routing.getVehicleProfiles",
       "family": "planning",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "planning.manage",
-      "description": "Expose supported car/motorcycle/bicycle application modes."
+      "description": "Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim.",
+      "method": "GET",
+      "path": "/api/v1/routing/profiles"
     },
     {
       "id": "routing.computeRoadRoute",
       "family": "planning",
       "kind": "internal-work",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "internal",
-      "description": "Private OSRM adapter with metre/second units; no public provider payload."
+      "description": "Private OSRM route/table conversion, seconds/metres and explicit unreachable cells; controlled HTTP verified, actual Engine unavailable."
     },
     {
       "id": "routing.optimize",
       "family": "planning",
       "kind": "internal-work",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "internal",
-      "description": "Private VROOM adapter validates all task IDs, unassigned work and time origin."
+      "description": "Private VROOM candidate validates exhaustive IDs, unassigned work, coordinates, relative timing and separate service estimates; controlled HTTP verified, live Engine unavailable. P14 validates route policy."
     },
     {
       "id": "planning.saveDraft",

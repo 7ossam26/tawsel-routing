@@ -2,9 +2,9 @@
 
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
-## Application workspace, identity and intake (through Phase 11)
+## Application workspace, identity and intake (through Phase 12)
 
-The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; P11 adds scoped location confirmation, a private Nominatim adapter and real self-hosted Cairo maps ([demo and limits](docs/locations-and-maps.md)). Live Nominatim is unavailable locally; route planning/execution, offline workers, signed ERP delivery and routing adapters remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
+The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; P11 adds scoped location confirmation, a private Nominatim adapter and real self-hosted Cairo maps ([demo and limits](docs/locations-and-maps.md)). P12 adds typed OSRM/VROOM adapters and authenticated profile metadata ([boundary and demo](docs/engine-boundary.md)). Live Engine services are unavailable locally; durable planning/execution, offline workers and signed ERP delivery remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
 
 The production account shell now supports real local company login, independent phone registration, verified-email recovery and separate sessions through Keycloak and PostgreSQL. Follow [identity setup and demo](docs/identity.md) before starting the API; it requires the dedicated database, generated issuer configuration and local email sink. See [Phase 07 evidence](docs/phase-07-evidence.md) for actual checks and remaining limits.
 
@@ -431,3 +431,7 @@ docker restart vroom
 | `/search` returns `[]` for a real Egyptian address | Missing `countrycodes=eg`, or the address genuinely isn't in OSM | Add `countrycodes=eg`; try a nearby landmark |
 | Geocode succeeds but routing it fails | `lat`/`lon` handed to OSRM unflipped | OSRM wants `lon,lat` — see [Geocode → route](#geocode--route) |
 ```
+
+### Phase 12 routing adapters
+
+`npm run engine:demo` runs a controlled HTTP demonstration for car/motorcycle/bicycle, `npm run test:engine` verifies provider boundaries, and `npm run engine:live` explicitly probes existing services without startup or import. [Boundary/setup](docs/engine-boundary.md), [dated evidence and live gaps](docs/phase-12-evidence.md). Live Engine is unavailable on this host; durable planning is still Phase 13.

@@ -170,3 +170,7 @@ Application setup must not write under `data/`, alter the `nominatim-data` volum
 ## P11 map assets and location demo
 
 Use [locations-and-maps.md](locations-and-maps.md) for explicit archive preparation, checksums, regional coverage, range serving, private Nominatim configuration and isolated demo. Map preparation is never part of install/dev/database setup. npm run test:locations and npm run test:browser:locations are the focused checks. Nginx configuration is a deployable example, not a production deployment claim.
+
+## P12 Engine verification
+
+Use [the Engine boundary guide](engine-boundary.md) for private per-profile origins and bounded calls. `npm run engine:live` reads Docker inventory when available and attempts all three route/table/optimization combinations without starting, pulling or importing. Runtime/data-build pinning remains required before deployment; current live verification is unavailable. `GET /api/v1/routing/profiles` returns supported application enums, not service health.

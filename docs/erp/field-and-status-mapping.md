@@ -179,3 +179,17 @@ P08 has validated live identity examples; P10/P21/P22/P25–27 must replace thei
 | location.pinConfirmed | Source-scoped durable B2B event intent; transport unimplemented until P25 |
 
 The [schema](../../contracts/location.schema.json) and [location consumer](../../packages/api-client/src/locations.ts) own the public shapes. ERP must not map a corrected execution pin to commercial customer-master replacement. P11 actual local evidence is in [the phase record](../phase-11-evidence.md).
+
+## P12 normalized routing reference
+
+| Canonical value | Meaning / connector obligation |
+| --- | --- |
+| `RoutingMode` | car, motorcycle, bicycle only. Internal bike/provider service names never become ERP enums. |
+| `RoutingProfiles.liveVerification` | not-checked: metadata is not a health/coverage guarantee. Human session read, not service impersonation. |
+| `RoutingOrigin` | Confirmed physical stop or explicit manual/branch pin; phone interactions do not move origin. |
+| `Coordinates` | Explicit latitude/longitude. Positional arrays belong only inside adapters. |
+| `serviceEstimateSeconds` | Customer default 600; branch endpoint requires its own separate estimate. Never actual dwell or customer outcome. |
+| `RoutingOptimizationResult` | Relative offsets in seconds and metres, public task IDs, complete or partial candidate, policyValidated=false. Unassigned work must remain visible. |
+| `RoutingFailure` | Sanitized dependency/validation failure; never reverses accepted receipt or supplies a synthetic road route. |
+
+These normalized models are verified internally and exported for coherent handoff; no optimization HTTP operation is available to the ERP yet. [P12 evidence](../phase-12-evidence.md).

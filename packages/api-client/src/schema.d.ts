@@ -668,6 +668,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/routing/profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Read supported application modes; availability is not checked.
+         * @description Requires planning.manage or own-driver execution.own in the selected authenticated account. No provider URLs or runtime-health claim.
+         */
+        get: operations["routing.getVehicleProfiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1075,6 +1095,20 @@ export interface components {
             /** @constant */
             schemaVersion: "1.0.0";
         };
+        Endpoint: {
+            /** @constant */
+            kind: "last-customer";
+        } | {
+            coordinates: components["schemas"]["Coordinates"];
+            /** @constant */
+            kind: "fixed";
+        } | {
+            branchId: string;
+            coordinates: components["schemas"]["Coordinates"];
+            /** @constant */
+            kind: "branch";
+            serviceEstimateSeconds: number;
+        };
         /** Recipient event envelope v1 — designed */
         "envelope.v1.schema": {
             aggregate: {
@@ -1126,6 +1160,12 @@ export interface components {
         /** @enum {string} */
         EvidenceStatus: "received";
         ExternalId: string;
+        Failure: {
+            /** @enum {string} */
+            code: "invalid_input" | "invalid_config" | "busy" | "timeout" | "cancelled" | "unavailable" | "http_error" | "provider_error" | "invalid_response" | "no_route" | "no_table";
+            /** @enum {string} */
+            provider: "osrm" | "vroom" | "boundary";
+        };
         Generation: number;
         /** @description Optional simple B2C collection only: positive EGP minor units, no item or fee model. */
         IndependentCollectionAmount: {
@@ -1179,8 +1219,18 @@ export interface components {
             kind: "integration";
             tenantId: components["schemas"]["Uuid"];
         };
+        Job: {
+            coordinates: components["schemas"]["Coordinates"];
+            /** @description Optional customer service estimate; adapter applies 600 seconds when omitted. */
+            serviceEstimateSeconds?: number;
+            taskId: string;
+        };
         KindRequest: {
             kind: components["schemas"]["AccountKind"];
+        };
+        Leg: {
+            distanceMetres: number;
+            durationSeconds: number;
         };
         Line: {
             description: string;
@@ -1225,6 +1275,8 @@ export interface components {
             coverage: string;
             styleUrl: string;
         };
+        /** @enum {string} */
+        Mode: "car" | "motorcycle" | "bicycle";
         /** @description Nonnegative integer minor units, never a decimal amount or arbitrary underpayment. Currency/exponent must match supported source policy; EGP is exponent 2. */
         Money: {
             amountMinor: number;
@@ -1236,6 +1288,37 @@ export interface components {
             observedAt: components["schemas"]["UtcInstant"] | null;
         };
         OperationId: string;
+        /** @description Internal normalized planning boundary; not an available HTTP operation. Origin must be resolved from authoritative physical confirmation or explicit pin by the caller. Default customer service is 600 seconds. Relative timing starts at zero; urgency/earliest availability/stitched policy are validated above the adapter in P14. */
+        OptimizationInput: {
+            /** @enum {string} */
+            accountKind: "personal" | "company";
+            endpoint: components["schemas"]["Endpoint"];
+            mode: components["schemas"]["Mode"];
+            origin: components["schemas"]["Origin"];
+            tasks: components["schemas"]["Job"][];
+        };
+        /** @description Validated provider candidate only, not a published or policy-verified route, arrival, receipt, outcome or actual dwell time. No optimizer geometry is promoted as a verified road route; request OSRM route separately. */
+        OptimizationResult: {
+            branchServiceEstimateSeconds: number;
+            customerServiceEstimateSeconds: number;
+            distanceMetres: number;
+            endpoint: components["schemas"]["Endpoint"];
+            finishOffsetSeconds: number;
+            mode: components["schemas"]["Mode"];
+            /** @constant */
+            policyValidated: false;
+            /** @enum {string} */
+            status: "complete" | "partial";
+            travelDurationSeconds: number;
+            unassignedTaskIds: string[];
+            visits: components["schemas"]["Visit"][];
+            waitingSeconds: number;
+        };
+        Origin: {
+            coordinates: components["schemas"]["Coordinates"];
+            /** @enum {string} */
+            kind: "last-confirmed-stop" | "manual-pin" | "branch-pin";
+        };
         PageInfo: {
             nextCursor: string | null;
             snapshotRevision: components["schemas"]["Revision"];
@@ -1295,6 +1378,13 @@ export interface components {
             /** Format: uri */
             type: string;
         } & (unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown & unknown);
+        Profiles: {
+            /** @constant */
+            defaultCustomerServiceSeconds: 600;
+            /** @constant */
+            liveVerification: "not-checked";
+            modes: components["schemas"]["Mode"][];
+        };
         ProvisioningChanged: {
             actionId: components["schemas"]["Uuid"];
             /** @enum {unknown} */
@@ -1463,6 +1553,36 @@ export interface components {
             /** @constant */
             schemaVersion: "1.0.0";
         };
+        RouteInput: {
+            coordinates: components["schemas"]["Coordinates"][];
+            mode: components["schemas"]["Mode"];
+        };
+        RouteResult: {
+            distanceMetres: number;
+            durationSeconds: number;
+            geometry: components["schemas"]["Coordinates"][];
+            /** @constant */
+            geometrySource: "osrm-road";
+            legs: components["schemas"]["Leg"][];
+            mode: components["schemas"]["Mode"];
+            /** @constant */
+            status: "complete";
+        };
+        RoutingEndpoint: components["schemas"]["Endpoint"];
+        RoutingFailure: components["schemas"]["Failure"];
+        RoutingJob: components["schemas"]["Job"];
+        RoutingLeg: components["schemas"]["Leg"];
+        RoutingMode: components["schemas"]["Mode"];
+        RoutingOptimizationInput: components["schemas"]["OptimizationInput"];
+        RoutingOptimizationResult: components["schemas"]["OptimizationResult"];
+        RoutingOrigin: components["schemas"]["Origin"];
+        RoutingProfiles: components["schemas"]["Profiles"];
+        RoutingRouteInput: components["schemas"]["RouteInput"];
+        RoutingRouteResult: components["schemas"]["RouteResult"];
+        RoutingTableCell: components["schemas"]["TableCell"];
+        RoutingTableInput: components["schemas"]["TableInput"];
+        RoutingTableResult: components["schemas"]["TableResult"];
+        RoutingVisit: components["schemas"]["Visit"];
         SchemaVersion: string;
         Search: {
             query: string;
@@ -1548,6 +1668,25 @@ export interface components {
             resources: Record<string, never>;
             /** @constant */
             schemaVersion: "1.0.0";
+        };
+        TableCell: {
+            distanceMetres: number;
+            durationSeconds: number;
+            /** @constant */
+            status: "reachable";
+        } | {
+            /** @constant */
+            status: "unreachable";
+        };
+        TableInput: {
+            coordinates: components["schemas"]["Coordinates"][];
+            mode: components["schemas"]["Mode"];
+        };
+        TableResult: {
+            cells: components["schemas"]["TableCell"][][];
+            mode: components["schemas"]["Mode"];
+            /** @enum {string} */
+            status: "complete" | "partial";
         };
         Task: {
             assignmentRevision: number;
@@ -1736,6 +1875,15 @@ export interface components {
             routeRevision?: components["schemas"]["Revision"];
             snapshotRevision?: components["schemas"]["Revision"];
             sourceRevision?: components["schemas"]["Revision"];
+        };
+        Visit: {
+            arrivalOffsetSeconds: number;
+            coordinates: components["schemas"]["Coordinates"];
+            distanceMetres: number;
+            serviceEstimateSeconds: number;
+            taskId: string;
+            travelDurationSeconds: number;
+            waitingSeconds: number;
         };
         Withdraw: {
             assignmentRevision: components["schemas"]["Revision"];
@@ -5038,6 +5186,56 @@ export interface operations {
                     "application/json": components["schemas"]["action-result.v1.schema"];
                     "application/problem+json": components["schemas"]["Problem"];
                 };
+            };
+        };
+    };
+    "routing.getVehicleProfiles": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Supported modes, not live verification. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Profiles"];
+                };
+            };
+            /** @description Invalid account selection or query. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session missing or expired. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Current capability denied. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Identity dependency unavailable. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
