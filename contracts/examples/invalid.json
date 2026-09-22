@@ -884,5 +884,116 @@
         }
       }
     }
+  },
+  {
+    "id": "access-unknown-effect",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": false,
+    "keyword": "enum",
+    "data": {
+      "capability": "planning.manage",
+      "effect": "admin"
+    }
+  },
+  {
+    "id": "access-branch-override",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "capability": "planning.manage",
+      "effect": "allow",
+      "branchId": "60000000-0000-4000-8000-000000000010"
+    }
+  },
+  {
+    "id": "access-role-name-capability",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": false,
+    "keyword": "enum",
+    "data": {
+      "capability": "Admin",
+      "effect": "allow"
+    }
+  },
+  {
+    "id": "access-personal-branch",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": false,
+    "keyword": "maxItems",
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000003",
+      "tenantKind": "personal",
+      "principalKind": "account",
+      "sourceId": "60000000-0000-4000-8000-000000000024",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010"
+      ],
+      "driverId": "60000000-0000-4000-8000-000000000043",
+      "effectiveCapabilities": [
+        "execution.own",
+        "reports.read"
+      ]
+    }
+  },
+  {
+    "id": "access-integration-driver",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000001",
+      "tenantKind": "company",
+      "principalKind": "integration",
+      "sourceId": "60000000-0000-4000-8000-000000000050",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010"
+      ],
+      "driverId": "60000000-0000-4000-8000-000000000040",
+      "effectiveCapabilities": [
+        "monitor.read",
+        "reports.export"
+      ]
+    }
+  },
+  {
+    "id": "access-integration-own",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": false,
+    "keyword": "not",
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000001",
+      "tenantKind": "company",
+      "principalKind": "integration",
+      "sourceId": "60000000-0000-4000-8000-000000000050",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010"
+      ],
+      "driverId": null,
+      "effectiveCapabilities": [
+        "execution.own"
+      ]
+    }
+  },
+  {
+    "id": "access-duplicate-grants",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": false,
+    "keyword": "uniqueItems",
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000001",
+      "tenantKind": "company",
+      "principalKind": "account",
+      "sourceId": "60000000-0000-4000-8000-000000000020",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010",
+        "60000000-0000-4000-8000-000000000011"
+      ],
+      "driverId": null,
+      "effectiveCapabilities": [
+        "monitor.read",
+        "monitor.read"
+      ]
+    }
   }
 ]

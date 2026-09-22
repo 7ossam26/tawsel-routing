@@ -27,6 +27,9 @@ export type Decision =
 
 export type WriteStage = 'identity' | 'domain' | 'progress' | 'evidence' | 'audit' | 'outbox' | 'result';
 export interface CommandHooks {
+  // Reauthorize resource visibility under the same transaction, even on replay.
+  // Runs after command acquisition and before feature mutation/result disclosure.
+  authorize?(tx: Transaction, command: ActionEnvelope, scope: Readonly<CommandScope>): Promise<void>;
   // Lock and write feature tables through this connection only, no HTTP/network.
   writeDomain(tx: Transaction, command: ActionEnvelope, scope: Readonly<CommandScope>): Promise<Decision>;
   writeProgress(tx: Transaction, decision: Extract<Decision, { status: 'accepted' }>, command: ActionEnvelope, scope: Readonly<CommandScope>): Promise<void>;
@@ -64,6 +67,14 @@ export async function getCommandResult(pool: Pool, scope: CommandScope, actionId
 }
 
 export async function executeCommand(pool: Pool, scope: CommandScope, envelope: ActionEnvelope, hooks: CommandHooks): Promise<CommandResult> {
+  const command = freezeJson(JSON.parse(canonicalJson(envelope)) as ActionEnvelope);
+  const binding = Object.freeze({ ...scope });
+  return withTransaction(pool, tx => executeCommandInTransaction(tx, binding, command, hooks));
+}
+
+/** Internal composition point for P06: authorization and command writes share
+ * one connection/commit. The caller owns the transaction, never hooks. */
+export async function executeCommandInTransaction(tx: Transaction, scope: CommandScope, envelope: ActionEnvelope, hooks: CommandHooks): Promise<CommandResult> {
   // Snapshot before the first await: later caller mutation cannot change the write/hash contract.
   const command = freezeJson(JSON.parse(canonicalJson(envelope)) as ActionEnvelope);
   validateProtocol('action-envelope', command);
@@ -75,7 +86,7 @@ export async function executeCommand(pool: Pool, scope: CommandScope, envelope: 
     throw new Error('Command context does not match trusted scope');
   }
   const hash = payloadHash({ envelope: command, actorId: binding.actorId ?? null });
-  return withTransaction(pool, async tx => {
+  return (async () => {
     const source = await tx.query('SELECT kind FROM tawsel.command_sources WHERE tenant_id=$1 AND source_id=$2', [binding.tenantId, binding.sourceId]);
     if (source.rows[0]?.kind !== (context.kind === 'integration' ? 'integration' : 'account')) throw new Error('Unknown or incompatible command source');
     const inserted = await tx.query(`INSERT INTO tawsel.command_identities
@@ -88,6 +99,7 @@ export async function executeCommand(pool: Pool, scope: CommandScope, envelope: 
       WHERE tenant_id=$1 AND source_id=$2 AND action_id=$3 FOR UPDATE`, key(binding, command.actionId));
     const row = found.rows[0];
     if (!row) throw new Error('Command acquisition failed');
+    await hooks.authorize?.(tx, command, binding);
     if (row.payload_hash !== hash) throw new IdempotencyConflict();
     if (!inserted.rowCount) return resultFrom(row);
     await hooks.afterWrite?.('identity', tx);
@@ -143,5 +155,5 @@ export async function executeCommand(pool: Pool, scope: CommandScope, envelope: 
     const result = resultFrom(updated.rows[0]!);
     validateProtocol('action-result', result);
     return result;
-  });
+  })();
 }

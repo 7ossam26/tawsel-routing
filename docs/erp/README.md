@@ -4,6 +4,8 @@
 
 Read in this order:
 
+P06 follow-through: [permission contract](../authorization.md) and [actual PostgreSQL evidence](../phase-06-evidence.md) now specify and verify internal membership/override/resource enforcement. Canonical access shapes are updated in the same public schemas/examples/client. Login, provisioning and external ERP HTTP proof remain unavailable; keep the distinction between fixture principals and verified credentials.
+
 1. [ERP-PLANNING-INPUT.md](ERP-PLANNING-INPUT.md): responsibilities, supported generic concepts, ordered future connector work, constraints and ERP-specific unknowns.
 2. [field-and-status-mapping.md](field-and-status-mapping.md): source versus Tawsel identities, field authority, meaningful state distinctions and designed worked mappings.
 3. [Integration guide](../integration-guide.md): provisioning, authentication/actor obligations, source commands, signed events, versions, retention and old queues.

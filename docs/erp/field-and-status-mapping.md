@@ -2,6 +2,19 @@
 
 All business mappings below are **designed**. Common shapes/examples are schema-verified; the reference ERP and real vendor mapping are not implemented. Canonical field definitions live in [common.schema.json](../../contracts/common.schema.json); envelopes/examples remain there, not copied as another schema here. The [catalog](../contract-coverage.md) names commands/events and owner phases. A real-ERP field/status column stays explicitly unchosen.
 
+P06 access additions (internal PostgreSQL guards verified; login/provisioning HTTP mapping remains P07/P08):
+
+| Field/fact | Consumer meaning and ownership |
+| --- | --- |
+| Issuer + subject → stable account UUID | Credential authority authenticates; Tawsel binds membership. Never match email, username or a role name to authorize. Company/personal accounts and tenants remain separate. |
+| One `roleId`; `CapabilityOverride.capability/effect` | ERP administers one company role and `inherit/allow/deny` exceptions. Explicit choice overrides live inheritance equally in every assigned branch. Missing grants deny. |
+| `AccessContext.tenantId/tenantKind/principalKind/sourceId` | Server-resolved display snapshot; stable source is an account or integration, never a token/device. Supplied body/query scope is checked, never authority. |
+| `branchIds/driverId/effectiveCapabilities` | Active branch membership, optional active own-driver identity and capability set. Their intersection with source visibility and lifecycle authorizes each operation; the array is not a bearer grant. |
+| `forbidden_resource` / `lifecycle_forbidden` | Generic 403 scope/capability denial; hidden and missing resources share 404; 409 lifecycle denial only after visibility. No hidden IDs/contacts/counts in error details. |
+| Integration source and asserted actor | P06 binds a service only to its own integration/branches and rejects unverified human assertions. P08 owns verified actor/delegation proof. A shared trip does not expand source visibility. |
+
+Canonical definitions remain in [common.schema.json](../../contracts/common.schema.json), with valid/invalid access fixtures and generated consumer types. See [permission contract and guard inputs](../authorization.md), `npm run test:authorization` and `npm run access:demo`. Real ERP fields remain unchosen and public conformance is still P26/P27.
+
 P05 recovery additions (internal PostgreSQL behavior verified; public HTTP mapping still designed):
 
 | Field/fact | Consumer meaning |

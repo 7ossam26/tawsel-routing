@@ -8,4 +8,6 @@ These are **designed examples**. Common values and envelope structure are fully 
 
 No endpoint URL, credential or automatic ERP compatibility is claimed. Real consumer quickstart and conformance arrive in P26–27; this phase's portable types example is in `packages/api-client/examples/consumer.ts`.
 
+P06 adds `access-*`: explicit inherit/allow/deny overrides; company, personal and integration `AccessContext`; lifecycle denial; invalid role-name grants, branch-specific overrides, personal branches, integration driver/own-work grants and duplicate capabilities. These are schema conformance fixtures. Real PostgreSQL isolation tests use labelled principals/synthetic resource rows and are documented in [P06 evidence](../../docs/phase-06-evidence.md); no example is a production authentication mechanism.
+
 P05 adds `action-result-full` and `action-result-compacted`, plus invalid missing-response, compacted-with-response and pending-result cases. These use illustrative delivery data for schema conformance only. Actual database tests exercise explicitly synthetic counters and real migrations. Compacted results preserve the original receipt/stable summary, omit full response status/body, and never authorize a new action ID. The public `action.getResult` route still awaits authenticated P06–P08 bindings.

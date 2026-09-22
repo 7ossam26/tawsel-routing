@@ -141,6 +141,8 @@ HTTP integration tests listen on ephemeral loopback ports; database tests requir
 
 ## CI
 
+P06 adds `npm run test:authorization` (real tenant/branch/driver/source isolation), `npm run access:demo` (labelled principals and synthetic records in a disposable DB), and `0002_tenant_access.sql`. `npm run db:migrate` upgrades existing P05 data without inventing metadata/authority for old keys; real provisioning remains P07/P08. Run database and authorization suites before depending on the schema. [Permission contract](authorization.md) documents transaction ordering, revocation and required handler/query/job/export guards. No production header or HTTP endpoint accepts fixture identities.
+
 `.github/workflows/application-checks.yml` runs on application/database/contract changes with read-only repository permissions. It uses Node 24.19.0, `npm ci`, `npm run check` and a dedicated `postgres:18.4` service on 55432. It marks the disposable control database explicitly. No Engine, issuer or map data are started. The workflow is configured/locally reviewed; no remote CI run is claimed by P05.
 
 ## Failure guide

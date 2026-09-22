@@ -976,5 +976,107 @@
         "outcomeRevision": 1
       }
     }
+  },
+  {
+    "id": "access-effect",
+    "schema": "common.schema.json#/$defs/CapabilityEffect",
+    "valid": true,
+    "data": "inherit"
+  },
+  {
+    "id": "access-inherit",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": true,
+    "data": {
+      "capability": "planning.manage",
+      "effect": "inherit"
+    }
+  },
+  {
+    "id": "access-allow",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": true,
+    "data": {
+      "capability": "planning.manage",
+      "effect": "allow"
+    }
+  },
+  {
+    "id": "access-deny",
+    "schema": "common.schema.json#/$defs/CapabilityOverride",
+    "valid": true,
+    "data": {
+      "capability": "planning.manage",
+      "effect": "deny"
+    }
+  },
+  {
+    "id": "access-company",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": true,
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000001",
+      "tenantKind": "company",
+      "principalKind": "account",
+      "sourceId": "60000000-0000-4000-8000-000000000020",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010",
+        "60000000-0000-4000-8000-000000000011"
+      ],
+      "driverId": null,
+      "effectiveCapabilities": [
+        "monitor.read",
+        "reports.export"
+      ]
+    }
+  },
+  {
+    "id": "access-personal",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": true,
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000003",
+      "tenantKind": "personal",
+      "principalKind": "account",
+      "sourceId": "60000000-0000-4000-8000-000000000024",
+      "branchIds": [],
+      "driverId": "60000000-0000-4000-8000-000000000043",
+      "effectiveCapabilities": [
+        "execution.own",
+        "reports.read"
+      ]
+    }
+  },
+  {
+    "id": "access-integration",
+    "schema": "common.schema.json#/$defs/AccessContext",
+    "valid": true,
+    "data": {
+      "tenantId": "60000000-0000-4000-8000-000000000001",
+      "tenantKind": "company",
+      "principalKind": "integration",
+      "sourceId": "60000000-0000-4000-8000-000000000050",
+      "branchIds": [
+        "60000000-0000-4000-8000-000000000010"
+      ],
+      "driverId": null,
+      "effectiveCapabilities": [
+        "monitor.read",
+        "reports.export"
+      ]
+    }
+  },
+  {
+    "id": "access-lifecycle-problem",
+    "schema": "common.schema.json#/$defs/Problem",
+    "valid": true,
+    "data": {
+      "type": "https://schemas.tawsel.invalid/problems/lifecycle-forbidden",
+      "title": "Operation unavailable in the current state",
+      "status": 409,
+      "code": "lifecycle_forbidden",
+      "correlationId": "60000000-0000-4000-8000-000000000099",
+      "retryable": false
+    }
   }
 ]

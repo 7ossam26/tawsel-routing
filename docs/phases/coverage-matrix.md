@@ -11,6 +11,8 @@ Each requirement below embeds its current meaning. **Owner phases** produce the 
 Phase 05 evidence, 22 September 2026: [the ordered record](../phase-05-evidence.md) verifies R-08 PostgreSQL atomicity/identity, R-56 pinned `pg`/PostgreSQL foundations, R-58 connected migration/race/fault/process/retention tests and R-65 prerequisite/checkpoint/handoff discipline. These proofs use test-only counters and actual commits; domain correctness, authentication and event delivery remain their assigned feature phases.
 Initial engineering requirements without a numbered discovery answer remain traced to the master plan; proposed numerical targets retain their proposal/evidence status.
 
+P06 evidence, 22 September 2026: [authorization schema/service/tests](../phase-06-evidence.md) and [permission contract](../authorization.md) verify R-01 personal/company separation, R-03 live inheritance/direct exceptions/no label or lifecycle bypass, R-04 equal multi-branch grants and denied third-branch access, R-43 tenant/driver/source filtering and forged job/export scope, R-58 connected PostgreSQL tests and R-65 ordered checks. Actual login/provisioning, feature handlers, offline caches and export delivery remain the assigned follow-through phases.
+
 ## Current requirement catalog
 
 ### R-01

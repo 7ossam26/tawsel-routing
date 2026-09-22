@@ -34,7 +34,9 @@
     "db:local:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-local.ps1 stop",
     "db:migrate": "node --env-file-if-exists=.env.database.local --env-file-if-exists=.env --import tsx scripts/db-migrate.ts",
     "test:database": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/database-lifecycle.test.ts apps/api/test/integration/command-transaction.test.ts",
-    "db:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/command-demo.ts"
+    "db:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/command-demo.ts",
+    "test:authorization": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/authorization-schema.test.ts apps/api/test/integration/effective-access.test.ts apps/api/test/integration/authorization-isolation.test.ts",
+    "access:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/access-demo.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -8,7 +8,7 @@ Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contrac
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the internal PostgreSQL kernel and ActionResult full/compacted shape. The public action.getResult HTTP adapter remains unavailable pending P06–P08 authentication. See [P05 evidence](../phase-05-evidence.md) and [retention/lock protocol](../tracking-and-consistency.md#implemented-p05-transaction-protocol).
+P05 verifies the internal PostgreSQL kernel and ActionResult full/compacted shape. P06 verifies tenant membership, capability overrides and resource guards with labelled principals; AccessContext is a server-resolved display snapshot, never request authority. Public session/result/provisioning HTTP adapters still await P07/P08 authentication. See [P05 evidence](../phase-05-evidence.md), [P06 permission contract](../authorization.md) and [retention/lock protocol](../tracking-and-consistency.md#implemented-p05-transaction-protocol).
 
 ## Common schemas and envelopes
 
@@ -719,6 +719,7 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
     "invalid_pin",
     "unauthorized",
     "forbidden_resource",
+    "lifecycle_forbidden",
     "departed_edit_forbidden",
     "stale_revision",
     "stale_device",
@@ -1133,6 +1134,177 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
     "identity.provision",
     "integration.manage",
     "diagnostics.read"
+  ]
+}
+```
+
+### CapabilityEffect
+
+[Canonical definition](../../contracts/common.schema.json#/$defs/CapabilityEffect)
+
+Explicit user choice overrides the role; inherit (or no exception row) follows the current role value. Missing role grants deny. Applies equally across assigned branches.
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "inherit",
+    "allow",
+    "deny"
+  ],
+  "description": "Explicit user choice overrides the role; inherit (or no exception row) follows the current role value. Missing role grants deny. Applies equally across assigned branches."
+}
+```
+
+### CapabilityOverride
+
+[Canonical definition](../../contracts/common.schema.json#/$defs/CapabilityOverride)
+
+Company-user override vocabulary; ERP provisioning endpoint remains P08. This object cannot grant access by appearing in a request.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "capability": {
+      "$ref": "#/$defs/Capability"
+    },
+    "effect": {
+      "$ref": "#/$defs/CapabilityEffect"
+    }
+  },
+  "required": [
+    "capability",
+    "effect"
+  ],
+  "additionalProperties": false,
+  "description": "Company-user override vocabulary; ERP provisioning endpoint remains P08. This object cannot grant access by appearing in a request."
+}
+```
+
+### AccessContext
+
+[Canonical definition](../../contracts/common.schema.json#/$defs/AccessContext)
+
+Server-resolved access snapshot, implemented internally in P06; session.getContext HTTP remains P07. Source is the stable account or integration UUID. Display guidance only: recheck current permissions, resource scope and lifecycle for every read/write/job/export. No role name conveys authority.
+
+```json
+{
+  "type": "object",
+  "description": "Server-resolved access snapshot, implemented internally in P06; session.getContext HTTP remains P07. Source is the stable account or integration UUID. Display guidance only: recheck current permissions, resource scope and lifecycle for every read/write/job/export. No role name conveys authority.",
+  "properties": {
+    "tenantId": {
+      "$ref": "#/$defs/Uuid"
+    },
+    "tenantKind": {
+      "type": "string",
+      "enum": [
+        "company",
+        "personal"
+      ]
+    },
+    "principalKind": {
+      "type": "string",
+      "enum": [
+        "account",
+        "integration"
+      ]
+    },
+    "sourceId": {
+      "$ref": "#/$defs/Uuid"
+    },
+    "branchIds": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Uuid"
+      },
+      "uniqueItems": true
+    },
+    "driverId": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "effectiveCapabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Capability"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "tenantId",
+    "tenantKind",
+    "principalKind",
+    "sourceId",
+    "branchIds",
+    "driverId",
+    "effectiveCapabilities"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "tenantKind": {
+            "const": "personal"
+          }
+        },
+        "required": [
+          "tenantKind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "principalKind": {
+            "const": "account"
+          },
+          "branchIds": {
+            "type": "array",
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "principalKind": {
+            "const": "integration"
+          }
+        },
+        "required": [
+          "principalKind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "tenantKind": {
+            "const": "company"
+          },
+          "driverId": {
+            "type": "null"
+          },
+          "effectiveCapabilities": {
+            "type": "array",
+            "items": {
+              "not": {
+                "enum": [
+                  "execution.own",
+                  "correction.own"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
   ]
 }
 ```
@@ -1700,6 +1872,14 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | error-correction_dependency_conflict | common.schema.json#/$defs/Problem | valid foundation shape |
 | action-result-full | action-result.v1.schema.json | valid foundation shape |
 | action-result-compacted | action-result.v1.schema.json | valid foundation shape |
+| access-effect | common.schema.json#/$defs/CapabilityEffect | valid foundation shape |
+| access-inherit | common.schema.json#/$defs/CapabilityOverride | valid foundation shape |
+| access-allow | common.schema.json#/$defs/CapabilityOverride | valid foundation shape |
+| access-deny | common.schema.json#/$defs/CapabilityOverride | valid foundation shape |
+| access-company | common.schema.json#/$defs/AccessContext | valid foundation shape |
+| access-personal | common.schema.json#/$defs/AccessContext | valid foundation shape |
+| access-integration | common.schema.json#/$defs/AccessContext | valid foundation shape |
+| access-lifecycle-problem | common.schema.json#/$defs/Problem | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -1738,5 +1918,12 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | action-result-full-missing-response | action-result.v1.schema.json | invalid (required) |
 | action-result-compacted-with-response | action-result.v1.schema.json | invalid (not) |
 | action-result-pending | action-result.v1.schema.json | invalid (enum) |
+| access-unknown-effect | common.schema.json#/$defs/CapabilityOverride | invalid (enum) |
+| access-branch-override | common.schema.json#/$defs/CapabilityOverride | invalid (additionalProperties) |
+| access-role-name-capability | common.schema.json#/$defs/CapabilityOverride | invalid (enum) |
+| access-personal-branch | common.schema.json#/$defs/AccessContext | invalid (maxItems) |
+| access-integration-driver | common.schema.json#/$defs/AccessContext | invalid (type) |
+| access-integration-own | common.schema.json#/$defs/AccessContext | invalid (not) |
+| access-duplicate-grants | common.schema.json#/$defs/AccessContext | invalid (uniqueItems) |
 
 [Canonical example data](../../contracts/examples/README.md)

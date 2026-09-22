@@ -12,6 +12,10 @@ Connector-facing feedback must distinguish source command pending/accepted/rejec
 
 ## Responsibility and compatibility target
 
+P06 now verifies the internal membership/capability model and [permission contract](../authorization.md) using actual PostgreSQL with labelled authenticated-principal fixtures. A company user has one role and explicit `inherit/allow/deny` exceptions; permissions are identical across assigned branches, while tenant/branch/driver/source/lifecycle remain separate mandatory checks. `CapabilityOverride` and server-resolved `AccessContext` are canonical common schemas. Role labels grant nothing; a service cannot claim a human via `assertedActorId`. P07/P08 must supply real authentication and verified provisioning/delegation. ERP remains the administration surface, with no duplicate Tawsel editor.
+
+Schema/consumer checks: `npm run test:contracts`, `npm run contracts:check`, `npm run typecheck -w @tawsel/api-client`. Internal isolation/demo: `npm run test:authorization`, `npm run access:demo`. The latter are **not** a public HTTP quickstart or real ERP conformance. P26/P27 still own that separate proof. In a shared driver trip, source projections must exclude other-source contacts, counts and current/next detail; explicit allow never restores postdeparture staff edits. [P06 evidence](../phase-06-evidence.md) records actual proof and limits.
+
 | Owner | Responsibility | Explicit boundary |
 | --- | --- | --- |
 | ERP/vendor system | Commercial order/customer master, source identities, shipment content/final prices/fees/allocated prepayment, branches/users/role/memberships, preparation/initial received assignment, actual branch receipt/disposition, inventory/liability/settlement | Tawsel does not require its source code or database schema and never becomes its finance/stock system. |

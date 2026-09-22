@@ -3,6 +3,18 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description Server-resolved access snapshot, implemented internally in P06; session.getContext HTTP remains P07. Source is the stable account or integration UUID. Display guidance only: recheck current permissions, resource scope and lifecycle for every read/write/job/export. No role name conveys authority. */
+        AccessContext: {
+            branchIds: components["schemas"]["Uuid"][];
+            driverId: components["schemas"]["Uuid"] | null;
+            effectiveCapabilities: components["schemas"]["Capability"][];
+            /** @enum {string} */
+            principalKind: "account" | "integration";
+            sourceId: components["schemas"]["Uuid"];
+            tenantId: components["schemas"]["Uuid"];
+            /** @enum {string} */
+            tenantKind: "company" | "personal";
+        } & (unknown & unknown);
         /**
          * Action envelope v1 — designed
          * @description P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
@@ -57,6 +69,16 @@ export interface components {
         BusinessStatus: "pending" | "accepted" | "rejected" | "review-required";
         /** @enum {string} */
         Capability: "monitor.read" | "planning.manage" | "location.review" | "execution.own" | "correction.own" | "reports.read" | "reports.export" | "intake.prepare" | "assignment.manage" | "return.receive" | "return.dispose" | "identity.provision" | "integration.manage" | "diagnostics.read";
+        /**
+         * @description Explicit user choice overrides the role; inherit (or no exception row) follows the current role value. Missing role grants deny. Applies equally across assigned branches.
+         * @enum {string}
+         */
+        CapabilityEffect: "inherit" | "allow" | "deny";
+        /** @description Company-user override vocabulary; ERP provisioning endpoint remains P08. This object cannot grant access by appearing in a request. */
+        CapabilityOverride: {
+            capability: components["schemas"]["Capability"];
+            effect: components["schemas"]["CapabilityEffect"];
+        };
         ClockEvidence: {
             estimatedOffsetMilliseconds?: number;
             /** @enum {string} */
@@ -131,7 +153,7 @@ export interface components {
             versions: components["schemas"]["Versions"];
         } & unknown;
         /** @enum {string} */
-        ErrorCode: "validation_failed" | "idempotency_conflict" | "capacity_exceeded" | "invalid_pin" | "unauthorized" | "forbidden_resource" | "departed_edit_forbidden" | "stale_revision" | "stale_device" | "unsupported_price_allocation" | "dependency_missing" | "dependency_unavailable" | "unassigned_route" | "result_unknown" | "unsupported_schema_version" | "replay_expired" | "correction_dependency_conflict";
+        ErrorCode: "validation_failed" | "idempotency_conflict" | "capacity_exceeded" | "invalid_pin" | "unauthorized" | "forbidden_resource" | "lifecycle_forbidden" | "departed_edit_forbidden" | "stale_revision" | "stale_device" | "unsupported_price_allocation" | "dependency_missing" | "dependency_unavailable" | "unassigned_route" | "result_unknown" | "unsupported_schema_version" | "replay_expired" | "correction_dependency_conflict";
         EventEnvelope: components["schemas"]["envelope.v1.schema"];
         /** Durable evidence receipt v1 — designed */
         "evidence-receipt.v1.schema": {

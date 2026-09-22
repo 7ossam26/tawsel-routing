@@ -80,6 +80,12 @@ components:
       $ref: ./common.schema.json#/$defs/Problem
     Capability:
       $ref: ./common.schema.json#/$defs/Capability
+    CapabilityEffect:
+      $ref: ./common.schema.json#/$defs/CapabilityEffect
+    CapabilityOverride:
+      $ref: ./common.schema.json#/$defs/CapabilityOverride
+    AccessContext:
+      $ref: ./common.schema.json#/$defs/AccessContext
     PageRequest:
       $ref: ./common.schema.json#/$defs/PageRequest
     PageInfo:

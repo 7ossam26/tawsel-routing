@@ -16,6 +16,15 @@ export const source: components['schemas']['SourceReference'] = {
 // There are no published business paths in the foundation.
 export const availablePaths: paths = {};
 
+// Planned ERP user editor vocabulary. This is a schema example, not a live
+// provisioning request. Scope/lifecycle remain server-enforced even with allow.
+export const permissionException: components['schemas']['CapabilityOverride'] = {
+  capability: 'planning.manage', effect: 'deny'
+};
+export function mayDisplayExport(context: components['schemas']['AccessContext']) {
+  return context.effectiveCapabilities.includes('reports.export');
+}
+
 // P05 defines the recovery shape; there is still no available HTTP method.
 // A compacted response requires later scoped reconciliation, never a new ID.
 export function recoveryState(result: components['schemas']['ActionResult']) {

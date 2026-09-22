@@ -54,7 +54,7 @@
       "lifecycle": "designed",
       "ownerPhase": 7,
       "capability": "authenticated",
-      "description": "Read subject, tenant, branches and effective capabilities."
+      "description": "Read server-resolved AccessContext: stable account source, tenant, assigned active branches and effective capabilities. Display snapshot grants no authority; HTTP adapter remains P07."
     },
     {
       "id": "session.refresh",
@@ -720,7 +720,7 @@
       "lifecycle": "designed",
       "ownerPhase": 5,
       "capability": "authenticated",
-      "description": "Recover scoped stable result after unknown response. P05 PostgreSQL getCommandResult primitive and ActionResult schema verified locally; HTTP route remains unavailable pending P06-P08 authenticated scope. Compacted identities never execute again."
+      "description": "Read durable full/compacted command result for the authenticated source, rechecking current capability and associated resource visibility before disclosing stored details. P05/P06 primitives verified internally; HTTP adapter remains unavailable."
     },
     {
       "id": "evidence.receiveFormerDevice",
@@ -1327,5 +1327,17 @@
       "path": "/health",
       "method": "GET"
     }
-  ]
+  ],
+  "authorizationFoundation": {
+    "ownerPhase": 6,
+    "lifecycle": "verified-local",
+    "evidence": "docs/phase-06-evidence.md",
+    "permissionContract": "docs/authorization.md",
+    "schemas": [
+      "common.schema.json#/$defs/Capability",
+      "common.schema.json#/$defs/CapabilityOverride",
+      "common.schema.json#/$defs/AccessContext"
+    ],
+    "boundary": "Internal PostgreSQL authorization with labelled authenticated-principal fixtures; no HTTP identity adapter, provisioning endpoint or shipment implementation."
+  }
 }
