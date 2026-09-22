@@ -2,17 +2,17 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07 session/context and P08 provisioning are implemented locally; each row records its actual lifecycle.** Other domain operations/events remain designed and unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07 session/context, P08 provisioning, P09 independent intake and P10 ERP intake are implemented locally; each row records its actual lifecycle.** Later domain operations/events remain designed and unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
-P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as an HTTP operation: P07 supplies session authentication; its future adapter must recheck resource visibility before disclosing retained details. P08 promotes its explicit provisioning commands and durable provisioning.changed intent; delivery remains P25. See [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
+P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as a general HTTP operation: P09 command retries return their retained scoped result through the same feature endpoint. P07 supplies session authentication; every adapter rechecks resource visibility before disclosure. P08 promotes provisioning commands and provisioning.changed; P09 promotes independent intake commands/reads and local task intake events. P10 promotes source snapshots, preparation, receipt/admission, predeparture updates and source-scoped reads/results, with durable event/replan intent. Delivery remains P25. See [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
 [UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. These are designed surfaces, not working endpoints or browser evidence; [Phase 03 evidence](phase-03-evidence.md) records the document checks.
 
-The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 implements explicitly permitted provisioning service operations and each feature supplies locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
+The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 implements explicitly permitted provisioning service operations; P09 applies personal-tenant and predeparture predicates; P10 composes service credentials and current source/branch guards in the same transaction. Each later feature supplies its locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
 
 ## Master-plan family review
 
@@ -75,24 +75,26 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `task.createIndependent` | http-command | designed | [P09](phases/09-b2c-task-intake.md) | execution.own | Create own simple B2C name/phone/destination/optional collection. |
-| `task.reviseIndependent` | http-command | designed | [P09](phases/09-b2c-task-intake.md) | execution.own | Correct own eligible B2C task with revision guards. |
-| `task.getIndependent` | http-read | designed | [P09](phases/09-b2c-task-intake.md) | execution.own | Inspect own persisted B2C task. |
-| `task.listIndependent` | http-read | designed | [P09](phases/09-b2c-task-intake.md) | execution.own | List own intake/preparation work with bounded pagination. |
-| `intake.submitSnapshot` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | Accept generic source task/order/contact/location/content/policy revision. |
-| `intake.prepare` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | Prepare upcoming work without driver receipt/custody. |
-| `assignment.receiveBatch` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Definitive ERP receipt assertion with all-or-none 50-stop admission. |
-| `assignment.withdraw` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Withdraw before departure; race start without mandatory reason/handover. |
-| `assignment.reassignBeforeDeparture` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Change predeparture driver and assignment generation; no live transfer. |
-| `intake.setUrgencyBeforeDeparture` | http-command | designed | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | ERP priority update only before execution lock. |
-| `intake.getBatchResult` | http-read | designed | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Recover entire accepted/rejected batch and uncertain response. |
-| `task.snapshotAccepted` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Stable generic source task snapshot revision accepted. |
-| `task.independentCreated` | event | designed | [P09](phases/09-b2c-task-intake.md) | recipient-scope | Own B2C task recorded; no ERP recipient unless separately authorized. |
-| `task.independentRevised` | event | designed | [P09](phases/09-b2c-task-intake.md) | recipient-scope | Own B2C task revision; preserve prior audit. |
-| `assignment.prepared` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Upcoming preparation, no possession. |
-| `assignment.received` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Definitive batch received/admitted; not prepared. |
-| `assignment.withdrawn` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture removal. |
-| `assignment.reassigned` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture generation change. |
+| `task.createIndependent` | http-command | verified-local | [P09](phases/09-b2c-task-intake.md) | execution.own | Create own simple B2C name/phone/destination/optional collection. |
+| `task.reviseIndependent` | http-command | verified-local | [P09](phases/09-b2c-task-intake.md) | execution.own | Correct own eligible B2C task with revision guards. |
+| `task.getIndependent` | http-read | verified-local | [P09](phases/09-b2c-task-intake.md) | execution.own | Inspect own persisted B2C task. |
+| `task.listIndependent` | http-read | verified-local | [P09](phases/09-b2c-task-intake.md) | execution.own | List own intake/preparation work with bounded pagination. |
+| `intake.submitSnapshot` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | Accept generic source task/order/contact/location/content/policy revision. |
+| `intake.prepare` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | Prepare upcoming work without driver receipt/custody. |
+| `assignment.receiveBatch` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Definitive ERP receipt assertion with all-or-none 50-stop admission. |
+| `assignment.withdraw` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists; full start-race proof belongs to P15. |
+| `assignment.reassignBeforeDeparture` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Change predeparture driver and assignment generation; no live transfer. |
+| `intake.setUrgencyBeforeDeparture` | http-command | verified-local | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | ERP priority update only before execution lock. |
+| `intake.getBatchResult` | http-read | verified-local | [P10](phases/10-b2b-intake-admission.md) | assignment.manage | Recover durable accepted/rejected source results; 202 pending means no committed result is visible, not proof of receipt. |
+| `task.snapshotAccepted` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Stable generic source task snapshot revision accepted. P10 durable own-source event intent; transport remains P25. |
+| `task.independentCreated` | event | verified-local | [P09](phases/09-b2c-task-intake.md) | recipient-scope | Own B2C task recorded; no ERP recipient unless separately authorized. |
+| `task.independentRevised` | event | verified-local | [P09](phases/09-b2c-task-intake.md) | recipient-scope | Own B2C task revision; preserve prior audit. |
+| `assignment.prepared` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Upcoming preparation, no possession. P10 durable own-source event intent; transport remains P25. |
+| `assignment.received` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Definitive batch received/admitted; not prepared. P10 durable own-source event intent; transport remains P25. |
+| `assignment.withdrawn` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture removal. P10 durable own-source event intent; transport remains P25. |
+| `assignment.reassigned` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture generation change. P10 durable own-source event intent; transport remains P25. |
+| `intake.getTask` | http-read | verified-local | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | Read current source snapshot, holder, readiness and dispatch identifiers. |
+| `intake.listTasks` | http-read | verified-local | [P10](phases/10-b2b-intake-admission.md) | intake.prepare | List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination. |
 
 ### locations
 
@@ -139,7 +141,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `device.takeOver` | http-command | designed | [P20](phases/20-device-takeover-evidence.md) | execution.own | Online same-driver takeover increments generation, preserves former-device evidence. |
 | `outcome.correct` | http-command | designed | [P23](phases/23-bounded-driver-corrections.md) | correction.own | Driver appends correction in open day before dependent receipt/redispatch. |
 | `evidence.adoptCompatible` | http-command | designed | [P23](phases/23-bounded-driver-corrections.md) | correction.own | Current owner adopts eligible former-device evidence under correction bounds. |
-| `task.urgencyChanged` | event | designed | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. |
+| `task.urgencyChanged` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25. |
 | `round.started` | event | designed | [P15](phases/15-round-start-departure-lock.md) | recipient-scope | Accepted start/departure/owner and baseline forecast. |
 | `current.headingSelected` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
 | `current.arrivalRecorded` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |

@@ -2,6 +2,8 @@
 
 Implemented locally, protocol/payload `1.0.0`, client package `0.1.0`. [Evidence](phase-08-evidence.md) separates PostgreSQL/provider fixtures, real local Keycloak/Chromium and the independent public HTTP consumer. No production release, external real ERP or signed event delivery is claimed. ERP remains the company administration and credential authority; this phase adds no administration UI.
 
+P10 extension: operator `integration.bindSource` accepts optional `intakeCapabilities` containing `intake.prepare` and/or `assignment.manage`. Omission preserves existing grants; `[]` revokes both. A newer source revision is required to change grants. Intake authentication requires the specific operation grant rather than `identity.provision`; provisioning authentication remains unchanged. Configuration discovery lists enabled intake operations. These are still source service operations with actor=null. See [intake contract/demo](b2b-intake.md) and [P10 evidence](phase-10-evidence.md).
+
 ## Trust and setup
 
 The operator establishes the company/tenant and integration, shared company issuer and a reservation of issuer subjects to that integration. Company codes are login locators, never grants. Subjects are immutable opaque issuer IDs, never usernames, phone numbers or email. The selected company issuer comes from server configuration, not the command body. Personal issuer identities cannot be bound here.

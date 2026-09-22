@@ -118,6 +118,10 @@ async function writeSource(tx: Transaction, b: ServiceBinding, command: ActionEn
       for (const cap of ['identity.provision', 'integration.manage']) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
       await insertCredential(tx, b, p);
     }
+    if (p.intakeCapabilities !== undefined) {
+      await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability IN ('intake.prepare','assignment.manage')", sourceKey(b));
+      for (const cap of p.intakeCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
+    }
   } else {
     if (!prior) return rejection('dependency_missing', command.actionId);
     if (command.operationId === 'integration.rotateCredential') {
@@ -140,8 +144,14 @@ export async function sourceConfiguration(pool: Pool, authorization: string | un
     const grant = await tx.query("SELECT 1 FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability='integration.manage'", sourceKey(b));
     if (!grant.rowCount) throw unavailable();
     const source = await tx.query('SELECT issuer FROM tawsel.provisioning_sources WHERE tenant_id=$1 AND integration_id=$2', sourceKey(b));
+    const grants = (await tx.query<{capability:string}>('SELECT capability FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2',sourceKey(b))).rows.map(r=>r.capability);
+    const intake = [
+      ...(grants.includes('intake.prepare') ? ['intake.submitSnapshot','intake.prepare','intake.setUrgencyBeforeDeparture'] : []),
+      ...(grants.includes('assignment.manage') ? ['assignment.receiveBatch','assignment.withdraw','assignment.reassignBeforeDeparture'] : []),
+      ...(grants.some(c=>c==='intake.prepare'||c==='assignment.manage') ? ['intake.getTask','intake.listTasks','intake.getBatchResult'] : [])
+    ];
     return { identity: identityView(b), issuer: source.rows[0]!.issuer as string, supportedVersions: ['1.0.0'],
-      allowedOperations: [...Object.keys(operations).filter(o => o !== 'integration.bindSource'), 'integration.getConfiguration', 'provisioning.getStatus'], humanDelegation: false };
+      allowedOperations: [...Object.keys(operations).filter(o => o !== 'integration.bindSource'), 'integration.getConfiguration', 'provisioning.getStatus', ...intake], humanDelegation: false };
   });
 }
 

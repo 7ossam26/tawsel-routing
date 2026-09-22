@@ -50,8 +50,12 @@
     "provisioning:demo": "node --import tsx packages/api-client/examples/provision-company.ts",
     "provisioning:worker": "node --env-file=.env.database.local --env-file=.env.identity.local --env-file=.env.provisioning.local --import tsx scripts/provisioning-worker.ts",
     "test:browser:provisioning": "playwright test -c playwright.provisioning.config.ts",
+    "test:browser:b2c": "playwright test -c playwright.b2c.config.ts",
     "provisioning:worker:once": "node --env-file=.env.database.local --env-file=.env.identity.local --env-file=.env.provisioning.local --import tsx scripts/provisioning-worker.ts --once",
-    "test:erp:provisioning": "node --import tsx tests/erp-conformance/provisioning.ts"
+    "test:erp:provisioning": "node --import tsx tests/erp-conformance/provisioning.ts",
+    "test:intake:b2b": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/b2b-intake-admission.test.ts",
+    "intake:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/b2b-intake-demo.ts",
+    "test:erp:intake": "node --import tsx tests/erp-conformance/intake.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

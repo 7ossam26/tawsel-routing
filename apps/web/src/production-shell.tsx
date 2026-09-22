@@ -1,6 +1,7 @@
 import { AccountShell } from './account-shell';
+import { IndependentTasksPage } from './independent-tasks';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
-  if (!fixtureRouteRequested) return <AccountShell />;
+  if (!fixtureRouteRequested) return window.location.pathname.startsWith('/tasks') ? <IndependentTasksPage /> : <AccountShell />;
   return (
     <main className="foundation-shell">
       <section className="foundation-card" aria-labelledby="page-title">

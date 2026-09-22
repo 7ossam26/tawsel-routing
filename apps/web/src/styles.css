@@ -253,6 +253,59 @@ h2 { line-height: 1.55; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* Phase 09 independent intake: production data, Arabic RTL, one stage action. */
+.tasks-shell { min-height: 100vh; background: #f5f7fb; color: #10233f; padding: 24px max(18px, calc((100vw - 760px) / 2)) 88px; }
+.tasks-header, .form-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin: 0 auto 24px; max-width: 760px; }
+.tasks-header h1, .form-header h1 { margin: 3px 0 6px; font-size: clamp(1.7rem, 6vw, 2.35rem); line-height: 1.25; }
+.tasks-header p, .form-header p { margin: 0; color: #64748b; }
+.tasks-logo { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; background: #112a4d; color: white; flex: 0 0 auto; }
+.tasks-stage, .task-form { max-width: 760px; margin: 0 auto; background: white; border: 1px solid #e2e8f0; border-radius: 24px; box-shadow: 0 16px 45px rgba(30, 64, 175, .07); padding: clamp(18px, 4vw, 30px); }
+.tasks-stage__heading { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+.tasks-stage__heading h2 { margin: 0 0 4px; font-size: 1.25rem; }
+.tasks-stage__heading p { margin: 0; color: #64748b; font-size: .9rem; }
+.tasks-stage__heading .action-button { width: auto; white-space: nowrap; }
+.action-button svg { width: 19px; vertical-align: middle; margin-inline-end: 7px; }
+.task-list { display: grid; gap: 14px; }
+.task-card { border: 1px solid #dce5f2; border-radius: 18px; padding: 18px; background: #fbfdff; }
+.task-card__top { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.task-card h3 { margin: 0 0 2px; font-size: 1.08rem; }
+.task-card a { color: #2563eb; text-decoration: none; font-size: .9rem; }
+.readiness { border-radius: 999px; padding: 5px 9px; font-size: .76rem; font-weight: 700; white-space: nowrap; }
+.readiness--missing { color: #92400e; background: #fef3c7; }
+.readiness--ready { color: #166534; background: #dcfce7; }
+.task-address { display: flex; align-items: flex-start; gap: 7px; margin: 16px 0 8px; color: #334155; }
+.task-address svg { width: 18px; flex: 0 0 auto; margin-top: 3px; color: #2563eb; }
+.task-amount { margin: 0; font-size: .9rem; font-weight: 700; }
+.task-amount--none { color: #64748b; font-weight: 500; }
+.task-blocker { background: #fff7ed; border-inline-start: 3px solid #f59e0b; padding: 9px 11px; color: #7c2d12; font-size: .84rem; border-radius: 8px; }
+.edit-link, .back-button, .cancel-button, .inline-retry { border: 0; background: transparent; color: #1d4ed8; font: inherit; font-weight: 700; cursor: pointer; padding: 7px 0; }
+.edit-link { display: inline-flex; align-items: center; gap: 6px; }
+.edit-link svg, .back-button svg { width: 17px; }
+.edit-link:disabled { color: #94a3b8; cursor: not-allowed; }
+.tasks-empty { text-align: center; padding: 42px 18px; color: #64748b; }
+.tasks-empty svg { width: 42px; height: 42px; color: #3b82f6; }
+.tasks-empty h3 { color: #10233f; margin: 8px 0 3px; }
+.tasks-empty p { margin: 0; }
+.tasks-foot { position: fixed; inset-inline: 0; bottom: 0; display: flex; justify-content: center; gap: 32px; padding: 14px; background: rgba(255,255,255,.96); border-top: 1px solid #e2e8f0; }
+.tasks-foot a, .tasks-foot span { color: #64748b; text-decoration: none; font-weight: 700; }
+.tasks-foot [aria-current="page"] { color: #1d4ed8; }
+.form-header { display: block; }
+.back-button { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 18px; }
+.task-form { display: grid; gap: 17px; }
+.task-form .field { margin: 0; }
+.task-form textarea { width: 100%; resize: vertical; border: 1px solid #cbd5e1; border-radius: 12px; padding: 12px 13px; font: inherit; color: #10233f; background: white; }
+.task-form textarea:focus { outline: 3px solid rgba(37, 99, 235, .16); border-color: #2563eb; }
+.task-form textarea[aria-invalid="true"] { border-color: #dc2626; }
+.cancel-button { justify-self: center; color: #475569; }
+.inline-retry { display: block; margin-top: 6px; }
+
+@media (max-width: 560px) {
+  .tasks-shell { padding-top: 18px; }
+  .tasks-stage__heading { align-items: stretch; flex-direction: column; }
+  .tasks-stage__heading .action-button { width: 100%; }
+  .task-card__top { flex-direction: column; }
+}
+
 @media (forced-colors: active) {
   .action-button, .contact-actions a, .contact-actions button, .status-notice, .map-marker, .desktop-marker { border: 1px solid ButtonText; }
 }

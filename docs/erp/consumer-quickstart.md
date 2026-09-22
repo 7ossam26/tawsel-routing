@@ -1,6 +1,19 @@
-# Public ERP consumer quickstart — P08 identity slice
+# Public ERP consumer quickstart — provisioning and intake
 
-This implements the P08 public provisioning slice. Task intake, event receiver/source databases and the complete two-way mock remain P10/P25–P27. Production release/vendor interoperability remain unverified. [Provisioning contract](../provisioning.md) defines trust, revisions, recovery and limits; [phase evidence](../phase-08-evidence.md) records actual runs.
+## Phase 10 public intake consumer
+
+The reproducible no-setup consumer proof is npm run db:local:start, then npm run intake:demo. It uses real isolated PostgreSQL and HTTP, copying only public client/types/conformance code into a separate working directory/process. Source/user projections are labelled fixtures; Engine/issuer login/native ERP UI are not exercised. The isolated database is removed at completion, and the private command journal remains in the printed temporary directory. [Exact behavior and limitations](../b2b-intake.md), [actual run evidence](../phase-10-evidence.md).
+
+For an independently provisioned dedicated test driver, copy packages/api-client/src/{schema.d.ts,intake.ts} and tests/erp-conformance/intake.ts preserving their relative paths. Use Node 24 with the pinned tsx runtime and a package.json with type=module. Supply a private JSON configuration with apiUrl, token, tenantId, integrationId, branchExternalId, driverExternalId and dedicatedTestDriver=true. No operator, database or issuer-admin credential belongs in it. Set TAWSEL_INTAKE_CONFIG to its path and run node --import tsx tests/erp-conformance/intake.ts (repository shortcut: npm run test:erp:intake). The source needs both explicit intake grants and P08 branch/driver mappings. Configuration/discovery/provisioning setup remains below.
+
+The runner refuses an already-held driver, journals each command before HTTP, verifies snapshot → prepared → received, same-address independence, retry/result recovery, revision/withdrawal, 49+2 whole rejection and unsupported deposits, and withdraws only the work it accepted. It leaves unassigned rejected test snapshots/history for inspection. A failed run retains its journal; reconcile those action IDs and withdraw its accepted test records via public APIs before rerunning. Do not delete a journal and assume a timeout meant rejection. The driver must be dedicated because the test deliberately fills its remaining-stop capacity.
+
+Canonical p10-* examples live in contracts/examples. Public error distinction: contract/credential Problem before admission versus durable rejected ActionResult for capacity/version/lifecycle failures; GET results=202 pending means no committed result visible. Full/compacted historical results follow P05. The six command and three read operations are defined in OpenAPI and the mapping, not private application imports.
+
+
+> P09 boundary: `/api/v1/independent/tasks*` is implemented for an authenticated **personal browser session** only. An ERP/service credential cannot use it, and its simple optional collection/address shape is not the P10 B2B snapshot/admission contract. ERP consumers use the P08 provisioning and P10 source operations described here.
+
+The remainder describes P08 provisioning setup. P10 task intake is implemented above; event receiver/source databases and the complete two-way mock remain P25–P27. Production release/vendor interoperability remain unverified. [Provisioning contract](../provisioning.md) defines trust, revisions, recovery and limits; [phase evidence](../phase-08-evidence.md) records actual runs.
 
 ## Local reference setup
 

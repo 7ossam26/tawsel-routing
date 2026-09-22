@@ -1,5 +1,10 @@
 # Tawsel public client foundation 0.1.0
 
+P10 adds the public-only src/intake.ts client with generated source/assignment/task/result types. Copy it with schema.d.ts; it imports no application/domain/database modules. Methods are command/get/list/result. Network errors leave the result unknown: retain the exact immutable command and retry it. [Consumer setup/conformance](../../docs/erp/consumer-quickstart.md), [wire semantics](../../docs/b2b-intake.md).
+
+
+P09 adds generated independent-driver intake types (`IndependentTask`, create/revise commands and list response). Those endpoints require a same-origin personal browser session plus CSRF and are not callable with ERP provisioning service credentials. See [B2C intake](../../docs/b2c-intake.md); ERP consumers continue with the [ERP quickstart](../../docs/erp/consumer-quickstart.md).
+
 P08 update: src/provisioning.ts is a public-only HTTP client over the generated canonical types. examples/provision-company.ts supplies the repeatable fixture/journal using only Node built-ins and that client. [Quickstart](../../docs/erp/consumer-quickstart.md) documents standalone use, bootstrap, credential rotation, disable and recovery. [P08 evidence](../../docs/phase-08-evidence.md) records real HTTP/issuer/DB checks; full two-way ERP proof remains P26–P27. Company sessions and source credentials are distinct; actor assertions are rejected.
 
 Canonical generated types now include **P07 browser session paths**, locally implemented as described in [identity quickstart](../../docs/identity.md). P08 provisioning methods are also available locally; other delivery domain/ERP operations remain designed. Generated `src/schema.d.ts` uses only canonical OpenAPI/JSON Schemas and imports no domain/database modules. `examples/consumer.ts` shows company versus personal entry shapes; schema validity is not authorization. Typecheck with `npm run typecheck -w @tawsel/api-client`; validate canonical examples with `npm run test:contracts`. This portable TypeScript package is not a required ERP implementation language, and browser cookies/CSRF tokens are not ERP credentials.

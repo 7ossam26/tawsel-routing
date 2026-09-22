@@ -1562,5 +1562,514 @@
         "actorId": null
       }
     }
+  },
+  {
+    "id": "p09-create-address-task",
+    "valid": true,
+    "schema": "b2c-intake.schema.json#/$defs/CreateIndependentCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "90000000-0000-4000-8000-000000000001",
+      "operationId": "task.createIndependent",
+      "context": {
+        "kind": "device",
+        "tenantId": "90000000-0000-4000-8000-000000000002",
+        "accountId": "90000000-0000-4000-8000-000000000003",
+        "deviceId": "90000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "recipientName": "منى أحمد",
+        "recipientPhone": "01012345678",
+        "destination": {
+          "kind": "address",
+          "addressText": "١٢ شارع التحرير، الدقي"
+        }
+      }
+    }
+  },
+  {
+    "id": "p09-confirmed-pin-task",
+    "valid": true,
+    "schema": "b2c-intake.schema.json#/$defs/IndependentTask",
+    "data": {
+      "taskId": "90000000-0000-4000-8000-000000000005",
+      "revision": 1,
+      "recipientName": "عمر علي",
+      "recipientPhone": "+201112345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "collectionAmount": {
+        "amountMinor": 12550,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "locationReadiness": "confirmed",
+      "executionReady": true,
+      "editable": true,
+      "createdAt": "2026-09-22T20:00:00Z",
+      "updatedAt": "2026-09-22T20:00:00Z"
+    }
+  },
+  {
+    "id": "p10-SourceSnapshot",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshotCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "intake.submitSnapshot",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-100",
+        "sourceDispatchCycleId": "dispatch-100-1",
+        "sourceRevision": 1,
+        "expectedSourceRevision": 0,
+        "sourceBranchExternalId": "cairo",
+        "recipientName": "أحمد",
+        "recipientPhone": "01012345678",
+        "destination": {
+          "kind": "confirmed-pin",
+          "addressText": "القاهرة",
+          "coordinates": {
+            "latitude": 30.0444,
+            "longitude": 31.2357
+          }
+        },
+        "splittingAllowed": true,
+        "allocation": "exact-outstanding-per-unit",
+        "lines": [
+          {
+            "sourceLineId": "order-line-7",
+            "description": "قطعة",
+            "quantity": 3,
+            "unitDue": {
+              "amountMinor": 10000,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          }
+        ],
+        "shippingDue": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "totalDue": {
+          "amountMinor": 35000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "priority": "ordinary"
+      }
+    }
+  },
+  {
+    "id": "p10-Prepare",
+    "schema": "b2b-intake.schema.json#/$defs/PrepareCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "intake.prepare",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverExternalId": "driver-1",
+        "items": [
+          {
+            "externalId": "shipment-100",
+            "sourceDispatchCycleId": "dispatch-100-1",
+            "expectedSourceRevision": 1,
+            "expectedAssignmentRevision": 0,
+            "assignmentRevision": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p10-ReceiveBatch",
+    "schema": "b2b-intake.schema.json#/$defs/ReceiveBatchCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "assignment.receiveBatch",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverExternalId": "driver-1",
+        "receiptAsserted": true,
+        "items": [
+          {
+            "externalId": "shipment-100",
+            "sourceDispatchCycleId": "dispatch-100-1",
+            "expectedSourceRevision": 1,
+            "expectedAssignmentRevision": 1,
+            "assignmentRevision": 2
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p10-Withdraw",
+    "schema": "b2b-intake.schema.json#/$defs/WithdrawCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "assignment.withdraw",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-100",
+        "sourceDispatchCycleId": "dispatch-100-1",
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 2,
+        "assignmentRevision": 3
+      }
+    }
+  },
+  {
+    "id": "p10-Reassign",
+    "schema": "b2b-intake.schema.json#/$defs/ReassignCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "assignment.reassignBeforeDeparture",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-100",
+        "sourceDispatchCycleId": "dispatch-100-1",
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 2,
+        "assignmentRevision": 3,
+        "driverExternalId": "driver-2",
+        "receiptAsserted": true
+      }
+    }
+  },
+  {
+    "id": "p10-Urgency",
+    "schema": "b2b-intake.schema.json#/$defs/UrgencyCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "operationId": "intake.setUrgencyBeforeDeparture",
+      "context": {
+        "kind": "integration",
+        "tenantId": "10000000-0000-4000-8000-000000000002",
+        "integrationId": "10000000-0000-4000-8000-000000000003"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-100",
+        "sourceDispatchCycleId": "dispatch-100-1",
+        "expectedSourceRevision": 1,
+        "sourceRevision": 2,
+        "priority": "urgent"
+      }
+    }
+  },
+  {
+    "id": "p10-explicit-prepaid",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": true,
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 0,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 0,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 0,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-exact-partial-prepaid",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": true,
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 5000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 2000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 17000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-error-capacity_exceeded",
+    "schema": "common.schema.json#/$defs/Problem",
+    "valid": true,
+    "data": {
+      "type": "https://schemas.tawsel.invalid/problems/capacity-exceeded",
+      "title": "Source command rejected",
+      "status": 409,
+      "code": "capacity_exceeded",
+      "detail": "49 remaining stops + incoming batch of 2: entire batch rejected; both source tasks remain unassigned.",
+      "correlationId": "10000000-0000-4000-8000-000000000004",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "retryable": false
+    }
+  },
+  {
+    "id": "p10-error-unsupported_price_allocation",
+    "schema": "common.schema.json#/$defs/Problem",
+    "valid": true,
+    "data": {
+      "type": "https://schemas.tawsel.invalid/problems/unsupported-price-allocation",
+      "title": "Source command rejected",
+      "status": 422,
+      "code": "unsupported_price_allocation",
+      "detail": "Supply exact outstanding unitDue, shippingDue and matching totalDue; no aggregate deposit allocation is inferred.",
+      "correlationId": "10000000-0000-4000-8000-000000000004",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "retryable": false
+    }
+  },
+  {
+    "id": "p10-error-stale_revision",
+    "schema": "common.schema.json#/$defs/Problem",
+    "valid": true,
+    "data": {
+      "type": "https://schemas.tawsel.invalid/problems/stale-revision",
+      "title": "Source command rejected",
+      "status": 409,
+      "code": "stale_revision",
+      "detail": "expectedAssignmentRevision must match the accepted assignment.",
+      "correlationId": "10000000-0000-4000-8000-000000000004",
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "retryable": false
+    }
+  },
+  {
+    "id": "p10-received-event-intent",
+    "schema": "b2b-intake.schema.json#/$defs/ChangedEvent",
+    "valid": true,
+    "data": {
+      "actionId": "10000000-0000-4000-8000-000000000001",
+      "task": {
+        "taskId": "10000000-0000-4000-8000-000000000005",
+        "dispatchCycleId": "10000000-0000-4000-8000-000000000006",
+        "externalId": "shipment-100",
+        "sourceDispatchCycleId": "dispatch-100-1",
+        "sourceRevision": 1,
+        "assignmentRevision": 2,
+        "state": "held",
+        "driverId": "10000000-0000-4000-8000-000000000007",
+        "driverExternalId": "driver-1",
+        "receivedAt": "2026-09-22T10:00:00Z",
+        "editable": true,
+        "planningEligible": true,
+        "planningStatus": "pending",
+        "locationReadiness": "confirmed",
+        "snapshot": {
+          "externalId": "shipment-100",
+          "sourceDispatchCycleId": "dispatch-100-1",
+          "sourceRevision": 1,
+          "expectedSourceRevision": 0,
+          "sourceBranchExternalId": "cairo",
+          "recipientName": "أحمد",
+          "recipientPhone": "01012345678",
+          "destination": {
+            "kind": "confirmed-pin",
+            "addressText": "القاهرة",
+            "coordinates": {
+              "latitude": 30.0444,
+              "longitude": 31.2357
+            }
+          },
+          "splittingAllowed": true,
+          "allocation": "exact-outstanding-per-unit",
+          "lines": [
+            {
+              "sourceLineId": "order-line-7",
+              "description": "قطعة",
+              "quantity": 3,
+              "unitDue": {
+                "amountMinor": 10000,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            }
+          ],
+          "shippingDue": {
+            "amountMinor": 5000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "totalDue": {
+            "amountMinor": 35000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "priority": "ordinary"
+        }
+      }
+    }
   }
 ]

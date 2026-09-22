@@ -6,6 +6,8 @@ import type { AuthConfig } from './auth/config.js';
 import { provisioningRoutes } from './provisioning/routes.js';
 import type { ProvisioningConfig } from './provisioning/credentials.js';
 import { writeProjection } from './provisioning/domain.js';
+import { b2cIntakeRoutes } from './b2c-intake/routes.js';
+import { b2bIntakeRoutes } from './b2b-intake/routes.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -26,7 +28,9 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
 
   if (database) app.addHook('onClose', async () => { await database.end(); });
   if (database && auth) app.register(async scope => { await authRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await b2cIntakeRoutes(scope, database, auth); });
   if (database && provisioning) app.register(async scope => { await provisioningRoutes(scope, database, provisioning, writeProjection); });
+  if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
 
   app.setErrorHandler((error, _request, reply) => {
     const failure = error instanceof Error

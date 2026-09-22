@@ -2,13 +2,13 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07 browser sessions and P08 ERP provisioning are implemented locally.** See [identity setup and browser quickstart](../identity.md) and [P07 evidence](../phase-07-evidence.md). See [P08 service provisioning](../erp/consumer-quickstart.md). Other domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07 browser sessions, P08 ERP provisioning, P09 independent intake and P10 ERP snapshots/receipt are implemented locally.** See [identity setup and browser quickstart](../identity.md), [P07 evidence](../phase-07-evidence.md), [P08 service provisioning](../erp/consumer-quickstart.md) and [P09 evidence](../phase-09-evidence.md). Later domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status; general action.getResult remains later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -2130,6 +2130,18 @@ P05 verifies this result in the internal PostgreSQL kernel. Authenticated action
     },
     "expiresAt": {
       "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "intakeCapabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "intake.prepare",
+          "assignment.manage"
+        ]
+      },
+      "uniqueItems": true,
+      "maxItems": 2,
+      "description": "Operator-owned service grants. Omit to preserve existing grants; empty removes both."
     }
   },
   "required": [
@@ -3719,6 +3731,1316 @@ P05 verifies this result in the internal PostgreSQL kernel. Authenticated action
 }
 ```
 
+### IndependentDestination
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/IndependentDestination)
+
+Original driver input. Address-only input remains non-executable until P11 confirms a destination.
+
+```json
+{
+  "oneOf": [
+    {
+      "$ref": "#/$defs/AddressDestination"
+    },
+    {
+      "$ref": "#/$defs/ConfirmedPinDestination"
+    }
+  ],
+  "description": "Original driver input. Address-only input remains non-executable until P11 confirms a destination."
+}
+```
+
+### IndependentTask
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/IndependentTask)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "recipientName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "recipientPhone": {
+      "$ref": "#/$defs/RecipientPhone"
+    },
+    "destination": {
+      "$ref": "#/$defs/IndependentDestination"
+    },
+    "collectionAmount": {
+      "$ref": "#/$defs/IndependentCollectionAmount"
+    },
+    "instructions": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "locationReadiness": {
+      "type": "string",
+      "enum": [
+        "needs-resolution",
+        "confirmed"
+      ]
+    },
+    "executionReady": {
+      "type": "boolean"
+    },
+    "editable": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "updatedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    }
+  },
+  "required": [
+    "taskId",
+    "revision",
+    "recipientName",
+    "recipientPhone",
+    "destination",
+    "locationReadiness",
+    "executionReady",
+    "editable",
+    "createdAt",
+    "updatedAt"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "locationReadiness": {
+            "const": "needs-resolution"
+          }
+        },
+        "required": [
+          "locationReadiness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "executionReady": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "locationReadiness": {
+            "const": "confirmed"
+          }
+        },
+        "required": [
+          "locationReadiness"
+        ]
+      },
+      "then": {
+        "properties": {
+          "executionReady": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### IndependentTaskList
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/IndependentTaskList)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/IndependentTask"
+      },
+      "maxItems": 50
+    },
+    "nextCursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CreateIndependentCommand
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/CreateIndependentCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.createIndependent"
+        },
+        "payload": {
+          "$ref": "#/$defs/CreateIndependentPayload"
+        }
+      }
+    }
+  ]
+}
+```
+
+### ReviseIndependentCommand
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/ReviseIndependentCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.reviseIndependent"
+        },
+        "payload": {
+          "$ref": "#/$defs/ReviseIndependentPayload"
+        }
+      }
+    }
+  ]
+}
+```
+
+### IntakeError
+
+[Canonical definition](../../contracts/b2c-intake.schema.json#/$defs/IntakeError)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bMoney
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Money)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "currency": {
+      "const": "EGP"
+    },
+    "exponent": {
+      "const": 2
+    }
+  },
+  "required": [
+    "amountMinor",
+    "currency",
+    "exponent"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bLine
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Line)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "unitDue": {
+      "$ref": "#/$defs/Money"
+    }
+  },
+  "required": [
+    "sourceLineId",
+    "description",
+    "quantity",
+    "unitDue"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bSourceSnapshot
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/SourceSnapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "sourceBranchExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceOrderReference": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "recipientName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    },
+    "recipientPhone": {
+      "$ref": "./b2c-intake.schema.json#/$defs/RecipientPhone"
+    },
+    "destination": {
+      "$ref": "./b2c-intake.schema.json#/$defs/IndependentDestination"
+    },
+    "splittingAllowed": {
+      "type": "boolean"
+    },
+    "allocation": {
+      "const": "exact-outstanding-per-unit"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Line"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "shippingDue": {
+      "$ref": "#/$defs/Money"
+    },
+    "totalDue": {
+      "$ref": "#/$defs/Money"
+    },
+    "priority": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    },
+    "earliestAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "instructions": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "\\S"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceDispatchCycleId",
+    "sourceRevision",
+    "expectedSourceRevision",
+    "sourceBranchExternalId",
+    "recipientName",
+    "recipientPhone",
+    "destination",
+    "splittingAllowed",
+    "allocation",
+    "lines",
+    "shippingDue",
+    "totalDue",
+    "priority"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bAssignmentReference
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/AssignmentReference)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "expectedSourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceDispatchCycleId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "assignmentRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bPrepare
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Prepare)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AssignmentReference"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "driverExternalId",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bReceiveBatch
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/ReceiveBatch)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/AssignmentReference"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "receiptAsserted": {
+      "const": true
+    }
+  },
+  "required": [
+    "driverExternalId",
+    "items",
+    "receiptAsserted"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bWithdraw
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Withdraw)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "expectedSourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceDispatchCycleId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "assignmentRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bReassign
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Reassign)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "expectedSourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "driverExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "receiptAsserted": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceDispatchCycleId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "assignmentRevision",
+    "driverExternalId",
+    "receiptAsserted"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bUrgency
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Urgency)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "expectedSourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "priority": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceDispatchCycleId",
+    "expectedSourceRevision",
+    "sourceRevision",
+    "priority"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bSourceSnapshotCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/SourceSnapshotCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "intake.submitSnapshot"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/SourceSnapshot"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bPrepareCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/PrepareCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "intake.prepare"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Prepare"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bReceiveBatchCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/ReceiveBatchCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "assignment.receiveBatch"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/ReceiveBatch"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bWithdrawCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/WithdrawCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "assignment.withdraw"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Withdraw"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bReassignCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/ReassignCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "assignment.reassignBeforeDeparture"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Reassign"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bUrgencyCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/UrgencyCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "intake.setUrgencyBeforeDeparture"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Urgency"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bTask
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Task)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "enum": [
+        "unassigned",
+        "prepared",
+        "held",
+        "withdrawn"
+      ]
+    },
+    "driverId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "driverExternalId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/ExternalId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "receivedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "editable": {
+      "type": "boolean"
+    },
+    "planningEligible": {
+      "type": "boolean"
+    },
+    "planningStatus": {
+      "enum": [
+        "not-requested",
+        "pending"
+      ]
+    },
+    "locationReadiness": {
+      "enum": [
+        "needs-resolution",
+        "confirmed"
+      ]
+    },
+    "snapshot": {
+      "$ref": "#/$defs/SourceSnapshot"
+    }
+  },
+  "required": [
+    "taskId",
+    "dispatchCycleId",
+    "externalId",
+    "sourceDispatchCycleId",
+    "sourceRevision",
+    "assignmentRevision",
+    "state",
+    "driverId",
+    "driverExternalId",
+    "receivedAt",
+    "editable",
+    "planningEligible",
+    "planningStatus",
+    "locationReadiness",
+    "snapshot"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bTaskList
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/TaskList)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Task"
+      },
+      "maxItems": 100
+    },
+    "nextCursor": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bBatchResult
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/BatchResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "review-required"
+      ]
+    },
+    "result": {
+      "$ref": "./action-result.v1.schema.json"
+    }
+  },
+  "required": [
+    "actionId",
+    "status"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bChangedEvent
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/ChangedEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "task": {
+      "$ref": "#/$defs/Task"
+    }
+  },
+  "required": [
+    "actionId",
+    "task"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -3815,6 +5137,20 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p08-driver.provisionReference | provisioning.schema.json#/$defs/DriverCommand | valid foundation shape |
 | p08-status-retry | provisioning.schema.json#/$defs/ProvisioningStatus | valid foundation shape |
 | p08-provisioning.changed | provisioning.schema.json#/$defs/ProvisioningChanged | valid foundation shape |
+| p09-create-address-task | b2c-intake.schema.json#/$defs/CreateIndependentCommand | valid foundation shape |
+| p09-confirmed-pin-task | b2c-intake.schema.json#/$defs/IndependentTask | valid foundation shape |
+| p10-SourceSnapshot | b2b-intake.schema.json#/$defs/SourceSnapshotCommand | valid foundation shape |
+| p10-Prepare | b2b-intake.schema.json#/$defs/PrepareCommand | valid foundation shape |
+| p10-ReceiveBatch | b2b-intake.schema.json#/$defs/ReceiveBatchCommand | valid foundation shape |
+| p10-Withdraw | b2b-intake.schema.json#/$defs/WithdrawCommand | valid foundation shape |
+| p10-Reassign | b2b-intake.schema.json#/$defs/ReassignCommand | valid foundation shape |
+| p10-Urgency | b2b-intake.schema.json#/$defs/UrgencyCommand | valid foundation shape |
+| p10-explicit-prepaid | b2b-intake.schema.json#/$defs/SourceSnapshot | valid foundation shape |
+| p10-exact-partial-prepaid | b2b-intake.schema.json#/$defs/SourceSnapshot | valid foundation shape |
+| p10-error-capacity_exceeded | common.schema.json#/$defs/Problem | valid foundation shape |
+| p10-error-unsupported_price_allocation | common.schema.json#/$defs/Problem | valid foundation shape |
+| p10-error-stale_revision | common.schema.json#/$defs/Problem | valid foundation shape |
+| p10-received-event-intent | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -3873,5 +5209,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p08-future-version | provisioning.schema.json#/$defs/UserCommand | invalid (const) |
 | p08-scope-omitted | provisioning.schema.json#/$defs/UserCommand | invalid (required) |
 | p08-unhandled-dependency | provisioning.schema.json#/$defs/UserCommand | invalid (maxItems) |
+| p09-phone-required | b2c-intake.schema.json#/$defs/CreateIndependentPayload | invalid (required) |
+| p09-amount-must-use-supported-exponent | b2c-intake.schema.json#/$defs/CreateIndependentPayload | invalid (const) |
+| p10-fractional-piece | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (type) |
+| p10-missing-unit-due | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (required) |
+| p10-ambiguous-deposit | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (additionalProperties) |
+| p10-missing-splitting-permission | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (required) |
+| p10-mixed-currency | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (const) |
+| p10-unasserted-receipt | b2b-intake.schema.json#/$defs/ReceiveBatch | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

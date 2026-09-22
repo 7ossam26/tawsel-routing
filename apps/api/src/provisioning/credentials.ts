@@ -14,7 +14,7 @@ export function isOperator(authorization: string | undefined, config: Provisioni
 }
 /** Tenant lock comes before credential/source lookup and remains held through
  * the command. Revocation and rotation use the same lock, including reads. */
-export async function authenticateService(tx: Transaction, authorization: string | undefined, write: boolean): Promise<ServiceBinding> {
+export async function authenticateService(tx: Transaction, authorization: string | undefined, write: boolean, capability = 'identity.provision'): Promise<ServiceBinding> {
   const match = /^Bearer twp_([a-f0-9-]{36})\.([a-f0-9]{64})$/.exec(authorization ?? '');
   if (!match || !/^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(match[1]!)) {
     throw new ProvisioningError('unauthorized', 401, 'Service credential required');
@@ -28,7 +28,7 @@ export async function authenticateService(tx: Transaction, authorization: string
     WHERE c.tenant_id=$1 AND c.credential_id=$2 AND NOT c.revoked AND c.expires_at>clock_timestamp() AND i.enabled`, [tenantId, match[1]]);
   const row = found.rows[0];
   if (!tenant.rows[0]?.enabled || !row || !timingSafeEqual(Buffer.from(row.secret_hash as string), Buffer.from(hash(match[2]!)))) throw unavailable();
-  const cap = await tx.query(`SELECT 1 FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability='identity.provision'`, [tenantId, row.integration_id]);
+  const cap = await tx.query(`SELECT 1 FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability=$3`, [tenantId, row.integration_id, capability]);
   if (!cap.rowCount) throw unavailable();
   return { tenantId, integrationId: row.integration_id as string, credentialId: match[1]!, operator: false };
 }

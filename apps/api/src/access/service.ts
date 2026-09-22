@@ -143,12 +143,17 @@ export class AccessSession {
   static async run<T>(pool: Pool, principal: AuthenticatedPrincipal, work: (access: AccessSession, tx: Transaction) => Promise<T>): Promise<T> {
     // Snapshot authenticated identity before awaiting. Never spread payload fields.
     const identity = Object.freeze({ ...principal });
-    return withTransaction(pool, async tx => {
-      const binding = await resolveBinding(tx, identity);
-      const session = new AccessSession(binding);
-      try { return await work(session, tx); }
-      finally { session.#active = false; }
-    });
+    return withTransaction(pool, tx => AccessSession.inTransaction(tx, identity, work));
+  }
+
+  /** Authenticated service adapters compose credential and resource checks on the
+   * same connection, retaining the tenant revocation lock through commit. */
+  static async inTransaction<T>(tx: Transaction, principal: AuthenticatedPrincipal, work: (access: AccessSession, tx: Transaction) => Promise<T>): Promise<T> {
+    const identity = Object.freeze({ ...principal });
+    const binding = await resolveBinding(tx, identity);
+    const session = new AccessSession(binding);
+    try { return await work(session, tx); }
+    finally { session.#active = false; }
   }
 }
 

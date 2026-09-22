@@ -1374,5 +1374,291 @@
         "enabled": true
       }
     }
+  },
+  {
+    "id": "p09-phone-required",
+    "valid": false,
+    "schema": "b2c-intake.schema.json#/$defs/CreateIndependentPayload",
+    "keyword": "required",
+    "data": {
+      "recipientName": "منى أحمد",
+      "destination": {
+        "kind": "address",
+        "addressText": "١٢ شارع التحرير"
+      }
+    }
+  },
+  {
+    "id": "p09-amount-must-use-supported-exponent",
+    "valid": false,
+    "schema": "b2c-intake.schema.json#/$defs/CreateIndependentPayload",
+    "keyword": "const",
+    "data": {
+      "recipientName": "منى أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "address",
+        "addressText": "١٢ شارع التحرير"
+      },
+      "collectionAmount": {
+        "amountMinor": 125,
+        "currency": "EGP",
+        "exponent": 3
+      }
+    }
+  },
+  {
+    "id": "p10-fractional-piece",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 1.5,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-missing-unit-due",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "line",
+          "description": "قطعة",
+          "quantity": 3
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-ambiguous-deposit",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary",
+      "depositMinor": 5000
+    }
+  },
+  {
+    "id": "p10-missing-splitting-permission",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-mixed-currency",
+    "schema": "b2b-intake.schema.json#/$defs/SourceSnapshot",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "externalId": "shipment-100",
+      "sourceDispatchCycleId": "dispatch-100-1",
+      "sourceRevision": 1,
+      "expectedSourceRevision": 0,
+      "sourceBranchExternalId": "cairo",
+      "recipientName": "أحمد",
+      "recipientPhone": "01012345678",
+      "destination": {
+        "kind": "confirmed-pin",
+        "addressText": "القاهرة",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "splittingAllowed": true,
+      "allocation": "exact-outstanding-per-unit",
+      "lines": [
+        {
+          "sourceLineId": "order-line-7",
+          "description": "قطعة",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ],
+      "shippingDue": {
+        "amountMinor": 50,
+        "currency": "USD",
+        "exponent": 2
+      },
+      "totalDue": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "priority": "ordinary"
+    }
+  },
+  {
+    "id": "p10-unasserted-receipt",
+    "schema": "b2b-intake.schema.json#/$defs/ReceiveBatch",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "driverExternalId": "driver-1",
+      "receiptAsserted": false,
+      "items": [
+        {
+          "externalId": "shipment-100",
+          "sourceDispatchCycleId": "dispatch-100-1",
+          "expectedSourceRevision": 1,
+          "expectedAssignmentRevision": 1,
+          "assignmentRevision": 2
+        }
+      ]
+    }
   }
 ]

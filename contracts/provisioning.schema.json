@@ -41,6 +41,18 @@
         },
         "expiresAt": {
           "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        "intakeCapabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "intake.prepare",
+              "assignment.manage"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 2,
+          "description": "Operator-owned service grants. Omit to preserve existing grants; empty removes both."
         }
       },
       "required": [

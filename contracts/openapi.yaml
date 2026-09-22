@@ -1,11 +1,10 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — local identity and ERP provisioning
+  title: Tawsel public contract — identity and independent/ERP intake
   version: 0.1.0
-  description: P07 sessions and P08 versioned ERP provisioning are implemented locally. Other business
-    operations remain designed. ERP owns company administration and issuer credentials.
-    Source-scoped service operations never accept human actor assertions. No deployed release or
-    real ERP compatibility claim.
+  description: P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP
+    snapshots/receipt/admission are locally implemented. Later execution, planning and signed delivery remain
+    designed. No production or real ERP compatibility claim.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -269,8 +268,7 @@ paths:
       security: []
       responses:
         "302":
-          description: Fixed same-origin account destination or safe login error; never a request-selected
-            redirect.
+          description: Fixed same-origin account destination or safe login error; never a request-selected redirect.
           headers:
             Location:
               schema:
@@ -348,8 +346,8 @@ paths:
   /api/session/context:
     get:
       operationId: session.getContext
-      summary: Read current issuer-validated session and P06 access context. Display fields are never
-        request authority.
+      summary: Read current issuer-validated session and P06 access context. Display fields are never request
+        authority.
       tags:
         - Sessions
       security:
@@ -618,6 +616,130 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthError"
+  /api/v1/independent/tasks:
+    get:
+      operationId: task.listIndependent
+      summary: List the authenticated independent driver's own persisted tasks.
+      tags:
+        - Independent intake
+      security:
+        - personalSession: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+        - name: cursor
+          in: query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 512
+      responses:
+        "200":
+          description: Own tasks only; unresolved addresses remain visible and non-executable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndependentTaskList"
+        "400": &a1
+          description: Validation, session or scoped-access failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "401": *a1
+        "403": *a1
+    post:
+      operationId: task.createIndependent
+      summary: Persist one simple task for the authenticated independent driver.
+      tags:
+        - Independent intake
+      security:
+        - personalSession: []
+      parameters: &a2
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateIndependentCommand"
+      responses:
+        "201":
+          description: Durable idempotent command result containing the created task.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a1
+        "403": *a1
+        "409": *a1
+  /api/v1/independent/tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          $ref: "#/components/schemas/Uuid"
+    get:
+      operationId: task.getIndependent
+      summary: Inspect one own independent task without disclosing guessed cross-account IDs.
+      tags:
+        - Independent intake
+      security:
+        - personalSession: []
+      responses:
+        "200":
+          description: Own task snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IndependentTask"
+        "400": *a1
+        "401": *a1
+        "403": *a1
+        "404": *a1
+    put:
+      operationId: task.reviseIndependent
+      summary: Replace editable predeparture fields with an expected revision guard.
+      tags:
+        - Independent intake
+      security:
+        - personalSession: []
+      parameters: *a2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviseIndependentCommand"
+      responses:
+        "200":
+          description: Durable idempotent command result containing the revised task.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a1
+        "403": *a1
+        "404": *a1
+        "409": *a1
   /api/v1/provisioning/commands/integration.bindSource:
     post:
       operationId: integration.bindSource
@@ -639,7 +761,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": &a1
+        "400": &a3
           description: Safe validation/access/dependency failure
           content:
             application/problem+json:
@@ -648,7 +770,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "401": &a2
+        "401": &a4
           description: Safe validation/access/dependency failure
           content:
             application/problem+json:
@@ -657,7 +779,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "403": &a3
+        "403": &a5
           description: Safe validation/access/dependency failure
           content:
             application/problem+json:
@@ -666,7 +788,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "404": &a4
+        "404": &a6
           description: Safe validation/access/dependency failure
           content:
             application/problem+json:
@@ -675,7 +797,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "409": &a5
+        "409": &a7
           description: Version or command conflict; inspect retained receipt
           content:
             application/problem+json:
@@ -684,7 +806,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "503": &a6
+        "503": &a8
           description: Safe validation/access/dependency failure
           content:
             application/problem+json:
@@ -715,12 +837,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/integration.disableSource:
     post:
       operationId: integration.disableSource
@@ -742,12 +864,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/branch.provision:
     post:
       operationId: branch.provision
@@ -769,12 +891,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/branch.disable:
     post:
       operationId: branch.disable
@@ -796,12 +918,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/role.defineCapabilities:
     post:
       operationId: role.defineCapabilities
@@ -823,12 +945,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/user.provision:
     post:
       operationId: user.provision
@@ -850,12 +972,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/user.setRole:
     post:
       operationId: user.setRole
@@ -877,12 +999,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/user.setCapabilityExceptions:
     post:
       operationId: user.setCapabilityExceptions
@@ -904,12 +1026,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/user.setBranchMemberships:
     post:
       operationId: user.setBranchMemberships
@@ -931,12 +1053,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/user.disable:
     post:
       operationId: user.disable
@@ -958,12 +1080,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/commands/driver.provisionReference:
     post:
       operationId: driver.provisionReference
@@ -985,12 +1107,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ActionResult"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/configuration:
     get:
       operationId: integration.getConfiguration
@@ -1006,12 +1128,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SourceConfiguration"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
   /api/v1/provisioning/status:
     get:
       operationId: provisioning.getStatus
@@ -1043,12 +1165,320 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProvisioningStatus"
-        "400": *a1
-        "401": *a2
-        "403": *a3
-        "404": *a4
-        "409": *a5
-        "503": *a6
+        "400": *a3
+        "401": *a4
+        "403": *a5
+        "404": *a6
+        "409": *a7
+        "503": *a8
+  /api/v1/intake/commands/intake.submitSnapshot:
+    post:
+      operationId: intake.submitSnapshot
+      summary: Accept generic source task/order/contact/location/content/policy revision.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bSourceSnapshotCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": &a9
+          description: Source validation, authorization or dependency error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": &a10
+          description: Retained business rejection or idempotency conflict
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/commands/intake.prepare:
+    post:
+      operationId: intake.prepare
+      summary: Prepare upcoming work without driver receipt/custody.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bPrepareCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/commands/assignment.receiveBatch:
+    post:
+      operationId: assignment.receiveBatch
+      summary: Definitive ERP receipt assertion with all-or-none 50-stop admission.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bReceiveBatchCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/commands/assignment.withdraw:
+    post:
+      operationId: assignment.withdraw
+      summary: Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists;
+        full start-race proof belongs to P15.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bWithdrawCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/commands/assignment.reassignBeforeDeparture:
+    post:
+      operationId: assignment.reassignBeforeDeparture
+      summary: Change predeparture driver and assignment generation; no live transfer.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bReassignCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/commands/intake.setUrgencyBeforeDeparture:
+    post:
+      operationId: intake.setUrgencyBeforeDeparture
+      summary: ERP priority update only before execution lock.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bUrgencyCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/task:
+    get:
+      operationId: intake.getTask
+      summary: Read current source snapshot, holder, readiness and dispatch identifiers.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      parameters:
+        - in: query
+          name: externalId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/B2bTask"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/tasks:
+    get:
+      operationId: intake.listTasks
+      summary: List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      parameters:
+        - in: query
+          name: state
+          required: false
+          schema:
+            enum:
+              - unassigned
+              - prepared
+              - held
+              - withdrawn
+        - in: query
+          name: driverExternalId
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/B2bTaskList"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
+  /api/v1/intake/results/{actionId}:
+    get:
+      operationId: intake.getBatchResult
+      summary: Recover durable accepted/rejected source results; 202 pending means no committed result is visible,
+        not proof of receipt.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      parameters:
+        - in: path
+          name: actionId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/B2bBatchResult"
+        "202":
+          description: No committed result visible; keep source command pending and retry the exact envelope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/B2bBatchResult"
+        "400": *a9
+        "401": *a9
+        "403": *a9
+        "404": *a9
+        "409": *a10
+        "422": *a9
+        "503": *a9
 components:
   schemas:
     Uuid:
@@ -1209,6 +1639,56 @@ components:
       $ref: ./provisioning.schema.json#/$defs/DisableUserCommand
     DriverCommand:
       $ref: ./provisioning.schema.json#/$defs/DriverCommand
+    IndependentDestination:
+      $ref: ./b2c-intake.schema.json#/$defs/IndependentDestination
+    IndependentTask:
+      $ref: ./b2c-intake.schema.json#/$defs/IndependentTask
+    IndependentTaskList:
+      $ref: ./b2c-intake.schema.json#/$defs/IndependentTaskList
+    CreateIndependentCommand:
+      $ref: ./b2c-intake.schema.json#/$defs/CreateIndependentCommand
+    ReviseIndependentCommand:
+      $ref: ./b2c-intake.schema.json#/$defs/ReviseIndependentCommand
+    IntakeError:
+      $ref: ./b2c-intake.schema.json#/$defs/IntakeError
+    B2bMoney:
+      $ref: ./b2b-intake.schema.json#/$defs/Money
+    B2bLine:
+      $ref: ./b2b-intake.schema.json#/$defs/Line
+    B2bSourceSnapshot:
+      $ref: ./b2b-intake.schema.json#/$defs/SourceSnapshot
+    B2bAssignmentReference:
+      $ref: ./b2b-intake.schema.json#/$defs/AssignmentReference
+    B2bPrepare:
+      $ref: ./b2b-intake.schema.json#/$defs/Prepare
+    B2bReceiveBatch:
+      $ref: ./b2b-intake.schema.json#/$defs/ReceiveBatch
+    B2bWithdraw:
+      $ref: ./b2b-intake.schema.json#/$defs/Withdraw
+    B2bReassign:
+      $ref: ./b2b-intake.schema.json#/$defs/Reassign
+    B2bUrgency:
+      $ref: ./b2b-intake.schema.json#/$defs/Urgency
+    B2bSourceSnapshotCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/SourceSnapshotCommand
+    B2bPrepareCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/PrepareCommand
+    B2bReceiveBatchCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/ReceiveBatchCommand
+    B2bWithdrawCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/WithdrawCommand
+    B2bReassignCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/ReassignCommand
+    B2bUrgencyCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/UrgencyCommand
+    B2bTask:
+      $ref: ./b2b-intake.schema.json#/$defs/Task
+    B2bTaskList:
+      $ref: ./b2b-intake.schema.json#/$defs/TaskList
+    B2bBatchResult:
+      $ref: ./b2b-intake.schema.json#/$defs/BatchResult
+    B2bChangedEvent:
+      $ref: ./b2b-intake.schema.json#/$defs/ChangedEvent
   securitySchemes:
     companySession:
       type: apiKey
@@ -1221,15 +1701,19 @@ components:
     ProvisioningService:
       type: http
       scheme: bearer
-      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side;
-        tenant/integration bound, expiring, rotatable. TLS required outside loopback.
+      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side; tenant/integration
+        bound, expiring, rotatable. TLS required outside loopback.
     ProvisioningOperator:
       type: http
       scheme: bearer
-      description: Out-of-band server operator token; bootstrap and recovery rotation only. Never
-        distribute to ERP application users.
+      description: Out-of-band server operator token; bootstrap and recovery rotation only. Never distribute to ERP
+        application users.
 tags:
   - name: Sessions
     description: P07 same-origin browser session and issuer journeys.
+  - name: Independent intake
+    description: P09 personal-tenant task creation, inspection and predeparture correction.
   - name: ERP provisioning
     description: Versioned ERP-owned identity projections and explicit service authority
+  - name: ERP intake
+    description: Source-authoritative snapshots, prepared/held distinction and atomic remaining-stop admission.

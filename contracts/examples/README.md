@@ -1,12 +1,17 @@
 # Canonical foundation examples
 
+P10 p10-* entries now cover closed snapshot/prepare/receive/withdraw/reassign/urgency envelopes, explicit prepaid and exact partial-prepaid allocations, typed event intent and capacity/allocation/stale errors. Invalid examples cover fractional pieces, missing due/splitting permission, ambiguous deposits, mixed currency and unasserted receipt. Schemas own shape; connected PostgreSQL tests additionally enforce exact sums, scope, revision and capacity. [Public consumer demo](../../docs/b2b-intake.md) executes real HTTP; examples alone are not acceptance evidence.
+
+
 `valid.json` and `invalid.json` contain `{id, schema, valid, data}` records, with an expected failing keyword for invalid cases. `schema` resolves locally under `contracts/`; `.invalid` IDs are identifiers, never network dependencies. `npm run contracts:demo` validates all examples and checks generated artifacts without running an Engine or business service.
 
-These are **designed examples**. Common values and envelope structure are fully validated here. The illustrative `payload` in an action/event is not a completed feature schema. Feature owners replace these with their exact versioned schemas/examples before accepting or emitting such messages. Envelope validity does not validate quantity conservation, authorization, cross-field currency/time policy or business acceptance.
+Most foundation examples are **designed examples**. Common values and envelope structure are fully validated here. P08 provisioning and P09 independent intake add exact implemented feature schemas/examples; other illustrative action/event payloads are not completed feature schemas. Feature owners replace them before accepting or emitting messages. Envelope validity never establishes authorization or business acceptance.
 
 `action-partial-envelope` uses distinct task/cycle/assignment/workday/trip/plan/stop/attempt IDs and EGP 25,000 integer minor units. `event-return-request` offers one piece and asserts only `requested`, never branch receipt or available stock. Transition event IDs differ from a newer progress replacement snapshot. `evidence-old-device-review` preserves receipt without a commit or ERP-applied claim. See the complete correction/subset/fresh-dispatch [state walkthrough](../../docs/tracking-and-consistency.md).
 
 No endpoint URL, credential or automatic ERP compatibility is claimed. Real consumer quickstart and conformance arrive in P26–27; this phase's portable types example is in `packages/api-client/examples/consumer.ts`.
+
+P09 adds `p09-create-address-task`, `p09-confirmed-pin-task` and invalid missing-phone/wrong-EGP-exponent cases. The runtime additionally enforces personal-tenant ownership, positive collection, revision/departure locking and location readiness through real PostgreSQL tests; see [P09 evidence](../../docs/phase-09-evidence.md).
 
 P06 adds `access-*`: explicit inherit/allow/deny overrides; company, personal and integration `AccessContext`; lifecycle denial; invalid role-name grants, branch-specific overrides, personal branches, integration driver/own-work grants and duplicate capabilities. These are schema conformance fixtures. Real PostgreSQL isolation tests use labelled principals/synthetic resource rows and are documented in [P06 evidence](../../docs/phase-06-evidence.md); no example is a production authentication mechanism.
 

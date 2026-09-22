@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Tawsel generated public protocol types and P08 provisioning HTTP consumer",
+  "description": "Tawsel public protocol types and provisioning/intake HTTP consumers",
   "types": "src/schema.d.ts",
   "files": [
     "src/schema.d.ts",
     "src/provisioning.ts",
     "examples/provision-company.ts",
-    "README.md"
+    "README.md",
+    "src/intake.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

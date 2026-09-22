@@ -2,9 +2,9 @@
 
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
-## Application workspace and real identity (through Phase 07)
+## Application workspace, identity and intake (through Phase 10)
 
-The application provides an Arabic RTL React/Vite shell, a Fastify workspace-health route and a clearly labelled development-only fixture for early driver/selected-driver review. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1) so Arabic text does not depend on a runtime font CDN or synthetic bold. The fixture does **not** provide delivery tasks, identity, application persistence, workers, ERP integration, real maps or routing adapters, and it is excluded from production navigation and fixture JavaScript output.
+The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; maps/address resolution, route planning/execution, offline workers, signed ERP delivery and routing adapters remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
 
 The production account shell now supports real local company login, independent phone registration, verified-email recovery and separate sessions through Keycloak and PostgreSQL. Follow [identity setup and demo](docs/identity.md) before starting the API; it requires the dedicated database, generated issuer configuration and local email sink. See [Phase 07 evidence](docs/phase-07-evidence.md) for actual checks and remaining limits.
 
@@ -19,7 +19,7 @@ Open `http://localhost:5173` for the exact identity callback origin, the fixture
 
 ## Contract foundation (Phase 02)
 
-The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account paths are now available locally; **delivery/ERP domain APIs and events remain designed and unavailable**. P05 supplies PostgreSQL foundations; no delivery handler or real ERP connector is implemented.
+The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account, P08 provisioning and P09/P10 independent/source intake paths are available locally. Later planning/execution/returns and signed event delivery remain designed; no real ERP connector is implemented.
 
 ```powershell
 npm ci

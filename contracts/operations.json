@@ -271,7 +271,7 @@
       "id": "task.createIndependent",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "execution.own",
       "description": "Create own simple B2C name/phone/destination/optional collection."
@@ -280,7 +280,7 @@
       "id": "task.reviseIndependent",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "execution.own",
       "description": "Correct own eligible B2C task with revision guards."
@@ -289,7 +289,7 @@
       "id": "task.getIndependent",
       "family": "intake",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "execution.own",
       "description": "Inspect own persisted B2C task."
@@ -298,7 +298,7 @@
       "id": "task.listIndependent",
       "family": "intake",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "execution.own",
       "description": "List own intake/preparation work with bounded pagination."
@@ -307,64 +307,78 @@
       "id": "intake.submitSnapshot",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "intake.prepare",
-      "description": "Accept generic source task/order/contact/location/content/policy revision."
+      "description": "Accept generic source task/order/contact/location/content/policy revision.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.submitSnapshot"
     },
     {
       "id": "intake.prepare",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "intake.prepare",
-      "description": "Prepare upcoming work without driver receipt/custody."
+      "description": "Prepare upcoming work without driver receipt/custody.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.prepare"
     },
     {
       "id": "assignment.receiveBatch",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "assignment.manage",
-      "description": "Definitive ERP receipt assertion with all-or-none 50-stop admission."
+      "description": "Definitive ERP receipt assertion with all-or-none 50-stop admission.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.receiveBatch"
     },
     {
       "id": "assignment.withdraw",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "assignment.manage",
-      "description": "Withdraw before departure; race start without mandatory reason/handover."
+      "description": "Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists; full start-race proof belongs to P15.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.withdraw"
     },
     {
       "id": "assignment.reassignBeforeDeparture",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "assignment.manage",
-      "description": "Change predeparture driver and assignment generation; no live transfer."
+      "description": "Change predeparture driver and assignment generation; no live transfer.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.reassignBeforeDeparture"
     },
     {
       "id": "intake.setUrgencyBeforeDeparture",
       "family": "intake",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "intake.prepare",
-      "description": "ERP priority update only before execution lock."
+      "description": "ERP priority update only before execution lock.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.setUrgencyBeforeDeparture"
     },
     {
       "id": "intake.getBatchResult",
       "family": "intake",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "assignment.manage",
-      "description": "Recover entire accepted/rejected batch and uncertain response."
+      "description": "Recover durable accepted/rejected source results; 202 pending means no committed result is visible, not proof of receipt.",
+      "method": "GET",
+      "path": "/api/v1/intake/results/{actionId}"
     },
     {
       "id": "location.searchCandidates",
@@ -1081,16 +1095,16 @@
       "id": "task.snapshotAccepted",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Stable generic source task snapshot revision accepted."
+      "description": "Stable generic source task snapshot revision accepted. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "task.independentCreated",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "recipient-scope",
       "description": "Own B2C task recorded; no ERP recipient unless separately authorized."
@@ -1099,7 +1113,7 @@
       "id": "task.independentRevised",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 9,
       "capability": "recipient-scope",
       "description": "Own B2C task revision; preserve prior audit."
@@ -1108,46 +1122,46 @@
       "id": "assignment.prepared",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Upcoming preparation, no possession."
+      "description": "Upcoming preparation, no possession. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "assignment.received",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Definitive batch received/admitted; not prepared."
+      "description": "Definitive batch received/admitted; not prepared. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "assignment.withdrawn",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture removal."
+      "description": "Predeparture removal. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "assignment.reassigned",
       "family": "intake",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture generation change."
+      "description": "Predeparture generation change. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "task.urgencyChanged",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18."
+      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25."
     },
     {
       "id": "location.pinConfirmed",
@@ -1357,6 +1371,28 @@
       "description": "Existing GET /health: scope=workspace, engine=not-checked; not the public integration API.",
       "path": "/health",
       "method": "GET"
+    },
+    {
+      "id": "intake.getTask",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Read current source snapshot, holder, readiness and dispatch identifiers.",
+      "method": "GET",
+      "path": "/api/v1/intake/task"
+    },
+    {
+      "id": "intake.listTasks",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination.",
+      "method": "GET",
+      "path": "/api/v1/intake/tasks"
     }
   ],
   "authorizationFoundation": {

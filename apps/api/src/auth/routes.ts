@@ -4,10 +4,10 @@ import type { Pool } from 'pg';
 import type { AccountKind, AuthConfig } from './config.js';
 import { Sessions, AuthError, type LoginInput } from './service.js';
 import { conforms } from './schemas.js';
-import { equal, hash, randomToken } from './crypto.js';
+import { hash, randomToken } from './crypto.js';
+import { browserCookie, requireBrowserCsrf, sessionCookie } from './guards.js';
+export { browserCookie, sessionCookie } from './guards.js';
 
-export const browserCookie = '__Host-tawsel-browser';
-export const sessionCookie = (kind: AccountKind) => `__Host-tawsel-${kind}`;
 const options = { httpOnly: true, secure: true, sameSite: 'lax' as const, path: '/' };
 
 export async function authRoutes(app: FastifyInstance, pool: Pool, config: AuthConfig) {
@@ -25,11 +25,7 @@ export async function authRoutes(app: FastifyInstance, pool: Pool, config: AuthC
     if (!conforms(schema, value)) throw new AuthError('invalid_request');
     return value as T;
   };
-  const csrf = (request: FastifyRequest) => {
-    const token = request.cookies[browserCookie];
-    if (request.headers.origin !== config.origin || !token || typeof request.headers['x-csrf-token'] !== 'string' || !equal(token, request.headers['x-csrf-token'])) throw new AuthError('csrf_invalid', 403);
-    return token;
-  };
+  const csrf = (request: FastifyRequest) => requireBrowserCsrf(request, config);
   app.get('/api/session/bootstrap', async (request, reply) => {
     await sessions.rate(request.ip, 'bootstrap', 120);
     const existing = request.cookies[browserCookie];

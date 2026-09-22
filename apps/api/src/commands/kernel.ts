@@ -60,7 +60,7 @@ function resultFrom(row: IdentityRow): CommandResult {
   };
 }
 
-export async function getCommandResult(pool: Pool, scope: CommandScope, actionId: string): Promise<CommandResult | null> {
+export async function getCommandResult(pool: Pool | Transaction, scope: CommandScope, actionId: string): Promise<CommandResult | null> {
   const found = await pool.query<IdentityRow>(`SELECT * FROM tawsel.command_identities
     WHERE tenant_id=$1 AND source_id=$2 AND action_id=$3`, key(scope, actionId));
   return found.rows[0] ? resultFrom(found.rows[0]) : null;

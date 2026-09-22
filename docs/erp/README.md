@@ -1,11 +1,11 @@
 # ERP integration planning — start here
 
-P07 sessions and P08 ERP provisioning are implemented and verified locally. Read [public consumer quickstart](consumer-quickstart.md), [provisioning trust/recovery contract](../provisioning.md) and [P08 evidence](../phase-08-evidence.md). Full receiver/source two-way conformance remains P26–P27; final released handoff remains P42. No real vendor connector or production release is claimed.
+P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP snapshot/receipt/admission are implemented and verified locally. See the [P10 contract/demo](../b2b-intake.md) and [P10 evidence](../phase-10-evidence.md). Read [public consumer quickstart](consumer-quickstart.md), [provisioning trust/recovery contract](../provisioning.md) and [P08 evidence](../phase-08-evidence.md). Full receiver/source two-way conformance remains P26–P27; final released handoff remains P42. No real vendor connector or production release is claimed.
 
 Read in this order:
 
 1. [ERP-PLANNING-INPUT.md](ERP-PLANNING-INPUT.md): implemented capability, responsibilities, ordered connector slices and ERP-specific unknowns.
-2. [field-and-status-mapping.md](field-and-status-mapping.md): verified identity/source mapping, canonical fields and separately designed delivery-business mappings.
+2. [field-and-status-mapping.md](field-and-status-mapping.md): verified identity/source/shipment/intake mapping, canonical fields and separately designed execution/return mappings.
 3. [Consumer quickstart](consumer-quickstart.md) and [provisioning](../provisioning.md): working public HTTP setup, scoped identity, versions, rotation/disable, durable issuer status and reproducible proof.
 4. [Integration guide](../integration-guide.md), [state model](../tracking-and-consistency.md), [permission contract](../authorization.md) and [identity sessions](../identity.md): authority, transaction boundaries and later delivery obligations.
 5. [Operation ownership](../contract-coverage.md), [OpenAPI](../../contracts/openapi.yaml), [provisioning schema](../../contracts/provisioning.schema.json), [common schema](../../contracts/common.schema.json), [event envelope](../../contracts/events/envelope.v1.schema.json), [examples](../../contracts/examples/README.md), [generated reference](../reference/public-contract.md) and [public client](../../packages/api-client/README.md): canonical artifacts, never divergent ERP-owned copies.
@@ -17,8 +17,9 @@ Read in this order:
 | P05 command kernel and full/compacted ActionResult | Real PostgreSQL/process/race verification | General action.getResult HTTP remains later; P08 uses authenticated POST replay |
 | P06/P07 access guards and real sessions | Locally verified, separate company/personal identity | Production/device verification P39/P41 |
 | P08 source/branch/role/user/driver provisioning | 12 commands, two reads, explicit service authentication, source revisions and issuer reconciliation verified locally | Deployment issuer ownership/permissions and native ERP administration |
-| Public client and consumer quickstart/conformance | P08 provisioning slice verified in independent copied consumer process; no DB imports/credentials | P26 receiver, P27 transactional native source/two-way proof |
-| Task admission, execution and reports | Designed only | P09 onward |
+| Public client and consumer quickstart/conformance | P08 provisioning and P10 intake verified in independent copied consumer processes; no DB imports/credentials | P26 receiver, P27 transactional native source/two-way proof |
+| Independent/source intake and atomic receipt admission | P09/P10 implemented and locally verified | P11 locations, P13 planning, P15 departure |
+| Execution and reports | Designed only | P15 onward |
 | Branch receipt/disposition/redispatch | Designed only | P21/P22/P27 |
 | provisioning.changed event | Durable own-source intent produced atomically | P25 signed/sequenced transport; P26 receiver |
 | Full signed delivery/independent receiver and docs/verification/integration.md | Not implemented/created | P25/P26/P27 |
