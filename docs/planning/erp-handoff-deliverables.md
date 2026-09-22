@@ -1,14 +1,16 @@
 # ERP handoff deliverables and proof plan
 
-Package revision 3 · D-111 · Planning only; application implementation has not started.
+Package revision 3 · D-111, amended by D-112 · Planning only; the integration deliverables below remain future phase work.
 
 This document makes the future ERP handoff explicit. It is an implementation obligation, not an as-built integration certificate. The files below are future deliverables until their owner phase creates substantive, tested content. The final bundle must let an implementer plan and build the real shipping ERP without this chat.
 
 ## Connection boundary
 
-The real ERP connects to Tawsel through the published authenticated HTTP API and signed event protocol. Tawsel uses the existing Nominatim/OSRM/VROOM Engine internally. ERP integrations do not need to import Tawsel domain code, share its database, know its internal routing payloads or rebuild its driver/map application.
+The real ERP connects to Tawsel through the released, versioned authenticated HTTP API and signed webhook/event protocol. That public boundary—not Tawsel source code, domain modules, database tables or any ERP's internal implementation—is the compatibility target. Tawsel uses the existing Nominatim/OSRM/VROOM Engine internally. The consumer must use public URLs, credentials, stable external IDs and the documented idempotency, revision and recovery semantics; it does not import Tawsel internals, share either application's database, use cross-database joins, know Tawsel routing payloads or rebuild its driver/map application.
 
-The public contract supports any ERP technology that implements that protocol. A TypeScript client/reference implementation is a convenience, not a requirement that the future ERP use the same language. Compatibility with a specific future ERP is verified when its connector is built; the mock proves the agreed boundary and recovery obligations, not every possible ERP.
+An ERP-side connector/adapter translates its ERP-specific records, statuses and workflows into the public delivery contract. It may be owned by the ERP vendor/agency, Tawsel or both. Before planning that connector, assess available REST/API, webhooks, integration modules, authentication, stable external IDs, import/export interfaces and other vendor-supported mechanisms. An ERP with no suitable surface may need vendor cooperation or an ERP-side adapter and may not be feasible automatically.
+
+The public contract is technology-neutral. A TypeScript client and the mock/reference ERP are conformance aids, not requirements that a real ERP use the same language, schema or workflow. Compatibility with a specific ERP is verified when its connector is mapped, built and tested; the reference implementation proves the released boundary and recovery obligations, not that every real ERP integrates identically.
 
 ## Phase responsibilities
 

@@ -1,6 +1,6 @@
 # Tawsel — current requirements and phase coverage
 
-Package revision 3, D-109–D-111. This maps current behavior to bounded implementation phases. It does not replace the [master plan](../../master-plan.md) or claim runtime completion.
+Package revision 3, D-109–D-111, amended by D-112 without changing phase count or ownership. This maps current behavior to bounded implementation phases. It does not replace the [master plan](../../master-plan.md) or claim runtime completion.
 
 Execution note, 22 September 2026: [Phase 01 evidence](../phase-01-evidence.md) verifies the workspace shell, local-only workspace health boundary, fast/integration Vitest selections, build/check commands, and non-destructive setup. The shell also establishes a locally packaged Cairo 400/600/700/800 typography baseline with synthetic weights disabled; P03 still owns the final shared typography/theme tokens and P04 still owns representative component/accessibility review. Phase 01 does not implement a delivery/ERP operation or the P38 owner-diagnostics health contract; Phases 02–42 retain their assignments below.
 Read [decision-map.md](decision-map.md) when an older answer differs. All phases start unimplemented; [the ledger](../implementation-status.md) records actual evidence.
@@ -516,9 +516,9 @@ Initial engineering requirements without a numbered discovery answer remain trac
 
 ### R-64
 
-**Canonical docs and truthful handoff.** Versioned HTTP/events/examples/client, state/UI/integration/operations/report docs and exact implementation/verification ledger. The final ERP bundle includes planning input, ownership/field/status mapping, public-consumer quickstart/conformance checks and a validated release manifest. External proof starts in P26–P27; P42 audits and packages actual evidence and remaining limitations. See the [handoff deliverables plan](../planning/erp-handoff-deliverables.md).
+**Canonical docs and truthful handoff.** Versioned HTTP/events/examples/client, state/UI/integration/operations/report docs and exact implementation/verification ledger. Compatibility targets this ERP-agnostic public protocol, not ERP source code, databases or schemas; an ERP-specific connector owns translation and its feasibility depends on the available integration surface. The final ERP bundle includes planning input, ownership/field/status mapping, public-consumer quickstart/conformance checks and a validated release manifest. External proof starts in P26–P27; P42 audits and packages actual evidence and remaining limitations. See the [handoff deliverables plan](../planning/erp-handoff-deliverables.md).
 
-- Source: D-13, D-108, D-111.
+- Source: D-13, D-108, D-111, D-112.
 - Owner phases: [P02](02-state-contract-foundation.md), [P42](42-final-contract-readiness-handoff.md).
 - Follow-through: [P03](03-design-action-specification.md), [P08](08-erp-provisioning-actor-binding.md), [P25](25-outbox-signed-delivery.md), [P26](26-mock-inbox-projection-recovery.md), [P27](27-native-mock-erp-source.md), [P36](36-workday-timing-reports.md), [P39](39-deployment-migration-release.md), [P40](40-backup-restore-rehearsal.md), [P41](41-device-owner-pilot-review.md), [P10](10-b2b-intake-admission.md), [P21](21-source-return-receipt.md), [P22](22-branch-interruption-redispatch.md).
 
@@ -637,7 +637,7 @@ P41 walks through the product/device evidence and P42 audits the final mapping. 
 | docs/erp/README.md / ERP-PLANNING-INPUT.md / field-and-status-mapping.md | 02 meaningful designed foundation; 08, 10, 21–27 actual identities/source/receipt/event mapping; 42 final ERP planning bundle |
 | docs/erp/consumer-quickstart.md / tests/erp-conformance/ | 26 receiver setup/checks; 27 complete two-way public-only setup/reference consumer; 42 clean final-release run |
 | docs/ERP-INTEGRATION-HANDOFF.md / docs/erp/release-manifest.json | 42 as-built released boundary, actual artifact versions/paths/digests, evidence and real-connector obligations |
-| docs/phases/model-selection.md / docs/planning/erp-handoff-deliverables.md | Current planning guidance under D-110/D-111; update recommendations and responsibilities coherently if facts change |
+| docs/phases/model-selection.md / docs/planning/erp-handoff-deliverables.md | Current planning guidance under D-110/D-111 and the D-112 boundary clarification; update recommendations and responsibilities coherently if facts change |
 | docs/implementation-status.md | Existing execution ledger, now reset only in the sense that all phases were never started; each task appends actual evidence |
 
 These are future deliverables until their owning phase produces substantive content. Exact implementation paths may follow verified repository conventions; update this map and callers coherently rather than keeping broken aliases.

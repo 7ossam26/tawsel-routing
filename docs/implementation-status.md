@@ -1,12 +1,12 @@
 # Tawsel implementation status
 
-Updated: 22 September 2026. Package revision 3 under D-109–D-111.
+Updated: 22 September 2026. Package revision 3 under D-109–D-111, with the ERP-agnostic boundary clarified by D-112.
 Planning HEAD: `3d6291697fb0baeb69215237bf1d09dbf6d1d9cd`.
 
 ## Current state
 
 The owner requested smaller self-contained implementation tasks after reviewing the broad 11-phase package.
-The [current package](phases/README.md) contains 42 sequential prompts, a 65-requirement catalog, complete D-01–D-111 traceability, per-phase model/reasoning recommendations, explicit ERP handoff deliverables and a review checklist.
+The [current package](phases/README.md) contains 42 sequential prompts, a 65-requirement catalog, complete D-01–D-112 traceability, per-phase model/reasoning recommendations, explicit ERP handoff deliverables and a review checklist.
 **Phase 01 is implemented and locally verified.** It adds the bounded web/API/shared workspace, locally bundled Cairo typography, meaningful configuration and real-HTTP tests, locked dependencies, CI, non-destructive setup, and operations evidence. It does not add delivery behavior, an application database, identity, worker, routing adapter, public ERP contract, or deployment. Phases 02–42 have not started.
 
 The [old package/ledger](phases-archive-v1/implementation-status-at-supersession.md) remains historical. Its earlier structure/link/hash validation does not establish the adequacy of its broad task boundaries, and is not evidence for the replacement's runtime behavior.

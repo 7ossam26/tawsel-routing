@@ -1,6 +1,6 @@
 # Phase 02 — State vocabulary and canonical contract foundation
 
-Package revision 3 · D-109–D-111 · Implementation not started at preparation time.
+Package revision 3 · D-109–D-111, amended by D-112 · Implementation not started at preparation time.
 Copy this entire file as the task prompt in the Tawsel repository.
 
 ## Codex model for this phase
@@ -24,14 +24,14 @@ Inspect their real artifacts and run the relevant prerequisite check. Do not inf
 Repair a small prerequisite defect needed here and record it. A material missing prerequisite prevents dependent work; continue independent work without inventing success.
 
 Requirements assigned here: [R-63](coverage-matrix.md#r-63), [R-64](coverage-matrix.md#r-64), [R-65](coverage-matrix.md#r-65).
-Decision references: D-11, D-13, D-28, D-38, D-54, D-64, D-76, D-108, D-109, D-110, D-111.
+Decision references: D-11, D-13, D-28, D-38, D-54, D-64, D-76, D-108, D-109, D-110, D-111, D-112.
 Use the [decision map](decision-map.md) for later amendments; older answers may have been explicitly replaced.
 
 ## Sources to read
 
 - [ERP handoff deliverables and proof plan](../planning/erp-handoff-deliverables.md); implement this phase's assigned artifacts and public-consumer proof, not the later real ERP.
 - master-plan.md sections 5–15 and 18–20, including quantities, revisions and evidence states.
-- TAWSEL-DISCOVERY-LOG.md current synthesis and D-64–D-109, especially the later overrides.
+- TAWSEL-DISCOVERY-LOG.md current synthesis and D-64–D-112, especially the later overrides.
 - Phase 01 workspace/config/test commands; existing docs/phases/coverage-matrix.md and decision-map.md.
 
 ## Required behavior and invariants
@@ -47,6 +47,8 @@ Use the [decision map](decision-map.md) for later amendments; older answers may 
 5. Use UUIDs, scoped source references, whole-piece quantities, integer minor-unit money/currency and separate observed/received/committed timestamps.
 
 6. Do not publish invented working endpoints. Unimplemented operation families must be marked designed, with an assigned future owner phase.
+
+7. Make the public integration boundary ERP-agnostic. Model generic delivery concepts—stable external task/order references, customer/contact and location snapshots, delivery requirements, optional time windows/service duration/priority, and Tawsel task/trip/assignment/execution resources—with explicit versions, revisions, idempotency and webhook events. Do not copy a specific ERP schema into Tawsel core or require ERP source/database access.
 
 ## Ordered implementation checkpoints
 
@@ -69,7 +71,7 @@ Before continuing, record what changed, the focused result and any unresolved de
 ### Checkpoint C — Operation ownership
 
 - [ ] Inventory every HTTP/event family in docs/contract-coverage.md with stable operation identifiers, lifecycle and the owning phase.
-- [ ] Document source provisioning, signed delivery, compatibility, replay retention and old queued-payload obligations in the initial integration guide. Create docs/erp/README.md, docs/erp/ERP-PLANNING-INPUT.md and docs/erp/field-and-status-mapping.md with meaningful designed responsibilities, identities/state ownership, known constraints, explicit unknown real-ERP choices and phase owners. Mark all unimplemented contracts honestly.
+- [ ] Document source provisioning, signed delivery, compatibility, replay retention and old queued-payload obligations in the initial integration guide. Create docs/erp/README.md, docs/erp/ERP-PLANNING-INPUT.md and docs/erp/field-and-status-mapping.md with meaningful designed responsibilities, identities/state ownership, known constraints, explicit unknown real-ERP choices and phase owners. Record that connector ownership may be the ERP vendor/agency, Tawsel or both, and that integration feasibility begins with discovery of the ERP's supported API/webhook/authentication/stable-ID/import-export mechanisms. Mark all unimplemented contracts honestly.
 - [ ] Check: every required action maps to an operation/event or explicit local-only UI action; no family is hidden as generic CRUD.
 
 Before continuing, record what changed, the focused result and any unresolved dependency in the phase evidence.
@@ -107,7 +109,7 @@ If an external service/device check is unavailable, report the exact gap and its
 
 ## Scope boundary
 
-Do not implement business handlers, a giant database schema or all UI routes here. Do not turn every future operation into a stub returning success.
+Do not implement business handlers, a giant database schema or all UI routes here. Do not turn every future operation into a stub returning success. Do not introduce ERP-specific domain models, direct ERP database access or a claim of automatic compatibility with every ERP.
 
 ## Instructions for an agent starting with no chat history
 
@@ -138,4 +140,3 @@ For any affected public interface, update docs/erp/ERP-PLANNING-INPUT.md, field-
 Phase 03 gets stable terminology; feature phases must replace their designed operations with validated schemas and real implementations in place.
 
 Next numbered prompt: [Phase 03](03-design-action-specification.md). State the exact verified artifacts it may rely on. Do not execute it in this task.
-

@@ -1,6 +1,6 @@
 # Tawsel decision-to-implementation map
 
-Package revision 3. Every numbered discovery decision D-01 through D-111 appears below, including historical answers that were later changed.
+Package revision 3, amended by D-112. Every numbered discovery decision D-01 through D-112 appears below, including historical answers that were later changed.
 The current requirement text in [coverage-matrix.md](coverage-matrix.md) and latest amendments govern implementation; a row's older topic is not independent permission to restore superseded behavior.
 Original wording and surrounding questions remain in [TAWSEL-DISCOVERY-LOG.md](../../TAWSEL-DISCOVERY-LOG.md). Requirements originating before numbered discovery remain mapped separately (notably atomicity, integration durability and backup proposals).
 
@@ -118,6 +118,7 @@ Original wording and surrounding questions remain in [TAWSEL-DISCOVERY-LOG.md](.
 
 | D-110 | [R-65 — Small self-contained sequential phases](coverage-matrix.md#r-65); [per-phase model guide](model-selection.md) | Owner requests a Codex model in each phase. Recommendations and effort are explicit; the prompt does not switch the runtime model or replace verification. |
 | D-111 | [R-64 — Canonical docs and truthful handoff](coverage-matrix.md#r-64); [ERP deliverables/proof plan](../planning/erp-handoff-deliverables.md) | Owner requires concrete reusable ERP planning/integration outputs and their responsible phases. Strengthen P02, P08/P10/P21/P22/P25, P26–P27 external proof and P42 final bundle; real ERP remains separate. |
+| D-112 | [R-02 — ERP administration authority](coverage-matrix.md#r-02); [R-51 — Real B2C and labelled B2B mock](coverage-matrix.md#r-51); [R-64 — Canonical docs and truthful handoff](coverage-matrix.md#r-64); [ERP deliverables/proof plan](../planning/erp-handoff-deliverables.md) | Compatibility is with Tawsel's released protocol, not ERP internals. ERP-specific translation belongs to a vendor-, Tawsel- or jointly-owned connector; feasibility depends on the ERP's supported integration surface. No source/database access, core ERP schema dependency, universal compatibility claim or new phase. |
 
 ## Rules when using historical context
 
@@ -125,4 +126,3 @@ Do not resurrect D-17 single-branch access, D-20/D-31/D-50 call limits, D-28 imm
 D-102 makes screen exports visual references only. D-103/D-107 settle the component/application stack. D-105/D-106 require meaningful connected Vitest and simple UX. D-109 changes implementation granularity and prompt completeness, without changing the agreed delivery business rules.
 
 The D-108 archived package is historical documentation. The current task sequence is the 42 prompts in this directory.
-

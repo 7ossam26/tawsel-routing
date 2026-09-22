@@ -2,7 +2,7 @@
 
 Updated: 21 September 2026
 
-Status: operational discovery consolidated; stack, meaningful Vitest and very simple driver UX accepted. D-109 requires smaller self-contained tasks. D-110 adds the recommended Codex model/reasoning setting per phase; D-111 requires concrete ERP planning/integration handoff files and explicit responsible phases. Master-plan revision 6 and package revision 3 contain 42 prompts, 65 requirement groups and D-01–D-111 traceability. The prior 11-phase package is archived. No application phase has started; planning establishes no runtime guarantee.
+Status: operational discovery consolidated; stack, meaningful Vitest and very simple driver UX accepted. D-109 requires smaller self-contained tasks. D-110 adds the recommended Codex model/reasoning setting per phase; D-111 requires concrete ERP planning/integration handoff files and explicit responsible phases; D-112 locks the ERP-agnostic public-contract boundary and connector ownership. Master-plan revision 7 and package revision 3 contain 42 prompts, 65 requirement groups and D-01–D-112 traceability. The prior 11-phase package is archived. Phase 01 is implemented and locally verified; Phases 02–42 remain unstarted, and planning establishes no runtime guarantee for them.
 
 ## 1. Sources and precedence
 
@@ -12,7 +12,7 @@ Status: operational discovery consolidated; stack, meaningful Vitest and very si
 4. Attached `STACK-CONTEXT(2).md` and `TAWSEL-ENGINE-CONTEXT(1).md`, both read in full and verified byte-for-byte equal to their repository counterparts during the 19 September inspection.
 5. Repository `7ossam26/tawsel-routing`: historical inspection at `62d9d4610c38446818e2abc715095c218d9c2f51`; refreshed repository/configuration and nine-screen source/visual assessment on 21 September at `3d6291697fb0baeb69215237bf1d09dbf6d1d9cd`. See docs/planning/repository-and-ui-assessment.md for observed evidence and limitations.
 
-The retained context preserves architecture/discovery history. D-108 authorizes preparation, D-109 governs granularity/completeness and D-110/D-111 add model guidance and explicit ERP handoff proof; they do not retroactively approve every historical assistant suggestion or establish implementation. Earlier suggestions do not become decisions merely through silence. Use the decision map to avoid restoring superseded behavior.
+The retained context preserves architecture/discovery history. D-108 authorizes preparation, D-109 governs granularity/completeness, D-110/D-111 add model guidance and explicit ERP handoff proof, and D-112 clarifies the existing integration boundary; they do not retroactively approve every historical assistant suggestion or establish implementation. Earlier suggestions do not become decisions merely through silence. Use the decision map to avoid restoring superseded behavior.
 
 ## 2. Existing scope retained
 
@@ -690,3 +690,11 @@ The original package is preserved in docs/phases-archive-v1 with superseded noti
 | D-111 | Owner asks whether completing the phases produces important files for planning the real ERP, fears an isolated Engine that cannot integrate externally, and asks which phase handles this. | Make the existing public integration and final handoff commitments concrete, reusable and verifiable. | P02 starts contracts/planning/mapping; P08/P10/P21/P22/P25 complete boundary details; P26/P27 prove separate-database public-only receiver/source integration and create a repeatable quickstart/conformance suite; P42 validates final versions, assembles the ERP planning bundle and records evidence/remaining real-connector work. No automatic compatibility with an unknown future ERP is claimed. |
 
 Package revision 3 retains all 42 phase boundaries and existing product decisions. The [model guide](docs/phases/model-selection.md) distinguishes official model descriptions from the assistant's workload recommendations. The [ERP handoff deliverables plan](docs/planning/erp-handoff-deliverables.md) names future outputs, phase ownership, mapping contents and reproducible external proof. No application, final as-built handoff or real ERP connector was created during this amendment; those files must be produced and tested by their assigned phases. Master-plan revision 6 and the execution ledger reflect the amendment.
+
+## 36. ERP-agnostic integration boundary and connector ownership
+
+| ID | Source clarification | Decision and rationale | Consequence |
+| --- | --- | --- | --- |
+| D-112 | Tawsel must integrate with shipping companies' existing ERPs even when Tawsel does not own them and cannot access their source code, database or internal schema. | Tawsel's compatibility target is its released HTTP API and webhook/event protocol, including authentication, stable external IDs, versioning, idempotency, revisions and recovery. ERP-specific translation belongs in a connector/adapter because keeping that knowledge outside Tawsel core preserves a stable delivery-execution product boundary. | ERP source-code access is not required, direct ERP database access/cross-database joins are not the preferred architecture, and Tawsel core must not depend on ERP-specific schemas. The ERP vendor/agency, Tawsel or both may implement the connector. Integration feasibility depends on an assessment of the ERP's API, webhooks, integration modules, authentication, stable IDs, import/export and vendor-supported mechanisms; an ERP with no suitable surface may require vendor cooperation or an ERP-side adapter. The mock ERP is a conformance/reference implementation, not proof that every ERP integrates identically or automatically. This clarification amends existing contract and handoff work and creates no new roadmap phase. |
+
+This decision sharpens D-111 without changing ownership, the Engine definition or the 42-phase sequence. Phase 02 makes the public foundation explicitly ERP-agnostic; P08/P10/P25/P26/P27/P42 already implement the correct boundary and remain unchanged.
