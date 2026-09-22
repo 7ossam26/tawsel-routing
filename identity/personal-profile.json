@@ -1,0 +1,19 @@
+{
+  "attributes": [
+    {
+      "name": "username", "displayName": "رقم الهاتف", "multivalued": false,
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] },
+      "validations": {
+        "length": { "min": 9, "max": 16 },
+        "pattern": { "pattern": "^\\+[1-9][0-9]{7,14}$", "error-message": "اكتب رقم الهاتف بالصيغة الدولية مثل +201000000000" }
+      }
+    },
+    {
+      "name": "email", "displayName": "البريد الإلكتروني للاستعادة", "multivalued": false,
+      "required": { "roles": ["user"] },
+      "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] },
+      "validations": { "email": {}, "length": { "max": 254 } }
+    }
+  ],
+  "groups": []
+}

@@ -1,14 +1,14 @@
-# Tawsel public contract reference — designed
+# Tawsel public contract reference
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**No business HTTP operation is implemented or released.** The foundation exports shared types only; there are no callable paths, server URL, credentials or working business examples. Workspace `/health` is excluded.
+**P07 browser session endpoints are implemented locally.** See [identity setup and browser quickstart](../identity.md) and [P07 evidence](../phase-07-evidence.md). Other domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the internal PostgreSQL kernel and ActionResult full/compacted shape. P06 verifies tenant membership, capability overrides and resource guards with labelled principals; AccessContext is a server-resolved display snapshot, never request authority. Public session/result/provisioning HTTP adapters still await P07/P08 authentication. See [P05 evidence](../phase-05-evidence.md), [P06 permission contract](../authorization.md) and [retention/lock protocol](../tracking-and-consistency.md#implemented-p05-transaction-protocol).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. Result/provisioning HTTP adapters remain later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -1804,6 +1804,290 @@ P05 verifies this result in the internal PostgreSQL kernel. Authenticated action
 }
 ```
 
+### AccountKind
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/AccountKind)
+
+```json
+{
+  "type": "string",
+  "enum": [
+    "company",
+    "personal"
+  ]
+}
+```
+
+### KindRequest
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/KindRequest)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind"
+  ],
+  "properties": {
+    "kind": {
+      "$ref": "#/$defs/AccountKind"
+    }
+  }
+}
+```
+
+### CompanyRequest
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/CompanyRequest)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code"
+  ],
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9-]{2,32}$"
+    }
+  }
+}
+```
+
+### CompanyResponse
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/CompanyResponse)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "code",
+    "displayName"
+  ],
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    }
+  }
+}
+```
+
+### LoginRequest
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/LoginRequest)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind"
+  ],
+  "properties": {
+    "kind": {
+      "$ref": "#/$defs/AccountKind"
+    },
+    "companyCode": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9-]{2,32}$"
+    },
+    "phone": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 40
+    },
+    "intent": {
+      "type": "string",
+      "enum": [
+        "login",
+        "register",
+        "recover"
+      ]
+    },
+    "reauthenticate": {
+      "type": "boolean"
+    }
+  }
+}
+```
+
+### RedirectResponse
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/RedirectResponse)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authorizationUrl"
+  ],
+  "properties": {
+    "authorizationUrl": {
+      "type": "string",
+      "format": "uri"
+    }
+  }
+}
+```
+
+### BootstrapResponse
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/BootstrapResponse)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "csrfToken"
+  ],
+  "properties": {
+    "csrfToken": {
+      "type": "string",
+      "minLength": 43,
+      "maxLength": 43
+    }
+  }
+}
+```
+
+### CallbackQuery
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/CallbackQuery)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state"
+  ],
+  "properties": {
+    "state": {
+      "type": "string",
+      "minLength": 43,
+      "maxLength": 43
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "iss": {
+      "type": "string",
+      "maxLength": 2048
+    },
+    "session_state": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "error": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "error_description": {
+      "type": "string",
+      "maxLength": 1024
+    }
+  }
+}
+```
+
+### SessionContext
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/SessionContext)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "access",
+    "expiresAt",
+    "recoveryEmailVerified",
+    "phoneOwnershipVerified",
+    "loginIdentifier"
+  ],
+  "properties": {
+    "kind": {
+      "$ref": "#/$defs/AccountKind"
+    },
+    "access": {
+      "$ref": "./common.schema.json#/$defs/AccessContext"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "loginIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "recoveryEmailVerified": {
+      "type": "boolean"
+    },
+    "phoneOwnershipVerified": {
+      "const": false
+    }
+  }
+}
+```
+
+### AuthError
+
+[Canonical definition](../../contracts/session.schema.json#/$defs/AuthError)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "error"
+  ],
+  "properties": {
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "invalid_request",
+            "csrf_invalid",
+            "rate_limited",
+            "login_failed",
+            "company_unavailable",
+            "access_disabled",
+            "session_expired",
+            "issuer_unavailable",
+            "same_account_required",
+            "phone_invalid"
+          ]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -1880,6 +2164,12 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | access-personal | common.schema.json#/$defs/AccessContext | valid foundation shape |
 | access-integration | common.schema.json#/$defs/AccessContext | valid foundation shape |
 | access-lifecycle-problem | common.schema.json#/$defs/Problem | valid foundation shape |
+| session-company-entry | session.schema.json#/$defs/CompanyRequest | valid foundation shape |
+| session-login | session.schema.json#/$defs/LoginRequest | valid foundation shape |
+| session-personal-register | session.schema.json#/$defs/LoginRequest | valid foundation shape |
+| session-csrf | session.schema.json#/$defs/BootstrapResponse | valid foundation shape |
+| session-kind | session.schema.json#/$defs/KindRequest | valid foundation shape |
+| session-denied | session.schema.json#/$defs/AuthError | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -1925,5 +2215,9 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | access-integration-driver | common.schema.json#/$defs/AccessContext | invalid (type) |
 | access-integration-own | common.schema.json#/$defs/AccessContext | invalid (not) |
 | access-duplicate-grants | common.schema.json#/$defs/AccessContext | invalid (uniqueItems) |
+| session-forged-redirect | session.schema.json#/$defs/LoginRequest | invalid (additionalProperties) |
+| session-unknown-kind | session.schema.json#/$defs/KindRequest | invalid (enum) |
+| session-extra-scope | session.schema.json#/$defs/KindRequest | invalid (additionalProperties) |
+| session-no-state | session.schema.json#/$defs/CallbackQuery | invalid (required) |
 
 [Canonical example data](../../contracts/examples/README.md)

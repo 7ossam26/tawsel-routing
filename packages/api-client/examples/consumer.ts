@@ -13,8 +13,10 @@ export const source: components['schemas']['SourceReference'] = {
   externalId: 'shipment-001'
 };
 
-// There are no published business paths in the foundation.
-export const availablePaths: paths = {};
+// P07 exposes browser session paths locally; this is not an ERP credential.
+export const contextPath: keyof paths = '/api/session/context';
+export const companyLogin: components['schemas']['LoginRequest'] = { kind: 'company', companyCode: 'LOCAL' };
+export const separatePersonalLogin: components['schemas']['LoginRequest'] = { kind: 'personal', phone: '+201000000000' };
 
 // Planned ERP user editor vocabulary. This is a schema example, not a live
 // provisioning request. Scope/lifecycle remain server-enforced even with allow.

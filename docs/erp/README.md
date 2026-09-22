@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P07 adds locally implemented [browser identity/session paths](../identity.md) and [real issuer evidence](../phase-07-evidence.md). ERP and Tawsel use separate clients; no per-command ERP request or password copying. Provisioning/verified service and delegated actors remain P08. Public schema/client conformance is available now; external ERP source/receiver HTTP conformance remains P26/P27. Updated planning and field mappings below distinguish these boundaries.
+
 **Phase 02 foundation is schema-verified locally; all business integration behavior is designed and unavailable.** There is no released API, real ERP connector, mock receiver, consumer quickstart or final release manifest yet. These files are planning inputs for an ERP implementer, not an integration certificate.
 
 Read in this order:

@@ -86,14 +86,17 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    expect(bundle.api.paths).toEqual({});
-    expect(bundle.api['x-lifecycle']).toBe('designed');
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$)/);
+    checkCatalog(bundle, ajv);
+    expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
   });
 
   it('covers every master-plan family with unique owned operations and real example references', () => {
     checkCatalog(bundle, ajv);
-    expect(bundle.catalog.operations.filter((entry: { lifecycle: string }) => entry.lifecycle !== 'designed').map((entry: { id: string }) => entry.id)).toEqual(['workspace.getHealth']);
+    const available = bundle.catalog.operations.filter((entry: { lifecycle: string }) => entry.lifecycle !== 'designed');
+    expect(available.map((entry: { id: string }) => entry.id)).toContain('session.getContext');
+    expect(available.every((entry: { family: string; id: string }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth')).toBe(true);
   });
 
   it('rejects missing owners, omitted families, duplicate IDs and invented public availability', () => {
@@ -132,6 +135,6 @@ describe('canonical public contract foundation (schema evidence, not business ex
     for (const [path, content] of first) expect(await readFile(resolve(root, path), 'utf8'), path).toBe(content);
     const client = first.get('packages/api-client/src/schema.d.ts')!;
     expect(client).not.toMatch(/from ["'](?:@tawsel\/(?:domain|shared)|.*apps\/api)/);
-    expect(first.get('docs/reference/public-contract.md')).toContain('No business HTTP operation is implemented or released.');
+    expect(first.get('docs/reference/public-contract.md')).toContain('Other domain HTTP operations/events remain designed and unavailable.');
   });
 });

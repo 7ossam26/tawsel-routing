@@ -15,6 +15,8 @@ P06 evidence, 22 September 2026: [authorization schema/service/tests](../phase-0
 
 ## Current requirement catalog
 
+P07 evidence, 22 September 2026: [ordered execution and acceptance results](../phase-07-evidence.md) verify R-05 separate real identities, R-06 code/PKCE login and restricted sessions, R-07 phone login and verified-email activation/recovery, and the P07 portion of R-41 same-account reauthentication without clearing local evidence. R-56/R-57 cover pinned issuer/connected Arabic account UI; R-59/R-60 cover the bounded local setup and recovery documentation; R-65 covers ordered checkpoints, canonical contract/ERP updates and handoff. The action catalog now contains 148 operations after adding CSRF bootstrap. P35 durable queue safeguards, P39 production deployment/email and P41 owner/device validation remain outstanding.
+
 ### R-01
 
 **Shared isolated product.** One maintained tenant-aware application; independent accounts have personal tenants. Scope records, jobs, cache, recipients and exports consistently.

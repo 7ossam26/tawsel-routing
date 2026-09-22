@@ -4,11 +4,12 @@ import { parseApiConfig } from './config.js';
 import { parseDatabaseConfig } from './db/config.js';
 import { createDatabasePool } from './db/pool.js';
 import { assertMigrationsCurrent } from './db/migrate.js';
+import { parseAuthConfig } from './auth/config.js';
 
 async function main(): Promise<void> {
   const config = parseApiConfig(process.env);
   const database = createDatabasePool(parseDatabaseConfig(process.env.TAWSEL_DATABASE_URL, 'application'));
-  const app = buildApp(database);
+  const app = buildApp(database, parseAuthConfig(process.env));
 
   try {
     await assertMigrationsCurrent(database);

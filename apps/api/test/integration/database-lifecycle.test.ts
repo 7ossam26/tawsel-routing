@@ -20,14 +20,14 @@ describe('real PostgreSQL migration lifecycle', () => {
 
   test('applies fresh SQL once, serializes concurrent runners, verifies checksums', async () => {
     const results = await Promise.all([migrate(db.pool), migrate(db.pool)]);
-    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql']);
+    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql', '0003_identity_sessions.sql']);
     await expect(assertMigrationsCurrent(db.pool)).resolves.toBeUndefined();
     const tables = await db.pool.query("SELECT tablename FROM pg_tables WHERE schemaname='tawsel' ORDER BY tablename");
     expect(tables.rows.map(r => r.tablename)).toEqual([
-      'accounts', 'branches', 'capabilities', 'command_audit', 'command_evidence', 'command_identities', 'command_sources',
+      'accounts', 'auth_rate_limits', 'branches', 'capabilities', 'command_audit', 'command_evidence', 'command_identities', 'command_sources', 'company_login_codes',
       'drivers', 'identity_subjects', 'integration_branches', 'integration_capabilities', 'integrations',
-      'membership_branches', 'memberships', 'outbox_intents', 'role_capabilities', 'roles', 'schema_migrations',
-      'tenant_keys', 'tenants', 'user_capability_exceptions'
+      'login_attempts', 'membership_branches', 'memberships', 'outbox_intents', 'role_capabilities', 'roles', 'schema_migrations',
+      'tenant_keys', 'tenants', 'user_capability_exceptions', 'web_sessions'
     ]);
     await db.pool.query("UPDATE tawsel.schema_migrations SET checksum='changed'");
     await expect(migrate(db.pool)).rejects.toThrow('Migration history differs');
@@ -55,7 +55,7 @@ describe('real PostgreSQL migration lifecycle', () => {
         async writeDomain() { return { status: 'accepted', response: { status: 200, body: { retained: true } }, summary: { retained: true }, audit: { fixture: true }, resourceVersions: {}, intents: [] }; },
         async writeProgress() { /* No domain table in this migration-only fixture. */ }
       });
-      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql']);
+      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql', '0003_identity_sessions.sql']);
       expect(await getCommandResult(old.pool, scopeA, command.actionId)).toEqual(before);
       expect(await migrate(old.pool)).toEqual([]);
       await expect(withAccess(old.pool, { kind: 'integration', integrationId: scopeA.sourceId }, async a => a.commandScope)).rejects.toMatchObject({ statusCode: 403 });

@@ -1078,5 +1078,59 @@
       "correlationId": "60000000-0000-4000-8000-000000000099",
       "retryable": false
     }
+  },
+  {
+    "id": "session-company-entry",
+    "schema": "session.schema.json#/$defs/CompanyRequest",
+    "valid": true,
+    "data": {
+      "code": "LOCAL"
+    }
+  },
+  {
+    "id": "session-login",
+    "schema": "session.schema.json#/$defs/LoginRequest",
+    "valid": true,
+    "data": {
+      "kind": "company",
+      "companyCode": "LOCAL"
+    }
+  },
+  {
+    "id": "session-personal-register",
+    "schema": "session.schema.json#/$defs/LoginRequest",
+    "valid": true,
+    "data": {
+      "kind": "personal",
+      "intent": "register",
+      "phone": "+201000000000"
+    }
+  },
+  {
+    "id": "session-csrf",
+    "schema": "session.schema.json#/$defs/BootstrapResponse",
+    "valid": true,
+    "data": {
+      "csrfToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "id": "session-kind",
+    "schema": "session.schema.json#/$defs/KindRequest",
+    "valid": true,
+    "data": {
+      "kind": "personal"
+    }
+  },
+  {
+    "id": "session-denied",
+    "schema": "session.schema.json#/$defs/AuthError",
+    "valid": true,
+    "data": {
+      "error": {
+        "code": "access_disabled",
+        "message": "الوصول غير متاح"
+      }
+    }
   }
 ]

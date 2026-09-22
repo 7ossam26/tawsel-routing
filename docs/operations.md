@@ -1,5 +1,7 @@
 # Tawsel application operations
 
+P07 adds the [identity/session runbook](identity.md): isolated Keycloak/Mailpit installation, random ignored secrets, exact localhost origin, seed/demo/browser commands and production limits. The API now requires identity environment configuration. `npm run dev` loads `.env.identity.local`; the issuer and sink run separately. Use `http://localhost:5173` for real login, while retained UI-fixture URLs remain usable. No Engine process/setup changes are required.
+
 This runbook covers the web/API workspace, Phase 04 development fixture and Phase 05 application PostgreSQL kernel. It does not operate the retained Nominatim/OSRM/VROOM Engine. Engine setup remains in the root `README.md` and `setup.ps1`.
 
 ## What exists now

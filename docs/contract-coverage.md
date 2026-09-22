@@ -2,17 +2,17 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**Every domain HTTP operation and event below is designed and unavailable.** Only the existing non-domain workspace health route is verified locally. Feature owners complete exact paths, authentication bindings, request/response/event schemas and examples before implementation, then update lifecycle and evidence. No generic CRUD endpoint replaces these explicit actions.
+**P07 session/context and issuer-hosted account journeys are implemented locally; each row records its actual lifecycle.** Other domain operations/events remain designed and unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
-P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as an HTTP operation: P07/P08 must authenticate and its adapter must recheck resource visibility before disclosing retained details. No domain command/event is promoted; see [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
+P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as an HTTP operation: P07 supplies session authentication; its future adapter must recheck resource visibility before disclosing retained details. No domain command/event is promoted; see [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
 [UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. These are designed surfaces, not working endpoints or browser evidence; [Phase 03 evidence](phase-03-evidence.md) records the document checks.
 
-The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07/P08 establish real authentication/provisioning and each feature supplies locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
+The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 still owns provisioning and each feature supplies locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
 
 ## Master-plan family review
 
@@ -37,17 +37,18 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `session.resolveCompany` | http-read | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Resolve company code to safe login context; company selection grants no authority. |
-| `account.registerIndependent` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Register a separate B2C phone/password identity with recovery email. |
-| `account.verifyRecoveryEmail` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Complete recovery-email verification; no SMS claim. |
-| `session.beginLogin` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Begin OIDC authorization code / PKCE login. |
-| `session.completeLogin` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Validate OIDC callback and establish independent Tawsel session. |
-| `session.getContext` | http-read | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Read server-resolved AccessContext: stable account source, tenant, assigned active branches and effective capabilities. Display snapshot grants no authority; HTTP adapter remains P07. |
-| `session.refresh` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Refresh authenticated backend session; no tokens in URLs. |
-| `account.getStatus` | http-read | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Read own activation/recovery state. |
-| `account.beginRecovery` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Initiate email recovery without account enumeration. |
-| `account.completeRecovery` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Consume verified recovery proof through the issuer. |
-| `session.logout` | http-command | designed | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | End session; P35 adds durable pending-action/account-switch guards. |
+| `session.bootstrap` | http-read | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Issue browser-bound CSRF token; grants no account access. |
+| `session.resolveCompany` | http-read | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Resolve company code to safe login context; company selection grants no authority. |
+| `account.registerIndependent` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Register a separate B2C phone/password identity with recovery email. |
+| `account.verifyRecoveryEmail` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Complete recovery-email verification; no SMS claim. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint. |
+| `session.beginLogin` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Begin OIDC authorization code / PKCE login. |
+| `session.completeLogin` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Validate OIDC callback and establish independent Tawsel session. |
+| `session.getContext` | http-read | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Read current issuer-validated session and P06 access context. Display fields are never request authority. |
+| `session.refresh` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Refresh authenticated backend session; no tokens in URLs. |
+| `account.getStatus` | http-read | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | Read own activation/recovery state. |
+| `account.beginRecovery` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Initiate email recovery without account enumeration. |
+| `account.completeRecovery` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | public | Consume verified recovery proof through the issuer. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint. |
+| `session.logout` | http-command | verified-local | [P07](phases/07-oidc-login-recovery-sessions.md) | authenticated | End session; P35 adds durable pending-action/account-switch guards. |
 | `device.getContext` | http-read | designed | [P20](phases/20-device-takeover-evidence.md) | execution.own | Read active round and execution generation on any signed-in phone. |
 
 ### integration-provisioning

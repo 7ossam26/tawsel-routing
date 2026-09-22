@@ -5,16 +5,18 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "dev": "node --watch --env-file-if-exists=../../.env.database.local --env-file-if-exists=../../.env --import tsx src/main.ts",
-    "start": "node --env-file-if-exists=../../.env.database.local --env-file-if-exists=../../.env dist/main.js",
+    "dev": "node --watch --env-file-if-exists=../../.env.database.local --env-file-if-exists=../../.env.identity.local --env-file-if-exists=../../.env --import tsx src/main.ts",
+    "start": "node --env-file-if-exists=../../.env.database.local --env-file-if-exists=../../.env.identity.local --env-file-if-exists=../../.env dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@fastify/cookie": "11.0.2",
     "@tawsel/api-client": "0.1.0",
     "@tawsel/shared": "0.1.0",
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "fastify": "5.12.5",
+    "openid-client": "6.8.8",
     "pg": "8.23.0"
   },
   "devDependencies": {

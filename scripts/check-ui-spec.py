@@ -96,9 +96,9 @@ def actions(document=None):
                     'State copy and feedback', 'Components and overlays', 'Screen coverage', 'Visual acceptance'):
         require(f'## {section}' in spec, f'Missing UI spec section: {section}')
     for op in catalog:
-        if op['id'] != 'workspace.getHealth':
-            require(op['lifecycle'] == 'designed', f'P03 must not promote implementation: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Business operations remain designed.')
+        if op['id'] != 'workspace.getHealth' and not (op['ownerPhase'] == 7 and op['family'] == 'session-context'):
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Only workspace/P07 operations may be promoted.')
 
 
 def states(document=None, demo=False):

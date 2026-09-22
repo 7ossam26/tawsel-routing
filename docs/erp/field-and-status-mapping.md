@@ -1,5 +1,7 @@
 # Field and status mapping — canonical foundation
 
+P07 session mapping, 22 September 2026 (locally implemented): issuer + opaque subject → immutable P06 account binding; company code → login locator only; `SessionContext.access.sourceId` → stable account key for display/account-local storage; `recoveryEmailVerified` → issuer email evidence, **never SMS phone ownership**; `phoneOwnershipVerified` is false. `kind=company` and `kind=personal` select separate cookies/realms, not linked workspaces. A browser session/CSRF token is not an ERP integration credential or actor assertion. Current membership can deny an otherwise valid login. The [canonical session schema](../../contracts/session.schema.json) owns exact fields; [identity guide](../identity.md) owns the flow. Business task/status rows below remain designed.
+
 All business mappings below are **designed**. Common shapes/examples are schema-verified; the reference ERP and real vendor mapping are not implemented. Canonical field definitions live in [common.schema.json](../../contracts/common.schema.json); envelopes/examples remain there, not copied as another schema here. The [catalog](../contract-coverage.md) names commands/events and owner phases. A real-ERP field/status column stays explicitly unchosen.
 
 P06 access additions (internal PostgreSQL guards verified; login/provisioning HTTP mapping remains P07/P08):

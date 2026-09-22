@@ -995,5 +995,43 @@
         "monitor.read"
       ]
     }
+  },
+  {
+    "id": "session-forged-redirect",
+    "schema": "session.schema.json#/$defs/LoginRequest",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "kind": "company",
+      "redirect_uri": "https://evil.invalid"
+    }
+  },
+  {
+    "id": "session-unknown-kind",
+    "schema": "session.schema.json#/$defs/KindRequest",
+    "valid": false,
+    "keyword": "enum",
+    "data": {
+      "kind": "linked"
+    }
+  },
+  {
+    "id": "session-extra-scope",
+    "schema": "session.schema.json#/$defs/KindRequest",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "kind": "personal",
+      "tenantId": "other"
+    }
+  },
+  {
+    "id": "session-no-state",
+    "schema": "session.schema.json#/$defs/CallbackQuery",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "code": "code"
+    }
   }
 ]

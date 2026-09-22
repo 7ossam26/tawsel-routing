@@ -2,9 +2,11 @@
 
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
-## Application workspace and representative UI (Phases 01 and 04)
+## Application workspace and real identity (through Phase 07)
 
 The application provides an Arabic RTL React/Vite shell, a Fastify workspace-health route and a clearly labelled development-only fixture for early driver/selected-driver review. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1) so Arabic text does not depend on a runtime font CDN or synthetic bold. The fixture does **not** provide delivery tasks, identity, application persistence, workers, ERP integration, real maps or routing adapters, and it is excluded from production navigation and fixture JavaScript output.
+
+The production account shell now supports real local company login, independent phone registration, verified-email recovery and separate sessions through Keycloak and PostgreSQL. Follow [identity setup and demo](docs/identity.md) before starting the API; it requires the dedicated database, generated issuer configuration and local email sink. See [Phase 07 evidence](docs/phase-07-evidence.md) for actual checks and remaining limits.
 
 Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
 
@@ -13,11 +15,11 @@ Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`, the fixture at `http://127.0.0.1:5173/__fixtures/driver-review`, and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, preview routes, individual checks, CI behavior, and troubleshooting; [the UI review](docs/ui-review.md) records actual findings and limits.
+Open `http://localhost:5173` for the exact identity callback origin, the fixture at `http://localhost:5173/__fixtures/driver-review`, and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, preview routes, individual checks, CI behavior, and troubleshooting; [the UI review](docs/ui-review.md) records actual findings and limits.
 
 ## Contract foundation (Phase 02)
 
-The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) now define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally; **all business APIs/events remain designed and unavailable**. No delivery handler, ERP connector or database is added.
+The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account paths are now available locally; **delivery/ERP domain APIs and events remain designed and unavailable**. P05 supplies PostgreSQL foundations; no delivery handler or real ERP connector is implemented.
 
 ```powershell
 npm ci

@@ -1,4 +1,6 @@
+import { AccountShell } from './account-shell';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
+  if (!fixtureRouteRequested) return <AccountShell />;
   return (
     <main className="foundation-shell">
       <section className="foundation-card" aria-labelledby="page-title">

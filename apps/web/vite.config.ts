@@ -16,7 +16,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 5173,
-      strictPort: true
+      strictPort: true,
+      proxy: { '/api': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false } }
     },
     preview: {
       port: 4173,

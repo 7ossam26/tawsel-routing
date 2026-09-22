@@ -3,103 +3,134 @@
   "description": "Canonical operation ownership catalog. Designed rows are unavailable; method/path/payload/auth binding finalized by owner before implementation.",
   "operations": [
     {
+      "id": "session.bootstrap",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Issue browser-bound CSRF token; grants no account access.",
+      "method": "GET",
+      "path": "/api/session/bootstrap"
+    },
+    {
       "id": "session.resolveCompany",
       "family": "session-context",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Resolve company code to safe login context; company selection grants no authority."
+      "description": "Resolve company code to safe login context; company selection grants no authority.",
+      "method": "POST",
+      "path": "/api/session/company"
     },
     {
       "id": "account.registerIndependent",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Register a separate B2C phone/password identity with recovery email."
+      "description": "Register a separate B2C phone/password identity with recovery email.",
+      "method": "POST",
+      "path": "/api/session/register"
     },
     {
       "id": "account.verifyRecoveryEmail",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Complete recovery-email verification; no SMS claim."
+      "description": "Complete recovery-email verification; no SMS claim. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint.",
+      "delivery": "issuer-hosted"
     },
     {
       "id": "session.beginLogin",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Begin OIDC authorization code / PKCE login."
+      "description": "Begin OIDC authorization code / PKCE login.",
+      "method": "POST",
+      "path": "/api/session/login"
     },
     {
       "id": "session.completeLogin",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Validate OIDC callback and establish independent Tawsel session."
+      "description": "Validate OIDC callback and establish independent Tawsel session.",
+      "method": "GET",
+      "path": "/api/session/callback"
     },
     {
       "id": "session.getContext",
       "family": "session-context",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "authenticated",
-      "description": "Read server-resolved AccessContext: stable account source, tenant, assigned active branches and effective capabilities. Display snapshot grants no authority; HTTP adapter remains P07."
+      "description": "Read current issuer-validated session and P06 access context. Display fields are never request authority.",
+      "method": "GET",
+      "path": "/api/session/context"
     },
     {
       "id": "session.refresh",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "authenticated",
-      "description": "Refresh authenticated backend session; no tokens in URLs."
+      "description": "Refresh authenticated backend session; no tokens in URLs.",
+      "method": "POST",
+      "path": "/api/session/refresh"
     },
     {
       "id": "account.getStatus",
       "family": "session-context",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "authenticated",
-      "description": "Read own activation/recovery state."
+      "description": "Read own activation/recovery state.",
+      "method": "GET",
+      "path": "/api/account/status"
     },
     {
       "id": "account.beginRecovery",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Initiate email recovery without account enumeration."
+      "description": "Initiate email recovery without account enumeration.",
+      "method": "POST",
+      "path": "/api/session/recover"
     },
     {
       "id": "account.completeRecovery",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "public",
-      "description": "Consume verified recovery proof through the issuer."
+      "description": "Consume verified recovery proof through the issuer. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint.",
+      "delivery": "issuer-hosted"
     },
     {
       "id": "session.logout",
       "family": "session-context",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 7,
       "capability": "authenticated",
-      "description": "End session; P35 adds durable pending-action/account-switch guards."
+      "description": "End session; P35 adds durable pending-action/account-switch guards.",
+      "method": "POST",
+      "path": "/api/session/logout"
     },
     {
       "id": "device.getContext",
@@ -1338,6 +1369,6 @@
       "common.schema.json#/$defs/CapabilityOverride",
       "common.schema.json#/$defs/AccessContext"
     ],
-    "boundary": "Internal PostgreSQL authorization with labelled authenticated-principal fixtures; no HTTP identity adapter, provisioning endpoint or shipment implementation."
+    "boundary": "P06 PostgreSQL authorization is bound to P07 verified issuer subjects/browser sessions. ERP service/delegation and provisioning remain P08."
   }
 }

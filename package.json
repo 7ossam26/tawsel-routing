@@ -36,7 +36,14 @@
     "test:database": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/database-lifecycle.test.ts apps/api/test/integration/command-transaction.test.ts",
     "db:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/command-demo.ts",
     "test:authorization": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/authorization-schema.test.ts apps/api/test/integration/effective-access.test.ts apps/api/test/integration/authorization-isolation.test.ts",
-    "access:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/access-demo.ts"
+    "access:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/access-demo.ts",
+    "identity:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 install",
+    "identity:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 start",
+    "identity:mail": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 mail",
+    "identity:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 stop",
+    "identity:seed": "node --env-file=.env.database.local --env-file=.env.identity.local --import tsx scripts/identity-seed.ts",
+    "test:auth": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run apps/api/test/fast/auth-config.test.ts apps/api/test/integration/session-auth.test.ts",
+    "test:browser:auth": "npm run build -w @tawsel/shared && playwright test -c playwright.auth.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

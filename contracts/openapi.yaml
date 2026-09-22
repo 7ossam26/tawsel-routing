@@ -1,19 +1,625 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract foundation — designed, unavailable
+  title: Tawsel public contract — local identity implementation
   version: 0.1.0
-  description: >-
-    Phase 02 common protocol schemas only. No public business HTTP operation is implemented
-    or released. Empty paths are deliberate. GET /health is workspace-only and excluded.
-    Operation ownership is documented in docs/contract-coverage.md; each owning phase
-    completes its schemas before adding handlers. Schema IDs use a reserved .invalid
-    namespace for offline resolution, not a hosted API or schema service.
+  description: P07 session and account entry endpoints are implemented locally.
+    Other business operations remain designed and unavailable. Issuer-hosted
+    password, email verification and recovery forms use Keycloak OIDC;
+    credentials never enter Tawsel. Same-origin browser cookies/CSRF are not ERP
+    service credentials.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
-x-lifecycle: designed
+x-lifecycle: implemented
 x-owner-phase: 2
-paths: {}
+paths:
+  /api/session/company:
+    post:
+      operationId: session.resolveCompany
+      summary: Resolve company code to safe login context; company selection grants no
+        authority.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyResponse"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/login:
+    post:
+      operationId: session.beginLogin
+      summary: Begin OIDC authorization code / PKCE login.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedirectResponse"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/register:
+    post:
+      operationId: account.registerIndependent
+      summary: Register a separate B2C phone/password identity with recovery email.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedirectResponse"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/recover:
+    post:
+      operationId: account.beginRecovery
+      summary: Initiate email recovery without account enumeration.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedirectResponse"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/callback:
+    get:
+      operationId: session.completeLogin
+      summary: Validate OIDC callback and establish independent Tawsel session.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "302":
+          description: Fixed same-origin account destination or safe login error; never a
+            request-selected redirect.
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      parameters:
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 43
+            maxLength: 43
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 2048
+        - name: iss
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 2048
+        - name: session_state
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 512
+        - name: error
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 128
+        - name: error_description
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 1024
+  /api/session/context:
+    get:
+      operationId: session.getContext
+      summary: Read current issuer-validated session and P06 access context. Display
+        fields are never request authority.
+      tags:
+        - Sessions
+      security:
+        - companySession: []
+        - personalSession: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionContext"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/AccountKind"
+  /api/account/status:
+    get:
+      operationId: account.getStatus
+      summary: Read own activation/recovery state.
+      tags:
+        - Sessions
+      security:
+        - companySession: []
+        - personalSession: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionContext"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/AccountKind"
+  /api/session/refresh:
+    post:
+      operationId: session.refresh
+      summary: Refresh authenticated backend session; no tokens in URLs.
+      tags:
+        - Sessions
+      security:
+        - companySession: []
+        - personalSession: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionContext"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KindRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/logout:
+    post:
+      operationId: session.logout
+      summary: End session; P35 adds durable pending-action/account-switch guards.
+      tags:
+        - Sessions
+      security:
+        - companySession: []
+        - personalSession: []
+      responses:
+        "204":
+          description: Local session ended. No global ERP logout.
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KindRequest"
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Origin
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uri
+  /api/session/bootstrap:
+    get:
+      operationId: session.bootstrap
+      summary: Issue browser-bound CSRF token; grants no account access.
+      tags:
+        - Sessions
+      security: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BootstrapResponse"
+        "400":
+          description: Invalid input or OIDC response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "401":
+          description: Session expired; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "403":
+          description: CSRF or current access denied
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "429":
+          description: Rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
+        "503":
+          description: Issuer unavailable; retain local evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthError"
 components:
   schemas:
     Uuid:
@@ -98,3 +704,35 @@ components:
       $ref: ./action-result.v1.schema.json
     EventEnvelope:
       $ref: ./events/envelope.v1.schema.json
+    AccountKind:
+      $ref: ./session.schema.json#/$defs/AccountKind
+    KindRequest:
+      $ref: ./session.schema.json#/$defs/KindRequest
+    CompanyRequest:
+      $ref: ./session.schema.json#/$defs/CompanyRequest
+    CompanyResponse:
+      $ref: ./session.schema.json#/$defs/CompanyResponse
+    LoginRequest:
+      $ref: ./session.schema.json#/$defs/LoginRequest
+    RedirectResponse:
+      $ref: ./session.schema.json#/$defs/RedirectResponse
+    BootstrapResponse:
+      $ref: ./session.schema.json#/$defs/BootstrapResponse
+    CallbackQuery:
+      $ref: ./session.schema.json#/$defs/CallbackQuery
+    SessionContext:
+      $ref: ./session.schema.json#/$defs/SessionContext
+    AuthError:
+      $ref: ./session.schema.json#/$defs/AuthError
+  securitySchemes:
+    companySession:
+      type: apiKey
+      in: cookie
+      name: __Host-tawsel-company
+    personalSession:
+      type: apiKey
+      in: cookie
+      name: __Host-tawsel-personal
+tags:
+  - name: Sessions
+    description: P07 same-origin browser session and issuer journeys.

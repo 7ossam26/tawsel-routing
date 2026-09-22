@@ -1,6 +1,8 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import type { HealthResponse } from '@tawsel/shared';
 import type { Pool } from 'pg';
+import { authRoutes } from './auth/routes.js';
+import type { AuthConfig } from './auth/config.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -9,7 +11,7 @@ const healthResponse: HealthResponse = {
   engine: 'not-checked'
 };
 
-export function buildApp(database?: Pool): FastifyInstance {
+export function buildApp(database?: Pool, auth?: AuthConfig): FastifyInstance {
   const app = Fastify({
     logger: false,
     ajv: {
@@ -20,6 +22,7 @@ export function buildApp(database?: Pool): FastifyInstance {
   });
 
   if (database) app.addHook('onClose', async () => { await database.end(); });
+  if (database && auth) app.register(async scope => { await authRoutes(scope, database, auth); });
 
   app.setErrorHandler((error, _request, reply) => {
     const failure = error instanceof Error

@@ -4,5 +4,5 @@ rules:
   struct: error
   no-unresolved-refs: error
   no-unused-components: off
-  # Foundation has no public HTTP paths or deployment URL. Do not invent one.
+  # P07 has local session paths but no published production deployment URL.
   no-empty-servers: off

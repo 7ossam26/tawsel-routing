@@ -256,3 +256,23 @@ h2 { line-height: 1.55; }
 @media (forced-colors: active) {
   .action-button, .contact-actions a, .contact-actions button, .status-notice, .map-marker, .desktop-marker { border: 1px solid ButtonText; }
 }
+/* P07 account entry reuses the reviewed field/button/notice tokens. */
+.account-shell { max-inline-size: 28rem; margin-inline: auto; padding: 32px 16px; min-block-size: 100dvh; }
+.account-brand { text-align: center; margin-block-end: 24px; }
+.account-logo { display: grid; place-items: center; inline-size: 64px; block-size: 64px; margin: 0 auto 8px; border-radius: 18px; background: #091426; color: #5bb8fe; }
+.account-logo svg { inline-size: 36px; block-size: 36px; }
+.account-brand > strong { display: block; font-size: 32px; font-weight: 800; }
+.account-brand p, .account-footnote { color: #45474c; font-size: 14px; }
+.account-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 2px 8px #09142614; }
+.account-card h1 { font-size: 24px; margin-block: 0 16px; }
+.account-card form { display: grid; gap: 20px; }
+.account-card > .action-button, .account-card form > .action-button { inline-size: 100%; }
+.account-paths { display: flex; gap: 8px; padding: 4px; background: #f2f4f6; border-radius: 12px; }
+.account-paths a { flex: 1; text-align: center; text-decoration: none; border-radius: 8px; padding: 10px 4px; color: #091426; }
+.account-paths a[aria-current] { background: #091426; color: white; }
+.account-secondary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-block-start: 16px; }
+.account-secondary a, .account-link { display: inline-flex; align-items: center; min-block-size: 44px; color: #006398; }
+.account-company { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.account-error { margin-block-end: 16px; }
+.account-footnote { text-align: center; }
+.account-card dd { overflow-wrap: anywhere; }
