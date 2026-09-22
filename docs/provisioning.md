@@ -1,0 +1,65 @@
+# ERP provisioning — Phase 08
+
+Implemented locally, protocol/payload `1.0.0`, client package `0.1.0`. [Evidence](phase-08-evidence.md) separates PostgreSQL/provider fixtures, real local Keycloak/Chromium and the independent public HTTP consumer. No production release, external real ERP or signed event delivery is claimed. ERP remains the company administration and credential authority; this phase adds no administration UI.
+
+## Trust and setup
+
+The operator establishes the company/tenant and integration, shared company issuer and a reservation of issuer subjects to that integration. Company codes are login locators, never grants. Subjects are immutable opaque issuer IDs, never usernames, phone numbers or email. The selected company issuer comes from server configuration, not the command body. Personal issuer identities cannot be bound here.
+
+Bootstrap is `integration.bindSource`, authenticated with an out-of-band operator bearer token configured as `TAWSEL_PROVISIONING_OPERATOR_TOKEN` (32 random bytes in lowercase hex). Omit that configuration to close bootstrap/recovery while ordinary source credentials remain usable. Keep it in the deployment secret manager and away from ERP users. Authenticate the company and ownership of supplied issuer subjects operationally before reserving them. Tawsel never infers that ownership from an arbitrary actor string or contact match.
+
+ERP/identity operators create users and manage passwords, activation, enabling and recovery at the shared issuer. Tawsel does **not** create or remotely enable issuer accounts. A newer operator bindSource can append subject reservations to an existing source: keep its externalId/companyCode and a credentialId/secretHash belonging to that source, increase the source revision, and supply the subject IDs to reserve. Reservations are additive and cannot move/recycle an already reserved or bound subject. An existing credential is only checked, not rotated, extended or re-enabled by this operation. Routine roles, exceptions, branches, driver references and membership enabling/disabling then use the scoped ERP service credential.
+
+Source credentials have the exact form `twp_<credential UUID>.<64 lowercase hex characters>`. Generate the secret with a cryptographic random generator and submit **only its SHA-256 hexadecimal hash** during bootstrap/rotation. Store the actual secret in the connector's secret store before sending the command. Tawsel stores the hash, expiry and source binding; it never returns or persists the raw credential in command results, audit or events. TLS is required outside loopback. Credentials never belong in query strings, logs, screenshots or delivery payloads.
+
+All P08 operations are **explicit service operations**. The verified audit identity is `{mode:"service-operation",tenantId,integrationId,actorId:null}`; audit also retains the authenticating credential ID or operator flag. `context.assertedActorId`, raw `actor_id`, passwords, unrelated resource fields and extra body/query fields are rejected. The connector credential cannot execute as a named staff member. Human-bound receipt/disposition remains its feature owner's work; P21 must use a verified session/bound proof or explicitly authorize its own narrowly scoped service operation, never treat P08 provisioning authority as staff authority.
+
+Authentication rechecks credential expiry, source/tenant enablement and `identity.provision` under the same tenant lock as each command/read. Source administration additionally needs `integration.manage`. Rotation/disable takes that lock too. A revoked credential cannot retrieve an old result by retrying. Replaying a retained command with a valid replacement credential preserves the source identity and original result.
+
+## Wire surface and canonical ownership
+
+POST `/api/v1/provisioning/commands/<operationId>` uses its exact canonical action envelope, not arbitrary CRUD. GET `/api/v1/provisioning/configuration` returns source identity, configured issuer, supported versions, allowed operation IDs and `humanDelegation:false`. GET `/api/v1/provisioning/status?entity=user&externalId=driver-1` returns only this credential's source record. There is no tenant/source selector on reads.
+
+[provisioning.schema.json](../contracts/provisioning.schema.json) owns payloads, exact command schemas, service identity, status and event payload. [OpenAPI](../contracts/openapi.yaml) owns methods/paths/security; [examples](../contracts/examples/valid.json) and [invalid cases](../contracts/examples/invalid.json) are canonical data. [Generated types](../packages/api-client/src/schema.d.ts) and [HTTP client](../packages/api-client/src/provisioning.ts) contain no application/database dependencies. Unknown fields/version fail `400 validation_failed`; malformed JSON and oversized bodies use the same safe Problem family. Body limit is 64 KiB; reference/capability/subject arrays are bounded at 100. No coercion or default insertion.
+
+| Operation | Versioned fields / behavior |
+| --- | --- |
+| `integration.bindSource` | Operator-only company/source setup and subject reservations; code/name, credential ID/hash/expiry and subject IDs. |
+| `integration.rotateCredential` | New ID/hash/expiry, overlapSeconds 0–86400, recover flag. New expiry must be future and within 366 days. Old expiry is shortened to at most the overlap. `recover:true` requires operator authority for a new command and can re-enable a disabled source; prior revoked credentials stay revoked. |
+| `integration.disableSource` | Stops source authentication and revokes its credentials; preserves users, source mappings, history, retained results and issuer work. It is connector disable, not company-wide staff disable. |
+| `branch.provision` / `branch.disable` | Name, enabled and nullable location; location null clears. Disable preserves branch UUID/history. |
+| `role.defineCapabilities` | Replaces name and complete capability set. Empty set grants nothing. No authority derives from a role name. |
+| `user.provision` | Reserved subject, exactly one roleExternalId, complete branchExternalIds and enabled. Updates these fields while preserving explicit exceptions. Subject cannot change. Initial accepted user is pending issuer verification. |
+| `user.setRole` | Replaces one role; preserves exceptions, branches and enablement. |
+| `user.setCapabilityExceptions` | Replaces complete inherit/allow/deny array; empty clears. Duplicate capability entries are rejected even with different effects. Explicit choice overrides live role inheritance. |
+| `user.setBranchMemberships` | Replaces complete branch list; empty clears. Same capabilities apply at all assigned active branches. |
+| `user.disable` | Disables membership and subject binding in the command transaction; queues external issuer-session logout. |
+| `driver.provisionReference` | Stable userExternalId, enabled, car/motorcycle/bicycle profile and nullable vehicleReference. One driver per account; no account reassignment of an existing driver ID. No fleet/commercial module. |
+
+Every payload has `externalId` and positive safe-integer `sourceRevision`. Entity namespaces are source/branch/role/user/driver. UUIDs returned in `resourceId` are stable; source references are scoped by `(tenant,integration,entity,externalId)`. All relationship references resolve in the same source. Two integrations may both use `driver-1`; their records and grants remain different. Record UUIDs never allow a connector to select another source's record.
+
+## Revisions, retries and effects
+
+One monotonic revision stream applies to each entity/externalId. **All user operations share the user's stream**; role and branch revisions are independent. All integration management operations share the source stream. Serialize the source's outgoing intent accordingly. `baseVersions`, resource context and dependency lists must be empty for P08; sourceRevision is the authority, not observed time. Nonempty generic dependencies are rejected rather than silently ignored.
+
+Same action ID and immutable envelope under the same authenticated source returns the original ActionResult. A different envelope under that action ID returns `409 idempotency_conflict`. A fresh action with the same entity/revision/content is a no-op with a new receipt but the same projection response; it creates no second provisioning.changed intent. Equal revision/different content conflicts; lower revisions reject with `stale_revision`. A stale enable cannot undo disable. Re-enabling requires a newer user.provision and fresh issuer verification. An old accepted command replay remains historical acceptance, never proof that the user is currently enabled.
+
+Missing references reject with `dependency_missing`; provision them first, then submit a new corrected intent with a new action ID. The rejected original ID is permanently associated with its original outcome. Wrong context/source/subject authority gives safe `403 forbidden_resource`; hidden/missing status records share 404. New authorized semantic rejections retain command evidence and service audit; invalid/unauthenticated requests never acquire command authority.
+
+P05 commits the projection, command receipt, service audit and `provisioning.changed` outbox intent atomically. The event payload carries entity/externalId/resourceId/sourceRevision/actionId/service; it means local projection acceptance. **It does not mean issuer readiness or webhook delivery.** P25 still owns envelope sequencing, signing and sending. No HTTP call occurs in this transaction. The tenant-first lock serializes access changes with current P06 readers/writers. Transactions/independent-connection/process tests establish these local guarantees.
+
+Retry POST with the **same stored envelope** after an uncertain response. General `action.getResult` remains unavailable; the P08 POST is the authenticated retained-result recovery path. GET status reports current projection and last effective action, not the historical outcome of an arbitrary rejected command. Kernel compaction preserves receipt/summary; do not create a new action ID to evade retention. No automatic purge is added.
+
+## Issuer reconciliation and readiness
+
+The worker needs separately configured `TAWSEL_ISSUER_WORKER_CLIENT_ID` and `TAWSEL_ISSUER_WORKER_CLIENT_SECRET`, scoped to the configured company Keycloak realm. Use supported service-account client credentials with user view/session logout permissions; never use the local test-control client in production. The API does not receive that admin secret. URLs derive from the fixed company issuer, redirects are refused, and each request times out after five seconds. The deployed operator must verify realm permissions and exact subject ownership.
+
+An enabled projection commits a disabled local subject binding and durable pending verification. Worker GET `/admin/realms/{realm}/users/{subject}` must return the exact enabled reserved subject before the local binding is enabled. A disabled projection denies online access immediately and queues idempotent POST `…/users/{subject}/logout`. ERP still owns global issuer enabled/disabled state and password/reset policy. Normal Tawsel login/action does not call ERP.
+
+`issuerStatus` is pending/running/retry/ready (not-required for branch/role/driver/source), with attempts, nextAttemptAt and a sanitized lastError. `enabled` is the projection's requested local enabled state, null for roles. **ready + enabled=false means disable reconciliation finished; it never means an enabled account.** An accepted command response freezes issuerStatus at that command's commit; poll GET status for current reconciliation. Role/exception edits do not queue unnecessary issuer work.
+
+Claims commit a 30-second lease. External HTTP runs without a checked-out database connection. Completion locks tenant first and checks lease ID plus intent generation; a stale verifier cannot enable a newer disabled user. A crashed worker is retried after lease expiry; GET/logout can repeat safely. Failures retain visible retry state with exponential backoff capped at 300 seconds plus up to two seconds jitter, indefinitely until resolved. New intents preserve an in-flight lease and fence its completion. No timer purges failures. The worker's composite subject/source foreign key additionally rejects cross-source jobs.
+
+Run `npm run provisioning:worker` as the separately supervised worker, or `npm run provisioning:worker:once` for one due item. Fix issuer credentials/availability/subject enablement and run again when nextAttemptAt is due. Configuration/role/subject errors never fabricate account-ready success. Offline revocation remains subject to the P07/P35 limits.
+
+Primary implementation reference checked: [Keycloak 26.7.4 Admin REST](https://www.keycloak.org/docs-api/26.7.4/rest-api/index.html) and [OIDC endpoints](https://www.keycloak.org/securing-apps/oidc-layers). Existing pinned dependencies were retained; actual behavior is established by [local evidence](phase-08-evidence.md), not documentation alone.

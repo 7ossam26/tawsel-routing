@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P08 adds [versioned identity projections and issuer reconciliation](provisioning.md): source-scoped monotonic entity revisions, atomic P05 result/audit/provisioning.changed intent, and separately committed lease/generation-fenced issuer work. User disable is locally effective before external logout. An accepted provisioning event never means issuer readiness or recipient delivery. [Actual evidence](phase-08-evidence.md) includes stale-update, process-death and in-flight disable tests.
+
 Protocol draft `1.0.0`, updated 22 September 2026. P05 implements and verifies the PostgreSQL command kernel described below; P06 adds [transactional authorization](authorization.md) with labelled principals. [P05 evidence](phase-05-evidence.md) and [P06 evidence](phase-06-evidence.md) distinguish these foundations from still-designed domain state, real authentication, offline storage and event delivery. Each feature phase must prove its own rules. Authority comes from [master plan §§5–15](../master-plan.md), amended by D-79–D-101 and D-112 in the [decision map](phases/decision-map.md). The [operation catalog](contract-coverage.md) assigns implementation owners.
 
 ## Identity and authority

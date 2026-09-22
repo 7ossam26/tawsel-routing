@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "types": ["node"], "noEmit": true },
-  "include": ["scripts/**/*.ts"]
+  "include": ["scripts/**/*.ts", "tests/erp-conformance/**/*.ts"]
 }

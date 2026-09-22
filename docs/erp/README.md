@@ -1,36 +1,29 @@
 # ERP integration planning — start here
 
-P07 adds locally implemented [browser identity/session paths](../identity.md) and [real issuer evidence](../phase-07-evidence.md). ERP and Tawsel use separate clients; no per-command ERP request or password copying. Provisioning/verified service and delegated actors remain P08. Public schema/client conformance is available now; external ERP source/receiver HTTP conformance remains P26/P27. Updated planning and field mappings below distinguish these boundaries.
-
-**Phase 02 foundation is schema-verified locally; all business integration behavior is designed and unavailable.** There is no released API, real ERP connector, mock receiver, consumer quickstart or final release manifest yet. These files are planning inputs for an ERP implementer, not an integration certificate.
+P07 sessions and P08 ERP provisioning are implemented and verified locally. Read [public consumer quickstart](consumer-quickstart.md), [provisioning trust/recovery contract](../provisioning.md) and [P08 evidence](../phase-08-evidence.md). Full receiver/source two-way conformance remains P26–P27; final released handoff remains P42. No real vendor connector or production release is claimed.
 
 Read in this order:
 
-P06 follow-through: [permission contract](../authorization.md) and [actual PostgreSQL evidence](../phase-06-evidence.md) now specify and verify internal membership/override/resource enforcement. Canonical access shapes are updated in the same public schemas/examples/client. Login, provisioning and external ERP HTTP proof remain unavailable; keep the distinction between fixture principals and verified credentials.
+1. [ERP-PLANNING-INPUT.md](ERP-PLANNING-INPUT.md): implemented capability, responsibilities, ordered connector slices and ERP-specific unknowns.
+2. [field-and-status-mapping.md](field-and-status-mapping.md): verified identity/source mapping, canonical fields and separately designed delivery-business mappings.
+3. [Consumer quickstart](consumer-quickstart.md) and [provisioning](../provisioning.md): working public HTTP setup, scoped identity, versions, rotation/disable, durable issuer status and reproducible proof.
+4. [Integration guide](../integration-guide.md), [state model](../tracking-and-consistency.md), [permission contract](../authorization.md) and [identity sessions](../identity.md): authority, transaction boundaries and later delivery obligations.
+5. [Operation ownership](../contract-coverage.md), [OpenAPI](../../contracts/openapi.yaml), [provisioning schema](../../contracts/provisioning.schema.json), [common schema](../../contracts/common.schema.json), [event envelope](../../contracts/events/envelope.v1.schema.json), [examples](../../contracts/examples/README.md), [generated reference](../reference/public-contract.md) and [public client](../../packages/api-client/README.md): canonical artifacts, never divergent ERP-owned copies.
+6. [Implementation ledger](../implementation-status.md): actual commands, versions, passed/failed/unrun checks and limits.
 
-1. [ERP-PLANNING-INPUT.md](ERP-PLANNING-INPUT.md): responsibilities, supported generic concepts, ordered future connector work, constraints and ERP-specific unknowns.
-2. [field-and-status-mapping.md](field-and-status-mapping.md): source versus Tawsel identities, field authority, meaningful state distinctions and designed worked mappings.
-3. [Integration guide](../integration-guide.md): provisioning, authentication/actor obligations, source commands, signed events, versions, retention and old queues.
-4. [State and consistency model](../tracking-and-consistency.md): actors, records, quantities, authority, transaction boundaries and the two-of-three correction/return walkthrough.
-5. [Operation ownership](../contract-coverage.md), [OpenAPI](../../contracts/openapi.yaml), [common schema](../../contracts/common.schema.json), [event envelope](../../contracts/events/envelope.v1.schema.json), [examples](../../contracts/examples/README.md), [generated reference](../reference/public-contract.md) and [public client types](../../packages/api-client/README.md): canonical artifacts; do not copy them into divergent ERP-owned schema definitions.
-6. [Phase evidence](../phase-02-evidence.md) and [implementation ledger](../implementation-status.md): actual commands, versions, passed/failed/unrun checks and limits.
-
-| Artifact / capability | Status now | Next owner |
+| Artifact / capability | Status now | Remaining owner |
 | --- | --- | --- |
-| Common IDs/money/versions/envelopes/error schemas; example validation | Implemented tooling, verified locally; protocol draft | Each feature completes exact payload schemas before handlers |
-| Generated public client `packages/api-client/src/schema.d.ts`, version 0.1.0 | Verified portable types; no business methods | Each feature adds real operations, then regenerates |
-| P05 ActionResult full/compacted recovery shape and internal command kernel | PostgreSQL-local verified; HTTP retrieval unavailable | P06–P08 trusted bindings, each feature's payload/record semantics |
-| State model, operation catalog, planning/mapping/guide | Designed obligations with local consistency checks | P08/P10/P21/P22/P25–27 maintain alongside implementation |
-| Identity/source provisioning and task admission | Designed only | P08/P10 |
-| Native branch receipt, disposition and redispatch | Designed only | P21/P22; native mock source P27 |
-| Signed durable delivery / independent receiver | Designed only | P25/P26 |
-| External consumer quickstart `docs/erp/consumer-quickstart.md`, conformance `tests/erp-conformance/`, verification `docs/verification/integration.md` | Not created; no working consumer setup to follow yet | P26 receiver; P27 two-way proof |
-| Final `docs/ERP-INTEGRATION-HANDOFF.md` and `docs/erp/release-manifest.json` | Not created; no release identity/digests invented | P42 |
+| Common schema/envelopes and generated types | Locally validated, unreleased draft | Each feature completes exact payload semantics |
+| P05 command kernel and full/compacted ActionResult | Real PostgreSQL/process/race verification | General action.getResult HTTP remains later; P08 uses authenticated POST replay |
+| P06/P07 access guards and real sessions | Locally verified, separate company/personal identity | Production/device verification P39/P41 |
+| P08 source/branch/role/user/driver provisioning | 12 commands, two reads, explicit service authentication, source revisions and issuer reconciliation verified locally | Deployment issuer ownership/permissions and native ERP administration |
+| Public client and consumer quickstart/conformance | P08 provisioning slice verified in independent copied consumer process; no DB imports/credentials | P26 receiver, P27 transactional native source/two-way proof |
+| Task admission, execution and reports | Designed only | P09 onward |
+| Branch receipt/disposition/redispatch | Designed only | P21/P22/P27 |
+| provisioning.changed event | Durable own-source intent produced atomically | P25 signed/sequenced transport; P26 receiver |
+| Full signed delivery/independent receiver and docs/verification/integration.md | Not implemented/created | P25/P26/P27 |
+| Final docs/ERP-INTEGRATION-HANDOFF.md and release-manifest.json | Not created; no release identity/digests invented | P42 |
 
-Today’s repeatable check is `npm ci` then `npm run contracts:demo`, `npm run test:contracts`, and `npm run typecheck -w @tawsel/api-client`. These use published-shape artifacts locally, without Tawsel database/domain imports. They establish schema/client consistency, **not external HTTP interoperability or transaction durability**. The [handoff deliverables plan](../planning/erp-handoff-deliverables.md) defines the later proof.
+Use npm run contracts:check, npm run test:contracts and the public client typecheck for canonical conformance; npm run test:provisioning for actual isolated PostgreSQL/provider-fixture proof; npm run test:erp:provisioning for running public HTTP; npm run test:browser:provisioning for actual local Keycloak/Chromium. Their setup and effects are in the quickstart. The CLI journal is not a transactional ERP outbox, and local email/localhost is not production SMTP/TLS evidence.
 
-P05 separately proves internal transaction durability across application-process restart, duplicate races, rollback and response compaction with `npm run test:database` against isolated PostgreSQL. [P05 evidence](../phase-05-evidence.md) and [database setup/demo](../operations.md#dedicated-postgresql-lifecycle) reproduce it. This is not a consumer HTTP quickstart or a released endpoint.
-
-P03 adds [designed UI action coverage](../ui-actions.md), including explicit external/native ERP surfaces and distinct waiting/receipt/acceptance/application labels. It changes no public payloads. `python -X utf8 scripts/check-ui-spec.py check` verifies document coverage from the repository root (Python 3.12 used); it is not the missing external consumer conformance suite. P26/P27 still own that quickstart and proof; none is fabricated here.
-
-Connector ownership may be the ERP vendor/agency, Tawsel or both. Begin with discovery of the ERP’s supported API/webhook/authentication/stable-ID/import-export mechanisms. Source-code/database access is not required; a vendor with no suitable interface may need cooperation or an adapter. Compatibility targets Tawsel’s released protocol, not any ERP’s internal schema or an automatic promise to support every ERP.
+ERP owns commercial records, company users/roles/branches and credential administration. Tawsel accepts execution projections. P08 service credentials cannot impersonate staff; human assertions are rejected. Connector ownership may be vendor/agency, Tawsel or joint. Discover supported APIs/webhooks/authentication/stable IDs/import-export before promising compatibility. No ERP source-code/database access or universal compatibility is implied by the reference consumer.

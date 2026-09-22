@@ -1033,5 +1033,346 @@
     "data": {
       "code": "code"
     }
+  },
+  {
+    "id": "p08-actor",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002",
+        "assertedActorId": "81000000-0000-4000-8000-000000000009"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-raw-actor",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true,
+        "actor_id": "81000000-0000-4000-8000-000000000009"
+      }
+    }
+  },
+  {
+    "id": "p08-password",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true,
+        "password": "not-a-real-password"
+      }
+    }
+  },
+  {
+    "id": "p08-revision-zero",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "minimum",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 0,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-multiple-roles",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true,
+        "roleIds": [
+          "a",
+          "b"
+        ]
+      }
+    }
+  },
+  {
+    "id": "p08-duplicate-branch",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "uniqueItems",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "cairo"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-future-version",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "const",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-scope-omitted",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-unhandled-dependency",
+    "valid": false,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "keyword": "maxItems",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [
+        "81000000-0000-4000-8000-000000000008"
+      ],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
   }
 ]

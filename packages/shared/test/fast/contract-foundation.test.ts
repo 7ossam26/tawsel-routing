@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$)/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/provisioning\/)/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -96,7 +96,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     checkCatalog(bundle, ajv);
     const available = bundle.catalog.operations.filter((entry: { lifecycle: string }) => entry.lifecycle !== 'designed');
     expect(available.map((entry: { id: string }) => entry.id)).toContain('session.getContext');
-    expect(available.every((entry: { family: string; id: string }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth')).toBe(true);
+    expect(available.every((entry: { family: string; id: string; ownerPhase: number }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth' || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning'))).toBe(true);
   });
 
   it('rejects missing owners, omitted families, duplicate IDs and invented public availability', () => {

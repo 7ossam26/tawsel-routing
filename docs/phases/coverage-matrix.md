@@ -17,6 +17,8 @@ P06 evidence, 22 September 2026: [authorization schema/service/tests](../phase-0
 
 P07 evidence, 22 September 2026: [ordered execution and acceptance results](../phase-07-evidence.md) verify R-05 separate real identities, R-06 code/PKCE login and restricted sessions, R-07 phone login and verified-email activation/recovery, and the P07 portion of R-41 same-account reauthentication without clearing local evidence. R-56/R-57 cover pinned issuer/connected Arabic account UI; R-59/R-60 cover the bounded local setup and recovery documentation; R-65 covers ordered checkpoints, canonical contract/ERP updates and handoff. The action catalog now contains 148 operations after adding CSRF bootstrap. P35 durable queue safeguards, P39 production deployment/email and P41 owner/device validation remain outstanding.
 
+P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase-08-evidence.md) cover R-01/R-43 tenant/source/reference/worker isolation; R-02 ERP-owned administration; R-03/R-04 live role, exceptions and branch projections; R-06 shared issuer bindings and separate sessions; R-34 explicit service authority with forged-human rejection (actual receipt remains P21); R-50 stable consumer command journals/retries (transactional source outbox remains P27); R-64 canonical schema/client/public quickstart/mapping; and R-65 ordered prerequisite/checkpoint/handoff proof. Real Keycloak/browser and copied HTTP-only consumer evidence are distinct from provider fixtures.
+
 ### R-01
 
 **Shared isolated product.** One maintained tenant-aware application; independent accounts have personal tenants. Scope records, jobs, cache, recipients and exports consistently.

@@ -43,7 +43,15 @@
     "identity:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 stop",
     "identity:seed": "node --env-file=.env.database.local --env-file=.env.identity.local --import tsx scripts/identity-seed.ts",
     "test:auth": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run apps/api/test/fast/auth-config.test.ts apps/api/test/integration/session-auth.test.ts",
-    "test:browser:auth": "npm run build -w @tawsel/shared && playwright test -c playwright.auth.config.ts"
+    "test:browser:auth": "npm run build -w @tawsel/shared && playwright test -c playwright.auth.config.ts",
+    "test:provisioning": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/provisioning-actor.test.ts apps/api/test/integration/authorization-isolation.test.ts",
+    "provisioning:local:setup": "node scripts/provisioning-local-setup.mjs",
+    "provisioning:bootstrap": "node --env-file=.env.provisioning.local --import tsx packages/api-client/examples/provision-company.ts bootstrap",
+    "provisioning:demo": "node --import tsx packages/api-client/examples/provision-company.ts",
+    "provisioning:worker": "node --env-file=.env.database.local --env-file=.env.identity.local --env-file=.env.provisioning.local --import tsx scripts/provisioning-worker.ts",
+    "test:browser:provisioning": "playwright test -c playwright.provisioning.config.ts",
+    "provisioning:worker:once": "node --env-file=.env.database.local --env-file=.env.identity.local --env-file=.env.provisioning.local --import tsx scripts/provisioning-worker.ts --once",
+    "test:erp:provisioning": "node --import tsx tests/erp-conformance/provisioning.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

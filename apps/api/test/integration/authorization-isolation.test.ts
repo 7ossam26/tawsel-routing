@@ -6,12 +6,30 @@ import { withAccess, type AuthenticatedPrincipal, type ScopeAssertion } from '..
 import { executeAuthorizedCommand } from '../../src/access/command.js';
 import { deferred, observeDatabaseBlock } from '../support/barriers.js';
 import { createDatabasePool } from '../../src/db/pool.js';
+import { buildApp } from '../../src/app.js';
+import { bindSource, operatorToken, send } from '../support/provisioning-fixture.js';
 
 describe('P06 authorization isolation — real PostgreSQL, labelled principals and synthetic resources', () => {
   let db: Awaited<ReturnType<typeof createTestDatabase>>;
   beforeEach(async () => { db = await createTestDatabase(); await prepareAccessFixture(db.pool); });
   afterEach(async () => { await db?.close(); });
   const recordIds = async (principal: AuthenticatedPrincipal) => (await readFixture(db.pool, principal)).map(r => r.resource_id);
+  test('P08: public credentials isolate identical external references across companies and integrations', async () => {
+    const app = buildApp(createDatabasePool(db.config), undefined, { issuer: 'https://issuer.example.test/company', operatorToken });
+    try {
+      const a = await bindSource(app, []), b = await bindSource(app, []), otherSource = await bindSource(app, [], a.tenantId);
+      const commands = [a,b,otherSource].map(s => s.command('branch.provision', { externalId: 'same', sourceRevision: 1, name: 'Private branch', enabled: true, location: null }));
+      const responses = await Promise.all([a,b,otherSource].map((s,i) => send(app, s.token, commands[i]!)));
+      expect(responses.map(r => r.statusCode)).toEqual([200,200,200]);
+      expect(new Set(responses.map(r => r.json().summary.resourceId)).size).toBe(3);
+      expect((await send(app, otherSource.token, a.command('branch.disable', { externalId: 'same', sourceRevision: 2 }))).statusCode).toBe(403);
+      const hidden = await app.inject({ url: `/api/v1/provisioning/status?entity=branch&externalId=same&tenantId=${a.tenantId}`, headers: { authorization: `Bearer ${b.token}` } });
+      expect(hidden.statusCode).toBe(400); expect(hidden.body).not.toContain(a.tenantId);
+      await db.pool.query("DELETE FROM tawsel.integration_capabilities WHERE integration_id=$1 AND capability='identity.provision'", [a.integrationId]);
+      expect((await send(app, a.token, commands[0]!)).statusCode).toBe(403);
+      expect((await db.pool.query('SELECT count(*)::int AS n FROM tawsel.branches WHERE tenant_id=$1', [a.tenantId])).rows[0].n).toBe(2);
+    } finally { await app.close(); }
+  });
   function accountCommand(resourceId = ids.record) {
     const command = accessCommand(resourceId);
     command.context = { kind: 'device', tenantId: ids.tenant, accountId: ids.staff, deviceId: randomUUID(), deviceGeneration: 1, deviceSequence: 1 };

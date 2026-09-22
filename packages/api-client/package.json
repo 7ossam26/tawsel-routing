@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Designed Tawsel public protocol types; no available business HTTP methods yet",
+  "description": "Tawsel generated public protocol types and P08 provisioning HTTP consumer",
   "types": "src/schema.d.ts",
-  "files": ["src/schema.d.ts", "README.md"],
+  "files": [
+    "src/schema.d.ts",
+    "src/provisioning.ts",
+    "examples/provision-company.ts",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
   }

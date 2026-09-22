@@ -8,7 +8,8 @@ export async function issuerFixture() {
   const codes = new Map<string, URLSearchParams>();
   const refreshes = new Map<string, { kind: string; sub: string }>();
   const issued = new Map<string, { kind: string; sub: string }>();
-  const state = { subject: 'driver', nonce: '', audience: '', claimIssuer: '', verified: true, active: true, unavailable: false, introspectionUnavailable: false, refreshCount: 0, badSignature: false, invalidGrant: false };
+  const state = { subject: 'driver', nonce: '', audience: '', claimIssuer: '', verified: true, active: true, unavailable: false, introspectionUnavailable: false, refreshCount: 0, badSignature: false, invalidGrant: false,
+    adminUnavailable: false, adminSubjects: new Map<string, boolean>(), adminRevocations: [] as string[], beforeAdminRead: undefined as (() => Promise<void>) | undefined };
   let origin = '';
   server.addContentTypeParser('application/x-www-form-urlencoded', { parseAs: 'string' }, (_r, body, done) => done(null, new URLSearchParams(String(body))));
   server.get('/:kind/.well-known/openid-configuration', async request => {
@@ -53,6 +54,27 @@ export async function issuerFixture() {
     return { active: Boolean(token) && state.active, sub: token?.sub, client_id: 'tawsel-web' };
   });
   server.post('/:kind/revoke', async (request, reply) => { refreshes.delete((request.body as URLSearchParams).get('token')!); return reply.code(200).send(); });
+  // P08 labelled Keycloak Admin HTTP fixture. Shares no Tawsel database state.
+  server.post('/realms/company/protocol/openid-connect/token', async (request, reply) => {
+    const p = request.body as URLSearchParams;
+    if (state.adminUnavailable) return reply.code(503).send();
+    if (p.get('grant_type') !== 'client_credentials' || p.get('client_id') !== 'provisioning-worker' || p.get('client_secret') !== 'fixture-admin') return reply.code(401).send();
+    return { access_token: 'fixture-admin-token' };
+  });
+  server.get('/admin/realms/company/users/:subject', async (request, reply) => {
+    if (request.headers.authorization !== 'Bearer fixture-admin-token') return reply.code(401).send();
+    await state.beforeAdminRead?.();
+    const { subject } = request.params as { subject: string };
+    if (!state.adminSubjects.has(subject)) return reply.code(404).send();
+    return { id: subject, enabled: state.adminSubjects.get(subject) };
+  });
+  server.post('/admin/realms/company/users/:subject/logout', async (request, reply) => {
+    if (request.headers.authorization !== 'Bearer fixture-admin-token') return reply.code(401).send();
+    const { subject } = request.params as { subject: string };
+    state.adminRevocations.push(subject);
+    for (const [token, value] of issued) if (value.sub === subject) issued.delete(token);
+    return reply.code(204).send();
+  });
   origin = await server.listen({ host: '127.0.0.1', port: 0 });
   return { origin, state, close: () => server.close() };
 }

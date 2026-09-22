@@ -1132,5 +1132,435 @@
         "message": "الوصول غير متاح"
       }
     }
+  },
+  {
+    "id": "p08-integration.bindSource",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/BindSourceCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "integration.bindSource",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "erp",
+        "sourceRevision": 1,
+        "companyCode": "COMPANY",
+        "displayName": "شركة",
+        "subjectIds": [
+          "issuer-subject-1"
+        ],
+        "credentialId": "81000000-0000-4000-8000-000000000004",
+        "secretHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expiresAt": "2027-01-01T00:00:00Z"
+      }
+    }
+  },
+  {
+    "id": "p08-integration.rotateCredential",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/RotateCredentialCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "integration.rotateCredential",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "erp",
+        "sourceRevision": 1,
+        "credentialId": "81000000-0000-4000-8000-000000000004",
+        "secretHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expiresAt": "2027-01-01T00:00:00Z",
+        "overlapSeconds": 300,
+        "recover": false
+      }
+    }
+  },
+  {
+    "id": "p08-integration.disableSource",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/DisableSourceCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "integration.disableSource",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "erp",
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p08-branch.provision",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/BranchCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "branch.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "cairo",
+        "sourceRevision": 1,
+        "name": "القاهرة",
+        "enabled": true,
+        "location": null
+      }
+    }
+  },
+  {
+    "id": "p08-branch.disable",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/DisableBranchCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "branch.disable",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "cairo",
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p08-role.defineCapabilities",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/RoleCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "role.defineCapabilities",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-role",
+        "sourceRevision": 1,
+        "name": "دور",
+        "capabilities": [
+          "execution.own",
+          "monitor.read"
+        ]
+      }
+    }
+  },
+  {
+    "id": "p08-user.provision",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/UserCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.provision",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "subject": "issuer-subject-1",
+        "roleExternalId": "driver-role",
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ],
+        "enabled": true
+      }
+    }
+  },
+  {
+    "id": "p08-user.setRole",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/UserRoleCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.setRole",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "roleExternalId": "driver-role"
+      }
+    }
+  },
+  {
+    "id": "p08-user.setCapabilityExceptions",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/UserExceptionsCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.setCapabilityExceptions",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "exceptions": [
+          {
+            "capability": "monitor.read",
+            "effect": "deny"
+          },
+          {
+            "capability": "reports.read",
+            "effect": "allow"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p08-user.setBranchMemberships",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/UserBranchesCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.setBranchMemberships",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "branchExternalIds": [
+          "cairo",
+          "giza"
+        ]
+      }
+    }
+  },
+  {
+    "id": "p08-user.disable",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/DisableUserCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "user.disable",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p08-driver.provisionReference",
+    "valid": true,
+    "schema": "provisioning.schema.json#/$defs/DriverCommand",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "driver.provisionReference",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "userExternalId": "driver-1",
+        "enabled": true,
+        "vehicleReference": "vehicle-01",
+        "profile": "car"
+      }
+    }
+  },
+  {
+    "id": "p08-status-retry",
+    "schema": "provisioning.schema.json#/$defs/ProvisioningStatus",
+    "valid": true,
+    "data": {
+      "entity": "user",
+      "externalId": "driver-1",
+      "resourceId": "81000000-0000-4000-8000-000000000005",
+      "sourceRevision": 1,
+      "lastActionId": "81000000-0000-4000-8000-000000000003",
+      "issuerStatus": "retry",
+      "attempts": 1,
+      "nextAttemptAt": "2026-09-22T20:00:00Z",
+      "lastError": "issuer_unavailable",
+      "enabled": true
+    }
+  },
+  {
+    "id": "p08-provisioning.changed",
+    "schema": "provisioning.schema.json#/$defs/ProvisioningChanged",
+    "valid": true,
+    "data": {
+      "entity": "user",
+      "externalId": "driver-1",
+      "resourceId": "81000000-0000-4000-8000-000000000005",
+      "sourceRevision": 1,
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "service": {
+        "mode": "service-operation",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002",
+        "actorId": null
+      }
+    }
   }
 ]

@@ -145,7 +145,7 @@
       "id": "integration.bindSource",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "integration.manage",
       "description": "Bootstrap authorized tenant/integration binding and supported protocol versions."
@@ -154,7 +154,7 @@
       "id": "integration.rotateCredential",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "integration.manage",
       "description": "Rotate scoped command credential with explicit overlap/recovery."
@@ -163,7 +163,7 @@
       "id": "integration.disableSource",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "integration.manage",
       "description": "Disable source credentials without erasing audit or queued evidence."
@@ -172,7 +172,7 @@
       "id": "integration.getConfiguration",
       "family": "integration-provisioning",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "integration.manage",
       "description": "Read authorized source configuration without secret disclosure."
@@ -181,7 +181,7 @@
       "id": "branch.provision",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Apply versioned branch identity/location reference."
@@ -190,7 +190,7 @@
       "id": "branch.disable",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Apply explicit versioned branch disable without deleting custody history."
@@ -199,7 +199,7 @@
       "id": "role.defineCapabilities",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Apply versioned ERP role capability definition."
@@ -208,7 +208,7 @@
       "id": "user.provision",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Bind ERP user reference to trusted issuer subject; no copied passwords."
@@ -217,7 +217,7 @@
       "id": "user.setRole",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Assign exactly one role per company user."
@@ -226,7 +226,7 @@
       "id": "user.setCapabilityExceptions",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Apply inherit/allow/deny overrides without bypassing resource scope."
@@ -235,7 +235,7 @@
       "id": "user.setBranchMemberships",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Version branch membership; common effective capabilities across branches."
@@ -244,7 +244,7 @@
       "id": "user.disable",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Revoke access without resurrecting via stale source revision."
@@ -253,7 +253,7 @@
       "id": "driver.provisionReference",
       "family": "integration-provisioning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Apply minimal execution driver/vehicle profile reference."
@@ -262,7 +262,7 @@
       "id": "provisioning.getStatus",
       "family": "integration-provisioning",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "identity.provision",
       "description": "Read application acceptance and separate issuer reconciliation state."
@@ -1072,7 +1072,7 @@
       "id": "provisioning.changed",
       "family": "integration-provisioning",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "recipient-scope",
       "description": "Versioned branch/user/role/membership/driver-reference acceptance."

@@ -2,17 +2,17 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07 session/context and issuer-hosted account journeys are implemented locally; each row records its actual lifecycle.** Other domain operations/events remain designed and unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07 session/context and P08 provisioning are implemented locally; each row records its actual lifecycle.** Other domain operations/events remain designed and unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
-P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as an HTTP operation: P07 supplies session authentication; its future adapter must recheck resource visibility before disclosing retained details. No domain command/event is promoted; see [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
+P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as an HTTP operation: P07 supplies session authentication; its future adapter must recheck resource visibility before disclosing retained details. P08 promotes its explicit provisioning commands and durable provisioning.changed intent; delivery remains P25. See [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
 [UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. These are designed surfaces, not working endpoints or browser evidence; [Phase 03 evidence](phase-03-evidence.md) records the document checks.
 
-The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 still owns provisioning and each feature supplies locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
+The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 implements explicitly permitted provisioning service operations and each feature supplies locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
 
 ## Master-plan family review
 
@@ -55,21 +55,21 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `integration.bindSource` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Bootstrap authorized tenant/integration binding and supported protocol versions. |
-| `integration.rotateCredential` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Rotate scoped command credential with explicit overlap/recovery. |
-| `integration.disableSource` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Disable source credentials without erasing audit or queued evidence. |
-| `integration.getConfiguration` | http-read | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Read authorized source configuration without secret disclosure. |
-| `branch.provision` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply versioned branch identity/location reference. |
-| `branch.disable` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply explicit versioned branch disable without deleting custody history. |
-| `role.defineCapabilities` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply versioned ERP role capability definition. |
-| `user.provision` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Bind ERP user reference to trusted issuer subject; no copied passwords. |
-| `user.setRole` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Assign exactly one role per company user. |
-| `user.setCapabilityExceptions` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply inherit/allow/deny overrides without bypassing resource scope. |
-| `user.setBranchMemberships` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Version branch membership; common effective capabilities across branches. |
-| `user.disable` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Revoke access without resurrecting via stale source revision. |
-| `driver.provisionReference` | http-command | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply minimal execution driver/vehicle profile reference. |
-| `provisioning.getStatus` | http-read | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Read application acceptance and separate issuer reconciliation state. |
-| `provisioning.changed` | event | designed | [P08](phases/08-erp-provisioning-actor-binding.md) | recipient-scope | Versioned branch/user/role/membership/driver-reference acceptance. |
+| `integration.bindSource` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Bootstrap authorized tenant/integration binding and supported protocol versions. |
+| `integration.rotateCredential` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Rotate scoped command credential with explicit overlap/recovery. |
+| `integration.disableSource` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Disable source credentials without erasing audit or queued evidence. |
+| `integration.getConfiguration` | http-read | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | integration.manage | Read authorized source configuration without secret disclosure. |
+| `branch.provision` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply versioned branch identity/location reference. |
+| `branch.disable` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply explicit versioned branch disable without deleting custody history. |
+| `role.defineCapabilities` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply versioned ERP role capability definition. |
+| `user.provision` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Bind ERP user reference to trusted issuer subject; no copied passwords. |
+| `user.setRole` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Assign exactly one role per company user. |
+| `user.setCapabilityExceptions` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply inherit/allow/deny overrides without bypassing resource scope. |
+| `user.setBranchMemberships` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Version branch membership; common effective capabilities across branches. |
+| `user.disable` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Revoke access without resurrecting via stale source revision. |
+| `driver.provisionReference` | http-command | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Apply minimal execution driver/vehicle profile reference. |
+| `provisioning.getStatus` | http-read | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | identity.provision | Read application acceptance and separate issuer reconciliation state. |
+| `provisioning.changed` | event | verified-local | [P08](phases/08-erp-provisioning-actor-binding.md) | recipient-scope | Versioned branch/user/role/membership/driver-reference acceptance. |
 
 ### intake
 
@@ -250,6 +250,6 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 The §5–15/18–20 review found no unresolved concrete product contradiction after applying the decision map. D-73 staff correction is superseded by D-91/D-95/D-96; D-68 receipt-before-resume and D-80 confirmed-subset continuation coexist. `trip` and `round` name the same resource; task/cycle/assignment/attempt remain different. These are terminology resolutions, not new permissions.
 
-Full-capacity branch interruption remains the explicitly labelled master-plan proposal for P22 to verify. Signing/header details (P25), trusted actor binding (P08), feature payload schemas (each owner), replay/retention implementation (P25–26/P34–35), target service configuration and real ERP choices remain concrete future work. The legacy README Engine examples do not override the application’s 600-second service default or complete route validation.
+Full-capacity branch interruption remains the explicitly labelled master-plan proposal for P22 to verify. Signing/header details (P25), human-bound operations beyond P08 service provisioning (their feature owner), feature payload schemas (each owner), replay/retention implementation (P25–26/P34–35), target service configuration and real ERP choices remain concrete future work. The legacy README Engine examples do not override the application’s 600-second service default or complete route validation.
 
 No V1 GPS, billing, call counter, advanced POD, direct driver transfer, settlement, ERP schema coupling or B2C splitting/custody operation is present. [Integration guide](integration-guide.md) and [ERP planning index](erp/README.md) explain the unreleased boundary. [Phase evidence](phase-02-evidence.md) records verification separately.

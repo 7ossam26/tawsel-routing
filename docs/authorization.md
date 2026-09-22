@@ -1,5 +1,7 @@
 # Authorization contract — Phase 06
 
+P08 update: [scoped provisioning service authentication](provisioning.md) now feeds the existing access tables through the atomic command kernel. Service credentials authorize only explicit P08 provisioning operations, with actor=null and source/credential audit; human assertions remain rejected. ERP-projected role/exception/branch/disable changes are re-resolved by existing P07 sessions. [Evidence](phase-08-evidence.md) includes real API/database isolation and local Keycloak login/denial; later resource/lifecycle checks remain each feature's responsibility.
+
 Implemented internal model, verified against real PostgreSQL with **labelled authenticated-principal fixtures and synthetic resources**. No OIDC, service credential verifier, public resource handler, role editor or shipment command is implemented here. [Ordered evidence](phase-06-evidence.md), [canonical capability/override/context definitions](../contracts/common.schema.json), [operation inventory](contract-coverage.md).
 
 ## Identity and membership

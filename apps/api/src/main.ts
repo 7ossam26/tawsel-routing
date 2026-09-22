@@ -9,7 +9,9 @@ import { parseAuthConfig } from './auth/config.js';
 async function main(): Promise<void> {
   const config = parseApiConfig(process.env);
   const database = createDatabasePool(parseDatabaseConfig(process.env.TAWSEL_DATABASE_URL, 'application'));
-  const app = buildApp(database, parseAuthConfig(process.env));
+  const auth = parseAuthConfig(process.env);
+  const app = buildApp(database, auth, { issuer: auth.issuers.company.issuer,
+    ...(process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN ? { operatorToken: process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN } : {}) });
 
   try {
     await assertMigrationsCurrent(database);

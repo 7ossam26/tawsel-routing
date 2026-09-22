@@ -2,13 +2,13 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07 browser session endpoints are implemented locally.** See [identity setup and browser quickstart](../identity.md) and [P07 evidence](../phase-07-evidence.md). Other domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07 browser sessions and P08 ERP provisioning are implemented locally.** See [identity setup and browser quickstart](../identity.md) and [P07 evidence](../phase-07-evidence.md). See [P08 service provisioning](../erp/consumer-quickstart.md). Other domain HTTP operations/events remain designed and unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. Result/provisioning HTTP adapters remain later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status; general action.getResult remains later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -2088,6 +2088,1637 @@ P05 verifies this result in the internal PostgreSQL kernel. Authenticated action
 }
 ```
 
+### BindSource
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/BindSource)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "companyCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]{2,32}$"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "subjectIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    },
+    "credentialId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "secretHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expiresAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "companyCode",
+    "displayName",
+    "subjectIds",
+    "credentialId",
+    "secretHash",
+    "expiresAt"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RotateCredential
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/RotateCredential)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "credentialId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "secretHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expiresAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "overlapSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "recover": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "credentialId",
+    "secretHash",
+    "expiresAt",
+    "overlapSeconds",
+    "recover"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableSource
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableSource)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### Branch
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/Branch)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "location": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Coordinates"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "name",
+    "enabled",
+    "location"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableBranch
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableBranch)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### Role
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/Role)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Capability"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "name",
+    "capabilities"
+  ],
+  "additionalProperties": false
+}
+```
+
+### User
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/User)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "roleExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "branchExternalIds": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/ExternalId"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    },
+    "enabled": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "subject",
+    "roleExternalId",
+    "branchExternalIds",
+    "enabled"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserRole
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserRole)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "roleExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "roleExternalId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserExceptions
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserExceptions)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/CapabilityOverride"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "exceptions"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserBranches
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserBranches)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "branchExternalIds": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/ExternalId"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "branchExternalIds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableUser
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableUser)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### Driver
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/Driver)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "userExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "vehicleReference": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/ExternalId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profile": {
+      "enum": [
+        "car",
+        "motorcycle",
+        "bicycle"
+      ]
+    }
+  },
+  "required": [
+    "externalId",
+    "sourceRevision",
+    "userExternalId",
+    "enabled",
+    "vehicleReference",
+    "profile"
+  ],
+  "additionalProperties": false
+}
+```
+
+### VerifiedService
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/VerifiedService)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "const": "service-operation"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "integrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "actorId": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "mode",
+    "tenantId",
+    "integrationId",
+    "actorId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ProvisioningStatus
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/ProvisioningStatus)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "entity": {
+      "enum": [
+        "source",
+        "branch",
+        "role",
+        "user",
+        "driver"
+      ]
+    },
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "resourceId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "lastActionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "issuerStatus": {
+      "enum": [
+        "not-required",
+        "pending",
+        "running",
+        "retry",
+        "ready"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "nextAttemptAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastError": {
+      "enum": [
+        null,
+        "issuer_unavailable",
+        "subject_unavailable"
+      ]
+    },
+    "enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Requested local projection enabled state; null for a role. ready plus enabled=false means disable reconciliation completed, never account-ready."
+    }
+  },
+  "required": [
+    "entity",
+    "externalId",
+    "resourceId",
+    "sourceRevision",
+    "lastActionId",
+    "issuerStatus",
+    "attempts",
+    "nextAttemptAt",
+    "lastError",
+    "enabled"
+  ],
+  "additionalProperties": false
+}
+```
+
+### SourceConfiguration
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/SourceConfiguration)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "identity": {
+      "$ref": "#/$defs/VerifiedService"
+    },
+    "issuer": {
+      "type": "string",
+      "format": "uri"
+    },
+    "supportedVersions": {
+      "type": "array",
+      "items": {
+        "const": "1.0.0"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    },
+    "allowedOperations": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/OperationId"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
+    },
+    "humanDelegation": {
+      "const": false
+    }
+  },
+  "required": [
+    "identity",
+    "issuer",
+    "supportedVersions",
+    "allowedOperations",
+    "humanDelegation"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ProvisioningChanged
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/ProvisioningChanged)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "entity": {
+      "enum": [
+        "source",
+        "branch",
+        "role",
+        "user",
+        "driver"
+      ]
+    },
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "resourceId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "service": {
+      "$ref": "#/$defs/VerifiedService"
+    }
+  },
+  "required": [
+    "entity",
+    "externalId",
+    "resourceId",
+    "sourceRevision",
+    "actionId",
+    "service"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BindSourceCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/BindSourceCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.bindSource"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/BindSource"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RotateCredentialCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/RotateCredentialCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.rotateCredential"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/RotateCredential"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableSourceCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableSourceCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.disableSource"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/DisableSource"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BranchCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/BranchCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "branch.provision"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Branch"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableBranchCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableBranchCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "branch.disable"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/DisableBranch"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoleCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/RoleCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "role.defineCapabilities"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Role"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "user.provision"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/User"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserRoleCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserRoleCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "user.setRole"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/UserRole"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserExceptionsCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserExceptionsCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "user.setCapabilityExceptions"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/UserExceptions"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### UserBranchesCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/UserBranchesCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "user.setBranchMemberships"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/UserBranches"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DisableUserCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DisableUserCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "user.disable"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/DisableUser"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DriverCommand
+
+[Canonical definition](../../contracts/provisioning.schema.json#/$defs/DriverCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "driver.provisionReference"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Driver"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -2170,6 +3801,20 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | session-csrf | session.schema.json#/$defs/BootstrapResponse | valid foundation shape |
 | session-kind | session.schema.json#/$defs/KindRequest | valid foundation shape |
 | session-denied | session.schema.json#/$defs/AuthError | valid foundation shape |
+| p08-integration.bindSource | provisioning.schema.json#/$defs/BindSourceCommand | valid foundation shape |
+| p08-integration.rotateCredential | provisioning.schema.json#/$defs/RotateCredentialCommand | valid foundation shape |
+| p08-integration.disableSource | provisioning.schema.json#/$defs/DisableSourceCommand | valid foundation shape |
+| p08-branch.provision | provisioning.schema.json#/$defs/BranchCommand | valid foundation shape |
+| p08-branch.disable | provisioning.schema.json#/$defs/DisableBranchCommand | valid foundation shape |
+| p08-role.defineCapabilities | provisioning.schema.json#/$defs/RoleCommand | valid foundation shape |
+| p08-user.provision | provisioning.schema.json#/$defs/UserCommand | valid foundation shape |
+| p08-user.setRole | provisioning.schema.json#/$defs/UserRoleCommand | valid foundation shape |
+| p08-user.setCapabilityExceptions | provisioning.schema.json#/$defs/UserExceptionsCommand | valid foundation shape |
+| p08-user.setBranchMemberships | provisioning.schema.json#/$defs/UserBranchesCommand | valid foundation shape |
+| p08-user.disable | provisioning.schema.json#/$defs/DisableUserCommand | valid foundation shape |
+| p08-driver.provisionReference | provisioning.schema.json#/$defs/DriverCommand | valid foundation shape |
+| p08-status-retry | provisioning.schema.json#/$defs/ProvisioningStatus | valid foundation shape |
+| p08-provisioning.changed | provisioning.schema.json#/$defs/ProvisioningChanged | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -2219,5 +3864,14 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | session-unknown-kind | session.schema.json#/$defs/KindRequest | invalid (enum) |
 | session-extra-scope | session.schema.json#/$defs/KindRequest | invalid (additionalProperties) |
 | session-no-state | session.schema.json#/$defs/CallbackQuery | invalid (required) |
+| p08-actor | provisioning.schema.json#/$defs/UserCommand | invalid (additionalProperties) |
+| p08-raw-actor | provisioning.schema.json#/$defs/UserCommand | invalid (additionalProperties) |
+| p08-password | provisioning.schema.json#/$defs/UserCommand | invalid (additionalProperties) |
+| p08-revision-zero | provisioning.schema.json#/$defs/UserCommand | invalid (minimum) |
+| p08-multiple-roles | provisioning.schema.json#/$defs/UserCommand | invalid (additionalProperties) |
+| p08-duplicate-branch | provisioning.schema.json#/$defs/UserCommand | invalid (uniqueItems) |
+| p08-future-version | provisioning.schema.json#/$defs/UserCommand | invalid (const) |
+| p08-scope-omitted | provisioning.schema.json#/$defs/UserCommand | invalid (required) |
+| p08-unhandled-dependency | provisioning.schema.json#/$defs/UserCommand | invalid (maxItems) |
 
 [Canonical example data](../../contracts/examples/README.md)

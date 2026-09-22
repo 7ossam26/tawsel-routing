@@ -6,7 +6,8 @@ import type { CommandScope } from '../commands/kernel.js';
 export type Capability = components['schemas']['Capability'];
 /** Input from a VERIFIED server adapter only. P06 has no HTTP/header adapter.
  * Jobs retain this identity from trusted persisted metadata, never payload scope.
- * P08 will separately verify delegated human actor assertions. */
+ * P08 authenticates explicit provisioning service operations; human actor
+ * assertions remain unavailable and must never be inferred from body IDs. */
 export type AuthenticatedPrincipal =
   | { readonly kind: 'account'; readonly issuer: string; readonly subject: string }
   | { readonly kind: 'integration'; readonly integrationId: string };
@@ -81,7 +82,7 @@ export class AccessSession {
     this.alive();
     const b = this.#binding;
     // These are assertions, not selectors that can alter the binding. Human
-    // delegation is deliberately unavailable until P08 verifies its proof.
+    // delegation is unavailable; P08 provisioning uses explicit service authority.
     if ((requested.tenantId !== undefined && requested.tenantId !== b.tenantId)
       || (requested.accountId !== undefined && requested.accountId !== b.actorId)
       || (requested.branchId !== undefined && !b.branches.includes(requested.branchId))

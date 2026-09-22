@@ -1,5 +1,7 @@
 # Identity and browser sessions — P07
 
+P08 update: [ERP provisioning](provisioning.md) and [public fixture quickstart](erp/consumer-quickstart.md) now provide the company subject/role/branch/driver projection boundary. The P07 LOCAL seed remains historical fixture tooling; P08LOCAL is provisioned through public HTTP. Issuer passwords/accounts remain externally administered. A separate durable worker verifies reserved enabled subjects and revokes sessions after local disable. Ordinary session checks still need no ERP connection.
+
 Tawsel uses a confidential OIDC authorization-code client with S256 PKCE. Passwords, activation and password-reset proofs are handled by Keycloak. There is no password-grant handler or password-hash copy. Company and personal realms, subject bindings, tenant/account records and browser session cookies are separate. Contact equality never links identities. Company codes locate a tenant; P06 live membership grants access.
 
 ## Reproduce the local demonstration
@@ -33,7 +35,7 @@ Logout revokes the local session first and attempts issuer revocation for that T
 
 ## HTTP boundary / consumer quickstart
 
-Canonical ownership: `contracts/session.schema.json`, `contracts/openapi.yaml`, `contracts/operations.json`; generated `packages/api-client/src/schema.d.ts` and `docs/reference/public-contract.md`. `account.verifyRecoveryEmail` / `account.completeRecovery` are issuer-hosted single-use actions, not invented Tawsel endpoints. Other business/provisioning paths remain unavailable.
+Canonical ownership: `contracts/session.schema.json`, `contracts/openapi.yaml`, `contracts/operations.json`; generated `packages/api-client/src/schema.d.ts` and `docs/reference/public-contract.md`. `account.verifyRecoveryEmail` / `account.completeRecovery` are issuer-hosted single-use actions, not invented Tawsel endpoints. P08 provisioning paths are separately documented; other delivery-business paths remain unavailable.
 
 | Operation | Wire surface | Trust |
 | --- | --- | --- |
@@ -53,7 +55,7 @@ Shared PostgreSQL rate limits use hashed client IP + route category + minute. En
 
 The personal recovery provider additionally uses the issuer's shared single-use-object cache for ten submissions per IP/minute and one message attempt per email/minute, with hashed keys and neutral acknowledgement on suppression. This protects direct issuer-form submissions too; it is not just a UI button limit. Production edge limits/SMTP abuse monitoring remain deployment work.
 
-Consumer conformance: `npm run contracts:check`, `npm run test:contracts`, `npm run typecheck -w @tawsel/api-client`, `npm run test:auth` and actual `npm run test:browser:auth` are distinct checks. These browser sessions are not service credentials for ERP connectors. P08 adds the authenticated provisioning/actor boundary; P26/P27 still own external receiver/source conformance.
+Consumer conformance: `npm run contracts:check`, `npm run test:contracts`, `npm run typecheck -w @tawsel/api-client`, `npm run test:auth` and actual `npm run test:browser:auth` are distinct checks. These browser sessions are not service credentials for ERP connectors. P08 now adds the authenticated explicit provisioning-service boundary; P26/P27 still own external receiver/source conformance.
 
 ## Production configuration and remaining deployment work
 

@@ -1,12 +1,11 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — local identity implementation
+  title: Tawsel public contract — local identity and ERP provisioning
   version: 0.1.0
-  description: P07 session and account entry endpoints are implemented locally.
-    Other business operations remain designed and unavailable. Issuer-hosted
-    password, email verification and recovery forms use Keycloak OIDC;
-    credentials never enter Tawsel. Same-origin browser cookies/CSRF are not ERP
-    service credentials.
+  description: P07 sessions and P08 versioned ERP provisioning are implemented locally. Other business
+    operations remain designed. ERP owns company administration and issuer credentials.
+    Source-scoped service operations never accept human actor assertions. No deployed release or
+    real ERP compatibility claim.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -16,8 +15,7 @@ paths:
   /api/session/company:
     post:
       operationId: session.resolveCompany
-      summary: Resolve company code to safe login context; company selection grants no
-        authority.
+      summary: Resolve company code to safe login context; company selection grants no authority.
       tags:
         - Sessions
       security: []
@@ -271,8 +269,8 @@ paths:
       security: []
       responses:
         "302":
-          description: Fixed same-origin account destination or safe login error; never a
-            request-selected redirect.
+          description: Fixed same-origin account destination or safe login error; never a request-selected
+            redirect.
           headers:
             Location:
               schema:
@@ -350,8 +348,8 @@ paths:
   /api/session/context:
     get:
       operationId: session.getContext
-      summary: Read current issuer-validated session and P06 access context. Display
-        fields are never request authority.
+      summary: Read current issuer-validated session and P06 access context. Display fields are never
+        request authority.
       tags:
         - Sessions
       security:
@@ -620,6 +618,437 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AuthError"
+  /api/v1/provisioning/commands/integration.bindSource:
+    post:
+      operationId: integration.bindSource
+      summary: Bootstrap authorized tenant/integration binding and supported protocol versions.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningOperator: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BindSourceCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": &a1
+          description: Safe validation/access/dependency failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "401": &a2
+          description: Safe validation/access/dependency failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "403": &a3
+          description: Safe validation/access/dependency failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "404": &a4
+          description: Safe validation/access/dependency failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "409": &a5
+          description: Version or command conflict; inspect retained receipt
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "503": &a6
+          description: Safe validation/access/dependency failure
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+  /api/v1/provisioning/commands/integration.rotateCredential:
+    post:
+      operationId: integration.rotateCredential
+      summary: Rotate scoped command credential with explicit overlap/recovery.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+        - ProvisioningOperator: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RotateCredentialCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/integration.disableSource:
+    post:
+      operationId: integration.disableSource
+      summary: Disable source credentials without erasing audit or queued evidence.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DisableSourceCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/branch.provision:
+    post:
+      operationId: branch.provision
+      summary: Apply versioned branch identity/location reference.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/branch.disable:
+    post:
+      operationId: branch.disable
+      summary: Apply explicit versioned branch disable without deleting custody history.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DisableBranchCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/role.defineCapabilities:
+    post:
+      operationId: role.defineCapabilities
+      summary: Apply versioned ERP role capability definition.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/user.provision:
+    post:
+      operationId: user.provision
+      summary: Bind ERP user reference to trusted issuer subject; no copied passwords.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/user.setRole:
+    post:
+      operationId: user.setRole
+      summary: Assign exactly one role per company user.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRoleCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/user.setCapabilityExceptions:
+    post:
+      operationId: user.setCapabilityExceptions
+      summary: Apply inherit/allow/deny overrides without bypassing resource scope.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserExceptionsCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/user.setBranchMemberships:
+    post:
+      operationId: user.setBranchMemberships
+      summary: Version branch membership; common effective capabilities across branches.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserBranchesCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/user.disable:
+    post:
+      operationId: user.disable
+      summary: Revoke access without resurrecting via stale source revision.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DisableUserCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/commands/driver.provisionReference:
+    post:
+      operationId: driver.provisionReference
+      summary: Apply minimal execution driver/vehicle profile reference.
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverCommand"
+      responses:
+        "200":
+          description: Durable command result; user acceptance is separate from issuer readiness
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/configuration:
+    get:
+      operationId: integration.getConfiguration
+      summary: Discover this source, supported protocol and explicitly permitted service operations
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SourceConfiguration"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
+  /api/v1/provisioning/status:
+    get:
+      operationId: provisioning.getStatus
+      summary: Read source-scoped current projection and separate issuer reconciliation status
+      tags:
+        - ERP provisioning
+      security:
+        - ProvisioningService: []
+      parameters:
+        - name: entity
+          in: query
+          required: true
+          schema:
+            enum:
+              - source
+              - branch
+              - role
+              - user
+              - driver
+        - name: externalId
+          in: query
+          required: true
+          schema:
+            $ref: ./common.schema.json#/$defs/ExternalId
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisioningStatus"
+        "400": *a1
+        "401": *a2
+        "403": *a3
+        "404": *a4
+        "409": *a5
+        "503": *a6
 components:
   schemas:
     Uuid:
@@ -724,6 +1153,62 @@ components:
       $ref: ./session.schema.json#/$defs/SessionContext
     AuthError:
       $ref: ./session.schema.json#/$defs/AuthError
+    BindSource:
+      $ref: ./provisioning.schema.json#/$defs/BindSource
+    RotateCredential:
+      $ref: ./provisioning.schema.json#/$defs/RotateCredential
+    DisableSource:
+      $ref: ./provisioning.schema.json#/$defs/DisableSource
+    Branch:
+      $ref: ./provisioning.schema.json#/$defs/Branch
+    DisableBranch:
+      $ref: ./provisioning.schema.json#/$defs/DisableBranch
+    Role:
+      $ref: ./provisioning.schema.json#/$defs/Role
+    User:
+      $ref: ./provisioning.schema.json#/$defs/User
+    UserRole:
+      $ref: ./provisioning.schema.json#/$defs/UserRole
+    UserExceptions:
+      $ref: ./provisioning.schema.json#/$defs/UserExceptions
+    UserBranches:
+      $ref: ./provisioning.schema.json#/$defs/UserBranches
+    DisableUser:
+      $ref: ./provisioning.schema.json#/$defs/DisableUser
+    Driver:
+      $ref: ./provisioning.schema.json#/$defs/Driver
+    VerifiedService:
+      $ref: ./provisioning.schema.json#/$defs/VerifiedService
+    ProvisioningStatus:
+      $ref: ./provisioning.schema.json#/$defs/ProvisioningStatus
+    SourceConfiguration:
+      $ref: ./provisioning.schema.json#/$defs/SourceConfiguration
+    ProvisioningChanged:
+      $ref: ./provisioning.schema.json#/$defs/ProvisioningChanged
+    BindSourceCommand:
+      $ref: ./provisioning.schema.json#/$defs/BindSourceCommand
+    RotateCredentialCommand:
+      $ref: ./provisioning.schema.json#/$defs/RotateCredentialCommand
+    DisableSourceCommand:
+      $ref: ./provisioning.schema.json#/$defs/DisableSourceCommand
+    BranchCommand:
+      $ref: ./provisioning.schema.json#/$defs/BranchCommand
+    DisableBranchCommand:
+      $ref: ./provisioning.schema.json#/$defs/DisableBranchCommand
+    RoleCommand:
+      $ref: ./provisioning.schema.json#/$defs/RoleCommand
+    UserCommand:
+      $ref: ./provisioning.schema.json#/$defs/UserCommand
+    UserRoleCommand:
+      $ref: ./provisioning.schema.json#/$defs/UserRoleCommand
+    UserExceptionsCommand:
+      $ref: ./provisioning.schema.json#/$defs/UserExceptionsCommand
+    UserBranchesCommand:
+      $ref: ./provisioning.schema.json#/$defs/UserBranchesCommand
+    DisableUserCommand:
+      $ref: ./provisioning.schema.json#/$defs/DisableUserCommand
+    DriverCommand:
+      $ref: ./provisioning.schema.json#/$defs/DriverCommand
   securitySchemes:
     companySession:
       type: apiKey
@@ -733,6 +1218,18 @@ components:
       type: apiKey
       in: cookie
       name: __Host-tawsel-personal
+    ProvisioningService:
+      type: http
+      scheme: bearer
+      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side;
+        tenant/integration bound, expiring, rotatable. TLS required outside loopback.
+    ProvisioningOperator:
+      type: http
+      scheme: bearer
+      description: Out-of-band server operator token; bootstrap and recovery rotation only. Never
+        distribute to ERP application users.
 tags:
   - name: Sessions
     description: P07 same-origin browser session and issuer journeys.
+  - name: ERP provisioning
+    description: Versioned ERP-owned identity projections and explicit service authority
