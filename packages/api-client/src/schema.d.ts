@@ -3,7 +3,10 @@ export type paths = Record<string, never>;
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Action envelope v1 — designed */
+        /**
+         * Action envelope v1 — designed
+         * @description P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+         */
         "action-envelope.v1.schema": {
             actionId: components["schemas"]["Uuid"];
             baseVersions: components["schemas"]["Versions"];
@@ -21,7 +24,33 @@ export interface components {
             /** @constant */
             schemaVersion: "1.0.0";
         };
+        /**
+         * Durable command result v1
+         * @description P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.
+         */
+        "action-result.v1.schema": {
+            operationId: components["schemas"]["OperationId"];
+            receipt: components["schemas"]["evidence-receipt.v1.schema"];
+            response?: {
+                body: {
+                    [key: string]: unknown;
+                };
+                status: number;
+            };
+            /** @enum {unknown} */
+            retention: "full" | "compacted";
+            /** @description Minimal stable feature identity/revision references, retained for the business-record lifetime; not a copy of the full response or personal contact details. */
+            summary: {
+                [key: string]: unknown;
+            };
+        } & (unknown & {
+            receipt: {
+                /** @enum {unknown} */
+                businessStatus?: "accepted" | "rejected" | "review-required";
+            };
+        });
         ActionEnvelope: components["schemas"]["action-envelope.v1.schema"];
+        ActionResult: components["schemas"]["action-result.v1.schema"];
         /** @enum {string} */
         ApplicationStatus: "unknown" | "pending" | "applied" | "failed";
         /** @enum {string} */

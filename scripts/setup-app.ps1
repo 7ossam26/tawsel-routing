@@ -40,7 +40,7 @@ try {
     }
   }
 
-  Write-Host 'Application workspace setup complete. Run: npm run dev' -ForegroundColor Cyan
+  Write-Host 'Workspace dependencies ready. For PostgreSQL setup/migrations and checks, follow docs/operations.md; then npm run dev.' -ForegroundColor Cyan
 }
 finally {
   Pop-Location

@@ -2,6 +2,19 @@
 
 All business mappings below are **designed**. Common shapes/examples are schema-verified; the reference ERP and real vendor mapping are not implemented. Canonical field definitions live in [common.schema.json](../../contracts/common.schema.json); envelopes/examples remain there, not copied as another schema here. The [catalog](../contract-coverage.md) names commands/events and owner phases. A real-ERP field/status column stays explicitly unchosen.
 
+P05 recovery additions (internal PostgreSQL behavior verified; public HTTP mapping still designed):
+
+| Field/fact | Consumer meaning |
+| --- | --- |
+| `(authenticated tenant, stable account/integration source, actionId)` | Immutable command identity across retries, token refresh and process restarts. Never infer scope from a body field. |
+| Same identity, different semantic envelope/actor | 409 `idempotency_conflict`; original history/result survives. |
+| `ActionResult.retention=full`, `response.status/body` | Original persisted response, retained at least 30 days; recovery is not a second operation. |
+| `ActionResult.retention=compacted`, receipt/summary | Previously finalized command; response body unavailable. Reconcile the referenced record when APIs exist; never create a new identity for the old action. |
+| `receipt.businessStatus` rejected / review-required | Evidence may be durable without accepted state/progress/outbound business intent; no business committedAt. |
+| Internal outbox pending intent | Transaction committed a future delivery obligation. It is neither public DeliveryStatus received nor ApplicationStatus applied. |
+
+Examples and generated public types follow [action-result.v1.schema.json](../../contracts/action-result.v1.schema.json). P05 does not change commercial/status ownership or implement any of the domain mappings below.
+
 ## Identity, fields and state authority
 
 Phase 03's [action map](../ui-actions.md) and [Arabic state cases](../ui-spec.md#acceptance-copy-cases) add presentation traceability only. Preserve separate fields rather than serializing a translated badge as a new ERP status:

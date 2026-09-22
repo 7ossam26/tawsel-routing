@@ -907,5 +907,74 @@
       "actionId": "10000000-0000-4000-8000-000000000040",
       "retryable": false
     }
+  },
+  {
+    "id": "action-result-full",
+    "schema": "action-result.v1.schema.json",
+    "valid": true,
+    "data": {
+      "receipt": {
+        "schemaVersion": "1.0.0",
+        "receiptId": "10000000-0000-4000-8000-000000000070",
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "evidenceStatus": "received",
+        "businessStatus": "accepted",
+        "receivedAt": "2026-09-22T10:00:00Z",
+        "committedAt": "2026-09-22T10:00:01Z",
+        "resourceVersions": {
+          "sourceRevision": 1,
+          "resourceRevision": 1,
+          "outcomeRevision": 1,
+          "assignmentGeneration": 1,
+          "routeRevision": 2,
+          "deviceGeneration": 1,
+          "snapshotRevision": 5
+        }
+      },
+      "operationId": "outcome.recordPartial",
+      "retention": "full",
+      "summary": {
+        "outcomeId": "10000000-0000-4000-8000-000000000080",
+        "outcomeRevision": 1
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "outcomeId": "10000000-0000-4000-8000-000000000080",
+          "deliveredPieces": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "action-result-compacted",
+    "schema": "action-result.v1.schema.json",
+    "valid": true,
+    "data": {
+      "receipt": {
+        "schemaVersion": "1.0.0",
+        "receiptId": "10000000-0000-4000-8000-000000000070",
+        "actionId": "10000000-0000-4000-8000-000000000040",
+        "evidenceStatus": "received",
+        "businessStatus": "accepted",
+        "receivedAt": "2026-09-22T10:00:00Z",
+        "committedAt": "2026-09-22T10:00:01Z",
+        "resourceVersions": {
+          "sourceRevision": 1,
+          "resourceRevision": 1,
+          "outcomeRevision": 1,
+          "assignmentGeneration": 1,
+          "routeRevision": 2,
+          "deviceGeneration": 1,
+          "snapshotRevision": 5
+        }
+      },
+      "operationId": "outcome.recordPartial",
+      "retention": "compacted",
+      "summary": {
+        "outcomeId": "10000000-0000-4000-8000-000000000080",
+        "outcomeRevision": 1
+      }
+    }
   }
 ]

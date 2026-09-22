@@ -24,12 +24,17 @@
     "test:contracts": "vitest run --project fast packages/shared/test/fast/contract-foundation.test.ts",
     "dev": "npm run build -w @tawsel/shared && concurrently --kill-others-on-fail --names api,web --prefix-colors green,blue \"npm run dev -w @tawsel/api\" \"npm run dev -w @tawsel/web\"",
     "lint": "eslint .",
-    "typecheck": "npm run build -w @tawsel/shared && npm run typecheck -w @tawsel/api && npm run typecheck -w @tawsel/web && npm run typecheck -w @tawsel/api-client",
-    "test": "npm run build -w @tawsel/shared && vitest",
+    "typecheck": "npm run build -w @tawsel/shared && npm run typecheck -w @tawsel/api && npm run typecheck -w @tawsel/web && npm run typecheck -w @tawsel/api-client && tsc -p tsconfig.scripts.json",
+    "test": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs",
     "test:fast": "npm run build -w @tawsel/shared && vitest run --project fast",
-    "test:integration": "npm run build -w @tawsel/shared && vitest run --project integration",
+    "test:integration": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration",
     "test:browser:ui": "npm run build -w @tawsel/shared && playwright test",
-    "test:ci": "npm run build -w @tawsel/shared && vitest run"
+    "test:ci": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run",
+    "db:local:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-local.ps1 start",
+    "db:local:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-local.ps1 stop",
+    "db:migrate": "node --env-file-if-exists=.env.database.local --env-file-if-exists=.env --import tsx scripts/db-migrate.ts",
+    "test:database": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/database-lifecycle.test.ts apps/api/test/integration/command-transaction.test.ts",
+    "db:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/command-demo.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

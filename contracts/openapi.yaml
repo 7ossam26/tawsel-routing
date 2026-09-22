@@ -88,5 +88,7 @@ components:
       $ref: ./action-envelope.v1.schema.json
     EvidenceReceipt:
       $ref: ./evidence-receipt.v1.schema.json
+    ActionResult:
+      $ref: ./action-result.v1.schema.json
     EventEnvelope:
       $ref: ./events/envelope.v1.schema.json

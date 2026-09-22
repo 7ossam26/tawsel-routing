@@ -8,6 +8,8 @@ Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contrac
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
+P05 verifies the internal PostgreSQL kernel and ActionResult full/compacted shape. The public action.getResult HTTP adapter remains unavailable pending P06–P08 authentication. See [P05 evidence](../phase-05-evidence.md) and [retention/lock protocol](../tracking-and-consistency.md#implemented-p05-transaction-protocol).
+
 ## Common schemas and envelopes
 
 ### Uuid
@@ -1195,11 +1197,14 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
 
 [Canonical definition](../../contracts/action-envelope.v1.schema.json)
 
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/action-envelope.v1.schema.json",
   "title": "Action envelope v1 — designed",
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -1366,6 +1371,115 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
         "required": [
           "problem"
         ]
+      }
+    }
+  ]
+}
+```
+
+### ActionResult
+
+[Canonical definition](../../contracts/action-result.v1.schema.json)
+
+P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tawsel.invalid/v1/action-result.v1.schema.json",
+  "title": "Durable command result v1",
+  "description": "P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.",
+  "type": "object",
+  "properties": {
+    "receipt": {
+      "$ref": "./evidence-receipt.v1.schema.json"
+    },
+    "operationId": {
+      "$ref": "./common.schema.json#/$defs/OperationId"
+    },
+    "retention": {
+      "enum": [
+        "full",
+        "compacted"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Minimal stable feature identity/revision references, retained for the business-record lifetime; not a copy of the full response or personal contact details."
+    },
+    "response": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "minimum": 200,
+          "maximum": 599
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "status",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "receipt",
+    "operationId",
+    "retention",
+    "summary"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "retention": {
+            "const": "full"
+          }
+        },
+        "required": [
+          "retention"
+        ]
+      },
+      "then": {
+        "properties": {
+          "response": true
+        },
+        "required": [
+          "response"
+        ]
+      },
+      "else": {
+        "not": {
+          "properties": {
+            "response": true
+          },
+          "required": [
+            "response"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "receipt": {
+          "type": "object",
+          "properties": {
+            "businessStatus": {
+              "enum": [
+                "accepted",
+                "rejected",
+                "review-required"
+              ]
+            }
+          }
+        }
       }
     }
   ]
@@ -1584,6 +1698,8 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | error-unsupported_schema_version | common.schema.json#/$defs/Problem | valid foundation shape |
 | error-replay_expired | common.schema.json#/$defs/Problem | valid foundation shape |
 | error-correction_dependency_conflict | common.schema.json#/$defs/Problem | valid foundation shape |
+| action-result-full | action-result.v1.schema.json | valid foundation shape |
+| action-result-compacted | action-result.v1.schema.json | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -1619,5 +1735,8 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | unknown-null-is-not-zero | common.schema.json#/$defs/Money | invalid (type) |
 | conflict-must-be-409 | common.schema.json#/$defs/Problem | invalid (const) |
 | location-has-no-destination | common.schema.json#/$defs/LocationSnapshot | invalid (anyOf) |
+| action-result-full-missing-response | action-result.v1.schema.json | invalid (required) |
+| action-result-compacted-with-response | action-result.v1.schema.json | invalid (not) |
+| action-result-pending | action-result.v1.schema.json | invalid (enum) |
 
 [Canonical example data](../../contracts/examples/README.md)

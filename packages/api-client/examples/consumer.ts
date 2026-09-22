@@ -15,3 +15,11 @@ export const source: components['schemas']['SourceReference'] = {
 
 // There are no published business paths in the foundation.
 export const availablePaths: paths = {};
+
+// P05 defines the recovery shape; there is still no available HTTP method.
+// A compacted response requires later scoped reconciliation, never a new ID.
+export function recoveryState(result: components['schemas']['ActionResult']) {
+  return result.retention === 'compacted'
+    ? { actionId: result.receipt.actionId, summary: result.summary, next: 'reconcile-existing-record' as const }
+    : { actionId: result.receipt.actionId, response: result.response, next: 'use-durable-response' as const };
+}

@@ -6,6 +6,8 @@ Generated from [contracts/operations.json](../contracts/operations.json) by `npm
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
+P05 foundation: getCommandResult and the PostgreSQL command/retention primitives are verified internally. action.getResult remains designed as an HTTP operation until P06–P08 trusted scope is available. This does not promote any domain command/event to implemented; see [P05 evidence](phase-05-evidence.md).
+
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
 [UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. These are designed surfaces, not working endpoints or browser evidence; [Phase 03 evidence](phase-03-evidence.md) records the document checks.
@@ -182,7 +184,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `action.getResult` | http-read | designed | [P05](phases/05-postgres-atomic-command-kernel.md) | authenticated | Recover scoped stable idempotency/business result after unknown response. |
+| `action.getResult` | http-read | designed | [P05](phases/05-postgres-atomic-command-kernel.md) | authenticated | Recover scoped stable result after unknown response. P05 PostgreSQL getCommandResult primitive and ActionResult schema verified locally; HTTP route remains unavailable pending P06-P08 authenticated scope. Compacted identities never execute again. |
 | `evidence.receiveFormerDevice` | http-command | designed | [P20](phases/20-device-takeover-evidence.md) | execution.own | Durably receive old-generation evidence without accepting execution. |
 | `sync.submitActions` | http-command | designed | [P34](phases/34-ordered-replay-conflict-recovery.md) | execution.own | Dependency-ordered replay batch with per-action result, original identity/version. |
 | `sync.getEvidenceReceipt` | http-read | designed | [P34](phases/34-ordered-replay-conflict-recovery.md) | execution.own | Recover durable received/rejected/review evidence without implying acceptance. |

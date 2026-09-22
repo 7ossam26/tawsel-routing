@@ -16,6 +16,11 @@ on:
       - 'vitest.config.ts'
       - 'contracts/**'
       - 'scripts/contracts.mjs'
+      - 'scripts/db-migrate.ts'
+      - 'scripts/command-demo.ts'
+      - 'scripts/postgres-local.ps1'
+      - 'db/**'
+      - 'tsconfig.scripts.json'
       - 'docs/contract-coverage.md'
       - 'docs/reference/**'
       - 'docs/phases/**'
@@ -36,6 +41,11 @@ on:
       - 'vitest.config.ts'
       - 'contracts/**'
       - 'scripts/contracts.mjs'
+      - 'scripts/db-migrate.ts'
+      - 'scripts/command-demo.ts'
+      - 'scripts/postgres-local.ps1'
+      - 'db/**'
+      - 'tsconfig.scripts.json'
       - 'docs/contract-coverage.md'
       - 'docs/reference/**'
       - 'docs/phases/**'
@@ -49,10 +59,23 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18.4
+        env:
+          POSTGRES_USER: tawsel_ci
+          POSTGRES_PASSWORD: isolated_ci_only
+          POSTGRES_DB: tawsel_test_control
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U tawsel_ci -d tawsel_test_control"
+          --health-interval 5s --health-timeout 5s --health-retries 12
     env:
       TAWSEL_API_HOST: 127.0.0.1
       TAWSEL_API_PORT: 3001
       VITE_TAWSEL_API_BASE_URL: http://127.0.0.1:3001
+      TAWSEL_TEST_ADMIN_URL: postgresql://tawsel_ci:isolated_ci_only@127.0.0.1:55432/tawsel_test_control?sslmode=disable
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -63,5 +86,9 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Mark isolated test control database
+        env:
+          PGPASSWORD: isolated_ci_only
+        run: psql -h 127.0.0.1 -p 55432 -U tawsel_ci -d tawsel_test_control -v ON_ERROR_STOP=1 -c "COMMENT ON DATABASE tawsel_test_control IS 'tawsel:test-control:v1'"
       - name: Run application checks
         run: npm run check

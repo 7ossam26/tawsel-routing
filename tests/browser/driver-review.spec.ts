@@ -33,7 +33,7 @@ test('360x800 daily readiness and missing-pin recovery', async ({ page }) => {
   });
   expect(typography).toEqual(expect.objectContaining({ bodyWeight: '400', headingWeight: '800', actionWeight: '700', loaded: true }));
   expect(typography.family).toContain('Cairo');
-  expect(requests.filter((url) => /^https?:/.test(url) && !url.startsWith('http://127.0.0.1:5173'))).toEqual([]);
+  expect(requests.filter((url) => /^https?:/.test(url) && new URL(url).origin !== new URL(page.url()).origin)).toEqual([]);
   await page.screenshot({ path: `${evidenceDirectory}/360x800-daily-ready.png`, fullPage: true });
   await page.getByLabel('الحالة').selectOption('missing-pin');
   await expect(page.getByRole('button', { name: 'حدّد الموقع' })).toBeVisible();

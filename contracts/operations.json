@@ -720,7 +720,7 @@
       "lifecycle": "designed",
       "ownerPhase": 5,
       "capability": "authenticated",
-      "description": "Recover scoped stable idempotency/business result after unknown response."
+      "description": "Recover scoped stable result after unknown response. P05 PostgreSQL getCommandResult primitive and ActionResult schema verified locally; HTTP route remains unavailable pending P06-P08 authenticated scope. Compacted identities never execute again."
     },
     {
       "id": "evidence.receiveFormerDevice",
