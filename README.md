@@ -1,6 +1,21 @@
 # tawsel-routing
 
-Offline routing + fleet optimization stack for Egypt.
+Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
+
+## Application workspace (Phase 01)
+
+The application currently provides an Arabic RTL React/Vite shell and a Fastify workspace-health route. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1) so Arabic text does not depend on a runtime font CDN or synthetic bold. It does **not** yet provide delivery tasks, identity, application persistence, workers, ERP integration, maps, or routing adapters.
+
+Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
+
+```powershell
+.\scripts\setup-app.ps1 -Check
+npm run dev
+```
+
+Open `http://127.0.0.1:5173` and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, individual checks, CI behavior, and troubleshooting.
+
+The Engine remains available independently:
 
 - **OSRM** — road routing for **car**, **bicycle**, and **motorcycle** profiles
 - **VROOM** — vehicle routing optimization (multi-stop, capacity, time windows) on top of OSRM
@@ -35,13 +50,13 @@ Use **OSRM directly** for a single A→B route. Use **VROOM** when you need to d
 
 Nominatim is a **sibling, not a dependency** — VROOM and OSRM never call it. It's your app's job to geocode first, then route. And when you do, remember Nominatim hands back `lat`/`lon` while OSRM and VROOM want `[lon, lat]`. See [Gotchas](#gotchas).
 
-## Prerequisites
+## Engine prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 - ~10 GB free disk space for OSRM, plus **~13 GB** for the Nominatim database
 - Use **PowerShell**, not Git Bash — see [Gotchas](#gotchas)
 
-## Quick Start
+## Engine quick start
 
 ### 1. Download the Egypt OSM data
 
@@ -201,7 +216,7 @@ Invoke-RestMethod "http://localhost:5001/route/v1/driving/$($a.lon),$($a.lat);$(
   Select-Object -ExpandProperty routes | Select-Object distance, duration
 ```
 
-## Testing
+## Engine smoke testing
 
 A sample payload lives at [test-vrp.json](test-vrp.json).
 
@@ -300,6 +315,12 @@ There is no fix but starting over — `nominatim import` always begins with `cre
 
 ```
 tawsel-routing/
+├── apps/
+│   ├── api/                # Fastify workspace API
+│   └── web/                # React/Vite Arabic RTL shell
+├── packages/shared/        # Shared configuration and boundary types
+├── scripts/setup-app.ps1   # Non-destructive application setup/check
+├── docs/operations.md      # Application runbook
 ├── data/                   # OSM source + processed OSRM files (not in git)
 ├── profiles/
 │   └── motorcycle.lua      # Custom motorcycle routing profile
@@ -307,6 +328,8 @@ tawsel-routing/
 │   └── config.yml          # VROOM → OSRM backend mapping (in git)
 ├── docker-compose.yml      # Orchestrates the 3 OSRM instances + Nominatim
 ├── setup.ps1               # One-command OSRM setup & start
+├── package.json            # npm workspaces and application commands
+├── package-lock.json       # Reproducible application dependency graph
 ├── test-vrp.json           # Sample VROOM payload
 └── README.md
 ```

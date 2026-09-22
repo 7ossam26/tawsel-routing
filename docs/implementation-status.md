@@ -1,19 +1,19 @@
 # Tawsel implementation status
 
-Updated: 21 September 2026. Package revision 3 under D-109–D-111.
+Updated: 22 September 2026. Package revision 3 under D-109–D-111.
 Planning HEAD: `3d6291697fb0baeb69215237bf1d09dbf6d1d9cd`.
 
 ## Current state
 
 The owner requested smaller self-contained implementation tasks after reviewing the broad 11-phase package.
 The [current package](phases/README.md) contains 42 sequential prompts, a 65-requirement catalog, complete D-01–D-111 traceability, per-phase model/reasoning recommendations, explicit ERP handoff deliverables and a review checklist.
-**No application implementation phase has started.** No app packages, actual feature tests, runtime services or deployment were created during this rewrite.
+**Phase 01 is implemented and locally verified.** It adds the bounded web/API/shared workspace, locally bundled Cairo typography, meaningful configuration and real-HTTP tests, locked dependencies, CI, non-destructive setup, and operations evidence. It does not add delivery behavior, an application database, identity, worker, routing adapter, public ERP contract, or deployment. Phases 02–42 have not started.
 
 The [old package/ledger](phases-archive-v1/implementation-status-at-supersession.md) remains historical. Its earlier structure/link/hash validation does not establish the adequacy of its broad task boundaries, and is not evidence for the replacement's runtime behavior.
 
 ## Current planning verification — revision 3
 
-The D-110/D-111 amendment adds model/reasoning settings to all 42 prompts and strengthens the ERP planning bundle, ownership mapping, external consumer setup/conformance checks and final release manifest. All application phases remain Not started / Not run.
+The D-110/D-111 amendment added model/reasoning settings to all 42 prompts and strengthened the ERP planning bundle, ownership mapping, external consumer setup/conformance checks and final release manifest. At the time of that planning verification, all application phases were Not started / Not run; the Phase 01 execution below is later evidence.
 
 Python standard-library documentation validation on 21 September 2026: **PASS**.
 
@@ -44,7 +44,7 @@ Each row records implementation, verification and owner review separately. None 
 
 | Phase | Implementation | Verification | Owner review / evidence |
 | --- | --- | --- | --- |
-| [01 — Runnable workspace and test harness](phases/01-workspace-test-harness.md) | Not started | Not run | No implementation result yet |
+| [01 — Runnable workspace and test harness](phases/01-workspace-test-harness.md) | Implemented 22 Sep 2026 | Local checks pass; Engine runtime unavailable and not required | Awaiting owner review; [evidence](phase-01-evidence.md) |
 | [02 — State vocabulary and canonical contract foundation](phases/02-state-contract-foundation.md) | Not started | Not run | No implementation result yet |
 | [03 — Visual system and requirement-driven action specification](phases/03-design-action-specification.md) | Not started | Not run | No implementation result yet |
 | [04 — Shared components and early simple-UX review](phases/04-representative-ui-review.md) | Not started | Not run | No implementation result yet |
@@ -110,4 +110,16 @@ No new live host inventory, deployed Engine/profile/dataset verification, produc
 Operational targets remain unverified, and the detailed numerical defaults remain engineering proposals where the master plan labels them as such.
 
 There is no released application, finalized implemented contract boundary or real shipping ERP connector yet.
-The next execution prompt is [Phase 01 — workspace and test harness](phases/01-workspace-test-harness.md).
+The next execution prompt is [Phase 02 — state vocabulary and canonical contract foundation](phases/02-state-contract-foundation.md). It may rely only on the paths and commands listed in the Phase 01 handoff below.
+
+## 22 September 2026 — Phase 01 execution
+
+Starting HEAD: `eacf6b3fa596a845b4290c6f3ad471b39551e8d8`. Full checkpoint logs and acceptance mapping are in [docs/phase-01-evidence.md](phase-01-evidence.md).
+
+- Checkpoint A: added `apps/web`, `apps/api`, and `packages/shared`; safe required environment parsing; Node 24/npm 11 pinning and lockfile. `npm run dev` served the RTL shell on 5173 and actual workspace health on 3001. Docker Desktop was stopped, so Engine runtime state remains unverified and health truthfully reports `engine=not-checked`.
+- Checkpoint B: fast selection passed 6 configuration assertions; integration selection passed 3 tests over a real ephemeral Fastify listener. An initial invalid-query test exposed silent additional-field stripping; validation was corrected and the unchanged test then passed. Missing API configuration exited 1 with the named key. Lint, typecheck, and build passed.
+- Checkpoint C: added read-only CI, `scripts/setup-app.ps1`, lockfile-based setup, and operations documentation. The first isolated run exposed a hidden dependency on prior shared build output; command ordering was corrected. The repeated isolated `npm ci`/`npm run check` passed, preserved `.env` and an unrelated sentinel, and had no Engine data directory. A transient critical advisory in `concurrently@9.2.1` was removed by pinning `9.2.4`; final audit reports zero vulnerabilities.
+- Browser evidence: a headed Chromium render at 390×844 with reduced motion showed the concise Arabic RTL shell. A first pass found a favicon 404; after adding the local SVG, console errors/warnings were zero. The typography follow-up verified computed Cairo weights 400/600/700/800, all four font loads, and localhost-only font requests. The current screenshot is `output/playwright/phase-01-cairo-rtl-mobile.png`; the OFL text is retained under `docs/licenses/`. P03 must formalize this baseline as shared typography tokens and P04 must reuse/verify it in representative components. The shell is static foundation content; the API evidence is from the real local handler, and no Engine call occurred.
+- Actual runtime: Node `v24.19.0`, npm `11.1.0`, TypeScript `6.0.2`, Vite `8.3.0`, React `19.3.0`, `@fontsource/cairo 5.3.0`, Fastify `5.12.5`, Vitest `5.0.1`. Recommended model/effort was `gpt-5.6-sol`/`high`; the agent runtime exposed only GPT-5, not the exact picker variant or effort, so the latter are not asserted.
+- Preserved boundaries: Engine Compose/startup/profile/VROOM config and Stitch exports were unchanged. No database/volume/import command ran. No ERP planning interface exists yet, so ERP mapping/consumer documents are unaffected and remain Phase 02+ deliverables.
+- Handoff to Phase 02: rely on root `npm ci`, `npm run dev`, `npm run test:fast`, `npm run test:integration`, `npm run check`; workspace paths `apps/web`, `apps/api`, `packages/shared`; required `.env.example`; API port 3001; and the stable non-domain `GET /health` behavior. Do not treat workspace health as routing readiness or as a released public contract.

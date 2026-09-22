@@ -52,7 +52,7 @@ Use the [decision map](decision-map.md) for later amendments; older answers may 
 ### Checkpoint A — Shared visual primitives
 
 - [ ] Implement theme tokens, RTL shells, navigation, forms, status/stop components and focused overlays using selected shadcn/Smooth sources.
-- [ ] Self-host font/icon assets with license attribution; respect focus restoration and reduced motion.
+- [ ] Reuse and verify the Phase 01 self-hosted Cairo 400/600/700/800 baseline and its OFL attribution; add other font/icon assets only with local packaging and license attribution. Respect focus restoration and reduced motion.
 - [ ] Check: component rendering at mobile and desktop sizes, with long Arabic/LTR content.
 
 Before continuing, record what changed, the focused result and any unresolved dependency in the phase evidence.
@@ -136,4 +136,3 @@ For any affected public interface, update docs/erp/ERP-PLANNING-INPUT.md, field-
 Subsequent UI phases reuse these components; explicitly rejected patterns must be corrected before expansion, not silently treated as approved.
 
 Next numbered prompt: [Phase 05](05-postgres-atomic-command-kernel.md). State the exact verified artifacts it may rely on. Do not execute it in this task.
-

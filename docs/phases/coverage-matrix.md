@@ -1,6 +1,8 @@
 # Tawsel — current requirements and phase coverage
 
 Package revision 3, D-109–D-111. This maps current behavior to bounded implementation phases. It does not replace the [master plan](../../master-plan.md) or claim runtime completion.
+
+Execution note, 22 September 2026: [Phase 01 evidence](../phase-01-evidence.md) verifies the workspace shell, local-only workspace health boundary, fast/integration Vitest selections, build/check commands, and non-destructive setup. The shell also establishes a locally packaged Cairo 400/600/700/800 typography baseline with synthetic weights disabled; P03 still owns the final shared typography/theme tokens and P04 still owns representative component/accessibility review. Phase 01 does not implement a delivery/ERP operation or the P38 owner-diagnostics health contract; Phases 02–42 retain their assignments below.
 Read [decision-map.md](decision-map.md) when an older answer differs. All phases start unimplemented; [the ledger](../implementation-status.md) records actual evidence.
 
 Each requirement below embeds its current meaning. **Owner phases** produce the implementation/design; **follow-through** phases integrate UI, dependent rules or verification. This is not permission to defer all tests to the last phase.
@@ -532,6 +534,7 @@ Initial engineering requirements without a numbered discovery answer remain trac
 
 | Family | Contract/runtime owners | Important integration and evidence |
 | --- | --- | --- |
+| Local workspace liveness (non-domain, non-ERP) | [P01](01-workspace-test-harness.md) implemented `GET /health` | Reports only `scope=workspace` and `engine=not-checked`; [evidence](../phase-01-evidence.md). P38 still owns operational health/readiness. |
 | Shared IDs/errors/action/envelope/versioning | [P02](02-state-contract-foundation.md) canonical foundation | Feature owner completes schemas before handlers; [P42](42-final-contract-readiness-handoff.md) drift audit |
 | Sessions/account/recovery | [P07](07-oidc-login-recovery-sessions.md) | [P35](35-offline-auth-updates-ux.md) queue-aware exit/reauth |
 | Tenancy/capabilities/provisioning | [P06](06-tenant-capabilities-isolation.md), [P08](08-erp-provisioning-actor-binding.md) | [P27](27-native-mock-erp-source.md) native source UI, every resource phase extends enforcement |
@@ -651,4 +654,3 @@ These are future deliverables until their owning phase produces substantive cont
 - P39 completes target deployment only when its backup/recovery prerequisites are actually met; P40 provides the full timed recovery evidence. Otherwise target release remains explicitly pending.
 
 Initial deployment placeholders for domain/TLS/email/backup/map coverage are not invented values or readiness evidence.
-

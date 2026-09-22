@@ -42,7 +42,7 @@ Exact reference directories under stitch-export/screens/: 01-active-driver-trip;
 
 2. The nine directories cover active trip, stop detail, dispatcher workspace, login, daily work, preparation, location review, completion and sync review. They do not constrain the product to nine routes.
 
-3. Preserve Cairo typography, navy primary actions, blue accents, light surfaces, RTL and map/list relationships. Adapt responsive layouts rather than copying device frames.
+3. Preserve Cairo typography, navy primary actions, blue accents, light surfaces, RTL and map/list relationships. Phase 01 already self-hosts the real Cairo 400/600/700/800 files and disables synthetic weights; formalize those choices as shared typography tokens rather than reintroducing Google Fonts runtime imports or faux bold. Adapt responsive layouts rather than copying device frames.
 
 4. Buttons and permissions come from decisions. Remove GPS/call counters/demo switches/financial settlement assumptions; add B2C intake, returns, correction, takeover and reporting where required.
 
