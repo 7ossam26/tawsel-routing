@@ -74,7 +74,7 @@ export function AccountShell() {
         {loading ? <StatusNotice title="جارٍ التحقق من حسابك" /> : context ? <>
           <StatusNotice tone="success" title="أنت مسجّل الدخول">{kind === 'company' ? 'الوصول حسب صلاحياتك الحالية في الشركة.' : 'مساحة حسابك المستقل منفصلة عن حساب الشركة.'}</StatusNotice>
           <dl className="status-list"><div><dt>{kind === 'company' ? 'اسم المستخدم' : 'رقم الهاتف'}</dt><dd><bdi dir="auto">{context.loginIdentifier}</bdi></dd></div><div><dt>بريد الاستعادة</dt><dd>{context.recoveryEmailVerified ? 'تم التحقق منه' : 'راجع جهة تسجيل الدخول'}</dd></div></dl>
-          <p className="field-hint">حسابك جاهز. خدمة مهام التوصيل غير متاحة بعد.</p>
+          <a className="edit-link" href={kind === 'personal' ? '/tasks' : '/locations?kind=company'}>{kind === 'personal' ? 'مهام التوصيل' : 'مراجعة مواقع المهام'}</a>
           <ActionButton busy={busy} onClick={() => void act(async () => { await send('/api/session/logout', { kind }); window.location.assign(`/login?kind=${kind}`); })}>تسجيل الخروج</ActionButton>
         </> : <>
           {errorCode === 'session_expired' ? <ActionButton busy={busy} onClick={() => void act(() => begin(true))}>الدخول للحساب نفسه</ActionButton> : <ActionButton onClick={() => window.location.reload()}>إعادة المحاولة</ActionButton>}

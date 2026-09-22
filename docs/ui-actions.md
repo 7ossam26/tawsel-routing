@@ -83,3 +83,5 @@ Every catalog entry is covered explicitly, including events and internal/externa
 | B03 | External native source worker | A06–A08/A29/A43 source status | Durable native command intent delivery/status, not Tawsel internal persistence or an invented endpoint. | `source.deliverCommandIntent`, `source.getCommandStatus` | P27 external | R-50 R-51 |
 
 No feature payload/schema, wire enum, event or capability changes are required by this mapping. Reuse Phase 02 common schemas/examples/generated client unchanged. Each backend owner completes its feature schemas before handlers; each UI owner binds to those real contracts. The action map is not an alternate wire schema and does not promote any business operation from designed to implemented.
+
+P11 runtime coverage: location.list, location.getSnapshot, location.searchCandidates, location.confirmPin and map.getAssetConfiguration now connect to the focused review surface. B2C entry connects through its saved task. Durable location.pinConfirmed intent has no delivered-event claim. Full route preparation remains P28. See [P11 evidence](phase-11-evidence.md).

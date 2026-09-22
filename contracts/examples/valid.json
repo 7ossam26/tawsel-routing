@@ -2071,5 +2071,23 @@
         }
       }
     }
+  },
+  {
+    "id": "location-valid-confirmation",
+    "schema": "location.schema.json#/$defs/Confirm",
+    "valid": true,
+    "data": {
+      "taskId": "60000000-0000-4000-8000-000000000060",
+      "expectedSourceRevision": 1,
+      "expectedLocationRevision": 0,
+      "confirmed": true,
+      "selection": {
+        "kind": "manual",
+        "coordinates": {
+          "latitude": 30.04,
+          "longitude": 31.23
+        }
+      }
+    }
   }
 ]

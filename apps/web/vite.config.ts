@@ -14,14 +14,16 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    optimizeDeps: { exclude: ['maplibre-gl'] },
     server: {
       port: 5173,
       strictPort: true,
-      proxy: { '/api': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false } }
+      proxy: { '/api': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false }, '/maps': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false } }
     },
     preview: {
       port: 4173,
-      strictPort: true
+      strictPort: true,
+      proxy: { '/api': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false }, '/maps': { target: requireConfigurationValue(environment, 'VITE_TAWSEL_API_BASE_URL'), changeOrigin: false } }
     }
   };
 });

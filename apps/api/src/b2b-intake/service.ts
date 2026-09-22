@@ -16,14 +16,16 @@ export interface TaskRow extends ResourceScope {
   task_id: string; external_id: string; source_revision: string; payload: Snapshot; payload_hash: string;
   dispatch_cycle_id: string; source_dispatch_cycle_id: string; assignment_revision: string; assignment_hash: string | null;
   state: Task['state']; driver_external_id: string | null; received_at: Date | null; departure_at: Date | null;
-  reserved: boolean; planning_pending: boolean;
+  reserved: boolean; planning_pending: boolean; execution_confirmed: boolean;
 }
 const select = `SELECT t.*,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
  c.state,c.driver_id,c.driver_external_id,c.received_at,c.departure_at,
+ CASE WHEN l.task_id IS NOT NULL THEN l.source_revision=t.source_revision ELSE s.payload->'destination'->>'kind'='confirmed-pin' END AS execution_confirmed,
  EXISTS(SELECT 1 FROM tawsel.driver_planned_stops p WHERE p.tenant_id=t.tenant_id AND p.dispatch_cycle_id=c.dispatch_cycle_id AND p.driver_id=c.driver_id AND p.state='remaining') AS reserved,
  EXISTS(SELECT 1 FROM tawsel.intake_replan_intents p WHERE p.tenant_id=t.tenant_id AND p.driver_id=c.driver_id AND p.source_id=t.integration_id) AS planning_pending
  FROM tawsel.b2b_tasks t JOIN tawsel.b2b_source_snapshots s USING (tenant_id,task_id,source_revision)
- JOIN tawsel.b2b_dispatch_cycles c USING (tenant_id,task_id)`;
+ JOIN tawsel.b2b_dispatch_cycles c USING (tenant_id,task_id)
+ LEFT JOIN tawsel.task_locations l USING (tenant_id,task_id)`;
 const key = (b: ServiceBinding) => [b.tenantId, b.integrationId];
 function stableId(b: ServiceBinding, externalId: string) {
   const hex = createHash('sha256').update(canonicalJson(['b2b-task-v1', ...key(b), externalId])).digest('hex');
@@ -38,7 +40,7 @@ export function view(row: TaskRow): Task {
     state: row.state, driverId: row.driver_id, driverExternalId: row.driver_external_id, receivedAt: row.received_at?.toISOString() ?? null,
     editable: row.departure_at === null, planningEligible: row.state === 'held' && row.reserved,
     planningStatus: row.state === 'held' && row.planning_pending ? 'pending' : 'not-requested',
-    locationReadiness: row.payload.destination.kind === 'confirmed-pin' ? 'confirmed' : 'needs-resolution', snapshot: row.payload };
+    locationReadiness: row.execution_confirmed ? 'confirmed' : 'needs-resolution', snapshot: row.payload };
 }
 export function rejection(command: ActionEnvelope, error: SourceError): Decision {
   const problem = { type: `https://schemas.tawsel.invalid/problems/${error.code.replaceAll('_','-')}`, title: 'Source command rejected',
@@ -126,7 +128,7 @@ async function driverBranch(tx:Transaction,b:ServiceBinding,driverId:string,bran
 }
 async function reserve(tx:Transaction,b:ServiceBinding,row:TaskRow) {
   const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
-  const eligible=row.state==='held' && row.payload.destination.kind==='confirmed-pin'
+  const eligible=row.state==='held' && row.execution_confirmed
     && (!row.payload.earliestAt || Date.parse(row.payload.earliestAt)<=now.getTime());
   if(eligible) await tx.query(`INSERT INTO tawsel.driver_planned_stops (tenant_id,driver_id,stop_id,kind,dispatch_cycle_id,state)
     VALUES ($1,$2,$3,'customer',$3,'remaining') ON CONFLICT (tenant_id,dispatch_cycle_id)

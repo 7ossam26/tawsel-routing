@@ -329,3 +329,29 @@ h2 { line-height: 1.55; }
 .account-error { margin-block-end: 16px; }
 .account-footnote { text-align: center; }
 .account-card dd { overflow-wrap: anywhere; }
+/* P11 focused location review; shared Cairo/navy/RTL controls. */
+.locations-shell { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+.locations-shell .tasks-header { display: block; }
+.locations-shell .tasks-header h1 { margin-block: .5rem; }
+.locations-shell .tasks-header > a { display: inline-block; min-height: 44px; }
+.location-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 1.5rem; align-items: start; }
+.location-details, .pin-picker { background: var(--card); border-radius: var(--radius-card); padding: 1.25rem; min-width: 0; box-shadow: var(--shadow-card); }
+.location-details { display: grid; gap: 1rem; }
+.location-details h2,.location-details p { margin: 0; }
+.source-address { padding: 1rem; background: var(--muted); border-radius: var(--radius-control); overflow-wrap: anywhere; }
+.pin-map { width: 100%; height: 440px; border-radius: var(--radius-control); background: var(--muted); overflow: hidden; direction: ltr; }
+.pin-picker p { font-size: .875rem; }
+.pin-picker details { margin-block: 1rem; }
+.pin-picker summary { min-height: 44px; cursor: pointer; padding-block: .5rem; }
+.coordinate-fields { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.coordinate-fields input { min-width: 0; width: 100%; }
+.candidate-list { margin: 0; padding: 0; border: 0; min-width: 0; }
+.candidate-list legend { font-weight: 700; margin-bottom: .5rem; }
+.candidate { display: flex; align-items: start; gap: .75rem; padding: .75rem; min-height: 44px; border: 1px solid var(--border); border-radius: var(--radius-control); margin-block: .5rem; cursor: pointer; overflow-wrap: anywhere; }
+.candidate input { margin-top: .5rem; flex-shrink: 0; }
+.candidate:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
+.candidate small { display: block; color: var(--muted-foreground); }
+.maplibregl-ctrl-group button { width: 44px; height: 44px; }
+.maplibregl-ctrl-attrib { font-family: var(--font-sans); font-size: 11px; }
+.location-details button:focus-visible,.pin-picker button:focus-visible,.pin-picker summary:focus-visible,.candidate:focus-within { outline: 3px solid var(--ring); outline-offset: 3px; }
+@media (max-width: 760px) { .locations-shell { padding: 1rem; } .location-layout { grid-template-columns: minmax(0,1fr); gap: 1rem; } .pin-map { height: 340px; } .location-details,.pin-picker { padding: 1rem; } }

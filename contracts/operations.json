@@ -384,37 +384,45 @@
       "id": "location.searchCandidates",
       "family": "locations",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 11,
       "capability": "location.review",
-      "description": "Scoped Nominatim candidates with provenance; never GPS/accuracy percentage."
+      "description": "Scoped Nominatim candidates with provenance; never GPS/accuracy percentage.",
+      "method": "POST",
+      "path": "/api/v1/locations/{taskId}/candidates"
     },
     {
       "id": "location.getSnapshot",
       "family": "locations",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 11,
       "capability": "monitor.read",
-      "description": "Read original address and separate confirmed execution pin/revision."
+      "description": "Read original address and separate confirmed execution pin/revision.",
+      "method": "GET",
+      "path": "/api/v1/locations/{taskId}"
     },
     {
       "id": "location.confirmPin",
       "family": "locations",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 11,
       "capability": "location.review",
-      "description": "Authorized predeparture confirmation or assigned-driver execution correction."
+      "description": "Authorized predeparture confirmation or assigned-driver execution correction.",
+      "method": "PUT",
+      "path": "/api/v1/locations/{taskId}"
     },
     {
       "id": "map.getAssetConfiguration",
       "family": "locations",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 11,
       "capability": "authenticated",
-      "description": "Read configured self-hosted style/archive/attribution; no invented map coverage."
+      "description": "Read configured self-hosted style/archive/attribution; no invented map coverage.",
+      "method": "GET",
+      "path": "/api/v1/maps/configuration"
     },
     {
       "id": "routing.getVehicleProfiles",
@@ -1167,10 +1175,11 @@
       "id": "location.pinConfirmed",
       "family": "locations",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 11,
       "capability": "recipient-scope",
-      "description": "Execution pin/provenance revision, source address retained."
+      "description": "Durable source-scoped execution pin/provenance intent; source retained. Signed delivery is P25.",
+      "payloadSchema": "./location.schema.json#/$defs/ConfirmedEvent"
     },
     {
       "id": "plan.revisionPublished",
@@ -1393,6 +1402,17 @@
       "description": "List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination.",
       "method": "GET",
       "path": "/api/v1/intake/tasks"
+    },
+    {
+      "id": "location.list",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Scoped focused location review list.",
+      "method": "GET",
+      "path": "/api/v1/locations"
     }
   ],
   "authorizationFoundation": {

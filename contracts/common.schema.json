@@ -337,6 +337,12 @@
         },
         "snapshotRevision": {
           "$ref": "#/$defs/Revision"
+        },
+        "locationRevision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "planningInputRevision": {
+          "$ref": "#/$defs/Revision"
         }
       },
       "required": [],
@@ -900,16 +906,27 @@
     },
     "CapabilityEffect": {
       "type": "string",
-      "enum": ["inherit", "allow", "deny"],
+      "enum": [
+        "inherit",
+        "allow",
+        "deny"
+      ],
       "description": "Explicit user choice overrides the role; inherit (or no exception row) follows the current role value. Missing role grants deny. Applies equally across assigned branches."
     },
     "CapabilityOverride": {
       "type": "object",
       "properties": {
-        "capability": { "$ref": "#/$defs/Capability" },
-        "effect": { "$ref": "#/$defs/CapabilityEffect" }
+        "capability": {
+          "$ref": "#/$defs/Capability"
+        },
+        "effect": {
+          "$ref": "#/$defs/CapabilityEffect"
+        }
       },
-      "required": ["capability", "effect"],
+      "required": [
+        "capability",
+        "effect"
+      ],
       "additionalProperties": false,
       "description": "Company-user override vocabulary; ERP provisioning endpoint remains P08. This object cannot grant access by appearing in a request."
     },
@@ -917,25 +934,117 @@
       "type": "object",
       "description": "Server-resolved access snapshot, implemented internally in P06; session.getContext HTTP remains P07. Source is the stable account or integration UUID. Display guidance only: recheck current permissions, resource scope and lifecycle for every read/write/job/export. No role name conveys authority.",
       "properties": {
-        "tenantId": { "$ref": "#/$defs/Uuid" },
-        "tenantKind": { "type": "string", "enum": ["company", "personal"] },
-        "principalKind": { "type": "string", "enum": ["account", "integration"] },
-        "sourceId": { "$ref": "#/$defs/Uuid" },
-        "branchIds": { "type": "array", "items": { "$ref": "#/$defs/Uuid" }, "uniqueItems": true },
-        "driverId": { "anyOf": [{ "$ref": "#/$defs/Uuid" }, { "type": "null" }] },
-        "effectiveCapabilities": { "type": "array", "items": { "$ref": "#/$defs/Capability" }, "uniqueItems": true }
+        "tenantId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "tenantKind": {
+          "type": "string",
+          "enum": [
+            "company",
+            "personal"
+          ]
+        },
+        "principalKind": {
+          "type": "string",
+          "enum": [
+            "account",
+            "integration"
+          ]
+        },
+        "sourceId": {
+          "$ref": "#/$defs/Uuid"
+        },
+        "branchIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Uuid"
+          },
+          "uniqueItems": true
+        },
+        "driverId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effectiveCapabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Capability"
+          },
+          "uniqueItems": true
+        }
       },
-      "required": ["tenantId", "tenantKind", "principalKind", "sourceId", "branchIds", "driverId", "effectiveCapabilities"],
+      "required": [
+        "tenantId",
+        "tenantKind",
+        "principalKind",
+        "sourceId",
+        "branchIds",
+        "driverId",
+        "effectiveCapabilities"
+      ],
       "additionalProperties": false,
       "allOf": [
         {
-          "if": { "properties": { "tenantKind": { "const": "personal" } }, "required": ["tenantKind"] },
-          "then": { "properties": { "principalKind": { "const": "account" }, "branchIds": { "type": "array", "maxItems": 0 } } }
+          "if": {
+            "properties": {
+              "tenantKind": {
+                "const": "personal"
+              }
+            },
+            "required": [
+              "tenantKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "principalKind": {
+                "const": "account"
+              },
+              "branchIds": {
+                "type": "array",
+                "maxItems": 0
+              }
+            }
+          }
         },
         {
-          "if": { "properties": { "principalKind": { "const": "integration" } }, "required": ["principalKind"] },
-          "then": { "properties": { "tenantKind": { "const": "company" }, "driverId": { "type": "null" },
-            "effectiveCapabilities": { "type": "array", "items": { "not": { "enum": ["execution.own", "correction.own"] } } } } }
+          "if": {
+            "properties": {
+              "principalKind": {
+                "const": "integration"
+              }
+            },
+            "required": [
+              "principalKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "tenantKind": {
+                "const": "company"
+              },
+              "driverId": {
+                "type": "null"
+              },
+              "effectiveCapabilities": {
+                "type": "array",
+                "items": {
+                  "not": {
+                    "enum": [
+                      "execution.own",
+                      "correction.own"
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
       ]
     },

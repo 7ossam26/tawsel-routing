@@ -10,7 +10,8 @@
     "src/provisioning.ts",
     "examples/provision-company.ts",
     "README.md",
-    "src/intake.ts"
+    "src/intake.ts",
+    "src/locations.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

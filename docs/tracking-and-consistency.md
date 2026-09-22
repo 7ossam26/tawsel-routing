@@ -131,3 +131,7 @@ Without the optional correction, return request offers 1 and accepted receipt yi
 ## Deliberate exclusions and proof boundaries
 
 No V1 GPS, billing, call counters, advanced POD, direct driver handoff, financial settlement, commercial ERP build or speculative modules. B2C shares execution primitives but never item splitting or branch custody. P02 validates schema/example/reference consistency; P05 verifies real PostgreSQL rollback, locking, application-process recovery and response compaction with explicit synthetic counters. Feature semantics, Engine outcomes, signed delivery, independent consumer durability, browser storage, measured freshness and physical-device support remain future evidence.
+
+## P11 confirmed locations
+
+task_locations + append-only location_history preserve original source separately. Each explicit confirmation atomically writes the pin/provenance revision, pending driver location_planning_inputs revision, intake_replan_intents and B2B source-scoped outbox intent through P05. P09/P10 reads/reservation consume current execution readiness. Source revision mismatch invalidates a prior pin; P13 must fingerprint both revisions. Driver/task invariant locks compose with source/assignment commands; P15 still owns actual start. No route is published by P11. [Details](locations-and-maps.md).

@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -98,7 +98,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     expect(available.map((entry: { id: string }) => entry.id)).toContain('session.getContext');
     expect(available.every((entry: { family: string; id: string; ownerPhase: number }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth'
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
-      || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged'))).toBe(true);
+      || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations'))).toBe(true);
   });
 
   it('rejects missing owners, omitted families, duplicate IDs and invented public availability', () => {

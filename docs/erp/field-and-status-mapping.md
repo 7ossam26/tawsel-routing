@@ -163,3 +163,19 @@ These are examples for the future reference ERP, not its implemented schema. The
 | Progress revision 8 arrives around distinct outcome/request/correction events | Replacement view can be refreshed; every required transition retains own event ID and sequence processing obligation | `event-progress-snapshot`, `event-outcome-transition`, `event-correction-transition`; P25/P26 recovery proof future |
 
 P08 has validated live identity examples; P10/P21/P22/P25–27 must replace their designed feature examples with captured/validated real messages and add concrete native reference ERP mappings without changing canonical schema ownership. Real ERP fields remain unknown until its discovery. Available consumer quickstart/conformance must be updated in the same phase as any public interface change; P08 supplies the identity slice, P26/P27 add the two-way flow, and P42 audits the final bundle.
+
+## P11 execution-location mapping
+
+| Field/status | Meaning and ownership |
+| --- | --- |
+| original | Unchanged intake/ERP destination; never overwritten by location confirmation |
+| sourceRevision | Current task/source snapshot version, independently checked |
+| locationRevision | Monotonic explicit confirmation revision; 0 for source-confirmed input/no review |
+| pin.coordinates | Named finite latitude/longitude; only a current confirmed pin is usable |
+| pin.provenance | manual, nominatim (saved selected candidate), or source-confirmed; no inferred match percentage |
+| pin.confirmedBy / confirmedAt | Account and server time for explicit reviews; null for original source-confirmed input |
+| needs-resolution | Only this task lacks a current confirmation; unrelated valid work remains usable |
+| planningInputRevision / pending | Input invalidation and durable intent, never a published route |
+| location.pinConfirmed | Source-scoped durable B2B event intent; transport unimplemented until P25 |
+
+The [schema](../../contracts/location.schema.json) and [location consumer](../../packages/api-client/src/locations.ts) own the public shapes. ERP must not map a corrected execution pin to commercial customer-master replacement. P11 actual local evidence is in [the phase record](../phase-11-evidence.md).

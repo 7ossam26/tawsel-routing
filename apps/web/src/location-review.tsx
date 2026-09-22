@@ -1,0 +1,35 @@
+import {useEffect,useState} from 'react';
+import type {components} from '@tawsel/api-client';
+import {ActionButton,Field,StatusNotice} from './components/ui';
+import {LocationPicker,type Point} from './components/location-picker';
+import {api,deviceId,nextSequence} from './independent-tasks';
+type Snapshot=components['schemas']['LocationExecutionSnapshot'];
+type Candidate=components['schemas']['LocationCandidate'];
+type Selection=components['schemas']['LocationConfirm']['selection'];
+type Session=components['schemas']['SessionContext'];
+export function LocationReview(){
+ const kind=new URLSearchParams(location.search).get('kind')==='company'?'company':'personal';
+ const id=location.pathname.split('/')[2],base=`/api/v1/locations${id?`/${id}`:''}`,suffix=`?kind=${kind}`;
+ const [session,setSession]=useState<Session|null>(null),[snapshot,setSnapshot]=useState<Snapshot|null>(null),[items,setItems]=useState<Snapshot[]>([]),[error,setError]=useState(''),[busy,setBusy]=useState(false),[loading,setLoading]=useState(true);
+ const [query,setQuery]=useState(''),[results,setResults]=useState<Candidate[]|null>(null),[searchError,setSearchError]=useState(''),[point,setPoint]=useState<Point|null>(null),[selection,setSelection]=useState<Selection|null>(null),[saved,setSaved]=useState(false);
+ const [pending,setPending]=useState<Record<string,unknown>|null>(null);
+ const key=session?`tawsel:location:${session.access.tenantId}:${session.access.sourceId}:${id}`:null;
+ async function load(){setLoading(true);setError('');try{const context=await api(`/api/session/context?kind=${kind}`) as Session;setSession(context);const data=await api(base+suffix);if(id){setSnapshot(data);setQuery(data.original.addressText??'');setPoint(data.pin?.coordinates??null);setSelection(null);const stored=sessionStorage.getItem(`tawsel:location:${context.access.tenantId}:${context.access.sourceId}:${id}`);if(stored){const draft=JSON.parse(stored);setQuery(draft.query);setPoint(draft.point);setSelection(draft.selection);setPending(draft.pending??null);}}else setItems(data.items);}catch(e){setError(e instanceof Error?e.message:'تعذر تحميل الموقع.');}finally{setLoading(false);}}
+ useEffect(()=>{void load();},[]); // Page navigation mounts a fresh scoped review.
+ useEffect(()=>{if(key&&snapshot&&!loading)sessionStorage.setItem(key,JSON.stringify({query,point,selection,pending}));},[key,snapshot,loading,query,point,selection,pending]);
+ async function search(){setBusy(true);setSearchError('');try{const data=await api(`${base}/candidates${suffix}`,{method:'POST',body:JSON.stringify({query})});setResults(data.items);}catch(e){setSearchError(e instanceof Error?e.message:'تعذر البحث.');}finally{setBusy(false);}}
+ function choose(p:Point,candidate?:Candidate){setPoint(p);setSelection(candidate?{kind:'candidate',candidateId:candidate.id}:{kind:'manual',coordinates:p});setPending(null);setSaved(false);setError('');}
+ async function confirm(){if(!session||!snapshot||!selection)return;setBusy(true);setError('');const envelope=pending??{schemaVersion:'1.0.0',payloadVersion:'1.0.0',actionId:crypto.randomUUID(),operationId:'location.confirmPin',context:{kind:'device',tenantId:session.access.tenantId,accountId:session.access.sourceId,deviceId:deviceId(),deviceGeneration:1,deviceSequence:nextSequence()},resources:{taskId:id},baseVersions:{},dependsOnActionIds:[],observation:{observedAt:null,clock:{quality:'unknown'}},payload:{taskId:id,expectedSourceRevision:snapshot.sourceRevision,expectedLocationRevision:snapshot.locationRevision,confirmed:true,selection}};setPending(envelope);try{const result=await api(base+suffix,{method:'PUT',body:JSON.stringify(envelope)});setSnapshot(result.response.body.location);setSaved(true);setSelection(null);setPending(null);if(key)sessionStorage.removeItem(key);}catch(e){setError(e instanceof Error?e.message:'تعذر حفظ الموقع.');}finally{setBusy(false);}}
+ return <main className="locations-shell"><header className="tasks-header"><a href={kind==='personal'?'/tasks':'/account?kind=company'}>العودة</a><p className="eyebrow">موقع التوصيل</p><h1>{id?'راجع الموقع وأكّد النقطة':'مراجعة مواقع المهام'}</h1><p>العنوان الأصلي محفوظ. اختر نقطة التوصيل ثم أكّدها.</p></header>
+ {loading?<p role="status">جارٍ تحميل المهمة…</p>:null}
+ {error?<StatusNotice tone="error" title="تعذر إكمال الطلب">{error}<button className="edit-link" onClick={()=>{setPending(null);if(key){const draft=JSON.parse(sessionStorage.getItem(key)??'{}');draft.pending=null;sessionStorage.setItem(key,JSON.stringify(draft));}void load();}}>تحميل النسخة الحالية</button></StatusNotice>:null}
+ {!id?<div className="task-list">{items.map(t=><article className="task-card" key={t.taskId}><h2>{t.recipientName}</h2><p>{t.original.addressText??'عنوان بدبوس'}</p><p>{t.locationReadiness==='confirmed'?'الموقع مؤكّد':'الموقع يحتاج تحديد'}</p><a className="edit-link" href={`/locations/${t.taskId}${suffix}`}>مراجعة الموقع</a></article>)}{!loading&&!items.length?<p>لا توجد مهام متاحة للمراجعة.</p>:null}</div>:snapshot?<div className="location-layout"><section className="location-details"><h2>{snapshot.recipientName}</h2><div className="source-address"><strong>العنوان الأصلي</strong><p>{snapshot.original.addressText??'دبوس أدخله صاحب المهمة'}</p></div>
+ {snapshot.pin?<p className="readiness readiness--ready">الموقع الحالي مؤكّد — {snapshot.pin.provenance.kind==='nominatim'?'نتيجة بحث أكّدها المستخدم':snapshot.pin.provenance.kind==='manual'?'تحديد يدوي':'دبوس المصدر المؤكّد'}</p>:<p className="task-blocker">هذه المهمة تحتاج نقطة مؤكّدة قبل التخطيط.</p>}
+ {saved?<StatusNotice tone="success" title="تم تأكيد الموقع">تم حفظ النقطة. تحديث التخطيط مطلوب.</StatusNotice>:null}
+ {!snapshot.editable?<p className="task-blocker">للعرض فقط؛ تعديل الموقع غير متاح لهذا الحساب في الحالة الحالية.</p>:<><form onSubmit={e=>{e.preventDefault();void search();}}><Field id="location-query" label="ابحث عن العنوان" value={query} onChange={e=>setQuery(e.target.value)} maxLength={200}/><button type="submit" className="cancel-button" disabled={busy}>بحث</button></form>
+ {searchError?<p role="status" className="task-blocker">{searchError} أعد البحث أو حدّد النقطة على الخريطة.</p>:null}
+ {results?.length===0?<p role="status">لا توجد نتائج. حدّد النقطة يدويًا؛ العنوان محفوظ.</p>:null}
+ {results?.length?<fieldset className="candidate-list"><legend>نتائج مقترحة — تحتاج تأكيدك</legend>{results.map(c=><label className="candidate" key={c.id}><input type="radio" name="candidate" checked={selection?.kind==='candidate'&&selection.candidateId===c.id} onChange={()=>choose(c.coordinates,c)}/><span>{c.label}<small>Nominatim · {c.type} · OpenStreetMap</small></span></label>)}</fieldset>:null}
+ <ActionButton onClick={()=>void confirm()} disabled={!selection||busy} busy={busy}>{busy?'جارٍ الإرسال…':'تأكيد نقطة التوصيل'}</ActionButton>{!selection?<p className="field-hint">اختر نتيجة أو نقطة لتفعيل التأكيد.</p>:<p className="field-hint">النقطة المختارة لم تُحفظ بعد.</p>}</>}
+ </section><LocationPicker point={point} onChange={(p)=>{if(snapshot.editable)choose(p);}}/></div>:null}</main>;
+}

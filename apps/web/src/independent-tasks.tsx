@@ -11,7 +11,7 @@ const emptyDraft: Draft = { recipientName: '', recipientPhone: '', addressText: 
 class RequestError extends Error {
   constructor(message: string, readonly code?: string, readonly fields?: Record<string, string>) { super(message); }
 }
-async function api(path: string, init?: RequestInit) {
+export async function api(path: string, init?: RequestInit) {
   const options = { credentials: 'same-origin' as const, cache: 'no-store' as const, ...init };
   if (init?.method && init.method !== 'GET') {
     const bootstrap = await fetch('/api/session/bootstrap', { credentials: 'same-origin', cache: 'no-store' });
@@ -37,13 +37,13 @@ function parseRoute() {
   return { kind: 'list' as const };
 }
 function navigate(path: string) { window.history.pushState({}, '', path); window.dispatchEvent(new PopStateEvent('popstate')); }
-function deviceId() {
+export function deviceId() {
   const key = 'tawsel:device-id';
   let value = localStorage.getItem(key);
   if (!value) { value = crypto.randomUUID(); localStorage.setItem(key, value); }
   return value;
 }
-function nextSequence() {
+export function nextSequence() {
   const key = 'tawsel:device-sequence';
   const next = Math.max(1, Number(localStorage.getItem(key) ?? '0') + 1);
   localStorage.setItem(key, String(next));
@@ -95,8 +95,9 @@ export function IndependentTasksPage() {
       {loading ? <StatusNotice title="جارٍ تحميل مهامك" /> : tasks.length === 0 ? <div className="tasks-empty"><MapPin aria-hidden="true" /><h3>لا توجد مهام بعد</h3><p>ابدأ باسم المستلم ورقم الهاتف والعنوان.</p></div> : <div className="task-list">{tasks.map(task => <article className="task-card" key={task.taskId}><div className="task-card__top"><div><h3><bdi>{task.recipientName}</bdi></h3><a href={`tel:${task.recipientPhone}`} dir="ltr"><bdi>{task.recipientPhone}</bdi></a></div><span className={task.executionReady ? 'readiness readiness--ready' : 'readiness readiness--missing'}>{task.executionReady ? 'الموقع مؤكّد' : 'الموقع يحتاج تحديد'}</span></div>
         <p className="task-address"><MapPin aria-hidden="true" />{task.destination.kind === 'address' ? task.destination.addressText : task.destination.addressText ?? `${task.destination.coordinates.latitude}, ${task.destination.coordinates.longitude}`}</p>
         {task.collectionAmount ? <p className="task-amount">تحصيل: <bdi>{(task.collectionAmount.amountMinor / 100).toFixed(2)} ج.م</bdi></p> : <p className="task-amount task-amount--none">بدون مبلغ تحصيل</p>}
-        {!task.executionReady ? <p className="task-blocker">العنوان محفوظ، لكنه لن يصبح وقفة قابلة للتنفيذ قبل تأكيد الموقع في مرحلة تحديد المواقع.</p> : null}
+        {!task.executionReady ? <p className="task-blocker">العنوان محفوظ، لكنه لن يصبح وقفة قابلة للتنفيذ قبل تأكيد نقطة التوصيل.</p> : null}
         <button className="edit-link" onClick={() => navigate(`/tasks/${task.taskId}/edit`)} disabled={!task.editable}><Pencil aria-hidden="true" />{task.editable ? 'تصحيح البيانات' : 'للعرض فقط'}</button>
+        <a className="edit-link" href={`/locations/${task.taskId}?kind=personal`}>مراجعة الموقع</a>
       </article>)}</div>}
     </section><nav className="tasks-foot"><a href="/account?kind=personal">الحساب</a><span aria-current="page">المهام</span></nav></main>;
 }
@@ -161,7 +162,7 @@ function TaskForm({ context, task, taskId, loading, loadError, onSaved }: { cont
       {notice ? <div ref={errorRef} tabIndex={-1}><StatusNotice tone="error" title="تعذر الحفظ">{notice}</StatusNotice></div> : null}
       <Field id="recipient-name" label="اسم المستلم (مطلوب)" value={draft.recipientName} onChange={event => change('recipientName', event.target.value)} {...(errors.recipientName ? { error: errors.recipientName } : {})} autoComplete="name" maxLength={200} />
       <Field id="recipient-phone" label="رقم الهاتف (مطلوب)" value={draft.recipientPhone} onChange={event => change('recipientPhone', event.target.value)} {...(errors.recipientPhone ? { error: errors.recipientPhone } : {})} type="tel" inputMode="tel" dir="ltr" autoComplete="tel" />
-      <div className="field"><label htmlFor="address-text">العنوان المكتوب (مطلوب)</label><textarea id="address-text" value={draft.addressText} onChange={event => change('addressText', event.target.value)} aria-invalid={Boolean(errors.addressText)} aria-describedby="address-help" rows={3} maxLength={500} /><p id="address-help" className={errors.addressText ? 'field-error' : 'field-hint'}>{errors.addressText ?? 'سيُحفظ العنوان الآن بوضوح كـ «يحتاج تحديد موقع». اختيار الدبوس الحقيقي يأتي في مرحلة تحديد المواقع، بلا خريطة وهمية.'}</p></div>
+      <div className="field"><label htmlFor="address-text">العنوان المكتوب (مطلوب)</label><textarea id="address-text" value={draft.addressText} onChange={event => change('addressText', event.target.value)} aria-invalid={Boolean(errors.addressText)} aria-describedby="address-help" rows={3} maxLength={500} /><p id="address-help" className={errors.addressText ? 'field-error' : 'field-hint'}>{errors.addressText ?? 'احفظ العنوان ثم افتح «مراجعة الموقع» لاختيار نقطة التوصيل وتأكيدها.'}</p></div>
       <Field id="collection-amount" label="مبلغ التحصيل (اختياري)" value={draft.collectionAmount} onChange={event => change('collectionAmount', event.target.value)} {...(errors.collectionAmount ? { error: errors.collectionAmount } : {})} inputMode="decimal" dir="ltr" placeholder="مثال: 125.50" hint="بالجنيه المصري؛ اتركه فارغًا إذا لا يوجد تحصيل." />
       <div className="field"><label htmlFor="instructions">تعليمات قصيرة (اختياري)</label><textarea id="instructions" value={draft.instructions} onChange={event => change('instructions', event.target.value)} aria-invalid={Boolean(errors.instructions)} rows={3} maxLength={1000} /></div>
       <ActionButton type="submit" busy={busy}>{busy ? 'جارٍ الحفظ…' : task ? 'حفظ التصحيح' : 'حفظ المهمة'}</ActionButton>

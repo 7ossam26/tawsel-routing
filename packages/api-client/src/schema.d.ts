@@ -361,6 +361,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scoped focused location review list. */
+        get: operations["location.list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locations/{taskId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read original address and separate confirmed execution pin/revision. */
+        get: operations["location.getSnapshot"];
+        /** Authorized predeparture confirmation or assigned-driver execution correction. */
+        put: operations["location.confirmPin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/locations/{taskId}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Scoped Nominatim candidates with provenance; never GPS/accuracy percentage. */
+        post: operations["location.searchCandidates"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maps/configuration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read configured self-hosted style/archive/attribution; no invented map coverage. */
+        get: operations["map.getAssetConfiguration"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/provisioning/commands/branch.disable": {
         parameters: {
             query?: never;
@@ -790,6 +859,18 @@ export interface components {
             session_state?: string;
             state: string;
         };
+        Candidate: {
+            coordinates: components["schemas"]["Coordinates"];
+            id: string;
+            label: string;
+            /** @constant */
+            source: "nominatim";
+            type: string;
+        };
+        Candidates: {
+            attribution: string;
+            items: components["schemas"]["Candidate"][];
+        };
         /** @enum {string} */
         Capability: "monitor.read" | "planning.manage" | "location.review" | "execution.own" | "correction.own" | "reports.read" | "reports.export" | "intake.prepare" | "assignment.manage" | "return.receive" | "return.dispose" | "identity.provision" | "integration.manage" | "diagnostics.read";
         /**
@@ -819,6 +900,33 @@ export interface components {
         CompanyResponse: {
             code: string;
             displayName: string;
+        };
+        Confirm: {
+            /** @constant */
+            confirmed: true;
+            expectedLocationRevision: number;
+            expectedSourceRevision: number;
+            selection: {
+                coordinates: components["schemas"]["Coordinates"];
+                /** @constant */
+                kind: "manual";
+            } | {
+                candidateId: string;
+                /** @constant */
+                kind: "candidate";
+            };
+            /** Format: uuid */
+            taskId: string;
+        };
+        ConfirmCommand: components["schemas"]["action-envelope.v1.schema"] & {
+            /** @constant */
+            operationId: "location.confirmPin";
+            payload: components["schemas"]["Confirm"];
+        };
+        ConfirmedEvent: {
+            /** Format: uuid */
+            actionId: string;
+            location: components["schemas"]["Snapshot"];
         };
         ConfirmedPinDestination: {
             addressText?: string;
@@ -1080,6 +1188,19 @@ export interface components {
             sourceLineId: components["schemas"]["ExternalId"];
             unitDue: components["schemas"]["$defs-Money"];
         };
+        List: {
+            items: components["schemas"]["Snapshot"][];
+        };
+        LocationCandidate: components["schemas"]["Candidate"];
+        LocationCandidates: components["schemas"]["Candidates"];
+        LocationConfirm: components["schemas"]["Confirm"];
+        LocationConfirmCommand: components["schemas"]["ConfirmCommand"];
+        LocationConfirmedEvent: components["schemas"]["ConfirmedEvent"];
+        LocationExecutionSnapshot: components["schemas"]["Snapshot"];
+        LocationList: components["schemas"]["List"];
+        LocationMapConfiguration: components["schemas"]["MapConfiguration"];
+        LocationPin: components["schemas"]["Pin"];
+        LocationSearch: components["schemas"]["Search"];
         LocationSnapshot: {
             confirmedPin?: components["schemas"]["Coordinates"];
             locationRevision?: components["schemas"]["Revision"];
@@ -1098,6 +1219,11 @@ export interface components {
             kind: components["schemas"]["AccountKind"];
             phone?: string;
             reauthenticate?: boolean;
+        };
+        MapConfiguration: {
+            attribution: string;
+            coverage: string;
+            styleUrl: string;
         };
         /** @description Nonnegative integer minor units, never a decimal amount or arbitrary underpayment. Currency/exponent must match supported source policy; EGP is exponent 2. */
         Money: {
@@ -1119,6 +1245,19 @@ export interface components {
             limit?: number;
         };
         PieceCount: number;
+        Pin: {
+            /** Format: date-time */
+            confirmedAt: string | null;
+            /** Format: uuid */
+            confirmedBy: string | null;
+            coordinates: components["schemas"]["Coordinates"];
+            provenance: {
+                candidate?: components["schemas"]["Candidate"];
+                /** @enum {unknown} */
+                kind: "manual" | "nominatim" | "source-confirmed";
+            };
+            sourceRevision: number;
+        };
         PositivePieceCount: number;
         Prepare: {
             driverExternalId: components["schemas"]["ExternalId"];
@@ -1325,6 +1464,9 @@ export interface components {
             schemaVersion: "1.0.0";
         };
         SchemaVersion: string;
+        Search: {
+            query: string;
+        };
         Sequence: number;
         SessionContext: {
             access: components["schemas"]["AccessContext"];
@@ -1335,6 +1477,21 @@ export interface components {
             /** @constant */
             phoneOwnershipVerified: false;
             recoveryEmailVerified: boolean;
+        };
+        Snapshot: {
+            editable: boolean;
+            /** @enum {unknown} */
+            locationReadiness: "confirmed" | "needs-resolution";
+            locationRevision: number;
+            original: components["schemas"]["AddressDestination"] | components["schemas"]["ConfirmedPinDestination"];
+            pin: components["schemas"]["Pin"] | null;
+            planningInputRevision: number;
+            /** @enum {unknown} */
+            planningStatus: "pending" | "not-requested";
+            recipientName: string;
+            sourceRevision: number;
+            /** Format: uuid */
+            taskId: string;
         };
         SourceConfiguration: {
             allowedOperations: components["schemas"]["OperationId"][];
@@ -1572,7 +1729,9 @@ export interface components {
         Versions: {
             assignmentGeneration?: components["schemas"]["Generation"];
             deviceGeneration?: components["schemas"]["Generation"];
+            locationRevision?: components["schemas"]["Revision"];
             outcomeRevision?: components["schemas"]["Revision"];
+            planningInputRevision?: components["schemas"]["Revision"];
             resourceRevision?: components["schemas"]["Revision"];
             routeRevision?: components["schemas"]["Revision"];
             snapshotRevision?: components["schemas"]["Revision"];
@@ -3409,6 +3568,305 @@ export interface operations {
                     "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
                     "application/problem+json": components["schemas"]["Problem"];
                 };
+            };
+        };
+    };
+    "location.list": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Scoped result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["List"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hidden or missing task */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision or lifecycle conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Geocoder unavailable; retain current input and pin */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "location.getSnapshot": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                taskId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Scoped result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Snapshot"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hidden or missing task */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision or lifecycle conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Geocoder unavailable; retain current input and pin */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "location.confirmPin": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                taskId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmCommand"];
+            };
+        };
+        responses: {
+            /** @description Scoped result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hidden or missing task */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision or lifecycle conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Geocoder unavailable; retain current input and pin */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "location.searchCandidates": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                taskId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Search"];
+            };
+        };
+        responses: {
+            /** @description Scoped result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Candidates"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hidden or missing task */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision or lifecycle conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Geocoder unavailable; retain current input and pin */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "map.getAssetConfiguration": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Scoped result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapConfiguration"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not authorized */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hidden or missing task */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Revision or lifecycle conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Geocoder unavailable; retain current input and pin */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

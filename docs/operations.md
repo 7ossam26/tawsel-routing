@@ -166,3 +166,7 @@ P06 adds `npm run test:authorization` (real tenant/branch/driver/source isolatio
 ## Preservation boundary
 
 Application setup must not write under `data/`, alter the `nominatim-data` volume, run imports, rebuild OSRM profiles, or edit `docker-compose.yml`, `setup.ps1`, `profiles/motorcycle.lua`, or `vroom-conf/config.yml`. A repeat setup may replace only dependency artifacts managed by `npm ci`; it preserves `.env`, Engine data, Stitch exports, and unrelated files.
+
+## P11 map assets and location demo
+
+Use [locations-and-maps.md](locations-and-maps.md) for explicit archive preparation, checksums, regional coverage, range serving, private Nominatim configuration and isolated demo. Map preparation is never part of install/dev/database setup. npm run test:locations and npm run test:browser:locations are the focused checks. Nginx configuration is a deployable example, not a production deployment claim.

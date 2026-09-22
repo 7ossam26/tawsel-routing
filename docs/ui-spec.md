@@ -200,3 +200,7 @@ Paper demo: `python scripts/check-ui-spec.py demo` reads J01–J07 and the block
 | Short decision needs separation | Result/defer/urgency/takeover sheets; no nesting or repeated confirmation; cancel retains draft | P04 interaction/focus evidence |
 | Long Arabic name and LTR phone | Typography/isolated contact/touch/wrap rules plus all viewport cases | P04 screenshots/keyboard; P41 real device |
 | No owner review yet | Status explicitly specified and owner review pending in all phase evidence | Actual owner feedback, never inferred from silence |
+
+## P11 implemented focused location review
+
+/locations?kind=company is the scoped first-50 review list; /locations/:taskId?kind=personal|company is the focused original-address/candidate/pin page. Personal task cards and account screens link into it. Shared MapLibre picker keeps numeric and keyboard center selection available; explicit confirmation is the sole dominant action. Search empty/error and tile failure preserve address/current pin. Arabic provenance labels replace prototype match percentages/GPS/StreetView. [Runtime/browser evidence](phase-11-evidence.md); physical-device and owner review remain pending.

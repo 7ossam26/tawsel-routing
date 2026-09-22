@@ -35,6 +35,7 @@ interface TaskRow extends ResourceScope {
   departure_at: Date | null; created_at: Date; updated_at: Date; destination_kind: DestinationInput['kind'];
   address_text: string | null; latitude: number | null; longitude: number | null;
   amount_minor: string | null; currency: 'EGP' | null; exponent: 2 | null;
+  execution_confirmed: boolean;
 }
 
 export class IntakeError extends Error {
@@ -119,13 +120,15 @@ function taskFrom(row: TaskRow): IndependentTask {
   return {
     taskId: row.task_id, revision: Number(row.revision), recipientName: row.recipient_name, recipientPhone: row.recipient_phone,
     destination, ...(row.amount_minor === null ? {} : { collectionAmount: { amountMinor: Number(row.amount_minor), currency: 'EGP', exponent: 2 } }),
-    ...(row.instructions ? { instructions: row.instructions } : {}), locationReadiness: confirmed ? 'confirmed' : 'needs-resolution',
-    executionReady: confirmed, editable: row.departure_at === null, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString()
+    ...(row.instructions ? { instructions: row.instructions } : {}), locationReadiness: row.execution_confirmed ? 'confirmed' : 'needs-resolution',
+    executionReady: row.execution_confirmed, editable: row.departure_at === null, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString()
   };
 }
 const selectTask = `SELECT t.*,s.kind AS destination_kind,s.address_text,s.latitude,s.longitude,
-  a.amount_minor,a.currency,a.exponent FROM tawsel.b2c_tasks t
+  a.amount_minor,a.currency,a.exponent,
+  CASE WHEN l.task_id IS NOT NULL THEN l.source_revision=t.revision ELSE s.kind='confirmed-pin' END AS execution_confirmed FROM tawsel.b2c_tasks t
   JOIN tawsel.task_source_addresses s USING (tenant_id,task_id)
+  LEFT JOIN tawsel.task_locations l USING (tenant_id,task_id)
   LEFT JOIN tawsel.task_collection_amounts a USING (tenant_id,task_id)`;
 
 function requirePersonalDriver(access: AccessSession) {

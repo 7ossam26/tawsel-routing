@@ -6,7 +6,7 @@ Generated from [contracts/operations.json](../contracts/operations.json) by `npm
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
-P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as a general HTTP operation: P09 command retries return their retained scoped result through the same feature endpoint. P07 supplies session authentication; every adapter rechecks resource visibility before disclosure. P08 promotes provisioning commands and provisioning.changed; P09 promotes independent intake commands/reads and local task intake events. P10 promotes source snapshots, preparation, receipt/admission, predeparture updates and source-scoped reads/results, with durable event/replan intent. Delivery remains P25. See [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
+P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource authorization are verified internally. The catalog authorizationFoundation records the P06 evidence and canonical shared schemas. action.getResult remains designed as a general HTTP operation: P09 command retries return their retained scoped result through the same feature endpoint. P07 supplies session authentication; every adapter rechecks resource visibility before disclosure. P08 promotes provisioning commands and provisioning.changed; P09 promotes independent intake commands/reads and local task intake events. P10 promotes source snapshots, preparation, receipt/admission, predeparture updates and source-scoped reads/results, with durable event/replan intent. P11 promotes scoped original/pin snapshots, private candidate search, confirmation, map configuration and durable location intent. Actual private Nominatim is unavailable; actual map/browser rendering is locally verified. Delivery remains P25. See [P05 evidence](phase-05-evidence.md), [P06 evidence](phase-06-evidence.md) and [permission contract/guard inputs](authorization.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
@@ -100,11 +100,12 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `location.searchCandidates` | http-read | designed | [P11](phases/11-locations-map-assets.md) | location.review | Scoped Nominatim candidates with provenance; never GPS/accuracy percentage. |
-| `location.getSnapshot` | http-read | designed | [P11](phases/11-locations-map-assets.md) | monitor.read | Read original address and separate confirmed execution pin/revision. |
-| `location.confirmPin` | http-command | designed | [P11](phases/11-locations-map-assets.md) | location.review | Authorized predeparture confirmation or assigned-driver execution correction. |
-| `map.getAssetConfiguration` | http-read | designed | [P11](phases/11-locations-map-assets.md) | authenticated | Read configured self-hosted style/archive/attribution; no invented map coverage. |
-| `location.pinConfirmed` | event | designed | [P11](phases/11-locations-map-assets.md) | recipient-scope | Execution pin/provenance revision, source address retained. |
+| `location.searchCandidates` | http-read | verified-local | [P11](phases/11-locations-map-assets.md) | location.review | Scoped Nominatim candidates with provenance; never GPS/accuracy percentage. |
+| `location.getSnapshot` | http-read | verified-local | [P11](phases/11-locations-map-assets.md) | monitor.read | Read original address and separate confirmed execution pin/revision. |
+| `location.confirmPin` | http-command | verified-local | [P11](phases/11-locations-map-assets.md) | location.review | Authorized predeparture confirmation or assigned-driver execution correction. |
+| `map.getAssetConfiguration` | http-read | verified-local | [P11](phases/11-locations-map-assets.md) | authenticated | Read configured self-hosted style/archive/attribution; no invented map coverage. |
+| `location.pinConfirmed` | event | verified-local | [P11](phases/11-locations-map-assets.md) | recipient-scope | Durable source-scoped execution pin/provenance intent; source retained. Signed delivery is P25. |
+| `location.list` | http-read | verified-local | [P11](phases/11-locations-map-assets.md) | location.review | Scoped focused location review list. |
 
 ### planning
 

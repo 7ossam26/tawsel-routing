@@ -101,3 +101,9 @@ The P08 provisioning conformance runner and quickstart are available now; P26/P2
 | Capacity/freshness under its interface limits, retention/privacy policy and tested upgrade/rollback | **Unmeasured/unconfigured** | Joint operators; P38/P39/P42 evidence owners |
 
 These unknowns do not reopen accepted Tawsel behavior. Each affected phase updates this input, the mapping, canonical examples/client and available consumer conformance together. P42 packages actual release identity/digests and verified limits; it cannot retroactively replace missing external proof with documentation.
+
+## P11 location boundary — 22 September 2026
+
+Original ERP destination stays authoritative commercial input; Tawsel confirmation is a separate execution pin. Human browser sessions use the closed location search/snapshot/confirm schemas. Service credentials cannot impersonate a reviewer. Existing source-confirmed coordinates retain source provenance; Nominatim candidates require explicit user confirmation. Named latitude/longitude are globally validated, never GPS or accuracy percentages.
+
+Plan consumers must fingerprint sourceRevision + locationRevision and the driver's planningInputRevision. Source changes invalidate older confirmations. Confirmation returns planningStatus=pending and never claims routing success. B2B source recipients receive durable location.pinConfirmed intent using LocationConfirmedEvent; signed delivery is P25. These are execution corrections, not customer-master updates. P15 owns the real departure boundary; P11 guards departure_at under shared locks and tests a persisted lifecycle fixture. See [location API and maps](../locations-and-maps.md), [evidence](../phase-11-evidence.md), [canonical schemas](../../contracts/location.schema.json).

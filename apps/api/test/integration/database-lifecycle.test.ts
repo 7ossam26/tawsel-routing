@@ -20,14 +20,14 @@ describe('real PostgreSQL migration lifecycle', () => {
 
   test('applies fresh SQL once, serializes concurrent runners, verifies checksums', async () => {
     const results = await Promise.all([migrate(db.pool), migrate(db.pool)]);
-    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql']);
+    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql']);
     await expect(assertMigrationsCurrent(db.pool)).resolves.toBeUndefined();
     const tables = await db.pool.query("SELECT tablename FROM pg_tables WHERE schemaname='tawsel' ORDER BY tablename");
     expect(tables.rows.map(r => r.tablename)).toEqual([
       'accounts', 'auth_rate_limits', 'b2b_assignment_history', 'b2b_dispatch_cycles', 'b2b_source_lines', 'b2b_source_snapshots', 'b2b_tasks', 'b2c_tasks', 'branches', 'capabilities', 'command_audit', 'command_evidence', 'command_identities', 'command_sources', 'company_login_codes',
       'driver_planned_stops', 'drivers', 'identity_subjects', 'intake_replan_intents', 'integration_branches', 'integration_capabilities', 'integrations', 'issuer_reconciliation',
-      'login_attempts', 'membership_branches', 'memberships', 'outbox_intents', 'provisioning_records', 'provisioning_sources', 'provisioning_subject_grants', 'role_capabilities', 'roles', 'schema_migrations', 'service_credentials',
-      'task_collection_amounts', 'task_intake_events', 'task_source_addresses', 'tenant_keys', 'tenants', 'user_capability_exceptions', 'web_sessions'
+      'location_history', 'location_planning_inputs', 'login_attempts', 'membership_branches', 'memberships', 'outbox_intents', 'provisioning_records', 'provisioning_sources', 'provisioning_subject_grants', 'role_capabilities', 'roles', 'schema_migrations', 'service_credentials',
+      'task_collection_amounts', 'task_intake_events', 'task_locations', 'task_source_addresses', 'tenant_keys', 'tenants', 'user_capability_exceptions', 'web_sessions'
     ]);
     await db.pool.query("UPDATE tawsel.schema_migrations SET checksum='changed'");
     await expect(migrate(db.pool)).rejects.toThrow('Migration history differs');
@@ -55,7 +55,7 @@ describe('real PostgreSQL migration lifecycle', () => {
         async writeDomain() { return { status: 'accepted', response: { status: 200, body: { retained: true } }, summary: { retained: true }, audit: { fixture: true }, resourceVersions: {}, intents: [] }; },
         async writeProgress() { /* No domain table in this migration-only fixture. */ }
       });
-      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql']);
+      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql']);
       expect(await getCommandResult(old.pool, scopeA, command.actionId)).toEqual(before);
       expect(await migrate(old.pool)).toEqual([]);
       await expect(withAccess(old.pool, { kind: 'integration', integrationId: scopeA.sourceId }, async a => a.commandScope)).rejects.toMatchObject({ statusCode: 403 });

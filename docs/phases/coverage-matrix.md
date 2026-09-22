@@ -666,3 +666,5 @@ These are future deliverables until their owning phase produces substantive cont
 - P39 completes target deployment only when its backup/recovery prerequisites are actually met; P40 provides the full timed recovery evidence. Otherwise target release remains explicitly pending.
 
 Initial deployment placeholders for domain/TLS/email/backup/map coverage are not invented values or readiness evidence.
+
+P11 evidence, 22 September 2026: [ordered checkpoints](../phase-11-evidence.md) cover R-15 own saved-task location review, R-19 source/pin provenance and authority, R-20 no GPS, R-55 reference-derived layout, R-56 pinned MapLibre/PMTiles, R-57 focused Arabic confirmation/failure recovery, R-59 actual Chromium keyboard/emulated touch/RTL and production rendering, R-60 explicit local asset provisioning/coverage/licenses, R-65 canonical handoff. Live private Nominatim, real departure, production deployment and physical-device/owner review remain explicit limits.

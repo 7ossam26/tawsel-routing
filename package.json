@@ -55,7 +55,11 @@
     "test:erp:provisioning": "node --import tsx tests/erp-conformance/provisioning.ts",
     "test:intake:b2b": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/b2b-intake-admission.test.ts",
     "intake:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/b2b-intake-demo.ts",
-    "test:erp:intake": "node --import tsx tests/erp-conformance/intake.ts"
+    "test:erp:intake": "node --import tsx tests/erp-conformance/intake.ts",
+    "maps:assets": "node scripts/maps-assets.mjs",
+    "test:locations": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/location-provenance.test.ts",
+    "test:browser:locations": "playwright test -c playwright.locations.config.ts",
+    "locations:demo": "node --env-file=.env.database.local --import tsx scripts/location-browser-server.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

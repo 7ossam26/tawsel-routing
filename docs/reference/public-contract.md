@@ -489,6 +489,12 @@ Nonnegative integer minor units, never a decimal amount or arbitrary underpaymen
     },
     "snapshotRevision": {
       "$ref": "#/$defs/Revision"
+    },
+    "locationRevision": {
+      "$ref": "#/$defs/Revision"
+    },
+    "planningInputRevision": {
+      "$ref": "#/$defs/Revision"
     }
   },
   "required": [],
@@ -5041,6 +5047,416 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### LocationCandidate
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Candidate)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "source": {
+      "const": "nominatim"
+    },
+    "coordinates": {
+      "$ref": "./common.schema.json#/$defs/Coordinates"
+    }
+  },
+  "required": [
+    "id",
+    "label",
+    "type",
+    "source",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationSearch
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Search)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationCandidates
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Candidates)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "$ref": "./location.schema.json#/$defs/Candidate"
+      }
+    },
+    "attribution": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "items",
+    "attribution"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationConfirm
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Confirm)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "expectedLocationRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "confirmed": {
+      "const": true
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "manual"
+            },
+            "coordinates": {
+              "$ref": "./common.schema.json#/$defs/Coordinates"
+            }
+          },
+          "required": [
+            "kind",
+            "coordinates"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "candidate"
+            },
+            "candidateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "kind",
+            "candidateId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "taskId",
+    "expectedSourceRevision",
+    "expectedLocationRevision",
+    "confirmed",
+    "selection"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationPin
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Pin)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "coordinates": {
+      "$ref": "./common.schema.json#/$defs/Coordinates"
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "manual",
+            "nominatim",
+            "source-confirmed"
+          ]
+        },
+        "candidate": {
+          "$ref": "./location.schema.json#/$defs/Candidate"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "confirmedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "confirmedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "coordinates",
+    "provenance",
+    "confirmedBy",
+    "confirmedAt",
+    "sourceRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationList
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/List)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "./location.schema.json#/$defs/Snapshot"
+      }
+    }
+  },
+  "required": [
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationMapConfiguration
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/MapConfiguration)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "styleUrl": {
+      "type": "string"
+    },
+    "coverage": {
+      "type": "string"
+    },
+    "attribution": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "styleUrl",
+    "coverage",
+    "attribution"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationConfirmCommand
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/ConfirmCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "location.confirmPin"
+        },
+        "payload": {
+          "$ref": "./location.schema.json#/$defs/Confirm"
+        }
+      },
+      "required": [
+        "operationId",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### LocationExecutionSnapshot
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "recipientName": {
+      "type": "string"
+    },
+    "original": {
+      "oneOf": [
+        {
+          "$ref": "./b2c-intake.schema.json#/$defs/AddressDestination"
+        },
+        {
+          "$ref": "./b2c-intake.schema.json#/$defs/ConfirmedPinDestination"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "locationRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pin": {
+      "oneOf": [
+        {
+          "$ref": "./location.schema.json#/$defs/Pin"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "locationReadiness": {
+      "enum": [
+        "confirmed",
+        "needs-resolution"
+      ]
+    },
+    "editable": {
+      "type": "boolean"
+    },
+    "planningInputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "planningStatus": {
+      "enum": [
+        "pending",
+        "not-requested"
+      ]
+    }
+  },
+  "required": [
+    "taskId",
+    "recipientName",
+    "original",
+    "sourceRevision",
+    "locationRevision",
+    "pin",
+    "locationReadiness",
+    "editable",
+    "planningInputRevision",
+    "planningStatus"
+  ],
+  "additionalProperties": false
+}
+```
+
+### LocationConfirmedEvent
+
+[Canonical definition](../../contracts/location.schema.json#/$defs/ConfirmedEvent)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actionId",
+    "location"
+  ],
+  "properties": {
+    "actionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "location": {
+      "$ref": "#/$defs/Snapshot"
+    }
+  }
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -5151,6 +5567,7 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p10-error-unsupported_price_allocation | common.schema.json#/$defs/Problem | valid foundation shape |
 | p10-error-stale_revision | common.schema.json#/$defs/Problem | valid foundation shape |
 | p10-received-event-intent | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
+| location-valid-confirmation | location.schema.json#/$defs/Confirm | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -5217,5 +5634,6 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p10-missing-splitting-permission | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (required) |
 | p10-mixed-currency | b2b-intake.schema.json#/$defs/SourceSnapshot | invalid (const) |
 | p10-unasserted-receipt | b2b-intake.schema.json#/$defs/ReceiveBatch | invalid (const) |
+| location-invalid-confirmation | location.schema.json#/$defs/Confirm | invalid (maximum) |
 
 [Canonical example data](../../contracts/examples/README.md)

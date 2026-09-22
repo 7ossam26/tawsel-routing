@@ -1660,5 +1660,24 @@
         }
       ]
     }
+  },
+  {
+    "id": "location-invalid-confirmation",
+    "schema": "location.schema.json#/$defs/Confirm",
+    "valid": false,
+    "data": {
+      "taskId": "60000000-0000-4000-8000-000000000060",
+      "expectedSourceRevision": 1,
+      "expectedLocationRevision": 0,
+      "confirmed": true,
+      "selection": {
+        "kind": "manual",
+        "coordinates": {
+          "latitude": 91,
+          "longitude": 31.23
+        }
+      }
+    },
+    "keyword": "maximum"
   }
 ]

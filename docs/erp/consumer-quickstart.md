@@ -52,3 +52,9 @@ The available `tests/erp-conformance/provisioning.ts` uses only the public HTTP 
 - Issuer unreachable after acceptance: query status to observe retry, attempts and nextAttemptAt. Retain the accepted source command; repair issuer connectivity and let the worker reconcile. Do not resend it with a fabricated new actor or mark ERP's account ready.
 
 Rotation is an ordinary source command with a fresh credential ID/hash, next source revision and bounded overlap. Generate/store the new raw secret **before** sending. If the response is lost and overlap has expired, use the new credential to retry the same envelope. Lost-all-credentials or source-disable recovery uses operator-authenticated rotateCredential with recover=true and a newer source revision; no self-service backdoor. Disabling a source stops connector access without deleting the company's user history.
+
+## P11 location review and conformance
+
+The reviewer uses a same-origin personal/company browser session and CSRF bootstrap; do not reuse the P08/P10 bearer credential as a human. Copy src/locations.ts with the generated schema.d.ts for the public typed LocationClient. Persist each exact LocationConfirmCommand until its result is known. See [reproducible location/map demo](../locations-and-maps.md).
+
+An ERP source still supplies its original destination through P10; task reads now reflect execution-location readiness. location.pinConfirmed is durably recorded for that source but is not delivered until P25. tests/erp-conformance/locations.ts checks usable coordinates, source/current-confirmation alignment and pending input revision; P11's real PostgreSQL suite invokes it on an actual result and validates stored event payloads against canonical JSON Schema. This is local conformance evidence, not an independent real ERP connector or signed-receiver test.

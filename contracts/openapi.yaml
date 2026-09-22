@@ -1,9 +1,10 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — identity and independent/ERP intake
+  title: Tawsel public contract — identity, intake and confirmed locations
   version: 0.1.0
   description: P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP
-    snapshots/receipt/admission are locally implemented. Later execution, planning and signed delivery remain
+    snapshots/receipt/admission and P11 confirmed locations/maps are locally implemented. Live private Nominatim
+    is currently unavailable. Later execution, planning and signed delivery remain
     designed. No production or real ERP compatibility claim.
   license:
     name: Private development contract; no public release
@@ -1479,6 +1480,206 @@ paths:
         "409": *a10
         "422": *a9
         "503": *a9
+  /api/v1/locations:
+    get:
+      operationId: location.list
+      tags:
+        - Locations
+      summary: Scoped focused location review list.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      responses:
+        "200":
+          description: Scoped result
+          content:
+            application/json:
+              schema:
+                $ref: ./location.schema.json#/$defs/List
+        "400":
+          description: Invalid request
+        "403":
+          description: Not authorized
+        "404":
+          description: Hidden or missing task
+        "409":
+          description: Revision or lifecycle conflict
+        "503":
+          description: Geocoder unavailable; retain current input and pin
+  /api/v1/locations/{taskId}:
+    get:
+      operationId: location.getSnapshot
+      tags:
+        - Locations
+      summary: Read original address and separate confirmed execution pin/revision.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: taskId
+          in: path
+          required: true
+          schema: &a11
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Scoped result
+          content:
+            application/json:
+              schema:
+                $ref: ./location.schema.json#/$defs/Snapshot
+        "400":
+          description: Invalid request
+        "403":
+          description: Not authorized
+        "404":
+          description: Hidden or missing task
+        "409":
+          description: Revision or lifecycle conflict
+        "503":
+          description: Geocoder unavailable; retain current input and pin
+    put:
+      operationId: location.confirmPin
+      tags:
+        - Locations
+      summary: Authorized predeparture confirmation or assigned-driver execution correction.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: taskId
+          in: path
+          required: true
+          schema: *a11
+      responses:
+        "200":
+          description: Scoped result
+          content:
+            application/json:
+              schema:
+                $ref: ./action-result.v1.schema.json
+        "400":
+          description: Invalid request
+        "403":
+          description: Not authorized
+        "404":
+          description: Hidden or missing task
+        "409":
+          description: Revision or lifecycle conflict
+        "503":
+          description: Geocoder unavailable; retain current input and pin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./location.schema.json#/$defs/ConfirmCommand
+  /api/v1/locations/{taskId}/candidates:
+    post:
+      operationId: location.searchCandidates
+      tags:
+        - Locations
+      summary: Scoped Nominatim candidates with provenance; never GPS/accuracy percentage.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: taskId
+          in: path
+          required: true
+          schema: *a11
+      responses:
+        "200":
+          description: Scoped result
+          content:
+            application/json:
+              schema:
+                $ref: ./location.schema.json#/$defs/Candidates
+        "400":
+          description: Invalid request
+        "403":
+          description: Not authorized
+        "404":
+          description: Hidden or missing task
+        "409":
+          description: Revision or lifecycle conflict
+        "503":
+          description: Geocoder unavailable; retain current input and pin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./location.schema.json#/$defs/Search
+  /api/v1/maps/configuration:
+    get:
+      operationId: map.getAssetConfiguration
+      tags:
+        - Locations
+      summary: Read configured self-hosted style/archive/attribution; no invented map coverage.
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      responses:
+        "200":
+          description: Scoped result
+          content:
+            application/json:
+              schema:
+                $ref: ./location.schema.json#/$defs/MapConfiguration
+        "400":
+          description: Invalid request
+        "403":
+          description: Not authorized
+        "404":
+          description: Hidden or missing task
+        "409":
+          description: Revision or lifecycle conflict
+        "503":
+          description: Geocoder unavailable; retain current input and pin
 components:
   schemas:
     Uuid:
@@ -1689,6 +1890,26 @@ components:
       $ref: ./b2b-intake.schema.json#/$defs/BatchResult
     B2bChangedEvent:
       $ref: ./b2b-intake.schema.json#/$defs/ChangedEvent
+    LocationCandidate:
+      $ref: ./location.schema.json#/$defs/Candidate
+    LocationSearch:
+      $ref: ./location.schema.json#/$defs/Search
+    LocationCandidates:
+      $ref: ./location.schema.json#/$defs/Candidates
+    LocationConfirm:
+      $ref: ./location.schema.json#/$defs/Confirm
+    LocationPin:
+      $ref: ./location.schema.json#/$defs/Pin
+    LocationList:
+      $ref: ./location.schema.json#/$defs/List
+    LocationMapConfiguration:
+      $ref: ./location.schema.json#/$defs/MapConfiguration
+    LocationConfirmCommand:
+      $ref: ./location.schema.json#/$defs/ConfirmCommand
+    LocationExecutionSnapshot:
+      $ref: ./location.schema.json#/$defs/Snapshot
+    LocationConfirmedEvent:
+      $ref: ./location.schema.json#/$defs/ConfirmedEvent
   securitySchemes:
     companySession:
       type: apiKey
@@ -1717,3 +1938,5 @@ tags:
     description: Versioned ERP-owned identity projections and explicit service authority
   - name: ERP intake
     description: Source-authoritative snapshots, prepared/held distinction and atomic remaining-stop admission.
+  - name: Locations
+    description: Explicit execution pins and private geocoding.
