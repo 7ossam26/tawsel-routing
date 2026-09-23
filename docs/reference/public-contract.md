@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P17 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P18 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -10661,6 +10661,13 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
     },
     "progress": {
       "$ref": "#/$defs/Progress"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Record"
+      },
+      "description": "Preserved outcomes including earlier attempts. Collection totals include all history; items count latest resolved attempts only."
     }
   },
   "required": [
@@ -10686,6 +10693,910 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
   },
   "required": [
     "outcome"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityDefer
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Defer)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedEligibilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "earliestAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision",
+    "expectedEligibilityRevision",
+    "earliestAt"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityDeferCommand
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/DeferCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.deferWhole"
+        },
+        "payload": {
+          "$ref": "#/$defs/Defer"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### EligibilityRetry
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Retry)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedEligibilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision",
+    "expectedEligibilityRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityRetryCommand
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/RetryCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.retryWhole"
+        },
+        "payload": {
+          "$ref": "#/$defs/Retry"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### EligibilityActivate
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Activate)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedEligibilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision",
+    "expectedEligibilityRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityActivateCommand
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/ActivateCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.activateDeferred"
+        },
+        "payload": {
+          "$ref": "#/$defs/Activate"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### EligibilityUrgency
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Urgency)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedEligibilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "urgency": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision",
+    "expectedEligibilityRevision",
+    "urgency"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityUrgencyCommand
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/UrgencyCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "task.setDriverUrgency"
+        },
+        "payload": {
+          "$ref": "#/$defs/Urgency"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### EligibilityAllowedAction
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/AllowedAction)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "allowed": {
+      "type": "boolean"
+    },
+    "blocker": {
+      "anyOf": [
+        {
+          "enum": [
+            "not-held",
+            "different-driver",
+            "receipt-or-disposition",
+            "partial-or-delivered",
+            "current-customer",
+            "result-required",
+            "not-deferred",
+            "earliest-time",
+            "location-required",
+            "capacity"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "message": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "allowed",
+    "blocker",
+    "message"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityState
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/State)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "earliestAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "urgency": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    },
+    "deferred": {
+      "type": "boolean"
+    },
+    "latestOutcomeId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actions": {
+      "type": "object",
+      "properties": {
+        "defer": {
+          "$ref": "#/$defs/AllowedAction"
+        },
+        "retry": {
+          "$ref": "#/$defs/AllowedAction"
+        },
+        "activate": {
+          "$ref": "#/$defs/AllowedAction"
+        },
+        "urgency": {
+          "$ref": "#/$defs/AllowedAction"
+        }
+      },
+      "required": [
+        "defer",
+        "retry",
+        "activate",
+        "urgency"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "revision",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "earliestAt",
+    "urgency",
+    "deferred",
+    "latestOutcomeId",
+    "actions"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityRecord
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Record)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "enum": [
+        "task.deferWhole",
+        "task.retryWhole",
+        "task.activateDeferred",
+        "task.setDriverUrgency"
+      ]
+    },
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "previousAttemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "earliestAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "urgency": {
+      "enum": [
+        "ordinary",
+        "urgent"
+      ]
+    },
+    "deferred": {
+      "type": "boolean"
+    },
+    "time": {
+      "$ref": "./current-activity.schema.json#/$defs/ActionTime"
+    },
+    "sourceReference": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/SourceReference"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceDispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/ExternalId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "operationId",
+    "roundId",
+    "driverId",
+    "taskId",
+    "previousAttemptId",
+    "attemptId",
+    "revision",
+    "earliestAt",
+    "urgency",
+    "deferred",
+    "time",
+    "sourceReference",
+    "sourceDispatchCycleId",
+    "sourceRevision",
+    "assignmentRevision",
+    "dispatchCycleId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityCommandResult
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/CommandResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "change": {
+      "$ref": "#/$defs/Record"
+    },
+    "state": {
+      "$ref": "#/$defs/State"
+    }
+  },
+  "required": [
+    "change",
+    "state"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityEvent
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "change": {
+      "$ref": "#/$defs/Record"
+    }
+  },
+  "required": [
+    "change"
+  ],
+  "additionalProperties": false
+}
+```
+
+### EligibilityActionResult
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-result.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "enum": [
+            "task.deferWhole",
+            "task.retryWhole",
+            "task.activateDeferred",
+            "task.setDriverUrgency"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "receipt": {
+                "type": "object",
+                "properties": {
+                  "businessStatus": {
+                    "const": "accepted"
+                  }
+                },
+                "required": [
+                  "businessStatus"
+                ]
+              }
+            },
+            "required": [
+              "receipt"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "$ref": "#/$defs/CommandResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### EligibilityActionStatus
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "#/$defs/ActionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### EligibilitySnapshot
+
+[Canonical definition](../../contracts/eligibility.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "currentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/State"
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Record"
+      }
+    }
+  },
+  "required": [
+    "roundId",
+    "activityRevision",
+    "currentAttemptId",
+    "items",
+    "history"
   ],
   "additionalProperties": false
 }
@@ -10845,6 +11756,20 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p17-action-accepted | outcomes.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p17-action-pending | outcomes.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p17-event-payload | outcomes.schema.json#/$defs/Event | valid foundation shape |
+| p18-retry-command | eligibility.schema.json#/$defs/RetryCommand | valid foundation shape |
+| p18-defer-command | eligibility.schema.json#/$defs/DeferCommand | valid foundation shape |
+| p18-urgency-command | eligibility.schema.json#/$defs/UrgencyCommand | valid foundation shape |
+| p18-activate-command | eligibility.schema.json#/$defs/ActivateCommand | valid foundation shape |
+| p18-snapshot | eligibility.schema.json#/$defs/Snapshot | valid foundation shape |
+| p18-action-status | eligibility.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p18-pending | eligibility.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p18-accepted | eligibility.schema.json#/$defs/ActionResult | valid foundation shape |
+| p18-denied | eligibility.schema.json#/$defs/ActionResult | valid foundation shape |
+| p18-event-0 | eligibility.schema.json#/$defs/Event | valid foundation shape |
+| p18-event-1 | eligibility.schema.json#/$defs/Event | valid foundation shape |
+| p18-event-2 | eligibility.schema.json#/$defs/Event | valid foundation shape |
+| p18-state | eligibility.schema.json#/$defs/State | valid foundation shape |
+| p18-record | eligibility.schema.json#/$defs/Record | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -10943,5 +11868,14 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p17-invalid-no-answer-arrival | outcomes.schema.json#/$defs/NoAnswerCommand | invalid (additionalProperties) |
 | p17-no-answer-fabricated-collection | outcomes.schema.json#/$defs/Record | invalid (type) |
 | p17-personal-piece-result | outcomes.schema.json#/$defs/Record | invalid (maxItems) |
+| p18-call-counter | eligibility.schema.json#/$defs/RetryCommand | invalid (additionalProperties) |
+| p18-negative-revision | eligibility.schema.json#/$defs/RetryCommand | invalid (minimum) |
+| p18-fractional-revision | eligibility.schema.json#/$defs/RetryCommand | invalid (type) |
+| p18-overflow-revision | eligibility.schema.json#/$defs/RetryCommand | invalid (maximum) |
+| p18-appointment-window | eligibility.schema.json#/$defs/RetryCommand | invalid (additionalProperties) |
+| p18-bad-date | eligibility.schema.json#/$defs/DeferCommand | invalid (format) |
+| p18-bad-urgency | eligibility.schema.json#/$defs/UrgencyCommand | invalid (enum) |
+| p18-missing-revision | eligibility.schema.json#/$defs/RetryCommand | invalid (required) |
+| p18-operation-mismatch | eligibility.schema.json#/$defs/RetryCommand | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

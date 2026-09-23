@@ -1,5 +1,13 @@
 # ERP planning input — designed foundation
 
+## P18 implemented boundary — 24 September 2026
+
+[Deferral/retry/driver urgency](../eligibility.md) now has real API/PostgreSQL evidence and public-only consumer checks. ERP still supplies frozen outstanding per-unit allocation and predeparture source urgency. After departure only the authenticated assigned driver may change execution urgency; an ERP service token cannot impersonate that driver. Whole retry preserves the ERP external task/cycle and original source/assignment revisions while adding a server attempt identity. Rejected partial remainders never become customer stops. Future deferral is earliest availability, not a guaranteed appointment; explicit activation/retry still requires remaining capacity.
+
+Committed source-only intents `task.deferred`, `task.retryAdmitted`, `task.deferredActivated`, `task.driverUrgencyChanged` use `EligibilityEvent.change`, including `sourceReference`, `sourceDispatchCycleId`, `dispatchCycleId`, source/assignment revisions, old/new attempt IDs and honest action time. Preserve original outcomes and reported fees: do not charge shipping again or overwrite the source snapshot's priority with execution priority. The demonstration validates intent creation, not signed delivery or receiver application. Receipt/disposal dependency facts are test fixtures for the future P21/P22 producer; no physical return API is claimed. Full driver UI remains P29–31.
+
+Run `npm run eligibility:demo` then `npm run test:erp:eligibility -- .local/phase-18-demo.json`. [Exact mapping](field-and-status-mapping.md), [quickstart](consumer-quickstart.md), [ordered evidence](../phase-18-evidence.md). Tawsel core consumes its public contract and requires no vendor database/source-code access.
+
 P15 adds [online start/departure authority](../round-start.md), verified locally with real PostgreSQL and HTTP/session clients. Every new round requires server readiness and acceptance. Definitive receipt admitted to an active round immediately freezes its source snapshot; ERP `editable=false` is not delayed until another start. Source snapshots, urgency, preparation/receipt amendments, withdrawal and reassignment cannot bypass the departed lock. No new dispatcher approval is required. ERP owns identity administration separately. P15 produces recipient-scoped `round.started` durable intent with first forecast/workload identities and only that source's admitted task IDs; signed delivery remains P25. No real ERP connector or complete offline queue gate is claimed.
 
 ## P14 implemented boundary — 23 September 2026

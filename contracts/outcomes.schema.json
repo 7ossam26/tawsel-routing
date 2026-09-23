@@ -1178,6 +1178,13 @@
         },
         "progress": {
           "$ref": "#/$defs/Progress"
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Record"
+          },
+          "description": "Preserved outcomes including earlier attempts. Collection totals include all history; items count latest resolved attempts only."
         }
       },
       "required": [

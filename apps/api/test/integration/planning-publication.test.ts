@@ -19,11 +19,34 @@ import { assertPlanningPlan } from '../../../../tests/erp-conformance/planning.j
 import { planRoute, validateCompleteRoute } from '../../src/planning/policy.js';
 import type { OptimizationInput } from '../../src/engine/index.js';
 import { companyPlanningFixture } from '../support/planning-company-fixture.js';
+import { outcomeCompanyFixture } from '../support/outcome-fixture.js';
+import { Eligibility } from '../../src/eligibility/service.js';
+import { CurrentActivity } from '../../src/current/service.js';
 
 describe('P13 publication — immutable PostgreSQL forecasts, controlled HTTP candidates',()=>{
  let db:Awaited<ReturnType<typeof createTestDatabase>>;
  beforeEach(async()=>{db=await createTestDatabase();await prepareAccessFixture(db.pool);});
  afterEach(async()=>{await db?.close();});
+ test.each(['urgency','earliest'])('P18: driver %s update supersedes delayed optimization and preserves authoritative current',async(change)=>{
+  const f=await outcomeCompanyFixture(db,[{},{},{}]),current=new CurrentActivity(db.pool),heading=f.make(0,'current.selectHeading');
+  const entered=deferred(),release=deferred();let delay=true;
+  const provider=await providerFixture({async beforeResponse(){if(delay){delay=false;entered.resolve();await release.promise;}}});let running:Promise<unknown>|undefined;
+  try{
+   await current.command(f.principal,heading);const before=await current.read(f.principal,f.round.roundId);
+   const state=await f.service.plans(f.principal,f.driverId);
+   await f.service.command(f.principal,f.planCommand('planning.requestReplan',{expectedSettingsRevision:state.settingsRevision}));
+   const old=(await f.service.plans(f.principal,f.driverId)).latestJob!;running=runPlanningOnce(db.pool,provider.engine);await entered.promise;
+   const c=f.make(1,change==='urgency'?'task.setDriverUrgency':'task.deferWhole',{expectedEligibilityRevision:0,...(change==='urgency'?{urgency:'urgent'}:{earliestAt:new Date(Date.now()+86400000).toISOString()})},before.revision,before.currentActivity!.attemptId);
+   expect((await new Eligibility(db.pool).command(f.principal,c)).receipt.businessStatus).toBe('accepted');
+   release.resolve();await running;expect((await f.service.job(f.principal,old.jobId)).status).toBe('superseded');
+   await runPlanningOnce(db.pool,provider.engine);const plan=(await f.service.plans(f.principal,f.driverId)).items[0]!;
+   expect(plan.inputCurrent).toBe(true);expect(plan.state).toBe('ready');expect(plan.input.currentTarget?.taskId).toBe(f.tasks[0]);
+   const member=plan.input.members.find(m=>m.taskId===f.tasks[1])!;expect(member).toMatchObject(change==='urgency'?{priority:'urgent',eligible:true}:{eligible:false});
+   if(change==='earliest')expect(member.earliestAt).toBe(c.payload.earliestAt);
+   const after=await current.read(f.principal,f.round.roundId);expect(after.currentActivity).toEqual(before.currentActivity);expect(after.physicalOrigin).toEqual(before.physicalOrigin);expect(after.nextSuggestion?.taskId).not.toBe(f.tasks[0]);
+   expect((await db.pool.query('SELECT first_plan_id FROM tawsel.rounds WHERE tenant_id=$1',[f.tenantId])).rows[0].first_plan_id).toBe(f.plan.planId);
+  }finally{release.resolve();await running;await provider.close();await f.close();}
+ });
  test('P14: unavailable fixed-endpoint road leg cannot be omitted from a ready result',async()=>{
   await intake(db.pool);const d=await draft(db.pool,0,{endpoint:{kind:'fixed',coordinates:{latitude:30.1,longitude:31.3}}}),provider=await providerFixture({roadStatus:503});
   try{

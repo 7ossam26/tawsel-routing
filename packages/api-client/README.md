@@ -33,3 +33,7 @@ Copy `src/current.ts`, `src/rounds.ts` and generated `src/schema.d.ts` for the h
 ## P17 outcome client
 
 `src/outcomes.ts` / `OutcomesClient` implements `full`, `partial`, `refusal`, `noAnswer`, `read(roundId)` and `result(actionId)` using only public types and HTTP. It requires the selected human session plus CSRF; it is not callable as an ERP service identity. Preserve the original action after uncertainty. `OutcomeRecord` separates whole pieces, goods/shipping collection, explicit unpaid shipping and missing collection claims. Aggregate minor units are decimal integer strings. [Exact examples and real HTTP demo](../../docs/outcomes.md), [public-only conformance](../../tests/erp-conformance/outcomes.ts). Event transport, full UI and retries remain later phases; earlier dated client notes retain their original scope.
+
+## P18 eligibility client
+
+`src/eligibility.ts` exports `EligibilityClient.read/defer/retry/activate/urgency/result`. Closed generated `Eligibility*` types separate earliest-time deferral, explicit unresolved activation, whole return-required retry and driver urgency. Use authenticated human session/CSRF and the active owner's device generation; ERP tokens cannot impersonate drivers. `OutcomeSnapshot.history` now preserves earlier attempts, and reported totals include their fees. [Sequence/demo](../../docs/eligibility.md), [public conformance](../../tests/erp-conformance/eligibility.ts). Earlier dated retry exclusions above describe their original phase boundary.

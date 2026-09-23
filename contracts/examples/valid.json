@@ -4548,5 +4548,782 @@
         "sourceDispatchCycleId": "cycle"
       }
     }
+  },
+  {
+    "id": "p18-retry-command",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p18-defer-command",
+    "schema": "eligibility.schema.json#/$defs/DeferCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "97203a2c-3224-47dd-8edd-0b51baff234f",
+      "operationId": "task.deferWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0,
+        "earliestAt": "2026-09-24T22:55:01.456Z"
+      }
+    }
+  },
+  {
+    "id": "p18-urgency-command",
+    "schema": "eligibility.schema.json#/$defs/UrgencyCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "d48b59bf-49da-4532-8322-193e0eb5f222",
+      "operationId": "task.setDriverUrgency",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 1,
+        "urgency": "urgent"
+      }
+    }
+  },
+  {
+    "id": "p18-activate-command",
+    "schema": "eligibility.schema.json#/$defs/ActivateCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "20e4cf41-2928-46ff-9698-91782ace33d6",
+      "operationId": "task.activateDeferred",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 2
+      }
+    }
+  },
+  {
+    "id": "p18-snapshot",
+    "schema": "eligibility.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+      "activityRevision": 2,
+      "currentAttemptId": null,
+      "items": [
+        {
+          "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+          "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+          "revision": 1,
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "earliestAt": null,
+          "urgency": "ordinary",
+          "deferred": false,
+          "latestOutcomeId": "d12f704a-05e9-41c5-8c1a-4900f193ac33",
+          "actions": {
+            "defer": {
+              "allowed": false,
+              "blocker": "partial-or-delivered",
+              "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+            },
+            "retry": {
+              "allowed": false,
+              "blocker": "partial-or-delivered",
+              "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+            },
+            "activate": {
+              "allowed": false,
+              "blocker": "partial-or-delivered",
+              "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+            },
+            "urgency": {
+              "allowed": false,
+              "blocker": "partial-or-delivered",
+              "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+            }
+          }
+        },
+        {
+          "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+          "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+          "revision": 2,
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "earliestAt": "2026-09-24T22:55:01.456Z",
+          "urgency": "urgent",
+          "deferred": true,
+          "latestOutcomeId": null,
+          "actions": {
+            "defer": {
+              "allowed": true,
+              "blocker": null,
+              "message": null
+            },
+            "retry": {
+              "allowed": false,
+              "blocker": "result-required",
+              "message": "سجّل نتيجة المحاولة قبل طلب إعادة المحاولة."
+            },
+            "activate": {
+              "allowed": false,
+              "blocker": "earliest-time",
+              "message": "لم يحن وقت الإتاحة بعد."
+            },
+            "urgency": {
+              "allowed": true,
+              "blocker": null,
+              "message": null
+            }
+          }
+        }
+      ],
+      "history": [
+        {
+          "time": {
+            "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+            "recordedAt": "2026-09-23T22:55:01.348Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+          "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+          "urgency": "ordinary",
+          "deferred": false,
+          "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+          "revision": 1,
+          "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+          "earliestAt": null,
+          "operationId": "task.retryWhole",
+          "sourceRevision": 1,
+          "dispatchCycleId": "68804436-01e1-4ea6-9128-8557d3682684",
+          "sourceReference": {
+            "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+            "externalId": "shipment-0",
+            "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+          },
+          "previousAttemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "time": {
+            "actionId": "97203a2c-3224-47dd-8edd-0b51baff234f",
+            "recordedAt": "2026-09-23T22:55:01.488Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+          "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+          "urgency": "ordinary",
+          "deferred": true,
+          "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+          "revision": 1,
+          "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+          "earliestAt": "2026-09-24T22:55:01.456Z",
+          "operationId": "task.deferWhole",
+          "sourceRevision": 1,
+          "dispatchCycleId": "fa38236a-36c1-42b3-9973-e12a44a6f70c",
+          "sourceReference": {
+            "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+            "externalId": "shipment-1",
+            "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+          },
+          "previousAttemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "time": {
+            "actionId": "d48b59bf-49da-4532-8322-193e0eb5f222",
+            "recordedAt": "2026-09-23T22:55:01.536Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+          "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+          "urgency": "urgent",
+          "deferred": true,
+          "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+          "revision": 2,
+          "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+          "earliestAt": "2026-09-24T22:55:01.456Z",
+          "operationId": "task.setDriverUrgency",
+          "sourceRevision": 1,
+          "dispatchCycleId": "fa38236a-36c1-42b3-9973-e12a44a6f70c",
+          "sourceReference": {
+            "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+            "externalId": "shipment-1",
+            "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+          },
+          "previousAttemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        }
+      ]
+    }
+  },
+  {
+    "id": "p18-action-status",
+    "schema": "eligibility.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+          "receiptId": "7a80b6ae-2801-4029-a4a9-11783c9a431d",
+          "receivedAt": "2026-09-23T22:55:01.335Z",
+          "committedAt": "2026-09-23T22:55:01.381Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "accepted",
+          "evidenceStatus": "received",
+          "resourceVersions": {
+            "deviceGeneration": 1,
+            "resourceRevision": 1
+          }
+        },
+        "operationId": "task.retryWhole",
+        "retention": "full",
+        "summary": {
+          "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+          "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+          "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+          "revision": 1
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "state": {
+              "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+              "actions": {
+                "defer": {
+                  "allowed": true,
+                  "blocker": null,
+                  "message": null
+                },
+                "retry": {
+                  "allowed": false,
+                  "blocker": "result-required",
+                  "message": "سجّل نتيجة المحاولة قبل طلب إعادة المحاولة."
+                },
+                "urgency": {
+                  "allowed": true,
+                  "blocker": null,
+                  "message": null
+                },
+                "activate": {
+                  "allowed": false,
+                  "blocker": "not-deferred",
+                  "message": "هذا العمل ليس مؤجلاً بلا نتيجة؛ راجع الإجراء المتاح."
+                }
+              },
+              "urgency": "ordinary",
+              "deferred": false,
+              "revision": 1,
+              "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+              "earliestAt": null,
+              "pinRevision": 0,
+              "sourceRevision": 1,
+              "latestOutcomeId": null,
+              "assignmentRevision": 1
+            },
+            "change": {
+              "time": {
+                "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+                "recordedAt": "2026-09-23T22:55:01.348Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+              "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+              "urgency": "ordinary",
+              "deferred": false,
+              "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+              "revision": 1,
+              "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+              "earliestAt": null,
+              "operationId": "task.retryWhole",
+              "sourceRevision": 1,
+              "dispatchCycleId": "68804436-01e1-4ea6-9128-8557d3682684",
+              "sourceReference": {
+                "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+                "externalId": "shipment-0",
+                "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+              },
+              "previousAttemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+              "assignmentRevision": 1,
+              "sourceDispatchCycleId": "cycle"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p18-pending",
+    "schema": "eligibility.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "p18-accepted",
+    "schema": "eligibility.schema.json#/$defs/ActionResult",
+    "valid": true,
+    "data": {
+      "receipt": {
+        "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+        "receiptId": "7a80b6ae-2801-4029-a4a9-11783c9a431d",
+        "receivedAt": "2026-09-23T22:55:01.335Z",
+        "committedAt": "2026-09-23T22:55:01.381Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "accepted",
+        "evidenceStatus": "received",
+        "resourceVersions": {
+          "deviceGeneration": 1,
+          "resourceRevision": 1
+        }
+      },
+      "operationId": "task.retryWhole",
+      "retention": "full",
+      "summary": {
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+        "revision": 1
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "state": {
+            "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+            "actions": {
+              "defer": {
+                "allowed": true,
+                "blocker": null,
+                "message": null
+              },
+              "retry": {
+                "allowed": false,
+                "blocker": "result-required",
+                "message": "سجّل نتيجة المحاولة قبل طلب إعادة المحاولة."
+              },
+              "urgency": {
+                "allowed": true,
+                "blocker": null,
+                "message": null
+              },
+              "activate": {
+                "allowed": false,
+                "blocker": "not-deferred",
+                "message": "هذا العمل ليس مؤجلاً بلا نتيجة؛ راجع الإجراء المتاح."
+              }
+            },
+            "urgency": "ordinary",
+            "deferred": false,
+            "revision": 1,
+            "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+            "earliestAt": null,
+            "pinRevision": 0,
+            "sourceRevision": 1,
+            "latestOutcomeId": null,
+            "assignmentRevision": 1
+          },
+          "change": {
+            "time": {
+              "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+              "recordedAt": "2026-09-23T22:55:01.348Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+            "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+            "urgency": "ordinary",
+            "deferred": false,
+            "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+            "revision": 1,
+            "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+            "earliestAt": null,
+            "operationId": "task.retryWhole",
+            "sourceRevision": 1,
+            "dispatchCycleId": "68804436-01e1-4ea6-9128-8557d3682684",
+            "sourceReference": {
+              "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+              "externalId": "shipment-0",
+              "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+            },
+            "previousAttemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+            "assignmentRevision": 1,
+            "sourceDispatchCycleId": "cycle"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p18-denied",
+    "schema": "eligibility.schema.json#/$defs/ActionResult",
+    "valid": true,
+    "data": {
+      "receipt": {
+        "problem": {
+          "code": "lifecycle_forbidden",
+          "type": "https://schemas.tawsel.invalid/problems/lifecycle-forbidden",
+          "title": "Eligibility change rejected",
+          "detail": "earliest-time: لم يحن وقت الإتاحة بعد.",
+          "status": 409,
+          "actionId": "20e4cf41-2928-46ff-9698-91782ace33d6",
+          "retryable": false,
+          "correlationId": "e111e436-c776-4adf-a1a0-b4d333fed887"
+        },
+        "actionId": "20e4cf41-2928-46ff-9698-91782ace33d6",
+        "receiptId": "b46cfde1-c906-4b95-b372-fef222da20c7",
+        "receivedAt": "2026-09-23T22:55:01.574Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "rejected",
+        "evidenceStatus": "received"
+      },
+      "operationId": "task.activateDeferred",
+      "retention": "full",
+      "summary": {
+        "code": "lifecycle_forbidden",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d"
+      },
+      "response": {
+        "status": 409,
+        "body": {
+          "code": "lifecycle_forbidden",
+          "type": "https://schemas.tawsel.invalid/problems/lifecycle-forbidden",
+          "title": "Eligibility change rejected",
+          "detail": "earliest-time: لم يحن وقت الإتاحة بعد.",
+          "status": 409,
+          "actionId": "20e4cf41-2928-46ff-9698-91782ace33d6",
+          "retryable": false,
+          "correlationId": "e111e436-c776-4adf-a1a0-b4d333fed887"
+        }
+      }
+    }
+  },
+  {
+    "id": "p18-event-0",
+    "schema": "eligibility.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "change": {
+        "time": {
+          "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+          "recordedAt": "2026-09-23T22:55:01.348Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "urgency": "ordinary",
+        "deferred": false,
+        "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+        "revision": 1,
+        "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+        "earliestAt": null,
+        "operationId": "task.retryWhole",
+        "sourceRevision": 1,
+        "dispatchCycleId": "68804436-01e1-4ea6-9128-8557d3682684",
+        "sourceReference": {
+          "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+          "externalId": "shipment-0",
+          "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+        },
+        "previousAttemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      }
+    }
+  },
+  {
+    "id": "p18-event-1",
+    "schema": "eligibility.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "change": {
+        "time": {
+          "actionId": "97203a2c-3224-47dd-8edd-0b51baff234f",
+          "recordedAt": "2026-09-23T22:55:01.488Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "urgency": "ordinary",
+        "deferred": true,
+        "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+        "revision": 1,
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "earliestAt": "2026-09-24T22:55:01.456Z",
+        "operationId": "task.deferWhole",
+        "sourceRevision": 1,
+        "dispatchCycleId": "fa38236a-36c1-42b3-9973-e12a44a6f70c",
+        "sourceReference": {
+          "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+          "externalId": "shipment-1",
+          "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+        },
+        "previousAttemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      }
+    }
+  },
+  {
+    "id": "p18-event-2",
+    "schema": "eligibility.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "change": {
+        "time": {
+          "actionId": "d48b59bf-49da-4532-8322-193e0eb5f222",
+          "recordedAt": "2026-09-23T22:55:01.536Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "urgency": "urgent",
+        "deferred": true,
+        "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+        "revision": 2,
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "earliestAt": "2026-09-24T22:55:01.456Z",
+        "operationId": "task.setDriverUrgency",
+        "sourceRevision": 1,
+        "dispatchCycleId": "fa38236a-36c1-42b3-9973-e12a44a6f70c",
+        "sourceReference": {
+          "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+          "externalId": "shipment-1",
+          "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+        },
+        "previousAttemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      }
+    }
+  },
+  {
+    "id": "p18-state",
+    "schema": "eligibility.schema.json#/$defs/State",
+    "valid": true,
+    "data": {
+      "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+      "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+      "revision": 1,
+      "sourceRevision": 1,
+      "assignmentRevision": 1,
+      "pinRevision": 0,
+      "earliestAt": null,
+      "urgency": "ordinary",
+      "deferred": false,
+      "latestOutcomeId": "d12f704a-05e9-41c5-8c1a-4900f193ac33",
+      "actions": {
+        "defer": {
+          "allowed": false,
+          "blocker": "partial-or-delivered",
+          "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+        },
+        "retry": {
+          "allowed": false,
+          "blocker": "partial-or-delivered",
+          "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+        },
+        "activate": {
+          "allowed": false,
+          "blocker": "partial-or-delivered",
+          "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+        },
+        "urgency": {
+          "allowed": false,
+          "blocker": "partial-or-delivered",
+          "message": "لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي."
+        }
+      }
+    }
+  },
+  {
+    "id": "p18-record",
+    "schema": "eligibility.schema.json#/$defs/Record",
+    "valid": true,
+    "data": {
+      "time": {
+        "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+        "recordedAt": "2026-09-23T22:55:01.348Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+      "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+      "urgency": "ordinary",
+      "deferred": false,
+      "driverId": "0ab536d2-da8d-4f8e-83b8-876e9834942d",
+      "revision": 1,
+      "attemptId": "4d327c01-11c8-4056-a42d-84263379fb7f",
+      "earliestAt": null,
+      "operationId": "task.retryWhole",
+      "sourceRevision": 1,
+      "dispatchCycleId": "68804436-01e1-4ea6-9128-8557d3682684",
+      "sourceReference": {
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "externalId": "shipment-0",
+        "integrationId": "b253cc1d-e831-4e70-8e37-c77982760cd0"
+      },
+      "previousAttemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+      "assignmentRevision": 1,
+      "sourceDispatchCycleId": "cycle"
+    }
   }
 ]

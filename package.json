@@ -79,7 +79,10 @@
     "test:erp:current": "node --import tsx tests/erp-conformance/current.ts",
     "test:outcomes": "npm run test:integration -- apps/api/test/integration/outcome-progress-outbox.test.ts",
     "outcomes:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/outcome-demo.ts",
-    "test:erp:outcomes": "node --import tsx tests/erp-conformance/outcomes.ts"
+    "test:erp:outcomes": "node --import tsx tests/erp-conformance/outcomes.ts",
+    "test:eligibility": "npm run test:integration -- apps/api/test/integration/retry-deferral-urgency.test.ts apps/api/test/integration/planning-publication.test.ts",
+    "eligibility:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/eligibility-demo.ts",
+    "test:erp:eligibility": "node --import tsx tests/erp-conformance/eligibility.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

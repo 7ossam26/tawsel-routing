@@ -28,7 +28,9 @@ export function assertOutcomeSnapshot(s:Snapshot){
  assert.equal(new Set(s.items.map(o=>o.taskId)).size,s.items.length);assert.equal(s.progress.processed,s.items.length);
  assert.equal(s.progress.full,s.items.filter(o=>o.outcome==='full').length);assert.equal(s.progress.partial,s.items.filter(o=>o.outcome==='partial').length);assert.equal(s.progress.refused,s.items.filter(o=>o.outcome==='refused').length);assert.equal(s.progress.noAnswer,s.items.filter(o=>o.outcome==='no-answer').length);
  assert.equal(s.progress.deliveredPieces,s.items.flatMap(o=>o.lines).reduce((n,l)=>n+l.delivered,0));assert.equal(s.progress.heldReturnRequiredPieces,s.items.flatMap(o=>o.lines).reduce((n,l)=>n+l.heldReturnRequired,0));
- const reported=s.items.reduce((n,o)=>n+BigInt(o.collection.reported?.amountMinor??0),0n),unpaid=s.items.reduce((n,o)=>n+BigInt(o.collection.unpaidShipping.amountMinor),0n);
+ const history=s.history??s.items;for(const o of history)assertOutcome(o);
+ const reported=history.reduce((n,o)=>n+BigInt(o.collection.reported?.amountMinor??0),0n);
+ let unpaid=0n;for(const key of new Set(history.map(o=>o.dispatchCycleId??o.taskId))){const rows=history.filter(o=>(o.dispatchCycleId??o.taskId)===key),declared=rows.reduce((n,o)=>n>BigInt(o.collection.unpaidShipping.amountMinor)?n:BigInt(o.collection.unpaidShipping.amountMinor),0n),paid=rows.reduce((n,o)=>n+BigInt(o.collection.shipping.amountMinor),0n);unpaid+=declared>paid?declared-paid:0n;}
  if(s.progress.collection.length){assert.equal(BigInt(s.progress.collection[0]!.reportedMinor),reported);assert.equal(BigInt(s.progress.collection[0]!.unpaidShippingMinor),unpaid);}else{assert.equal(reported,0n);assert.equal(unpaid,0n);}
 }
 export function assertOutcomeStatus(s:components['schemas']['OutcomeActionStatus']){

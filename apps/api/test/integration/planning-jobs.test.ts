@@ -57,7 +57,7 @@ test('P14/P15 upgrade retains committed P13-shaped data without promoting histor
    await tx.query('UPDATE tawsel.planning_states SET current_plan_id=$1,next_plan_revision=2',[planId]);
   });
   const forecast=(await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows,members=(await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows;
-  expect(await migrate(db.pool)).toEqual(['0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql','0013_current_activity.sql','0014_delivery_outcomes.sql']);
+  expect(await migrate(db.pool)).toEqual(['0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql','0013_current_activity.sql','0014_delivery_outcomes.sql','0015_retry_deferral_urgency.sql']);
   expect((await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows).toEqual(forecast);expect((await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows).toEqual(members);
   const plan=(await new PlanningService(db.pool).plans(principals.personal,ids.personalDriver)).items[0]!;
   expect(plan).toMatchObject({planId,state:'draft',policyValidated:false,candidate,inputCurrent:true});expect(plan.routePolicy).toBeUndefined();expect(planningConforms('Plan',plan)).toBe(true);
@@ -202,7 +202,7 @@ test('P12 retained intake upgrades without losing command or task; legacy intent
    },async writeProgress(){}
   }));
   const original=(await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows;
-  expect(await migrate(db.pool)).toEqual(['0009_planning.sql','0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql','0013_current_activity.sql','0014_delivery_outcomes.sql']);
+  expect(await migrate(db.pool)).toEqual(['0009_planning.sql','0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql','0013_current_activity.sql','0014_delivery_outcomes.sql','0015_retry_deferral_urgency.sql']);
   expect((await db.pool.query('SELECT status,job_id FROM tawsel.intake_replan_intents')).rows).toEqual([{status:'pending',job_id:null}]);
   expect(await materializeLegacyIntent(db.pool)).toBe(true);expect(await materializeLegacyIntent(db.pool)).toBe(false);
   expect((await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows).toEqual(original);

@@ -3293,5 +3293,368 @@
       "assignmentRevision": 1,
       "sourceDispatchCycleId": "cycle"
     }
+  },
+  {
+    "id": "p18-call-counter",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0,
+        "callCounter": 3
+      }
+    },
+    "keyword": "additionalProperties"
+  },
+  {
+    "id": "p18-negative-revision",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": -1
+      }
+    },
+    "keyword": "minimum"
+  },
+  {
+    "id": "p18-fractional-revision",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 1.5
+      }
+    },
+    "keyword": "type"
+  },
+  {
+    "id": "p18-overflow-revision",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 9007199254740992
+      }
+    },
+    "keyword": "maximum"
+  },
+  {
+    "id": "p18-appointment-window",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0,
+        "appointmentEnd": "2026-09-26T13:00:00Z"
+      }
+    },
+    "keyword": "additionalProperties"
+  },
+  {
+    "id": "p18-bad-date",
+    "schema": "eligibility.schema.json#/$defs/DeferCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "97203a2c-3224-47dd-8edd-0b51baff234f",
+      "operationId": "task.deferWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0,
+        "earliestAt": "tomorrow"
+      }
+    },
+    "keyword": "format"
+  },
+  {
+    "id": "p18-bad-urgency",
+    "schema": "eligibility.schema.json#/$defs/UrgencyCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "d48b59bf-49da-4532-8322-193e0eb5f222",
+      "operationId": "task.setDriverUrgency",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "5ca69a2f-94e8-50bf-a433-3549794246fa",
+        "attemptId": "26330fcd-63d9-46cb-ba59-1d50f3359927",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 1,
+        "urgency": "critical"
+      }
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "p18-missing-revision",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.retryWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0
+      }
+    },
+    "keyword": "required"
+  },
+  {
+    "id": "p18-operation-mismatch",
+    "schema": "eligibility.schema.json#/$defs/RetryCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "a8ff8fc7-957f-4a60-a9f7-e6daac5992ef",
+      "operationId": "task.deferWhole",
+      "context": {
+        "kind": "device",
+        "tenantId": "a8af1cba-4f60-4c10-a625-b07bbb8707a6",
+        "accountId": "7caa2ec2-f31a-4ffc-9a74-0037315211f7",
+        "deviceId": "33a81752-a43d-45c6-9f1f-ea1a17ff465c",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "90014a24-016e-455b-8c56-8983b05bc5bf",
+        "taskId": "4936c297-c99c-5d29-af92-e410b307978a",
+        "attemptId": "ae567b65-98dc-4183-b2b2-9c19153883c8",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "expectedEligibilityRevision": 0
+      }
+    },
+    "keyword": "const"
   }
 ]

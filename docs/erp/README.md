@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P18 adds [explicit deferral, whole retry and driver urgency](../eligibility.md), [ordered evidence](../phase-18-evidence.md), typed client and public conformance/demo. Source events retain external identity and prior collection; actual signed transport, receipt dependencies and full driver UI remain their later phases.
+
 P16 now supplies [explicit current/arrival and physical origin](../current-activity.md), [browser/API/PostgreSQL evidence](../phase-16-evidence.md), the typed current client and public-only conformance. P17 now supplies [exact whole-piece outcomes and reported collection](../outcomes.md), [real PostgreSQL/HTTP evidence](../phase-17-evidence.md), typed outcome client and portable consumer checks. Signed delivery/receiver application remains P25–27.
 
 P15 now supplies the [online start/departure contract and demo](../round-start.md), [ordered evidence](../phase-15-evidence.md) and `npm run test:erp:rounds`. Current mapping/quickstart includes active-admission locks and source-scoped start intent. Real ERP and signed delivery remain later phases.

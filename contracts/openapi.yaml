@@ -2685,6 +2685,282 @@ paths:
           description: Session required
         "403":
           description: Current scope or CSRF denied
+  /api/v1/eligibility/defer:
+    post:
+      operationId: task.deferWhole
+      summary: Change whole-work eligibility explicitly
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityDeferCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+        "400":
+          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+  /api/v1/eligibility/retry:
+    post:
+      operationId: task.retryWhole
+      summary: Change whole-work eligibility explicitly
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityRetryCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+        "400":
+          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+  /api/v1/eligibility/activate:
+    post:
+      operationId: task.activateDeferred
+      summary: Change whole-work eligibility explicitly
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityActivateCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+        "400":
+          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+  /api/v1/eligibility/urgency:
+    post:
+      operationId: task.setDriverUrgency
+      summary: Change whole-work eligibility explicitly
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EligibilityUrgencyCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+        "400":
+          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionResult"
+  /api/v1/eligibility/rounds/{roundId}:
+    get:
+      operationId: task.getEligibility
+      summary: Read server-derived task eligibility and preserved transition history
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilitySnapshot"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+  /api/v1/eligibility/actions/{actionId}:
+    get:
+      operationId: task.getEligibilityAction
+      summary: Recover retained eligibility command by stable action ID
+      tags:
+        - Eligibility
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionStatus"
+        "202":
+          description: Unknown/uncommitted is pending, never acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EligibilityActionStatus"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
 components:
   schemas:
     Uuid:
@@ -3085,6 +3361,38 @@ components:
       $ref: './outcomes.schema.json#/$defs/Snapshot'
     OutcomeEvent:
       $ref: './outcomes.schema.json#/$defs/Event'
+    EligibilityDefer:
+      $ref: './eligibility.schema.json#/$defs/Defer'
+    EligibilityDeferCommand:
+      $ref: './eligibility.schema.json#/$defs/DeferCommand'
+    EligibilityRetry:
+      $ref: './eligibility.schema.json#/$defs/Retry'
+    EligibilityRetryCommand:
+      $ref: './eligibility.schema.json#/$defs/RetryCommand'
+    EligibilityActivate:
+      $ref: './eligibility.schema.json#/$defs/Activate'
+    EligibilityActivateCommand:
+      $ref: './eligibility.schema.json#/$defs/ActivateCommand'
+    EligibilityUrgency:
+      $ref: './eligibility.schema.json#/$defs/Urgency'
+    EligibilityUrgencyCommand:
+      $ref: './eligibility.schema.json#/$defs/UrgencyCommand'
+    EligibilityAllowedAction:
+      $ref: './eligibility.schema.json#/$defs/AllowedAction'
+    EligibilityState:
+      $ref: './eligibility.schema.json#/$defs/State'
+    EligibilityRecord:
+      $ref: './eligibility.schema.json#/$defs/Record'
+    EligibilityCommandResult:
+      $ref: './eligibility.schema.json#/$defs/CommandResult'
+    EligibilityEvent:
+      $ref: './eligibility.schema.json#/$defs/Event'
+    EligibilityActionResult:
+      $ref: './eligibility.schema.json#/$defs/ActionResult'
+    EligibilityActionStatus:
+      $ref: './eligibility.schema.json#/$defs/ActionStatus'
+    EligibilitySnapshot:
+      $ref: './eligibility.schema.json#/$defs/Snapshot'
   securitySchemes:
     companySession:
       type: apiKey
@@ -3125,3 +3433,5 @@ tags:
     description: Explicit heading, arrival and manual origin, with stable attempts and retained action recovery.
   - name: Outcomes
     description: Whole-piece results, exact reported collection, effective progress and durable action recovery.
+  - name: Eligibility
+    description: Explicit earliest deferral, whole retry, activation, assigned-driver urgency and durable recovery.

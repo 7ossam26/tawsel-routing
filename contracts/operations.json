@@ -613,28 +613,34 @@
       "id": "task.deferWhole",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "execution.own",
-      "description": "Defer untouched whole work to earliest time; no narrow appointment guarantee."
+      "description": "Defer untouched whole work to earliest time; no narrow appointment guarantee.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/defer"
     },
     {
       "id": "task.retryWhole",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "execution.own",
-      "description": "Same-driver eligible untouched whole held return work, new attempt, before receipt."
+      "description": "Same-driver eligible untouched whole held return work, new attempt, before receipt.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/retry"
     },
     {
       "id": "task.setDriverUrgency",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "execution.own",
-      "description": "Assigned-driver urgency after departure; protect current/earliest eligibility."
+      "description": "Assigned-driver urgency after departure; protect current/earliest eligibility.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/urgency"
     },
     {
       "id": "round.end",
@@ -1263,7 +1269,7 @@
       "id": "task.deferred",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "recipient-scope",
       "description": "Untouched whole work earliest-time change."
@@ -1272,7 +1278,7 @@
       "id": "task.retryAdmitted",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "recipient-scope",
       "description": "New attempt on eligible whole held work; preserve prior outcome."
@@ -1534,6 +1540,57 @@
       "description": "Recover retained outcome command by stable action ID",
       "method": "GET",
       "path": "/api/v1/outcomes/actions/{actionId}"
+    },
+    {
+      "id": "task.activateDeferred",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Explicit eligibility transition; retained history and driver authority.",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/eligibility/activate"
+    },
+    {
+      "id": "task.getEligibility",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Server-derived permissions/history or stable action recovery.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/eligibility/rounds/{roundId}"
+    },
+    {
+      "id": "task.getEligibilityAction",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Server-derived permissions/history or stable action recovery.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/eligibility/actions/{actionId}"
+    },
+    {
+      "id": "task.deferredActivated",
+      "family": "execution",
+      "kind": "event",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
+      "lifecycle": "verified-local"
+    },
+    {
+      "id": "task.driverUrgencyChanged",
+      "family": "execution",
+      "kind": "event",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
+      "lifecycle": "verified-local"
     }
   ],
   "authorizationFoundation": {

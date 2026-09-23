@@ -16,24 +16,27 @@ interface TaskRow {
  source_revision:string; assignment_revision:string|null; dispatch_cycle_id:string|null;
  original:{kind:string;coordinates?:Member['coordinates']}; state:string|null; departure_at:Date|null; earliest_at:Date|null;
  location_revision:string|null; pin_source_revision:string|null; latitude:number|null;longitude:number|null;
- priority:'ordinary'|'urgent'|null; reservation_state:string|null; attempt_id:string; outcome_id:string|null;
+ priority:'ordinary'|'urgent'|null; reservation_state:string|null; attempt_id:string; outcome_id:string|null; deferred:boolean|null;
 }
 export async function snapshot(tx:Transaction,state:StateRow):Promise<Input> {
  const ids=[state.tenant_id,state.driver_id];
- // Stable initial attempt allocation. Retries with outcomes are P17/P18; no
- // fabricated execution timestamps or reset of attempts is performed here.
+ // Allocate initial identities only. Explicit retry owns successor creation;
+ // planning never resets an attempt or fabricates execution timestamps.
  await tx.query(`INSERT INTO tawsel.planning_attempts (tenant_id,attempt_id,task_id,b2c_task_id,dispatch_cycle_id)
   SELECT tenant_id,gen_random_uuid(),task_id,CASE WHEN kind='personal' THEN task_id END,dispatch_cycle_id
-  FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2 ON CONFLICT DO NOTHING`,ids);
+  FROM tawsel.location_tasks t WHERE tenant_id=$1 AND driver_id=$2 AND NOT EXISTS
+   (SELECT 1 FROM tawsel.planning_attempts a WHERE a.tenant_id=t.tenant_id AND a.task_id=t.task_id AND (a.dispatch_cycle_id=t.dispatch_cycle_id OR a.b2c_task_id=t.task_id)) ON CONFLICT DO NOTHING`,ids);
  const rows=(await tx.query<TaskRow>(`SELECT t.*,l.revision AS location_revision,l.source_revision AS pin_source_revision,l.latitude,l.longitude,
-  c.assignment_revision,s.payload->>'priority' AS priority,p.state AS reservation_state,a.attempt_id,o.outcome_id
+  c.assignment_revision,COALESCE(e.urgency,s.payload->>'priority') AS priority,p.state AS reservation_state,a.attempt_id,o.outcome_id,
+  GREATEST(t.earliest_at,e.earliest_at) AS earliest_at,e.deferred
   FROM tawsel.location_tasks t LEFT JOIN tawsel.task_locations l USING(tenant_id,task_id)
   LEFT JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=t.tenant_id AND c.dispatch_cycle_id=t.dispatch_cycle_id
   LEFT JOIN tawsel.b2b_source_snapshots s ON s.tenant_id=t.tenant_id AND s.task_id=t.task_id AND s.source_revision=t.source_revision
   LEFT JOIN tawsel.driver_planned_stops p ON p.tenant_id=t.tenant_id AND p.dispatch_cycle_id=t.dispatch_cycle_id AND p.driver_id=t.driver_id
-  LEFT JOIN tawsel.effective_task_outcomes o ON o.tenant_id=t.tenant_id AND o.task_id=t.task_id
+  LEFT JOIN tawsel.task_execution_options e ON e.tenant_id=t.tenant_id AND e.task_id=t.task_id
   JOIN tawsel.planning_attempts a ON a.tenant_id=t.tenant_id AND a.task_id=t.task_id
-    AND (a.dispatch_cycle_id=t.dispatch_cycle_id OR a.b2c_task_id=t.task_id)
+    AND a.latest AND (a.dispatch_cycle_id=t.dispatch_cycle_id OR a.b2c_task_id=t.task_id)
+  LEFT JOIN tawsel.delivery_outcomes o ON o.tenant_id=a.tenant_id AND o.attempt_id=a.attempt_id
   WHERE t.tenant_id=$1 AND t.driver_id=$2 ORDER BY t.task_id,a.attempt_id`,ids)).rows;
  const meta=(await tx.query<{kind:Input['accountKind'];revision:string|null}>(`SELECT t.kind,l.revision FROM tawsel.tenants t
   LEFT JOIN tawsel.location_planning_inputs l ON l.tenant_id=t.tenant_id AND l.driver_id=$2 WHERE t.tenant_id=$1`,ids)).rows[0]!;
@@ -42,7 +45,7 @@ export async function snapshot(tx:Transaction,state:StateRow):Promise<Input> {
    :r.original.kind==='confirmed-pin'?r.original.coordinates!:null;
   // Eligibility anchor is explicit and fingerprinted, never Date.now() during
   // publication. Future held work without admission remains not-reserved.
-  const exclusionReason:Member['exclusionReason']=r.outcome_id?'resolved-or-paused':r.kind==='company'&&r.state!=='held'?'not-held':!coordinates?'location-unresolved':
+  const exclusionReason:Member['exclusionReason']=r.outcome_id||r.deferred?'resolved-or-paused':r.kind==='company'&&r.state!=='held'?'not-held':!coordinates?'location-unresolved':
    r.earliest_at&&(!state.settings||r.earliest_at.getTime()>Date.parse(state.settings.plannedStartAt))?'future':
    r.kind==='company'&&r.reservation_state!=='remaining'?(r.reservation_state==='completed'||r.reservation_state==='paused'?'resolved-or-paused':'not-reserved'):null;
   return {taskId:r.task_id,attemptId:r.attempt_id,dispatchCycleId:r.dispatch_cycle_id,branchId:r.branch_id,integrationId:r.integration_id,

@@ -1,5 +1,22 @@
 # Field and status mapping — canonical foundation
 
+## P18 current mapping — 24 September 2026
+
+| Public field/status | Consumer meaning |
+| --- | --- |
+| `EligibilityState.revision` | Compare via `expectedEligibilityRevision`; also compare task/source/assignment/pin and current-activity revisions. Route reorder alone is compatible. |
+| `earliestAt`, `deferred` | Effective earliest time respects both source and driver restriction. Future/deferred work stays visible but outside execution until explicit capacity-checked activation/retry. |
+| `urgency` | Driver execution override; source snapshot stays frozen. Does not override current or future eligibility. |
+| `actions.*.allowed/blocker/message` | Server business eligibility with concise Arabic cause. Active owner/device authority is rechecked on submit. |
+| `change.previousAttemptId`, `attemptId` | Retry creates a new identity; deferral/activation/urgency retain unresolved attempt identity. Never erase previous results. |
+| `change.sourceReference`, `sourceDispatchCycleId` | Original ERP tenant/integration/external task and cycle identity; no new shipment or custody transfer is implied. |
+| `change.sourceRevision`, `assignmentRevision` | Frozen source/assignment compatibility, distinct from execution-option revision. |
+| `OutcomeSnapshot.history` | All accepted outcomes in the round. `items`/processed quantities describe latest resolved attempts only; collection totals include earlier attempts and do not duplicate shipping. |
+| `capacity_exceeded` | No admission/attempt/history change; old whole return-required shipment stays held. |
+| `receipt-or-disposition`, `partial-or-delivered` | No customer revisit. Future physical receipt/disposal commands must maintain the dependency boundary. |
+
+Use [canonical schema](../../contracts/eligibility.schema.json) and [exact sequence](../eligibility.md). New source intents are committed locally, not yet signed/delivered. Earlier dated mappings below retain their historical scope.
+
 P15 [verified start/departure mapping](../round-start.md):
 
 | Public field/status | Meaning / source obligation |

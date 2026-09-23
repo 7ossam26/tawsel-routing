@@ -75,3 +75,7 @@ Each company result creates one source-filtered `outcome.recorded` payload `{out
 ## Handoff to Phase 18
 
 P18 may rely on migration 0014, exact arithmetic, fenced outcome commands/read/recovery, resolved-attempt history, effective task projection, durable planning invalidation, independent duplicate/fault tests, and the two-task public-client demo. Untouched whole return-required goods have delivered count zero; rejected partial remainders have positive delivered count and cannot be retried. A retry needs a new attempt/admission and must preserve old outcomes, prior shipping and first forecasts, revise effective projection/counting coherently and pass capacity. The initial-attempt uniqueness in P13 still exists; P17 does not loosen it or implement retry/deferral. P21 receives actual pieces and P23 appends corrections later.
+
+## P18 extension — preserved retries
+
+[Explicit whole retry](eligibility.md) now creates a new admitted attempt while preserving every old outcome and fee. `OutcomeSnapshot.history` contains prior attempts, `items`/processed quantities count latest resolved attempts only, and collection totals include all attempts. Rejected partial remainders stay return-required and non-retryable. P17 sections above retain their dated evidence; physical receipt, correction, cross-round reporting and settlement remain outside P18.

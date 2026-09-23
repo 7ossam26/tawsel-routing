@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P17 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival and exact outcomes are implemented locally; each row records its actual lifecycle.** Later retry/takeover operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P18 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes and explicit eligibility transitions are implemented locally; each row records its actual lifecycle.** Later takeover operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -138,9 +138,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `outcome.recordPartial` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | B2B whole pieces only; rejected remainder is held return-required. |
 | `outcome.recordRefusal` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Refusal with shipping collection or explicit unpaid-shipping exception. |
 | `outcome.recordNoAnswer` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Simple no-answer; no call counters or implied fee refusal/arrival. |
-| `task.deferWhole` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Defer untouched whole work to earliest time; no narrow appointment guarantee. |
-| `task.retryWhole` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Same-driver eligible untouched whole held return work, new attempt, before receipt. |
-| `task.setDriverUrgency` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Assigned-driver urgency after departure; protect current/earliest eligibility. |
+| `task.deferWhole` | http-command | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Defer untouched whole work to earliest time; no narrow appointment guarantee. |
+| `task.retryWhole` | http-command | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Same-driver eligible untouched whole held return work, new attempt, before receipt. |
+| `task.setDriverUrgency` | http-command | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Assigned-driver urgency after departure; protect current/earliest eligibility. |
 | `round.end` | http-command | designed | [P19](phases/19-workday-closure-carryover.md) | execution.own | End round explicitly with held unfinished work preserved. |
 | `workday.end` | http-command | designed | [P19](phases/19-workday-closure-carryover.md) | execution.own | Close open workday/active round after resolving or pausing current; carry held work. |
 | `device.takeOver` | http-command | designed | [P20](phases/20-device-takeover-evidence.md) | execution.own | Online same-driver takeover increments generation, preserves former-device evidence. |
@@ -151,8 +151,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `current.headingSelected` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
 | `current.arrivalRecorded` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |
 | `outcome.recorded` | event | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | recipient-scope | Full/partial/refused/no-answer with quantity/collection transition. |
-| `task.deferred` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Untouched whole work earliest-time change. |
-| `task.retryAdmitted` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | New attempt on eligible whole held work; preserve prior outcome. |
+| `task.deferred` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Untouched whole work earliest-time change. |
+| `task.retryAdmitted` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | New attempt on eligible whole held work; preserve prior outcome. |
 | `round.ended` | event | designed | [P19](phases/19-workday-closure-carryover.md) | recipient-scope | Ended round, held work unchanged unless explicitly transitioned. |
 | `workday.ended` | event | designed | [P19](phases/19-workday-closure-carryover.md) | recipient-scope | Explicit day closure/carryover; not automatic midnight. |
 | `device.executionTransferred` | event | designed | [P20](phases/20-device-takeover-evidence.md) | recipient-scope | New device generation within same driver/round. |
@@ -165,6 +165,11 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `current.getResult` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Recover only own current activity action results with current scope reauthorization. |
 | `outcome.getRound` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Effective own-round outcomes and exact reported progress |
 | `outcome.getResult` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Recover retained outcome command by stable action ID |
+| `task.activateDeferred` | http-command | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Explicit eligibility transition; retained history and driver authority. |
+| `task.getEligibility` | http-read | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Server-derived permissions/history or stable action recovery. |
+| `task.getEligibilityAction` | http-read | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Server-derived permissions/history or stable action recovery. |
+| `task.deferredActivated` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Committed assigned-driver eligibility change; source-scoped durable intent. |
+| `task.driverUrgencyChanged` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Committed assigned-driver eligibility change; source-scoped durable intent. |
 
 ### returns
 

@@ -105,11 +105,16 @@ export class Outcomes {
   uuid(roundId);return withAccess(this.pool,principal,async(a,tx)=>{
    await authorize(tx,a);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);await round(tx,a,roundId);
    const rows=(await tx.query<{record:OutcomeRecord}>('SELECT o.record FROM tawsel.effective_task_outcomes e JOIN tawsel.delivery_outcomes o USING(tenant_id,task_id,outcome_id) WHERE o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->\'time\'->>\'recordedAt\',o.outcome_id',[a.context.tenantId,ownDriver(a),roundId])).rows;
-   const items=rows.map(r=>r.record);for(const o of items)a.requireResource(own,{tenant_id:a.context.tenantId,driver_id:o.driverId,branch_id:o.branchId,integration_id:o.sourceReference?.integrationId??null});
+   const all=(await tx.query<{record:OutcomeRecord;latest:boolean}>(`SELECT o.record,a.latest FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts a USING(tenant_id,attempt_id) WHERE o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->'time'->>'recordedAt',o.outcome_id`,[a.context.tenantId,ownDriver(a),roundId])).rows;
+   const history=all.map(r=>r.record),latest=new Set(all.filter(r=>r.latest).map(r=>r.record.outcomeId));
+   const items=rows.map(r=>r.record).filter(r=>latest.has(r.outcomeId));for(const o of history)a.requireResource(own,{tenant_id:a.context.tenantId,driver_id:o.driverId,branch_id:o.branchId,integration_id:o.sourceReference?.integrationId??null});
    const progress:components['schemas']['OutcomeProgress']={processed:items.length,full:0,partial:0,refused:0,noAnswer:0,deliveredPieces:0,heldReturnRequiredPieces:0,collection:[]};
-   let reported=0n,unpaid=0n;for(const o of items){if(o.outcome==='no-answer')progress.noAnswer++;else progress[o.outcome]++;for(const l of o.lines){progress.deliveredPieces+=l.delivered;progress.heldReturnRequiredPieces+=l.heldReturnRequired;}reported+=BigInt(o.collection.reported?.amountMinor??0);unpaid+=BigInt(o.collection.unpaidShipping.amountMinor);}
-   if(items.some(o=>o.collection.reported!==null||o.collection.unpaidShipping.amountMinor>0))progress.collection=[{currency:'EGP',exponent:2,reportedMinor:reported.toString(),unpaidShippingMinor:unpaid.toString()}];
-   const result={roundId,items,progress};requireOutcome('Snapshot',result);return result;
+   for(const o of items){if(o.outcome==='no-answer')progress.noAnswer++;else progress[o.outcome]++;for(const l of o.lines){progress.deliveredPieces+=l.delivered;progress.heldReturnRequiredPieces+=l.heldReturnRequired;}}
+   let reported=0n,unpaid=0n;const fees=new Map<string,{unpaid:bigint;paid:bigint}>();
+   for(const o of history){reported+=BigInt(o.collection.reported?.amountMinor??0);const key=o.dispatchCycleId??o.taskId,f=fees.get(key)??{unpaid:0n,paid:0n};f.unpaid=f.unpaid>BigInt(o.collection.unpaidShipping.amountMinor)?f.unpaid:BigInt(o.collection.unpaidShipping.amountMinor);f.paid+=BigInt(o.collection.shipping.amountMinor);fees.set(key,f);}
+   for(const f of fees.values())unpaid+=f.unpaid>f.paid?f.unpaid-f.paid:0n;
+   if(history.some(o=>o.collection.reported!==null||o.collection.unpaidShipping.amountMinor>0))progress.collection=[{currency:'EGP',exponent:2,reportedMinor:reported.toString(),unpaidShippingMinor:unpaid.toString()}];
+   const result={roundId,items,history,progress};requireOutcome('Snapshot',result);return result;
   });
  }
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['OutcomeActionStatus']>{

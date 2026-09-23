@@ -1,5 +1,11 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P18 human execution consumer — 24 September 2026
+
+Use `packages/api-client/src/eligibility.ts` (`EligibilityClient`) with generated public types. Select the company/personal browser session; use `read(roundId)`, then `defer`, `retry`, `activate` or `urgency` with the exact revisions and owner context described in [eligibility API](../eligibility.md). Keep the original action ID/request; use `result(actionId)` or identical resubmission after uncertainty. These are assigned-driver APIs, not ERP bearer-token commands.
+
+`npm run eligibility:demo` exercises real HTTP readiness/start, refusal with 50 EGP shipping, lost-response retry recovery, subsequent delivery with 300 EGP goods, and future urgent work denied activation. `npm run test:erp:eligibility -- .local/phase-18-demo.json` independently checks public wire semantics and cumulative reported money. `npm run test:erp:eligibility` checks canonical examples only. The demo uses disposable real PostgreSQL and labelled identity/bootstrap; no browser interaction, live Engine, receipt, real ERP or signed-event transport is claimed. For return-required work use explicit retry; for unresolved deferred work use activation. Preserve old attempts and source identity on the consumer side.
+
 P15 consumers: [online start and exact request/recovery sequence](../round-start.md), [canonical examples](../../contracts/examples/README.md), [portable session client](../../packages/api-client/src/rounds.ts). Run `npm run test:erp:rounds` for public-only conformance and `npm run rounds:demo` for an isolated real HTTP/session/PostgreSQL demonstration (signed issuer fixture, no live ERP/Engine). The latter closes the API for an unsuccessful offline attempt, discards a committed response and recovers the same owner after restart. Source apps must honor departed rejections and `editable=false` on newly received active work. `round.started` is only durable outbound intent until P25. P34 will integrate the complete pending-action journal; do not infer local queue readiness from connectivity.
 
 ## Phase 14 manual and validated-route consumers
