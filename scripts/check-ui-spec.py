@@ -59,7 +59,12 @@ def references(audit=None, verbose=False):
         require(s['image'] == ('screen.jpg' if s['number'] <= 3 else 'screen.png'), 'Wrong image extension')
         for filename, hash_key in [(s['image'], 'downloadedScreenshot'), (s['code'], 'downloadedCode')]:
             content = (directory / filename).read_bytes()
-            require(sha256(content).hexdigest() == s[hash_key]['sha256'], f'Changed original: {directory / filename}')
+            # Git autocrlf changes checkout line endings on Windows. Images stay
+            # byte-exact; code must match the original hash after only CRLF→LF.
+            matches = sha256(content).hexdigest() == s[hash_key]['sha256']
+            if not matches and filename == s['code']:
+                matches = sha256(content.replace(b'\r\n', b'\n')).hexdigest() == s[hash_key]['sha256']
+            require(matches, f'Changed original: {directory / filename}')
         parser = Controls()
         parser.feed((directory / s['code']).read_text(encoding='utf-8'))
         for n, item in enumerate(parser.items, 1):
@@ -67,7 +72,7 @@ def references(audit=None, verbose=False):
             if verbose:
                 print(f'{s["number"]:02}/{n}: line {item[0]} {item[1]} {item[2]}')
     require(set(assigned) == expected, f'Control coverage missing={expected-set(assigned)} extra={set(assigned)-expected}')
-    print(f'PASS A: 9 metadata/source/image sets, 18 original hashes, {len(expected)} control dispositions; visual review is recorded separately.')
+    print(f'PASS A: 9 metadata/source/image sets, 18 original hashes (code permits Git CRLF checkout), {len(expected)} control dispositions; visual review is recorded separately.')
 
 
 def actions(document=None):
@@ -96,9 +101,22 @@ def actions(document=None):
                     'State copy and feedback', 'Components and overlays', 'Screen coverage', 'Visual acceptance'):
         require(f'## {section}' in spec, f'Missing UI spec section: {section}')
     for op in catalog:
-        if op['id'] != 'workspace.getHealth' and not ((op['ownerPhase'] == 7 and op['family'] == 'session-context') or (op['ownerPhase'] == 8 and op['family'] == 'integration-provisioning')):
-            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07/P08 scope promoted: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Only workspace/P07/P08 operations may be promoted.')
+        phase, family = op['ownerPhase'], op['family']
+        implemented_scope = (
+            op['id'] == 'workspace.getHealth'
+            or (phase == 7 and family == 'session-context')
+            or (phase == 8 and family == 'integration-provisioning')
+            or (phase in (9, 10) and family == 'intake')
+            or (phase == 10 and op['id'] == 'task.urgencyChanged')
+            or (phase == 11 and family == 'locations')
+            or (phase == 12 and op['id'] in ('routing.getVehicleProfiles', 'routing.computeRoadRoute', 'routing.optimize'))
+            or (phase == 13 and op['id'] in ('planning.saveDraft', 'planning.requestPreview', 'planning.requestReplan', 'planning.getJob', 'planning.getPlan', 'planning.publishRevision', 'plan.revisionPublished'))
+            or (phase == 14 and op['id'] == 'planning.setManualOrder')
+            or (phase in (15, 16) and family == 'execution')
+        )
+        if not implemented_scope:
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P16 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P16 scope only; no UI completion inferred.')
 
 
 def states(document=None, demo=False):
@@ -140,7 +158,7 @@ def negative_checks():
     mutations = [
         ('unclassified exported control', references, re.sub(r'^\| 01 \| 1 \|.*\n', '', read('docs/ui-reference-audit.md'), count=1, flags=re.M)),
         ('unmapped required operation', actions, re.sub(r'^\| A26 \|.*\n', '', read('docs/ui-actions.md'), count=1, flags=re.M)),
-        ('invented operation', actions, read('docs/ui-actions.md').replace('`round.start`', '`round.fakeStart`', 1)),
+        ('invented operation', actions, re.sub(r'(\| A13 \|[^\n]*?)`round\.start`', r'\1`round.fakeStart`', read('docs/ui-actions.md'), count=1)),
         ('missing-pin cause removed', states, read('docs/ui-spec.md').replace('لم يتم تأكيد الموقع؛ افتح المراجعة ثم أكّد الدبوس', '—', 1)),
         ('pending waiting omitted', states, read('docs/ui-spec.md').replace('بانتظار المزامنة مع توصيل', '—', 1)),
         ('viewport omitted', states, read('docs/ui-spec.md').replace('1440×900', '1441×900')),

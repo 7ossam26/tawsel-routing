@@ -16,8 +16,8 @@ export function command(operationId:string,payload:Record<string,unknown>):Actio
   context:{kind:'device',tenantId:ids.personalTenant,accountId:ids.personalAccount,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1},
   resources:{},baseVersions:{},dependsOnActionIds:[],observation:{observedAt:null,clock:{quality:'unknown'}},payload};
 }
-export async function intake(pool:Pool,index=0){
- const c=command('task.createIndependent',{recipientName:'عميل',recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.05+index*0.01,longitude:31.24+index*0.01}}});
+export async function intake(pool:Pool,index=0,recipientName='عميل'){
+ const c=command('task.createIndependent',{recipientName,recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.05+index*0.01,longitude:31.24+index*0.01}}});
  const result=await new IndependentIntakeService(pool).create(principals.personal,c);
  return {command:c,result,taskId:(result.response!.body.task as {taskId:string}).taskId};
 }

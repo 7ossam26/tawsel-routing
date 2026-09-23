@@ -51,7 +51,8 @@ export async function snapshot(tx:Transaction,state:StateRow):Promise<Input> {
  });
  return {version:1,tenantId:state.tenant_id,driverId:state.driver_id,accountKind:meta.kind,inputRevision:Number(state.input_revision),settingsRevision:Number(state.settings_revision),
   executionRevision:Number(state.execution_revision),manualRevision:Number(state.manual_revision),currentTarget:state.current_target,
-  locationInputRevision:Number(meta.revision??0),settings:state.settings,members};
+  locationInputRevision:Number(meta.revision??0),settings:state.settings&&state.physical_origin?{...state.settings,origin:{kind:state.physical_origin.kind,coordinates:state.physical_origin.coordinates}}:state.settings,
+  ...(state.physical_origin?{physicalOrigin:state.physical_origin}:{}),members};
 }
 export const fingerprint=(input:Input)=>payloadHash(input);
 export function blocker(input:Input):Job['blockedReason'] {

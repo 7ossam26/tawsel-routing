@@ -336,7 +336,7 @@
         "settings": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Settings"
+              "$ref": "#/$defs/InputSettings"
             },
             {
               "type": "null"
@@ -348,6 +348,17 @@
           "items": {
             "$ref": "#/$defs/Member"
           }
+        },
+        "physicalOrigin": {
+          "anyOf": [
+            {
+              "$ref": "current-activity.schema.json#/$defs/PhysicalOrigin"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Absent or null means no recorded physical correction/arrival. Omitted until evidence exists to preserve unchanged pre-P16 input fingerprints."
         }
       },
       "required": [
@@ -1555,6 +1566,55 @@
         "roadMetricsAvailable"
       ],
       "additionalProperties": false
+    },
+    "InputSettings": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "$ref": "routing.schema.json#/$defs/Mode"
+        },
+        "origin": {
+          "$ref": "routing.schema.json#/$defs/Origin"
+        },
+        "endpoint": {
+          "$ref": "routing.schema.json#/$defs/Endpoint",
+          "allOf": [
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "branch"
+                  }
+                },
+                "required": [
+                  "kind"
+                ]
+              },
+              "then": {
+                "type": "object",
+                "properties": {
+                  "branchId": {
+                    "$ref": "common.schema.json#/$defs/Uuid"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "plannedStartAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "mode",
+        "origin",
+        "endpoint",
+        "plannedStartAt"
+      ],
+      "additionalProperties": false,
+      "description": "Server-effective settings. Origin is the last explicit arrival/manual correction, falling back to the draft manual pin. A caller cannot assert last-confirmed-stop through saveDraft."
     }
   }
 }

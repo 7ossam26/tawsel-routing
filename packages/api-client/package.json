@@ -13,7 +13,8 @@
     "src/intake.ts",
     "src/locations.ts",
     "src/planning.ts",
-    "src/rounds.ts"
+    "src/rounds.ts",
+    "src/current.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

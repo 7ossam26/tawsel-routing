@@ -12,6 +12,7 @@ import type { Input, Plan } from '../planning/models.js';
 import { validateCompleteRoute, validateOrder } from '../planning/policy.js';
 import { EngineError } from '../engine/index.js';
 import { admitMembers } from './departure.js';
+import { activity } from '../current/state.js';
 import { requireRound, RoundError, roundView, type Readiness, type ReadinessRequest, type RoundRow, type Start, type Workday } from './models.js';
 
 const own:ResourcePolicy=[{capability:'execution.own',ownership:'own-driver'}];
@@ -86,7 +87,7 @@ export class Rounds {
      const existing=await active(tx,a.context.tenantId,p.driverId);
      if(existing){
       inputAccess(a,await snapshot(tx,await planningState(tx,a.context.tenantId,p.driverId)));
-      const body={disposition:'already-active',workday:await workday(tx,a.context.tenantId,p.driverId),round:roundView(existing)};
+      const body={disposition:'already-active',workday:await workday(tx,a.context.tenantId,p.driverId),round:{...roundView(existing),currentActivity:await activity(tx,existing.tenant_id,existing.round_id)}};
       return {status:'accepted',response:{status:200,body},summary:{driverId:p.driverId,roundId:existing.round_id,workdayId:existing.workday_id},audit:{driverId:p.driverId,roundId:existing.round_id,changed:false},resourceVersions:{deviceGeneration:Number(existing.device_generation)},intents:[]};
      }
      const ready=(await tx.query<{fingerprint:string;relevant_action_ids:string[]}>(`SELECT fingerprint,relevant_action_ids FROM tawsel.start_readiness
@@ -122,7 +123,7 @@ export class Rounds {
   return withAccess(this.pool,principal,async(a,tx)=>{
    const driverId=ownDriver(a);await authorizeDriver(tx,a,driverId);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId}]);
    inputAccess(a,await snapshot(tx,await planningState(tx,a.context.tenantId,driverId)));
-   const r=await active(tx,a.context.tenantId,driverId);return {workday:await workday(tx,a.context.tenantId,driverId),round:r?roundView(r):null};
+   const r=await active(tx,a.context.tenantId,driverId);return {workday:await workday(tx,a.context.tenantId,driverId),round:r?{...roundView(r),currentActivity:await activity(tx,r.tenant_id,r.round_id)}:null};
   });
  }
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['RoundActionStatus']>{

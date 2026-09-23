@@ -132,8 +132,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
 | `round.start` | http-command | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
-| `current.selectHeading` | http-command | designed | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicitly select/change eligible target; protect arrived work until resolved. |
-| `current.recordArrival` | http-command | designed | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit arrival and physical-origin evidence; never inferred from outcome. |
+| `current.selectHeading` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicitly select/change eligible target; protect arrived work until resolved. |
+| `current.recordArrival` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit arrival and physical-origin evidence; never inferred from outcome. |
 | `outcome.recordFull` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Full result with exact permitted collection and coherent progress/outbox. |
 | `outcome.recordPartial` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | B2B whole pieces only; rejected remainder is held return-required. |
 | `outcome.recordRefusal` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Refusal with shipping collection or explicit unpaid-shipping exception. |
@@ -148,8 +148,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `evidence.adoptCompatible` | http-command | designed | [P23](phases/23-bounded-driver-corrections.md) | correction.own | Current owner adopts eligible former-device evidence under correction bounds. |
 | `task.urgencyChanged` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25. |
 | `round.started` | event | verified-local | [P15](phases/15-round-start-departure-lock.md) | recipient-scope | Accepted start/departure/owner and baseline forecast. |
-| `current.headingSelected` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
-| `current.arrivalRecorded` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |
+| `current.headingSelected` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
+| `current.arrivalRecorded` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |
 | `outcome.recorded` | event | designed | [P17](phases/17-outcomes-quantities-collection.md) | recipient-scope | Full/partial/refused/no-answer with quantity/collection transition. |
 | `task.deferred` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Untouched whole work earliest-time change. |
 | `task.retryAdmitted` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | New attempt on eligible whole held work; preserve prior outcome. |
@@ -160,6 +160,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `round.prepareStart` | http-command | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work. |
 | `round.getCurrent` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 | `round.getStartResult` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
+| `current.correctOrigin` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit owner-fenced manual physical-origin correction; no current activity or arrival is inferred. |
+| `current.getActivity` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. |
+| `current.getResult` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Recover only own current activity action results with current scope reauthorization. |
 
 ### returns
 

@@ -2,7 +2,7 @@ import type { components } from './schema.js';
 /** Online-only start. Preserve the exact action envelope on uncertain delivery.
  * The P34 journal must provide a complete, quiescent relevantActionIds barrier. */
 export class RoundsClient {
- constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=fetch){}
+ constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=(...args)=>globalThis.fetch(...args)){}
  private async request(path:string,body?:unknown){
   const headers:Record<string,string>={};
   if(body!==undefined){

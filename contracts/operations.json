@@ -547,19 +547,23 @@
       "id": "current.selectHeading",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "execution.own",
-      "description": "Explicitly select/change eligible target; protect arrived work until resolved."
+      "description": "Explicitly select/change eligible target; protect arrived work until resolved.",
+      "method": "POST",
+      "path": "/api/v1/current/heading"
     },
     {
       "id": "current.recordArrival",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "execution.own",
-      "description": "Explicit arrival and physical-origin evidence; never inferred from outcome."
+      "description": "Explicit arrival and physical-origin evidence; never inferred from outcome.",
+      "method": "POST",
+      "path": "/api/v1/current/arrival"
     },
     {
       "id": "outcome.recordFull",
@@ -1224,7 +1228,7 @@
       "id": "current.headingSelected",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "recipient-scope",
       "description": "Explicit selection/change, not a next suggestion."
@@ -1233,7 +1237,7 @@
       "id": "current.arrivalRecorded",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "recipient-scope",
       "description": "Explicit observed arrival; time provenance retained."
@@ -1467,6 +1471,39 @@
       "method": "GET",
       "path": "/api/v1/rounds/actions/{actionId}",
       "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20."
+    },
+    {
+      "id": "current.correctOrigin",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicit owner-fenced manual physical-origin correction; no current activity or arrival is inferred.",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/current/origin"
+    },
+    {
+      "id": "current.getActivity",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "description": "Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver.",
+      "method": "GET",
+      "path": "/api/v1/current/rounds/{roundId}"
+    },
+    {
+      "id": "current.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "description": "Recover only own current activity action results with current scope reauthorization.",
+      "method": "GET",
+      "path": "/api/v1/current/actions/{actionId}"
     }
   ],
   "authorizationFoundation": {

@@ -8,11 +8,12 @@ export function assertRoundStart(value:components['schemas']['RoundStartResult']
  assert.equal(value.workday.state,'open');assert.equal(value.round.state,'active');
  assert.equal(value.round.workdayId,value.workday.workdayId);assert.equal(value.round.driverId,value.workday.driverId);
  assert.ok(Date.parse(value.round.startedAt)>=Date.parse(value.workday.openedAt));
- assert.ok(value.round.owner.generation>=1);assert.equal(value.round.currentActivity,null);
+ assert.ok(value.round.owner.generation>=1);if(value.disposition==='started')assert.equal(value.round.currentActivity,null);
  assert.ok(value.round.firstForecastId);assert.ok(value.round.firstWorkloadId);assert.ok(value.round.firstPlanId);
 }
 export function assertSameAuthority(a:components['schemas']['RoundRound'],b:components['schemas']['RoundRound']){
- assert.deepEqual(b,a,'Retry/another phone must retain round, owner and first baseline');
+ const authority=(r:components['schemas']['RoundRound'])=>({roundId:r.roundId,workdayId:r.workdayId,driverId:r.driverId,owner:r.owner,firstPlanId:r.firstPlanId,firstForecastId:r.firstForecastId,firstWorkloadId:r.firstWorkloadId,startedAt:r.startedAt});
+ assert.deepEqual(authority(b),authority(a),'Retry/another phone must retain round, owner and first baseline; current activity can advance');
 }
 export function assertStartStatus(value:components['schemas']['RoundActionStatus']){
  if(value.status==='pending'){assert.equal('result' in value,false);return;}

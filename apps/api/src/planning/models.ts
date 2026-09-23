@@ -12,6 +12,7 @@ export interface StateRow {
  tenant_id:string; driver_id:string; settings_revision:string; settings:Settings|null;
  input_revision:string; execution_revision:string; manual_revision:string; current_target:Input['currentTarget'];
  next_plan_revision:string; latest_job_id:string|null; current_plan_id:string|null;
+ physical_origin?:components['schemas']['CurrentPhysicalOrigin']|null;
 }
 export interface JobRow {
  tenant_id:string; driver_id:string; job_id:string; source_id:string; action_id:string;
@@ -24,7 +25,7 @@ export class PlanningError extends Error {
 }
 const ajv=new Ajv2020({strict:true});
 (addFormats as unknown as (a:Ajv2020)=>void)(ajv);
-for(const file of ['common.schema.json','action-envelope.v1.schema.json','routing.schema.json','planning.schema.json'])
+for(const file of ['common.schema.json','action-envelope.v1.schema.json','action-result.v1.schema.json','evidence-receipt.v1.schema.json','routing.schema.json','current-activity.schema.json','planning.schema.json'])
  ajv.addSchema(JSON.parse(readFileSync(new URL(`../../../../contracts/${file}`,import.meta.url),'utf8')));
 export function planningConforms(name:string,value:unknown){return ajv.validate(`https://schemas.tawsel.invalid/v1/planning.schema.json#/$defs/${name}`,value);}
 export function requirePlanning(name:string,value:unknown){if(!planningConforms(name,value))throw new PlanningError('validation_failed',400,'راجع بيانات التخطيط والنسخة المطلوبة.');}

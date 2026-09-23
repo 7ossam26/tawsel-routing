@@ -195,7 +195,14 @@
           "$ref": "common.schema.json#/$defs/Uuid"
         },
         "currentActivity": {
-          "type": "null"
+          "anyOf": [
+            {
+              "$ref": "current-activity.schema.json#/$defs/Activity"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [

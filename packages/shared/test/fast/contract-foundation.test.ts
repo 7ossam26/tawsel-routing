@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -100,7 +100,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
       || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
       || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
-      || (entry.ownerPhase === 15 && entry.family === 'execution') || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
+      || ([15,16].includes(entry.ownerPhase) && entry.family === 'execution') || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
       || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
   });

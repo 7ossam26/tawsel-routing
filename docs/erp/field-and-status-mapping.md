@@ -241,3 +241,23 @@ The [schema](../../contracts/location.schema.json) and [location consumer](../..
 | `RoutingFailure` | Sanitized dependency/validation failure; never reverses accepted receipt or supplies a synthetic road route. |
 
 These normalized models are verified internally and exported for coherent handoff; no optimization HTTP operation is available to the ERP yet. [P12 evidence](../phase-12-evidence.md).
+
+## P16 explicit current activity — 24 September 2026
+
+| Public field/status | Meaning / mapping constraint |
+| --- | --- |
+| `CurrentSnapshot.revision` | Current-activity CAS; independent from plan/input/source/device versions |
+| `currentActivity = null` | No explicit current customer; next suggestion does not imply movement |
+| `currentActivity.stage = heading` | Assigned owner explicitly selected the stable task/attempt |
+| `currentActivity.stage = arrived` | Separate explicit arrival accepted; not delivered/paid/contacted |
+| `nextSuggestion` | Eligible task from retained route order; may change during replan without changing current |
+| `planning.updating` | Retained suggestion awaiting current planning; no fresh ETA claim |
+| `heading` / `arrival` ActionTime | Stable action ID, server `recordedAt` and original device observation/clock; not GPS timing |
+| `physicalOrigin` | Latest driver-recorded arrival/manual correction, driver-scoped history; independent of source destination |
+| `expectedCurrentAttemptId` + `expectedActivityRevision` | Explicit replacement precondition; arrived work rejects reselection until resolution |
+| `expectedSourceRevision` / `expectedAssignmentRevision` / `expectedPinRevision` | Task compatibility checked under driver/assignment locks; route reorder alone is compatible |
+| `stale_device` | Retained rejection/evidence; no transition; takeover remains P20 |
+| `current.headingSelected.stage = paused` | Previous source target explicitly replaced; no next-source target disclosure |
+| `current.getResult = pending` | Unknown/uncommitted, not success; retry exact original action |
+
+Schemas own fields and examples: [current](../../contracts/current-activity.schema.json), [examples](../../contracts/examples/valid.json). Local proof: real API/PostgreSQL/Chromium with labelled account/provider fixtures. Native ERP and event delivery remain unverified.

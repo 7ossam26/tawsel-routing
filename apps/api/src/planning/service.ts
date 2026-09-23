@@ -59,6 +59,9 @@ export class PlanningService {
       // Changing active vehicle/endpoint requires a later execution transition
       // that updates reserved branch capacity and the published route together.
       if(active&&(p.settings.mode!==input.settings?.mode||canonicalJson(p.settings.endpoint)!==canonicalJson(input.settings?.endpoint)))throw new LifecycleDenied();
+      // Active physical origin has its own explicit owner-fenced correction.
+      // Saving a draft must never overwrite arrival evidence or move the driver.
+      if(active&&canonicalJson(p.settings.origin)!==canonicalJson(state.settings?.origin))throw new LifecycleDenied();
       if((input.accountKind==='company'&&p.settings.endpoint.kind==='fixed')||(input.accountKind==='personal'&&p.settings.endpoint.kind==='branch'))throw new PlanningError('validation_failed',400,'نقطة النهاية غير متاحة لهذا الحساب.');
       if(p.settings.endpoint.kind==='branch'){
        const branch=(await tx.query('SELECT branch_id FROM tawsel.branches WHERE tenant_id=$1 AND branch_id=$2 AND enabled',[input.tenantId,p.settings.endpoint.branchId])).rows[0];

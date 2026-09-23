@@ -139,3 +139,7 @@ No V1 GPS, billing, call counters, advanced POD, direct driver handoff, financia
 ## P11 confirmed locations
 
 task_locations + append-only location_history preserve original source separately. Each explicit confirmation atomically writes the pin/provenance revision, pending driver location_planning_inputs revision, intake_replan_intents and B2B source-scoped outbox intent through P05. P09/P10 reads/reservation consume current execution readiness. Source revision mismatch invalidates a prior pin; P13 must fingerprint both revisions. Driver/task invariant locks compose with source/assignment commands; P15 still owns actual start. No route is published by P11. [Details](locations-and-maps.md).
+
+## P16 implementation update — 24 September 2026
+
+The canonical [current activity contract](../contracts/current-activity.schema.json) and [runbook](current-activity.md) now implement single explicit heading/arrival, stable attempts, generation-fenced commands, CAS/reselection, append-only history, manual physical-origin correction and scoped action recovery. Route reorder does not change current activity or reject compatible task commands. Server recording time and reported device clock evidence remain separate. P17 must add resolution states and clear current in its outcome transaction without moving the physical origin or selecting next. This update supersedes older statements that P16 current writers were still designed; later outcome/retry/closure/takeover state transitions remain designed.

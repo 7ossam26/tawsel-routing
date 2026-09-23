@@ -27,9 +27,9 @@ export function Field({ label, hint, error, id, ...props }: React.InputHTMLAttri
   return <div className="field"><label htmlFor={id}>{label}</label><input {...props} id={id} aria-invalid={Boolean(error)} aria-describedby={hint || error ? descriptionId : undefined} />{hint || error ? <p id={descriptionId} className={error ? 'field-error' : 'field-hint'}>{error ?? hint}</p> : null}</div>;
 }
 
-export function ContactActions({ phone = '+20 10 0000 0000' }: { phone?: string }) {
+export function ContactActions({ phone = '+20 10 0000 0000',coordinates }: { phone?: string;coordinates?:{latitude:number;longitude:number} }) {
   const normalized = phone.replaceAll(' ', '');
-  return <div className="contact-actions" aria-label="التواصل والاتجاه"><a href={`tel:${normalized}`}><Phone aria-hidden="true" /><span>اتصال</span></a><a href={`https://wa.me/${normalized.replace('+', '')}`} target="_blank" rel="noreferrer"><MessageCircle aria-hidden="true" /><span>واتساب</span></a><button type="button"><Navigation aria-hidden="true" /><span>الاتجاهات</span></button></div>;
+  return <div className="contact-actions" aria-label="التواصل والاتجاه"><a href={`tel:${normalized}`}><Phone aria-hidden="true" /><span>اتصال</span></a><a href={`https://wa.me/${normalized.replace('+', '')}`} target="_blank" rel="noreferrer"><MessageCircle aria-hidden="true" /><span>واتساب</span></a>{coordinates?<a href={`https://www.google.com/maps/dir/?api=1&destination=${coordinates.latitude},${coordinates.longitude}`} target="_blank" rel="noreferrer"><Navigation aria-hidden="true" /><span>الاتجاهات</span></a>:<button type="button"><Navigation aria-hidden="true" /><span>الاتجاهات</span></button>}</div>;
 }
 
 export function ProgressSummary({ processed, total, delivered, held }: { processed: number; total: number; delivered: number; held: number }) {
@@ -55,8 +55,8 @@ export function FocusedOverlay({ open, onOpenChange, title, description, childre
   return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal><Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="dialog-content" dir="rtl" onOpenAutoFocus={(event) => { event.preventDefault(); document.getElementById('focused-overlay-title')?.focus(); }} onCloseAutoFocus={(event) => { if (returnFocusId) { event.preventDefault(); document.getElementById(returnFocusId)?.focus(); } }}><div className="dialog-handle" aria-hidden="true" /><div className="dialog-heading"><div><Dialog.Title id="focused-overlay-title" tabIndex={-1}>{title}</Dialog.Title><Dialog.Description>{description}</Dialog.Description></div><Dialog.Close asChild><IconButton label="إغلاق"><X aria-hidden="true" /></IconButton></Dialog.Close></div><div className="dialog-body">{children}</div><div className="dialog-footer">{footer}</div></Dialog.Content></Dialog.Portal></Dialog.Root>;
 }
 
-export function StopIdentity({ stageLabel, long = false }: { stageLabel: string; long?: boolean }) {
-  return <div className="stop-identity"><span className="stage-label"><MapPin aria-hidden="true" />{stageLabel}</span><h2><bdi dir="auto">{long ? 'المهندس حسام الدين عبد الرحمن محمد عبد الله وشركاؤه لاستلام الطلبات' : 'حسام الدين عبد الرحمن'}</bdi></h2><p>١٢ شارع التحرير، الدور الرابع، شقة ١٢ — الاتصال عند الوصول وترك الطلب مع مسؤول الاستلام</p><a className="phone-link" href="tel:+201000000000"><bdi dir="ltr">+20 10 0000 0000</bdi></a></div>;
+export function StopIdentity({ stageLabel, long = false,recipientName,address,phone='+20 10 0000 0000' }: { stageLabel: string; long?: boolean;recipientName?:string;address?:string;phone?:string }) {
+  return <div className="stop-identity"><span className="stage-label"><MapPin aria-hidden="true" />{stageLabel}</span><h2><bdi dir="auto">{recipientName??(long ? 'المهندس حسام الدين عبد الرحمن محمد عبد الله وشركاؤه لاستلام الطلبات' : 'حسام الدين عبد الرحمن')}</bdi></h2><p>{address??'١٢ شارع التحرير، الدور الرابع، شقة ١٢ — الاتصال عند الوصول وترك الطلب مع مسؤول الاستلام'}</p><a className="phone-link" href={`tel:${phone.replaceAll(' ','')}`}><bdi dir="ltr">{phone}</bdi></a></div>;
 }
 
 export function BackLabel({ children }: PropsWithChildren) { return <span className="back-label"><ArrowLeft aria-hidden="true" />{children}</span>; }

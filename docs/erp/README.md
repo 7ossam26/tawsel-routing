@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P16 now supplies [explicit current/arrival and physical origin](../current-activity.md), [browser/API/PostgreSQL evidence](../phase-16-evidence.md), the typed current client and public-only conformance. P17 outcomes remain designed.
+
 P15 now supplies the [online start/departure contract and demo](../round-start.md), [ordered evidence](../phase-15-evidence.md) and `npm run test:erp:rounds`. Current mapping/quickstart includes active-admission locks and source-scoped start intent. Real ERP and signed delivery remain later phases.
 
 P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP snapshot/receipt/admission are implemented and verified locally. See the [P10 contract/demo](../b2b-intake.md) and [P10 evidence](../phase-10-evidence.md). Read [public consumer quickstart](consumer-quickstart.md), [provisioning trust/recovery contract](../provisioning.md) and [P08 evidence](../phase-08-evidence.md). Full receiver/source two-way conformance remains P26–P27; final released handoff remains P42. No real vendor connector or production release is claimed.

@@ -351,6 +351,15 @@ h2 { line-height: 1.55; }
 .candidate input { margin-top: .5rem; flex-shrink: 0; }
 .candidate:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
 .candidate small { display: block; color: var(--muted-foreground); }
+.current-shell { max-inline-size: 52rem; margin-inline: auto; padding-inline: 1rem; }
+.current-shell .current-stage-card > .action-button { inline-size: 100%; margin-block-start: 1rem; }
+.current-shell select { inline-size: 100%; min-block-size: 48px; padding: .65rem; border: 1px solid var(--border); border-radius: .65rem; background: white; color: var(--foreground); font: inherit; }
+.current-shell select:focus-visible,.current-shell summary:focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+.current-secondary { margin-block: 1rem; padding: .7rem; border-block-end: 1px solid var(--border); }
+.current-secondary summary { cursor: pointer; min-block-size: 44px; align-content: center; }
+.current-secondary p,.current-next small { color: var(--muted-foreground); }
+.current-next { padding: 1rem; border-inline-start: 3px solid var(--accent); background: white; border-radius: .6rem; }
+.current-next p { margin-block: .35rem; font-weight: 700; }
 .maplibregl-ctrl-group button { width: 44px; height: 44px; }
 .maplibregl-ctrl-attrib { font-family: var(--font-sans); font-size: 11px; }
 .location-details button:focus-visible,.pin-picker button:focus-visible,.pin-picker summary:focus-visible,.candidate:focus-within { outline: 3px solid var(--ring); outline-offset: 3px; }

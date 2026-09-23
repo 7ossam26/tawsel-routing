@@ -2,9 +2,9 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, locations and durable planning
   version: 0.1.0
-  description: P07–P15 locally implemented identity, intake, locations, validated planning and online
-    authoritative round start. Provider, browser and PostgreSQL evidence are distinguished in phase ledgers.
-    Later execution and signed delivery remain designed.
+  description: P07–P15 locally implemented identity, intake, locations, validated planning and online authoritative round
+    start. Provider, browser and PostgreSQL evidence are distinguished in phase ledgers. Later execution and signed
+    delivery remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -346,8 +346,7 @@ paths:
   /api/session/context:
     get:
       operationId: session.getContext
-      summary: Read current issuer-validated session and P06 access context. Display fields are never request
-        authority.
+      summary: Read current issuer-validated session and P06 access context. Display fields are never request authority.
       tags:
         - Sessions
       security:
@@ -1278,8 +1277,8 @@ paths:
   /api/v1/intake/commands/assignment.withdraw:
     post:
       operationId: assignment.withdraw
-      summary: Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists;
-        full start-race proof belongs to P15.
+      summary: Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists; full
+        start-race proof belongs to P15.
       tags:
         - ERP intake
       security:
@@ -1446,8 +1445,8 @@ paths:
   /api/v1/intake/results/{actionId}:
     get:
       operationId: intake.getBatchResult
-      summary: Recover durable accepted/rejected source results; 202 pending means no committed result is visible,
-        not proof of receipt.
+      summary: Recover durable accepted/rejected source results; 202 pending means no committed result is visible, not proof
+        of receipt.
       tags:
         - ERP intake
       security:
@@ -1685,8 +1684,8 @@ paths:
       tags:
         - Routing
       summary: Read supported application modes; availability is not checked.
-      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No
-        provider URLs or runtime-health claim.
+      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No provider
+        URLs or runtime-health claim.
       security:
         - personalSession: []
         - companySession: []
@@ -2179,6 +2178,237 @@ paths:
           description: Current scope or CSRF denied
         "409":
           description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+  /api/v1/current/heading:
+    post:
+      operationId: current.selectHeading
+      summary: current.selectHeading
+      tags:
+        - Current activity
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurrentSelectHeadingCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
+            action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+  /api/v1/current/arrival:
+    post:
+      operationId: current.recordArrival
+      summary: current.recordArrival
+      tags:
+        - Current activity
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurrentArrivalCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
+            action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+  /api/v1/current/origin:
+    post:
+      operationId: current.correctOrigin
+      summary: current.correctOrigin
+      tags:
+        - Current activity
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CurrentCorrectOriginCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
+            action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionResult"
+  /api/v1/current/rounds/{roundId}:
+    get:
+      operationId: current.getActivity
+      summary: current.getActivity
+      tags:
+        - Current activity
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentSnapshot"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+  /api/v1/current/actions/{actionId}:
+    get:
+      operationId: current.getResult
+      summary: current.getResult
+      tags:
+        - Current activity
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionStatus"
+        "202":
+          description: Unknown/uncommitted is pending, never acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentActionStatus"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
 components:
   schemas:
     Uuid:
@@ -2503,6 +2733,42 @@ components:
       $ref: ./round-start.schema.json#/$defs/StartedEvent
     RoundStartActionResult:
       $ref: ./round-start.schema.json#/$defs/StartActionResult
+    CurrentActionTime:
+      $ref: ./current-activity.schema.json#/$defs/ActionTime
+    CurrentActivity:
+      $ref: ./current-activity.schema.json#/$defs/Activity
+    CurrentPhysicalOrigin:
+      $ref: ./current-activity.schema.json#/$defs/PhysicalOrigin
+    CurrentTarget:
+      $ref: ./current-activity.schema.json#/$defs/Target
+    CurrentSelectHeading:
+      $ref: ./current-activity.schema.json#/$defs/SelectHeading
+    CurrentArrival:
+      $ref: ./current-activity.schema.json#/$defs/Arrival
+    CurrentCorrectOrigin:
+      $ref: ./current-activity.schema.json#/$defs/CorrectOrigin
+    CurrentSnapshot:
+      $ref: ./current-activity.schema.json#/$defs/Snapshot
+    CurrentCommandResult:
+      $ref: ./current-activity.schema.json#/$defs/CommandResult
+    CurrentSelectHeadingCommand:
+      $ref: ./current-activity.schema.json#/$defs/SelectHeadingCommand
+    CurrentArrivalCommand:
+      $ref: ./current-activity.schema.json#/$defs/ArrivalCommand
+    CurrentCorrectOriginCommand:
+      $ref: ./current-activity.schema.json#/$defs/CorrectOriginCommand
+    CurrentActionResult:
+      $ref: ./current-activity.schema.json#/$defs/ActionResult
+    CurrentActionStatus:
+      $ref: ./current-activity.schema.json#/$defs/ActionStatus
+    CurrentEvent:
+      $ref: ./current-activity.schema.json#/$defs/Event
+    PlanningInputSettings:
+      $ref: ./planning.schema.json#/$defs/InputSettings
+    CurrentHeadingEvent:
+      $ref: ./current-activity.schema.json#/$defs/HeadingEvent
+    CurrentArrivalEvent:
+      $ref: ./current-activity.schema.json#/$defs/ArrivalEvent
   securitySchemes:
     companySession:
       type: apiKey
@@ -2515,8 +2781,8 @@ components:
     ProvisioningService:
       type: http
       scheme: bearer
-      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side; tenant/integration
-        bound, expiring, rotatable. TLS required outside loopback.
+      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side; tenant/integration bound,
+        expiring, rotatable. TLS required outside loopback.
     ProvisioningOperator:
       type: http
       scheme: bearer
@@ -2539,3 +2805,5 @@ tags:
     description: Durable asynchronous candidates and preserved forecasts; no round activation.
   - name: Round start
     description: Online readiness, authoritative start, current workday/round and start action recovery.
+  - name: Current activity
+    description: Explicit heading, arrival and manual origin, with stable attempts and retained action recovery.

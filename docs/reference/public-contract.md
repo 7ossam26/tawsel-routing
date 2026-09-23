@@ -2,13 +2,13 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P15 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning and online round start are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P16 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work; P15 exposes only round.getStartResult for start actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -6551,7 +6551,7 @@ Explicit manual origin, never GPS or physical arrival. plannedStartAt is the eli
     "settings": {
       "anyOf": [
         {
-          "$ref": "#/$defs/Settings"
+          "$ref": "#/$defs/InputSettings"
         },
         {
           "type": "null"
@@ -6563,6 +6563,17 @@ Explicit manual origin, never GPS or physical arrival. plannedStartAt is the eli
       "items": {
         "$ref": "#/$defs/Member"
       }
+    },
+    "physicalOrigin": {
+      "anyOf": [
+        {
+          "$ref": "current-activity.schema.json#/$defs/PhysicalOrigin"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Absent or null means no recorded physical correction/arrival. Omitted until evidence exists to preserve unchanged pre-P16 input fingerprints."
     }
   },
   "required": [
@@ -8055,7 +8066,14 @@ Authoritative server round only. The immutable selected forecast retains its ori
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "currentActivity": {
-      "type": "null"
+      "anyOf": [
+        {
+          "$ref": "current-activity.schema.json#/$defs/Activity"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -8337,6 +8355,1007 @@ Authoritative server round only. The immutable selected forecast retains its ori
 }
 ```
 
+### CurrentActionTime
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/ActionTime)
+
+recordedAt is server acceptance recording time, not measured travel time. observation preserves the device report, including missing/uncertain clock evidence, without promoting it to server truth.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "recordedAt": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "observation": {
+      "$ref": "common.schema.json#/$defs/Observation"
+    }
+  },
+  "required": [
+    "actionId",
+    "recordedAt",
+    "observation"
+  ],
+  "additionalProperties": false,
+  "description": "recordedAt is server acceptance recording time, not measured travel time. observation preserves the device report, including missing/uncertain clock evidence, without promoting it to server truth."
+}
+```
+
+### CurrentActivity
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/Activity)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "arrived"
+      ]
+    },
+    "heading": {
+      "$ref": "#/$defs/ActionTime"
+    },
+    "arrival": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ActionTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "revision",
+    "stage",
+    "heading",
+    "arrival"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "arrived"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "arrival": {
+            "$ref": "#/$defs/ActionTime"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "arrival": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### CurrentPhysicalOrigin
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/PhysicalOrigin)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "enum": [
+        "last-confirmed-stop",
+        "manual-pin"
+      ]
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "time": {
+      "$ref": "#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "kind",
+    "coordinates",
+    "revision",
+    "roundId",
+    "taskId",
+    "attemptId",
+    "time"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "last-confirmed-stop"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "taskId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "attemptId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "taskId": {
+            "type": "null"
+          },
+          "attemptId": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### CurrentTarget
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/Target)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    },
+    "recipientName": {
+      "type": "string"
+    },
+    "recipientPhone": {
+      "type": "string"
+    },
+    "address": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "coordinates",
+    "recipientName",
+    "recipientPhone",
+    "address"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CurrentSelectHeading
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/SelectHeading)
+
+Selection itself explicitly begins heading. Compare activity revision and previous attempt; replacing heading pauses its attempt with history. Arrived work must be resolved first. Same task/attempt keeps its identity. Route revision is deliberately not a command dependency.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false,
+  "description": "Selection itself explicitly begins heading. Compare activity revision and previous attempt; replacing heading pauses its attempt with history. Arrived work must be resolved first. Same task/attempt keeps its identity. Route revision is deliberately not a command dependency."
+}
+```
+
+### CurrentArrival
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/Arrival)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CurrentCorrectOrigin
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/CorrectOrigin)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedOriginRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    }
+  },
+  "required": [
+    "roundId",
+    "expectedOriginRevision",
+    "coordinates"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CurrentSnapshot
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/Snapshot)
+
+Coherent authorized round read; current is explicit, nextSuggestion is only the first other eligible member of a retained valid plan. May be null while planning. targets contains only currently eligible admitted work. Physical origin is recorded evidence; initial planning origin is not arrival.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "deviceId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "accountId",
+        "deviceId",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "currentActivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Activity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "physicalOrigin": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PhysicalOrigin"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "planningOrigin": {
+      "$ref": "routing.schema.json#/$defs/Origin"
+    },
+    "nextSuggestion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Target"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "planning": {
+      "type": "object",
+      "properties": {
+        "planId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updating": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "planId",
+        "updating"
+      ],
+      "additionalProperties": false
+    },
+    "targets": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/Target"
+      }
+    }
+  },
+  "required": [
+    "roundId",
+    "driverId",
+    "owner",
+    "revision",
+    "currentActivity",
+    "physicalOrigin",
+    "planningOrigin",
+    "nextSuggestion",
+    "planning",
+    "targets"
+  ],
+  "additionalProperties": false,
+  "description": "Coherent authorized round read; current is explicit, nextSuggestion is only the first other eligible member of a retained valid plan. May be null while planning. targets contains only currently eligible admitted work. Physical origin is recorded evidence; initial planning origin is not arrival."
+}
+```
+
+### CurrentCommandResult
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/CommandResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "currentActivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Activity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "physicalOrigin": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PhysicalOrigin"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "roundId",
+    "revision",
+    "currentActivity",
+    "physicalOrigin"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CurrentSelectHeadingCommand
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/SelectHeadingCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "current.selectHeading"
+        },
+        "payload": {
+          "$ref": "#/$defs/SelectHeading"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### CurrentArrivalCommand
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/ArrivalCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "current.recordArrival"
+        },
+        "payload": {
+          "$ref": "#/$defs/Arrival"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### CurrentCorrectOriginCommand
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/CorrectOriginCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "current.correctOrigin"
+        },
+        "payload": {
+          "$ref": "#/$defs/CorrectOrigin"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### CurrentActionResult
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-result.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "enum": [
+            "current.selectHeading",
+            "current.recordArrival",
+            "current.correctOrigin"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "receipt": {
+                "type": "object",
+                "properties": {
+                  "businessStatus": {
+                    "const": "accepted"
+                  }
+                },
+                "required": [
+                  "businessStatus"
+                ]
+              }
+            },
+            "required": [
+              "receipt"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "$ref": "#/$defs/CommandResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### CurrentActionStatus
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "#/$defs/ActionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### CurrentEvent
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "arrived",
+        "paused"
+      ]
+    },
+    "time": {
+      "$ref": "#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "roundId",
+    "driverId",
+    "taskId",
+    "attemptId",
+    "activityRevision",
+    "stage",
+    "time"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningInputSettings
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/InputSettings)
+
+Server-effective settings. Origin is the last explicit arrival/manual correction, falling back to the draft manual pin. A caller cannot assert last-confirmed-stop through saveDraft.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "mode": {
+      "$ref": "routing.schema.json#/$defs/Mode"
+    },
+    "origin": {
+      "$ref": "routing.schema.json#/$defs/Origin"
+    },
+    "endpoint": {
+      "$ref": "routing.schema.json#/$defs/Endpoint",
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "branch"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "branchId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "plannedStartAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "mode",
+    "origin",
+    "endpoint",
+    "plannedStartAt"
+  ],
+  "additionalProperties": false,
+  "description": "Server-effective settings. Origin is the last explicit arrival/manual correction, falling back to the draft manual pin. A caller cannot assert last-confirmed-stop through saveDraft."
+}
+```
+
+### CurrentHeadingEvent
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/HeadingEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "paused"
+      ]
+    },
+    "time": {
+      "$ref": "#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "roundId",
+    "driverId",
+    "taskId",
+    "attemptId",
+    "activityRevision",
+    "stage",
+    "time"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CurrentArrivalEvent
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/ArrivalEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stage": {
+      "const": "arrived"
+    },
+    "time": {
+      "$ref": "#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "roundId",
+    "driverId",
+    "taskId",
+    "attemptId",
+    "activityRevision",
+    "stage",
+    "time"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -8470,6 +9489,16 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p15-action-accepted | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p15-action-pending | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p15-action-rejected | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
+| current-heading | current-activity.schema.json#/$defs/Activity | valid foundation shape |
+| current-arrived | current-activity.schema.json#/$defs/Activity | valid foundation shape |
+| current-manual-origin | current-activity.schema.json#/$defs/PhysicalOrigin | valid foundation shape |
+| p16-select-heading | current-activity.schema.json#/$defs/SelectHeadingCommand | valid foundation shape |
+| p16-arrival | current-activity.schema.json#/$defs/ArrivalCommand | valid foundation shape |
+| p16-correct-origin | current-activity.schema.json#/$defs/CorrectOriginCommand | valid foundation shape |
+| p16-heading-action-accepted | current-activity.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p16-action-pending | current-activity.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p16-arrival-action-accepted | current-activity.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p16-snapshot-arrived | current-activity.schema.json#/$defs/Snapshot | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -8555,5 +9584,10 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p14-duplicate-manual | planning.schema.json#/$defs/ManualOrderCommand | invalid (uniqueItems) |
 | p15-no-client-sync-flag | round-start.schema.json#/$defs/StartCommand | invalid (additionalProperties) |
 | p15-local-draft-not-active | round-start.schema.json#/$defs/Round | invalid (const) |
+| arrived-without-recorded-action | current-activity.schema.json#/$defs/Activity | invalid (type) |
+| heading-with-inferred-arrival | current-activity.schema.json#/$defs/Activity | invalid (type) |
+| current-next-is-not-stage | current-activity.schema.json#/$defs/Activity | invalid (enum) |
+| p16-no-arbitrary-selection | current-activity.schema.json#/$defs/SelectHeadingCommand | invalid (required) |
+| p16-arrival-must-identify-current | current-activity.schema.json#/$defs/ArrivalCommand | invalid (type) |
 
 [Canonical example data](../../contracts/examples/README.md)

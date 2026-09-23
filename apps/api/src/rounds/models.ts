@@ -12,7 +12,7 @@ export class RoundError extends Error {
 }
 const ajv=new Ajv2020({strict:true});
 (addFormats as unknown as (a:Ajv2020)=>void)(ajv);
-for(const file of ['common.schema.json','action-envelope.v1.schema.json','evidence-receipt.v1.schema.json','action-result.v1.schema.json','round-start.schema.json'])ajv.addSchema(JSON.parse(readFileSync(new URL(`../../../../contracts/${file}`,import.meta.url),'utf8')));
+for(const file of ['common.schema.json','action-envelope.v1.schema.json','evidence-receipt.v1.schema.json','action-result.v1.schema.json','routing.schema.json','current-activity.schema.json','round-start.schema.json'])ajv.addSchema(JSON.parse(readFileSync(new URL(`../../../../contracts/${file}`,import.meta.url),'utf8')));
 export const roundConforms=(name:string,value:unknown)=>ajv.validate(`https://schemas.tawsel.invalid/v1/round-start.schema.json#/$defs/${name}`,value);
 export function requireRound(name:string,value:unknown){if(!roundConforms(name,value))throw new RoundError('validation_failed',400,'راجع بيانات بدء الجولة.');}
 export interface RoundRow {

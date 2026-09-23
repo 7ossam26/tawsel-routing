@@ -3182,5 +3182,450 @@
         }
       }
     }
+  },
+  {
+    "id": "current-heading",
+    "schema": "current-activity.schema.json#/$defs/Activity",
+    "valid": true,
+    "data": {
+      "taskId": "16000000-0000-4000-8000-000000000002",
+      "attemptId": "16000000-0000-4000-8000-000000000003",
+      "revision": 1,
+      "stage": "heading",
+      "heading": {
+        "actionId": "16000000-0000-4000-8000-000000000001",
+        "recordedAt": "2026-09-23T20:00:00Z",
+        "observation": {
+          "observedAt": null,
+          "clock": {
+            "quality": "unknown"
+          }
+        }
+      },
+      "arrival": null
+    }
+  },
+  {
+    "id": "current-arrived",
+    "schema": "current-activity.schema.json#/$defs/Activity",
+    "valid": true,
+    "data": {
+      "taskId": "16000000-0000-4000-8000-000000000002",
+      "attemptId": "16000000-0000-4000-8000-000000000003",
+      "revision": 2,
+      "stage": "arrived",
+      "heading": {
+        "actionId": "16000000-0000-4000-8000-000000000001",
+        "recordedAt": "2026-09-23T20:00:00Z",
+        "observation": {
+          "observedAt": null,
+          "clock": {
+            "quality": "unknown"
+          }
+        }
+      },
+      "arrival": {
+        "actionId": "16000000-0000-4000-8000-000000000004",
+        "recordedAt": "2026-09-23T20:00:00Z",
+        "observation": {
+          "observedAt": null,
+          "clock": {
+            "quality": "unknown"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "current-manual-origin",
+    "schema": "current-activity.schema.json#/$defs/PhysicalOrigin",
+    "valid": true,
+    "data": {
+      "kind": "manual-pin",
+      "coordinates": {
+        "latitude": 30.04,
+        "longitude": 31.23
+      },
+      "revision": 1,
+      "roundId": "16000000-0000-4000-8000-000000000005",
+      "taskId": null,
+      "attemptId": null,
+      "time": {
+        "actionId": "16000000-0000-4000-8000-000000000001",
+        "recordedAt": "2026-09-23T20:00:00Z",
+        "observation": {
+          "observedAt": null,
+          "clock": {
+            "quality": "unknown"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p16-select-heading",
+    "schema": "current-activity.schema.json#/$defs/SelectHeadingCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "current.selectHeading",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p16-arrival",
+    "schema": "current-activity.schema.json#/$defs/ArrivalCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "current.recordArrival",
+      "actionId": "16000000-0000-4000-8000-000000000004",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 1,
+        "expectedCurrentAttemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p16-correct-origin",
+    "schema": "current-activity.schema.json#/$defs/CorrectOriginCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "current.correctOrigin",
+      "actionId": "16000000-0000-4000-8000-000000000006",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "expectedOriginRevision": 0,
+        "coordinates": {
+          "latitude": 30.04,
+          "longitude": 31.23
+        }
+      }
+    }
+  },
+  {
+    "id": "p16-heading-action-accepted",
+    "schema": "current-activity.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "schemaVersion": "1.0.0",
+          "receiptId": "15000000-0000-4000-8000-000000000012",
+          "actionId": "16000000-0000-4000-8000-000000000001",
+          "evidenceStatus": "received",
+          "businessStatus": "accepted",
+          "receivedAt": "2026-09-23T10:00:00.000Z",
+          "committedAt": "2026-09-23T10:00:00.000Z",
+          "resourceVersions": {
+            "deviceGeneration": 1,
+            "resourceRevision": 1
+          }
+        },
+        "operationId": "current.selectHeading",
+        "retention": "full",
+        "summary": {
+          "roundId": "15000000-0000-4000-8000-000000000006",
+          "driverId": "15000000-0000-4000-8000-000000000002",
+          "taskId": "16000000-0000-4000-8000-000000000002",
+          "activityRevision": 1
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "roundId": "15000000-0000-4000-8000-000000000006",
+            "revision": 1,
+            "currentActivity": {
+              "taskId": "16000000-0000-4000-8000-000000000002",
+              "attemptId": "16000000-0000-4000-8000-000000000003",
+              "revision": 1,
+              "stage": "heading",
+              "heading": {
+                "actionId": "16000000-0000-4000-8000-000000000001",
+                "recordedAt": "2026-09-23T20:00:00Z",
+                "observation": {
+                  "observedAt": null,
+                  "clock": {
+                    "quality": "unknown"
+                  }
+                }
+              },
+              "arrival": null
+            },
+            "physicalOrigin": null
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p16-action-pending",
+    "schema": "current-activity.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "16000000-0000-4000-8000-000000000004",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "p16-arrival-action-accepted",
+    "schema": "current-activity.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "16000000-0000-4000-8000-000000000004",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "schemaVersion": "1.0.0",
+          "receiptId": "15000000-0000-4000-8000-000000000012",
+          "actionId": "16000000-0000-4000-8000-000000000004",
+          "evidenceStatus": "received",
+          "businessStatus": "accepted",
+          "receivedAt": "2026-09-23T10:00:00.000Z",
+          "committedAt": "2026-09-23T10:00:00.000Z",
+          "resourceVersions": {
+            "resourceRevision": 2,
+            "deviceGeneration": 1
+          }
+        },
+        "operationId": "current.recordArrival",
+        "retention": "full",
+        "summary": {
+          "roundId": "15000000-0000-4000-8000-000000000006",
+          "driverId": "15000000-0000-4000-8000-000000000002",
+          "taskId": "16000000-0000-4000-8000-000000000002",
+          "activityRevision": 2
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "roundId": "15000000-0000-4000-8000-000000000006",
+            "revision": 2,
+            "currentActivity": {
+              "taskId": "16000000-0000-4000-8000-000000000002",
+              "attemptId": "16000000-0000-4000-8000-000000000003",
+              "revision": 2,
+              "stage": "arrived",
+              "heading": {
+                "actionId": "16000000-0000-4000-8000-000000000001",
+                "recordedAt": "2026-09-23T20:00:00Z",
+                "observation": {
+                  "observedAt": null,
+                  "clock": {
+                    "quality": "unknown"
+                  }
+                }
+              },
+              "arrival": {
+                "actionId": "16000000-0000-4000-8000-000000000004",
+                "recordedAt": "2026-09-23T20:00:00Z",
+                "observation": {
+                  "observedAt": null,
+                  "clock": {
+                    "quality": "unknown"
+                  }
+                }
+              }
+            },
+            "physicalOrigin": {
+              "kind": "last-confirmed-stop",
+              "coordinates": {
+                "latitude": 30.05,
+                "longitude": 31.24
+              },
+              "revision": 1,
+              "roundId": "15000000-0000-4000-8000-000000000006",
+              "taskId": "16000000-0000-4000-8000-000000000002",
+              "attemptId": "16000000-0000-4000-8000-000000000003",
+              "time": {
+                "actionId": "16000000-0000-4000-8000-000000000004",
+                "recordedAt": "2026-09-23T20:00:00Z",
+                "observation": {
+                  "observedAt": null,
+                  "clock": {
+                    "quality": "unknown"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p16-snapshot-arrived",
+    "schema": "current-activity.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "roundId": "15000000-0000-4000-8000-000000000006",
+      "driverId": "15000000-0000-4000-8000-000000000002",
+      "owner": {
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "generation": 1
+      },
+      "revision": 2,
+      "currentActivity": {
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "revision": 2,
+        "stage": "arrived",
+        "heading": {
+          "actionId": "16000000-0000-4000-8000-000000000001",
+          "recordedAt": "2026-09-23T20:00:00Z",
+          "observation": {
+            "observedAt": null,
+            "clock": {
+              "quality": "unknown"
+            }
+          }
+        },
+        "arrival": {
+          "actionId": "16000000-0000-4000-8000-000000000004",
+          "recordedAt": "2026-09-23T20:00:00Z",
+          "observation": {
+            "observedAt": null,
+            "clock": {
+              "quality": "unknown"
+            }
+          }
+        }
+      },
+      "physicalOrigin": {
+        "kind": "last-confirmed-stop",
+        "coordinates": {
+          "latitude": 30.05,
+          "longitude": 31.24
+        },
+        "revision": 1,
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "time": {
+          "actionId": "16000000-0000-4000-8000-000000000004",
+          "recordedAt": "2026-09-23T20:00:00Z",
+          "observation": {
+            "observedAt": null,
+            "clock": {
+              "quality": "unknown"
+            }
+          }
+        }
+      },
+      "planningOrigin": {
+        "kind": "last-confirmed-stop",
+        "coordinates": {
+          "latitude": 30.05,
+          "longitude": 31.24
+        }
+      },
+      "nextSuggestion": null,
+      "planning": {
+        "planId": "15000000-0000-4000-8000-000000000004",
+        "updating": true
+      },
+      "targets": [
+        {
+          "taskId": "16000000-0000-4000-8000-000000000002",
+          "attemptId": "16000000-0000-4000-8000-000000000003",
+          "sourceRevision": 1,
+          "assignmentRevision": 0,
+          "pinRevision": 0,
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "recipientName": "منى عبد الرحمن",
+          "recipientPhone": "+201012345678",
+          "address": null
+        }
+      ]
+    }
   }
 ]
