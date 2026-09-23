@@ -176,3 +176,7 @@ Use [locations-and-maps.md](locations-and-maps.md) for explicit archive preparat
 ## P12 Engine verification
 
 Use [the Engine boundary guide](engine-boundary.md) for private per-profile origins and bounded calls. `npm run engine:live` reads Docker inventory when available and attempts all three route/table/optimization combinations without starting, pulling or importing. Runtime/data-build pinning remains required before deployment; current live verification is unavailable. `GET /api/v1/routing/profiles` returns supported application enums, not service health.
+
+## P15 round start
+
+`npm run test:rounds`, `npm run rounds:demo` and `npm run test:erp:rounds` reproduce start/action recovery, real PostgreSQL races and portable conformance. [Runbook](round-start.md) and [evidence](phase-15-evidence.md) explain local PostgreSQL PATH setup, session/provider fixtures and future queue/takeover limits. Apply additive migration 0012 with the ordinary app migration runner; Engine setup is unnecessary.

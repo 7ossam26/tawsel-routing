@@ -512,7 +512,11 @@
         "result_unknown",
         "unsupported_schema_version",
         "replay_expired",
-        "correction_dependency_conflict"
+        "correction_dependency_conflict",
+        "sync_required",
+        "sync_incomplete",
+        "plan_not_startable",
+        "round_already_active"
       ]
     },
     "Problem": {

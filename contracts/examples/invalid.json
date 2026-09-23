@@ -2615,5 +2615,63 @@
         }
       }
     }
+  },
+  {
+    "id": "p15-no-client-sync-flag",
+    "schema": "round-start.schema.json#/$defs/StartCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "round.start",
+      "actionId": "15000000-0000-4000-8000-000000000010",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "readinessId": "15000000-0000-4000-8000-000000000001",
+        "planId": "15000000-0000-4000-8000-000000000004",
+        "expectedPlanRevision": 1,
+        "alreadySynced": true
+      }
+    }
+  },
+  {
+    "id": "p15-local-draft-not-active",
+    "schema": "round-start.schema.json#/$defs/Round",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "roundId": "15000000-0000-4000-8000-000000000006",
+      "workdayId": "15000000-0000-4000-8000-000000000005",
+      "driverId": "15000000-0000-4000-8000-000000000002",
+      "state": "draft",
+      "startedAt": "2026-09-23T10:00:00.000Z",
+      "owner": {
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "generation": 1
+      },
+      "firstPlanId": "15000000-0000-4000-8000-000000000004",
+      "firstForecastId": "15000000-0000-4000-8000-000000000008",
+      "firstWorkloadId": "15000000-0000-4000-8000-000000000009",
+      "currentActivity": null
+    }
   }
 ]

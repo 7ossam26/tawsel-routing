@@ -190,8 +190,8 @@ export class IndependentIntakeService {
           await tx.query(`INSERT INTO tawsel.task_intake_events
             (tenant_id,task_id,event_id,event_type,revision,source_id,action_id) VALUES ($1,$2,$3,'task.independentCreated',1,$4,$5)`,
           [owner.tenantId, taskId, randomUUID(), owner.accountId, command.actionId]);
-          const task = taskFrom((await loadTask(tx, owner.tenantId, taskId))!);
           await enqueuePlanning(tx, owner.tenantId, owner.driverId, owner.accountId, command.actionId);
+          const task = taskFrom((await loadTask(tx, owner.tenantId, taskId))!);
           return { status: 'accepted' as const, response: { status: 201, body: { task } }, summary: { taskId, revision: 1 },
             audit: { taskId, fields: Object.keys(input).sort() }, resourceVersions: { resourceRevision: 1 }, intents: [] };
         },
@@ -225,8 +225,8 @@ export class IndependentIntakeService {
           await tx.query(`INSERT INTO tawsel.task_intake_events
             (tenant_id,task_id,event_id,event_type,revision,source_id,action_id) VALUES ($1,$2,$3,'task.independentRevised',$4,$5,$6)`,
           [owner.tenantId, input.taskId, randomUUID(), next, owner.accountId, command.actionId]);
-          const task = taskFrom((await loadTask(tx, owner.tenantId, input.taskId))!);
           await enqueuePlanning(tx, owner.tenantId, owner.driverId, owner.accountId, command.actionId);
+          const task = taskFrom((await loadTask(tx, owner.tenantId, input.taskId))!);
           return { status: 'accepted' as const, response: { status: 200, body: { task } }, summary: { taskId: input.taskId, revision: next },
             audit: { taskId: input.taskId, revision: next, fields: Object.keys(input).sort() }, resourceVersions: { resourceRevision: next }, intents: [] };
         },

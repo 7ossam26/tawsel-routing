@@ -1,5 +1,7 @@
 # Canonical foundation examples
 
+P15 `p15-*` examples define readiness, start command/result, current workday/round, accepted/rejected/pending start status, and invalid caller sync flags/local drafts. The HTTP demo records actual equivalents in `.local/phase-15-demo.json`; canonical examples are schema fixtures. See [start contract and queue limits](../../docs/round-start.md).
+
 P14 `p14-*` examples cover a ready route, an unassigned urgent exception, complete manual order and select-first command. Negative examples reject fake road/finish estimates, partial-as-ready, missing policy approval and duplicate manual IDs. Examples are canonical contract data; behavioral PostgreSQL/HTTP evidence is separate in [P14 evidence](../../docs/phase-14-evidence.md).
 
 P13 `p13-*` examples cover explicit planning settings, revisioned snapshots/commands, durable job status, partial candidate forecasts and source-scoped draft notice. Invalid examples reject invented GPS provenance, missing attempt identity, false active/policy claims, invalid revisions/statuses and impossible running/completed status fields. These are canonical data examples; PostgreSQL/HTTP/process acceptance evidence is in [Phase 13](../../docs/phase-13-evidence.md).

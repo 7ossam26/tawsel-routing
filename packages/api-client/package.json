@@ -12,7 +12,8 @@
     "README.md",
     "src/intake.ts",
     "src/locations.ts",
-    "src/planning.ts"
+    "src/planning.ts",
+    "src/rounds.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

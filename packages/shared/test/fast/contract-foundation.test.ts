@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -100,7 +100,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
       || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
       || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
-      || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
+      || (entry.ownerPhase === 15 && entry.family === 'execution') || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
       || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
   });
@@ -116,7 +116,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     duplicate.catalog.operations.push(duplicate.catalog.operations[0]);
     expect(() => checkCatalog(duplicate, ajv)).toThrow('duplicate operation ID');
     const invented = structuredClone(bundle);
-    invented.api.paths = { '/test-only-mutation': { post: { operationId: 'round.start' } } };
+    invented.api.paths = { '/test-only-mutation': { post: { operationId: 'round.end' } } };
     expect(() => checkCatalog(invented, ajv)).toThrow('Unimplemented operation exposed');
   });
 
@@ -141,7 +141,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     for (const [path, content] of first) expect(await readFile(resolve(root, path), 'utf8'), path).toBe(content);
     const client = first.get('packages/api-client/src/schema.d.ts')!;
     expect(client).not.toMatch(/from ["'](?:@tawsel\/(?:domain|shared)|.*apps\/api)/);
-    expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores validated ready/partial and explicit manual revisions; no active round is started.');
+    expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references.');
     expect(first.get('docs/reference/public-contract.md')).toContain('later execution and signed event delivery remain unavailable/unimplemented.');
   });
 });

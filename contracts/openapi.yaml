@@ -2,10 +2,9 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, locations and durable planning
   version: 0.1.0
-  description: P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable
-    planning are locally implemented. Planning stores provider candidate drafts and forecasts, without
-    route-policy approval or round start. Live private Nominatim and Engine evidence remains unavailable.
-    Later execution and signed delivery remain designed. No production or real ERP compatibility claim.
+  description: P07–P15 locally implemented identity, intake, locations, validated planning and online
+    authoritative round start. Provider, browser and PostgreSQL evidence are distinguished in phase ledgers.
+    Later execution and signed delivery remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -2030,6 +2029,156 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/IntakeError"
+  /api/v1/rounds/readiness:
+    post:
+      operationId: round.prepareStart
+      summary: round.prepareStart
+      tags:
+        - Round start
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - &a15
+          name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoundReadinessRequest"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundReadiness"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+  /api/v1/rounds/start:
+    post:
+      operationId: round.start
+      summary: round.start
+      tags:
+        - Round start
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - *a15
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoundStartCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundStartActionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundStartActionResult"
+  /api/v1/rounds/current:
+    get:
+      operationId: round.getCurrent
+      summary: round.getCurrent
+      tags:
+        - Round start
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - *a15
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundCurrent"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+  /api/v1/rounds/actions/{actionId}:
+    get:
+      operationId: round.getStartResult
+      summary: round.getStartResult
+      tags:
+        - Round start
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - *a15
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundActionStatus"
+        "202":
+          description: Unknown or uncommitted action; keep the original action pending.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoundActionStatus"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
 components:
   schemas:
     Uuid:
@@ -2332,6 +2481,28 @@ components:
       $ref: ./planning.schema.json#/$defs/ManualResult
     PlanningContinuation:
       $ref: ./planning.schema.json#/$defs/Continuation
+    RoundReadinessRequest:
+      $ref: ./round-start.schema.json#/$defs/ReadinessRequest
+    RoundReadiness:
+      $ref: ./round-start.schema.json#/$defs/Readiness
+    RoundStart:
+      $ref: ./round-start.schema.json#/$defs/Start
+    RoundWorkday:
+      $ref: ./round-start.schema.json#/$defs/Workday
+    RoundRound:
+      $ref: ./round-start.schema.json#/$defs/Round
+    RoundCurrent:
+      $ref: ./round-start.schema.json#/$defs/Current
+    RoundStartResult:
+      $ref: ./round-start.schema.json#/$defs/StartResult
+    RoundStartCommand:
+      $ref: ./round-start.schema.json#/$defs/StartCommand
+    RoundActionStatus:
+      $ref: ./round-start.schema.json#/$defs/ActionStatus
+    RoundStartedEvent:
+      $ref: ./round-start.schema.json#/$defs/StartedEvent
+    RoundStartActionResult:
+      $ref: ./round-start.schema.json#/$defs/StartActionResult
   securitySchemes:
     companySession:
       type: apiKey
@@ -2366,3 +2537,5 @@ tags:
     description: Authenticated application profile metadata; provider routing remains internal.
   - name: Planning
     description: Durable asynchronous candidates and preserved forecasts; no round activation.
+  - name: Round start
+    description: Online readiness, authoritative start, current workday/round and start action recovery.

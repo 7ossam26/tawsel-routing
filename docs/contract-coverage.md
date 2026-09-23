@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P14 session/context, provisioning, intake, locations, routing metadata and durable planning are implemented locally; each row records its actual lifecycle.** Later execution/route-policy operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P15 session/context, provisioning, intake, locations, routing metadata, durable planning and online round start are implemented locally; each row records its actual lifecycle.** Later current/arrival/outcome/takeover operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -10,7 +10,7 @@ P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource
 
 P12 verifies authenticated profile metadata and internal OSRM route/table plus VROOM candidate adapters against controlled HTTP fixtures. Canonical routing schemas/types and [boundary evidence](phase-12-evidence.md) distinguish complete/partial/error, units and service estimates. Live Engine unavailable; jobs/publication/urgency remain P13/P14.
 
-P13 now verifies durable planning/status/history APIs, atomic intake/pin triggers, fenced worker recovery and immutable candidate/forecast/workload storage. plan.revisionPublished is a source-scoped draft identity intent, not an active round or delivered ERP fact. [Runbook](planning-jobs.md) and [evidence](phase-13-evidence.md) identify controlled providers and actual PostgreSQL/HTTP/process proof. P14 now verifies grouped urgent/current policy, complete validation and revisioned manual fallback; start/baseline remains P15. See [P14 policy](route-policy.md) and [evidence](phase-14-evidence.md).
+P13 now verifies durable planning/status/history APIs, atomic intake/pin triggers, fenced worker recovery and immutable candidate/forecast/workload storage. plan.revisionPublished is a source-scoped draft identity intent, not an active round or delivered ERP fact. [Runbook](planning-jobs.md) and [evidence](phase-13-evidence.md) identify controlled providers and actual PostgreSQL/HTTP/process proof. P14 now verifies grouped urgent/current policy, complete validation and revisioned manual fallback; P15 now verifies online start, first baseline, departure/admission guards and same-action recovery. See [start contract/demo](round-start.md) and [P15 evidence](phase-15-evidence.md). See [P14 policy](route-policy.md) and [evidence](phase-14-evidence.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
@@ -131,7 +131,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `round.start` | http-command | designed | [P15](phases/15-round-start-departure-lock.md) | execution.own | Online synchronized start: one round/day/device, departure lock and first forecast. |
+| `round.start` | http-command | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 | `current.selectHeading` | http-command | designed | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicitly select/change eligible target; protect arrived work until resolved. |
 | `current.recordArrival` | http-command | designed | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit arrival and physical-origin evidence; never inferred from outcome. |
 | `outcome.recordFull` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Full result with exact permitted collection and coherent progress/outbox. |
@@ -147,7 +147,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `outcome.correct` | http-command | designed | [P23](phases/23-bounded-driver-corrections.md) | correction.own | Driver appends correction in open day before dependent receipt/redispatch. |
 | `evidence.adoptCompatible` | http-command | designed | [P23](phases/23-bounded-driver-corrections.md) | correction.own | Current owner adopts eligible former-device evidence under correction bounds. |
 | `task.urgencyChanged` | event | verified-local | [P10](phases/10-b2b-intake-admission.md) | recipient-scope | Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25. |
-| `round.started` | event | designed | [P15](phases/15-round-start-departure-lock.md) | recipient-scope | Accepted start/departure/owner and baseline forecast. |
+| `round.started` | event | verified-local | [P15](phases/15-round-start-departure-lock.md) | recipient-scope | Accepted start/departure/owner and baseline forecast. |
 | `current.headingSelected` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
 | `current.arrivalRecorded` | event | designed | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |
 | `outcome.recorded` | event | designed | [P17](phases/17-outcomes-quantities-collection.md) | recipient-scope | Full/partial/refused/no-answer with quantity/collection transition. |
@@ -157,6 +157,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `workday.ended` | event | designed | [P19](phases/19-workday-closure-carryover.md) | recipient-scope | Explicit day closure/carryover; not automatic midnight. |
 | `device.executionTransferred` | event | designed | [P20](phases/20-device-takeover-evidence.md) | recipient-scope | New device generation within same driver/round. |
 | `outcome.corrected` | event | designed | [P23](phases/23-bounded-driver-corrections.md) | recipient-scope | Append-only correction; consumers keep original transition identity. |
+| `round.prepareStart` | http-command | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work. |
+| `round.getCurrent` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
+| `round.getStartResult` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 
 ### returns
 

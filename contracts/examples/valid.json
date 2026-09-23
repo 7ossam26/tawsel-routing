@@ -2958,5 +2958,229 @@
         }
       }
     }
+  },
+  {
+    "id": "p15-readiness",
+    "schema": "round-start.schema.json#/$defs/Readiness",
+    "valid": true,
+    "data": {
+      "readinessId": "15000000-0000-4000-8000-000000000001",
+      "driverId": "15000000-0000-4000-8000-000000000002",
+      "deviceId": "15000000-0000-4000-8000-000000000003",
+      "planId": "15000000-0000-4000-8000-000000000004",
+      "planRevision": 1,
+      "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "verifiedActionIds": [],
+      "issuedAt": "2026-09-23T10:00:00.000Z",
+      "expiresAt": "2026-09-23T10:01:00.000Z"
+    }
+  },
+  {
+    "id": "p15-start",
+    "schema": "round-start.schema.json#/$defs/StartCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "round.start",
+      "actionId": "15000000-0000-4000-8000-000000000010",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "readinessId": "15000000-0000-4000-8000-000000000001",
+        "planId": "15000000-0000-4000-8000-000000000004",
+        "expectedPlanRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p15-current",
+    "schema": "round-start.schema.json#/$defs/Current",
+    "valid": true,
+    "data": {
+      "workday": {
+        "workdayId": "15000000-0000-4000-8000-000000000005",
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "state": "open",
+        "openedAt": "2026-09-23T10:00:00.000Z"
+      },
+      "round": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "workdayId": "15000000-0000-4000-8000-000000000005",
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "state": "active",
+        "startedAt": "2026-09-23T10:00:00.000Z",
+        "owner": {
+          "accountId": "15000000-0000-4000-8000-000000000007",
+          "deviceId": "15000000-0000-4000-8000-000000000003",
+          "generation": 1
+        },
+        "firstPlanId": "15000000-0000-4000-8000-000000000004",
+        "firstForecastId": "15000000-0000-4000-8000-000000000008",
+        "firstWorkloadId": "15000000-0000-4000-8000-000000000009",
+        "currentActivity": null
+      }
+    }
+  },
+  {
+    "id": "p15-start-result",
+    "schema": "round-start.schema.json#/$defs/StartResult",
+    "valid": true,
+    "data": {
+      "disposition": "started",
+      "workday": {
+        "workdayId": "15000000-0000-4000-8000-000000000005",
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "state": "open",
+        "openedAt": "2026-09-23T10:00:00.000Z"
+      },
+      "round": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "workdayId": "15000000-0000-4000-8000-000000000005",
+        "driverId": "15000000-0000-4000-8000-000000000002",
+        "state": "active",
+        "startedAt": "2026-09-23T10:00:00.000Z",
+        "owner": {
+          "accountId": "15000000-0000-4000-8000-000000000007",
+          "deviceId": "15000000-0000-4000-8000-000000000003",
+          "generation": 1
+        },
+        "firstPlanId": "15000000-0000-4000-8000-000000000004",
+        "firstForecastId": "15000000-0000-4000-8000-000000000008",
+        "firstWorkloadId": "15000000-0000-4000-8000-000000000009",
+        "currentActivity": null
+      }
+    }
+  },
+  {
+    "id": "p15-action-accepted",
+    "schema": "round-start.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "15000000-0000-4000-8000-000000000010",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "schemaVersion": "1.0.0",
+          "receiptId": "15000000-0000-4000-8000-000000000012",
+          "actionId": "15000000-0000-4000-8000-000000000010",
+          "evidenceStatus": "received",
+          "businessStatus": "accepted",
+          "receivedAt": "2026-09-23T10:00:00.000Z",
+          "committedAt": "2026-09-23T10:00:00.000Z",
+          "resourceVersions": {
+            "deviceGeneration": 1
+          }
+        },
+        "operationId": "round.start",
+        "retention": "full",
+        "summary": {
+          "driverId": "15000000-0000-4000-8000-000000000002",
+          "roundId": "15000000-0000-4000-8000-000000000006",
+          "workdayId": "15000000-0000-4000-8000-000000000005"
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "disposition": "started",
+            "workday": {
+              "workdayId": "15000000-0000-4000-8000-000000000005",
+              "driverId": "15000000-0000-4000-8000-000000000002",
+              "state": "open",
+              "openedAt": "2026-09-23T10:00:00.000Z"
+            },
+            "round": {
+              "roundId": "15000000-0000-4000-8000-000000000006",
+              "workdayId": "15000000-0000-4000-8000-000000000005",
+              "driverId": "15000000-0000-4000-8000-000000000002",
+              "state": "active",
+              "startedAt": "2026-09-23T10:00:00.000Z",
+              "owner": {
+                "accountId": "15000000-0000-4000-8000-000000000007",
+                "deviceId": "15000000-0000-4000-8000-000000000003",
+                "generation": 1
+              },
+              "firstPlanId": "15000000-0000-4000-8000-000000000004",
+              "firstForecastId": "15000000-0000-4000-8000-000000000008",
+              "firstWorkloadId": "15000000-0000-4000-8000-000000000009",
+              "currentActivity": null
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p15-action-pending",
+    "schema": "round-start.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "15000000-0000-4000-8000-000000000013",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "p15-action-rejected",
+    "schema": "round-start.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "15000000-0000-4000-8000-000000000010",
+      "status": "rejected",
+      "result": {
+        "receipt": {
+          "schemaVersion": "1.0.0",
+          "receiptId": "15000000-0000-4000-8000-000000000012",
+          "actionId": "15000000-0000-4000-8000-000000000010",
+          "evidenceStatus": "received",
+          "businessStatus": "rejected",
+          "receivedAt": "2026-09-23T10:00:00.000Z",
+          "problem": {
+            "type": "https://schemas.tawsel.invalid/problems/sync-required",
+            "title": "Round start rejected",
+            "code": "sync_required",
+            "status": 409,
+            "detail": "Refresh server readiness before starting.",
+            "actionId": "15000000-0000-4000-8000-000000000010",
+            "correlationId": "15000000-0000-4000-8000-000000000014",
+            "retryable": false
+          }
+        },
+        "operationId": "round.start",
+        "retention": "full",
+        "summary": {
+          "driverId": "15000000-0000-4000-8000-000000000002",
+          "code": "sync_required"
+        },
+        "response": {
+          "status": 409,
+          "body": {
+            "type": "https://schemas.tawsel.invalid/problems/sync-required",
+            "title": "Round start rejected",
+            "code": "sync_required",
+            "status": 409,
+            "detail": "Refresh server readiness before starting.",
+            "actionId": "15000000-0000-4000-8000-000000000010",
+            "correlationId": "15000000-0000-4000-8000-000000000014",
+            "retryable": false
+          }
+        }
+      }
+    }
   }
 ]

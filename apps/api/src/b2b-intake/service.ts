@@ -8,6 +8,7 @@ import { withTransaction, type Transaction } from '../db/transaction.js';
 import { authenticateService, identityView, type ServiceBinding } from '../provisioning/credentials.js';
 import { record } from '../provisioning/service.js';
 import { enqueuePlanning } from '../planning/queue.js';
+import { DepartureCapacityError } from '../rounds/departure.js';
 import { SourceError, validateCommand, type Operation, type Snapshot, type Task, type AssignmentReference } from './schema.js';
 
 const policy = (capability: 'intake.prepare' | 'assignment.manage'): ResourcePolicy => [{ capability, ownership: 'assigned-branches' }];
@@ -169,8 +170,6 @@ async function assignmentCommand(tx:Transaction,b:ServiceBinding,access:AccessSe
     [b.tenantId,row.dispatch_cycle_id,item.assignmentRevision,digest,receiving?'held':'prepared',target.driver_id,p.driverExternalId]);
     await reserve(tx,b,(await load(tx,b,item.externalId))!);
     const task=view((await load(tx,b,item.externalId))!);
-    await tx.query(`INSERT INTO tawsel.b2b_assignment_history (tenant_id,dispatch_cycle_id,assignment_revision,state,source_id,action_id)
-      VALUES ($1,$2,$3,$4::jsonb,$5,$6)`,[b.tenantId,row.dispatch_cycle_id,item.assignmentRevision,canonicalJson(task),b.integrationId,command.actionId]);
     changed.push(task);results.push(task);
   }
   await ensureCapacity(tx,b,[target.driver_id]);
@@ -178,6 +177,8 @@ async function assignmentCommand(tx:Transaction,b:ServiceBinding,access:AccessSe
   // Return command-time state after replan intent has been recorded.
   const tasks:Task[]=[];
   for(const task of results) tasks.push(view((await load(tx,b,task.externalId))!));
+  for(const task of tasks.filter(t=>changed.some(c=>c.taskId===t.taskId)))await tx.query(`INSERT INTO tawsel.b2b_assignment_history (tenant_id,dispatch_cycle_id,assignment_revision,state,source_id,action_id)
+    VALUES ($1,$2,$3,$4::jsonb,$5,$6)`,[b.tenantId,task.dispatchCycleId,task.assignmentRevision,canonicalJson(task),b.integrationId,command.actionId]);
   const decision=accepted(b,command,tasks,receiving?'assignment.received':'assignment.prepared',false);
   if(decision.status==='accepted') decision.intents=changed.map(t=>({eventId:randomUUID(),recipientId:b.integrationId,eventType:receiving?'assignment.received':'assignment.prepared',payloadVersion:'1.0.0',payload:{actionId:command.actionId,task:tasks.find(v=>v.taskId===t.taskId)!}}));
   decision.audit.changed=changed.length>0;
@@ -255,7 +256,7 @@ export class B2bIntakeService {
               if(operation==='assignment.withdraw' || operation==='assignment.reassignBeforeDeparture') return await changeAssignment(tx,b,access,command);
               if(operation==='intake.setUrgencyBeforeDeparture') return await urgency(tx,b,access,command);
               throw new Error('Operation not implemented');
-            } catch(error) { if(error instanceof SourceError) return rejection(command,error); throw error; }
+            } catch(error) { if(error instanceof SourceError) return rejection(command,error); if(error instanceof DepartureCapacityError)return rejection(command,new SourceError(error.code,error.statusCode,error.message)); throw error; }
           },
           async writeProgress() { /* No execution outcome is implied by intake. */ },
           ...this.observe

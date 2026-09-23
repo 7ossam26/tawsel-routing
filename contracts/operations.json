@@ -536,10 +536,12 @@
       "id": "round.start",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 15,
       "capability": "execution.own",
-      "description": "Online synchronized start: one round/day/device, departure lock and first forecast."
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20.",
+      "method": "POST",
+      "path": "/api/v1/rounds/start"
     },
     {
       "id": "current.selectHeading",
@@ -1213,7 +1215,7 @@
       "id": "round.started",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 15,
       "capability": "recipient-scope",
       "description": "Accepted start/departure/owner and baseline forecast."
@@ -1432,6 +1434,39 @@
       "description": "Scoped focused location review list.",
       "method": "GET",
       "path": "/api/v1/locations"
+    },
+    {
+      "id": "round.prepareStart",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/rounds/readiness",
+      "description": "Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work."
+    },
+    {
+      "id": "round.getCurrent",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/rounds/current",
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20."
+    },
+    {
+      "id": "round.getStartResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/rounds/actions/{actionId}",
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20."
     }
   ],
   "authorizationFoundation": {

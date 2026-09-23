@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { payloadHash } from '../commands/json.js';
 import type { Transaction } from '../db/transaction.js';
 import type { Input, Member, StateRow, JobRow, Job } from './models.js';
+import { admitActiveWork } from '../rounds/departure.js';
 
 /** Caller holds tenant access/revocation lock, then P05 driver invariant lock.
  * Every future target/manual/outcome writer must take that driver lock, advance
@@ -70,7 +71,17 @@ export async function enqueuePlanning(tx:Transaction,tenantId:string,driverId:st
  if(prior?.status!=='linked'){
   state.input_revision=(await tx.query<{input_revision:string}>(`UPDATE tawsel.planning_states SET input_revision=input_revision+1 WHERE tenant_id=$1 AND driver_id=$2 RETURNING input_revision`,[tenantId,driverId])).rows[0]!.input_revision;
  }
- const input=await snapshot(tx,state),hash=fingerprint(input);
+ let input=await snapshot(tx,state);
+ if(await admitActiveWork(tx,input,sourceId,actionId)){
+  // Newly admitted work may become available after the original preview time.
+  // Advance the next estimate's anchor, never the immutable first forecast.
+  const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
+  if(state.settings&&Date.parse(state.settings.plannedStartAt)<now.getTime())state.settings={...state.settings,plannedStartAt:now.toISOString()};
+  const updated=(await tx.query<StateRow>('UPDATE tawsel.planning_states SET execution_revision=execution_revision+1,settings=$3,settings_revision=settings_revision+1 WHERE tenant_id=$1 AND driver_id=$2 RETURNING *',[tenantId,driverId,state.settings])).rows[0]!;
+  state.execution_revision=updated.execution_revision;state.settings_revision=updated.settings_revision;
+  input=await snapshot(tx,state);
+ }
+ const hash=fingerprint(input);
  const existing=(await tx.query<JobRow>('SELECT * FROM tawsel.planning_jobs WHERE tenant_id=$1 AND driver_id=$2 AND fingerprint=$3',[tenantId,driverId,hash])).rows[0];
  let job=existing;
  if(!job){

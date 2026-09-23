@@ -69,7 +69,10 @@
     "planning:worker:once": "npm run planning:worker -- --once",
     "planning:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/planning-demo.ts",
     "planning:policy:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/route-policy-demo.ts",
-    "test:erp:planning": "node --import tsx tests/erp-conformance/planning.ts"
+    "test:erp:planning": "node --import tsx tests/erp-conformance/planning.ts",
+    "test:rounds": "npm run build -w @tawsel/shared && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run --project integration apps/api/test/integration/start-assignment-race.test.ts apps/api/test/integration/round-start-http.test.ts",
+    "rounds:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/round-start-demo.ts",
+    "test:erp:rounds": "node --import tsx tests/erp-conformance/rounds.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

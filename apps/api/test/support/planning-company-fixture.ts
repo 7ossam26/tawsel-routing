@@ -11,7 +11,7 @@ import type { createTestDatabase } from './database.js';
 export async function companyPlanningFixture(db:Awaited<ReturnType<typeof createTestDatabase>>) {
  const app=buildApp(createDatabasePool(db.config),undefined,{issuer:'https://issuer.fixture.invalid',operatorToken});await app.ready();
  try{
-  const source=await bindSource(app,['policy-driver']),bootstrap=structuredClone(source.bootstrapCommand);
+  const source=await bindSource(app,['policy-driver','policy-staff','policy-second']),bootstrap=structuredClone(source.bootstrapCommand);
   const checked=async(p:Promise<{statusCode:number;body:string;json():unknown}>)=>{const r=await p;if(r.statusCode!==200)throw new Error(r.body);return r;};
   bootstrap.actionId=randomUUID();bootstrap.payload.sourceRevision=2;bootstrap.payload.intakeCapabilities=['intake.prepare','assignment.manage'];await checked(send(app,operatorToken,bootstrap));
   await checked(send(app,source.token,source.command('branch.provision',{externalId:'branch',sourceRevision:1,name:'فرع',enabled:true,location:null})));
@@ -23,7 +23,7 @@ export async function companyPlanningFixture(db:Awaited<ReturnType<typeof create
   const principal={kind:'account' as const,issuer:'https://issuer.fixture.invalid',subject:'policy-driver'},service=new PlanningService(db.pool);
   const post=(op:string,payload:object)=>checked(app.inject({method:'POST',url:`/api/v1/intake/commands/${op}`,headers:{authorization:`Bearer ${source.token}`},payload:source.command(op,payload)}));
   const planCommand=(op:string,payload:object)=>{const c=command(op,{driverId,...payload});c.context={kind:'device',tenantId:source.tenantId,accountId,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1};return c;};
-  return {tenantId:source.tenantId,driverId,service,principal,planCommand,async close(){await app.close();},async save(){return service.command(principal,planCommand('planning.saveDraft',{expectedSettingsRevision:0,settings}));},
+  return {tenantId:source.tenantId,driverId,accountId,source,app,post,service,principal,planCommand,async close(){await app.close();},async save(){return service.command(principal,planCommand('planning.saveDraft',{expectedSettingsRevision:0,settings}));},
    async task(name:string,priority:'urgent'|'ordinary',state:'held'|'prepared'='held',earliestAt?:string){
     const item={externalId:name,sourceDispatchCycleId:'cycle',expectedSourceRevision:1,expectedAssignmentRevision:0,assignmentRevision:1};
     const response=await post('intake.submitSnapshot',{externalId:name,sourceDispatchCycleId:'cycle',sourceRevision:1,expectedSourceRevision:0,sourceBranchExternalId:'branch',recipientName:'عميل',recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.05,longitude:31.24}},splittingAllowed:false,allocation:'exact-outstanding-per-unit',lines:[{sourceLineId:'line',description:'طرد',quantity:1,unitDue:{amountMinor:100,currency:'EGP',exponent:2}}],shippingDue:{amountMinor:0,currency:'EGP',exponent:2},totalDue:{amountMinor:100,currency:'EGP',exponent:2},priority,...(earliestAt?{earliestAt}:{})});

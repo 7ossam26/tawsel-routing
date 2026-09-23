@@ -1,5 +1,7 @@
 # Tawsel — current requirements and phase coverage
 
+P15 evidence, 23 September 2026: [ordered PostgreSQL/HTTP checkpoints](../phase-15-evidence.md) and [start contract/demo](../round-start.md) cover R-08 atomicity/idempotency, R-11 start-versus-withdrawal, R-12 departure/active-admission authority, R-13 capacity including branch endpoint, R-19 driver pin versus staff lock, R-25 ERP urgency lock, R-27 online readiness/one round/response recovery, R-28 ready/manual publication, R-53 immutable baseline, R-58 real independent-connection tests and R-65 ordered handoff. Full journal gate P34, takeover P20 and connected UI P28 remain future.
+
 P10 evidence, 22 September 2026: [ordered checks](../phase-10-evidence.md) cover R-02 source authority, R-08 atomic receipt/rejection and durable intent, R-09 exact immutable snapshots/lines, R-10 upcoming versus held, R-11 predeparture edits/removal/reassignment, R-13 per-driver remaining capacity including branch slots, R-14 same-address independence, R-18 exact outstanding allocations and explicit prepaid zero, R-50 source pending/result recovery (actual ERP outbox remains P27), R-58 real PostgreSQL races/faults, R-64 portable public client/mapping/demo and R-65 ordered handoff. P15 start races, P17 outcomes, P25 event transport and P27 native source remain future work.
 
 

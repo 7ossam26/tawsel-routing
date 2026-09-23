@@ -2,13 +2,13 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P14 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions; no active round is started. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P15 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning and online round start are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work; P15 exposes only round.getStartResult for start actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -736,7 +736,11 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
     "result_unknown",
     "unsupported_schema_version",
     "replay_expired",
-    "correction_dependency_conflict"
+    "correction_dependency_conflict",
+    "sync_required",
+    "sync_incomplete",
+    "plan_not_startable",
+    "round_already_active"
   ]
 }
 ```
@@ -7820,6 +7824,519 @@ An explicit complete eligible manual sequence, or a first suggestion followed by
 }
 ```
 
+### RoundReadinessRequest
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/ReadinessRequest)
+
+Online preparation verifies each relevant action is durably accepted in the authenticated account, and reads fresh authorized planning input. P34 supplies the complete local journal barrier; omitted unsent actions cannot be discovered by the server. No alreadySynced flag.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "deviceId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedPlanRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "relevantActionIds": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Uuid"
+      },
+      "uniqueItems": true,
+      "maxItems": 1000
+    }
+  },
+  "required": [
+    "driverId",
+    "deviceId",
+    "planId",
+    "expectedPlanRevision",
+    "relevantActionIds"
+  ],
+  "additionalProperties": false,
+  "description": "Online preparation verifies each relevant action is durably accepted in the authenticated account, and reads fresh authorized planning input. P34 supplies the complete local journal barrier; omitted unsent actions cannot be discovered by the server. No alreadySynced flag."
+}
+```
+
+### RoundReadiness
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/Readiness)
+
+Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "readinessId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "deviceId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "planRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "inputFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "verifiedActionIds": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Uuid"
+      },
+      "uniqueItems": true
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "readinessId",
+    "driverId",
+    "deviceId",
+    "planId",
+    "planRevision",
+    "inputFingerprint",
+    "verifiedActionIds",
+    "issuedAt",
+    "expiresAt"
+  ],
+  "additionalProperties": false,
+  "description": "Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work."
+}
+```
+
+### RoundStart
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/Start)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "readinessId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedPlanRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "driverId",
+    "readinessId",
+    "planId",
+    "expectedPlanRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoundWorkday
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/Workday)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "state": {
+      "const": "open"
+    },
+    "openedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "workdayId",
+    "driverId",
+    "state",
+    "openedAt"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoundRound
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/Round)
+
+Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "state": {
+      "const": "active"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "deviceId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "accountId",
+        "deviceId",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "firstPlanId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstForecastId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstWorkloadId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "currentActivity": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "roundId",
+    "workdayId",
+    "driverId",
+    "state",
+    "startedAt",
+    "owner",
+    "firstPlanId",
+    "firstForecastId",
+    "firstWorkloadId",
+    "currentActivity"
+  ],
+  "additionalProperties": false,
+  "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20."
+}
+```
+
+### RoundCurrent
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/Current)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "workday": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Workday"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "round": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Round"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "workday",
+    "round"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoundStartResult
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/StartResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "disposition": {
+      "enum": [
+        "started",
+        "already-active"
+      ]
+    },
+    "workday": {
+      "$ref": "#/$defs/Workday"
+    },
+    "round": {
+      "$ref": "#/$defs/Round"
+    }
+  },
+  "required": [
+    "disposition",
+    "workday",
+    "round"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoundStartCommand
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/StartCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "round.start"
+        },
+        "payload": {
+          "$ref": "#/$defs/Start"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### RoundActionStatus
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "#/$defs/StartActionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### RoundStartedEvent
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/StartedEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "firstPlanId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstForecastId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstWorkloadId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskIds": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Uuid"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "roundId",
+    "workdayId",
+    "driverId",
+    "startedAt",
+    "firstPlanId",
+    "firstForecastId",
+    "firstWorkloadId",
+    "taskIds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### RoundStartActionResult
+
+[Canonical definition](../../contracts/round-start.schema.json#/$defs/StartActionResult)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-result.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "round.start"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "receipt": {
+                "type": "object",
+                "properties": {
+                  "businessStatus": {
+                    "const": "accepted"
+                  }
+                },
+                "required": [
+                  "businessStatus"
+                ]
+              }
+            },
+            "required": [
+              "receipt"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "$ref": "#/$defs/StartResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -7946,6 +8463,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p14-manual | planning.schema.json#/$defs/Plan | valid foundation shape |
 | p14-manual-order | planning.schema.json#/$defs/ManualOrderCommand | valid foundation shape |
 | p14-manual-first | planning.schema.json#/$defs/ManualOrderCommand | valid foundation shape |
+| p15-readiness | round-start.schema.json#/$defs/Readiness | valid foundation shape |
+| p15-start | round-start.schema.json#/$defs/StartCommand | valid foundation shape |
+| p15-current | round-start.schema.json#/$defs/Current | valid foundation shape |
+| p15-start-result | round-start.schema.json#/$defs/StartResult | valid foundation shape |
+| p15-action-accepted | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p15-action-pending | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p15-action-rejected | round-start.schema.json#/$defs/ActionStatus | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -8029,5 +8553,7 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p14-manual-eta | planning.schema.json#/$defs/Plan | invalid (type) |
 | p14-no-policy | planning.schema.json#/$defs/Plan | invalid (const) |
 | p14-duplicate-manual | planning.schema.json#/$defs/ManualOrderCommand | invalid (uniqueItems) |
+| p15-no-client-sync-flag | round-start.schema.json#/$defs/StartCommand | invalid (additionalProperties) |
+| p15-local-draft-not-active | round-start.schema.json#/$defs/Round | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

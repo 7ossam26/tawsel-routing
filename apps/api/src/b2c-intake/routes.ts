@@ -9,6 +9,7 @@ import { AuthError, Sessions } from '../auth/service.js';
 import { AccessDenied, LifecycleDenied } from '../access/service.js';
 import { IdempotencyConflict } from '../commands/kernel.js';
 import { IndependentIntakeService, IntakeError } from './service.js';
+import { DepartureCapacityError } from '../rounds/departure.js';
 
 export type PersonalSessionAuthenticator = <T>(request: FastifyRequest, work: (principal: AuthenticatedPrincipal) => Promise<T>) => Promise<T>;
 
@@ -24,7 +25,7 @@ export async function b2cIntakeRoutes(app: FastifyInstance, pool: Pool, config: 
   app.setErrorHandler((error, _request, reply) => {
     if (error instanceof IntakeError) return reply.status(error.statusCode).send({ error: { code: error.code, message: error.message, ...(error.fields ? { fields: error.fields } : {}) } });
     if (error instanceof AuthError) return reply.status(error.statusCode).send({ error: { code: error.code, message: error.message } });
-    if (error instanceof AccessDenied || error instanceof LifecycleDenied || error instanceof IdempotencyConflict) {
+    if (error instanceof AccessDenied || error instanceof LifecycleDenied || error instanceof IdempotencyConflict || error instanceof DepartureCapacityError) {
       return reply.status(error.statusCode).send({ error: { code: error.code, message: error.message } });
     }
     return reply.status(500).send({ error: { code: 'request_failed', message: 'تعذر إكمال الطلب.' } });

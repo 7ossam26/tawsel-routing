@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { createTestDatabase } from '../support/database.js';
 import { prepareAccessFixture, ids, principals } from '../support/access-fixture.js';
-import { intake, draft, providerFixture, command } from '../support/planning-fixture.js';
+import { intake, draft, providerFixture, command, settings } from '../support/planning-fixture.js';
 import { PlanningService } from '../../src/planning/service.js';
 import { IndependentIntakeService } from '../../src/b2c-intake/service.js';
 import { createDatabasePool } from '../../src/db/pool.js';
@@ -19,13 +19,29 @@ import { randomUUID } from 'node:crypto';
 import { readMigrations, migrate } from '../../src/db/migrate.js';
 import { withTransaction } from '../../src/db/transaction.js';
 import { executeCommandInTransaction, getCommandResult } from '../../src/commands/kernel.js';
+import { fingerprint, planningState, snapshot } from '../../src/planning/queue.js';
 
-test('P14 upgrade retains a real P13 draft and forecast without promoting historical policy evidence',async()=>{
+test('P14/P15 upgrade retains committed P13-shaped data without promoting historical policy evidence',async()=>{
  const db=await createTestDatabase(),directory=await mkdtemp(join(tmpdir(),'tawsel-p13-upgrade-')),url=pathToFileURL(directory+'/');
  const files=(await readMigrations()).slice(0,9).map(m=>m.name),provider=await providerFixture();
  try{
   for(const name of files)await copyFile(new URL(`../../../../db/migrations/${name}`,import.meta.url),new URL(name,url));
-  await prepareAccessFixture(db.pool,undefined,url);await intake(db.pool);await draft(db.pool);
+  await prepareAccessFixture(db.pool,undefined,url);
+  // A historical schema fixture must not invoke today's API handlers against
+  // a pre-P15 database. Seed the actual retained P13 shape under the real kernel.
+  const taskId=randomUUID(),legacyCommand=command('task.createIndependent',{});
+  await withTransaction(db.pool,tx=>executeCommandInTransaction(tx,{tenantId:ids.personalTenant,sourceId:ids.personalAccount,actorId:ids.personalAccount},legacyCommand,{
+   async writeDomain(){
+    await tx.query("INSERT INTO tawsel.b2c_tasks (tenant_id,task_id,driver_id,recipient_name,recipient_phone,recipient_phone_normalized) VALUES ($1,$2,$3,'P13 retained','01012345678','+201012345678')",[ids.personalTenant,taskId,ids.personalDriver]);
+    await tx.query("INSERT INTO tawsel.task_source_addresses (tenant_id,task_id,kind,latitude,longitude) VALUES ($1,$2,'confirmed-pin',30.05,31.24)",[ids.personalTenant,taskId]);
+    await planningState(tx,ids.personalTenant,ids.personalDriver);
+    await tx.query('UPDATE tawsel.planning_states SET settings=$3,settings_revision=1,input_revision=1 WHERE tenant_id=$1 AND driver_id=$2',[ids.personalTenant,ids.personalDriver,settings]);
+    const input=await snapshot(tx,await planningState(tx,ids.personalTenant,ids.personalDriver)),jobId=randomUUID();
+    await tx.query("INSERT INTO tawsel.planning_jobs (tenant_id,driver_id,job_id,source_id,action_id,fingerprint,input,status) VALUES ($1,$2,$3,$4,$5,$6,$7,'pending')",[ids.personalTenant,ids.personalDriver,jobId,ids.personalAccount,legacyCommand.actionId,fingerprint(input),input]);
+    await tx.query('UPDATE tawsel.planning_states SET latest_job_id=$3 WHERE tenant_id=$1 AND driver_id=$2',[ids.personalTenant,ids.personalDriver,jobId]);
+    return {status:'accepted',response:{status:200,body:{taskId}},summary:{taskId},audit:{historicalSchemaFixture:true},resourceVersions:{},intents:[]};
+   },async writeProgress(){}
+  }));
   const claim=(await claimPlanningJob(db.pool))!,candidate=await provider.engine.optimize(engineInput(claim));
   const planId=randomUUID(),forecastId=randomUUID(),workloadId=randomUUID(),member=claim.input.members[0]!;
   // Exact P13 storage shape, committed before either P14 migration exists.
@@ -37,7 +53,7 @@ test('P14 upgrade retains a real P13 draft and forecast without promoting histor
    await tx.query('UPDATE tawsel.planning_states SET current_plan_id=$1,next_plan_revision=2',[planId]);
   });
   const forecast=(await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows,members=(await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows;
-  expect(await migrate(db.pool)).toEqual(['0010_route_policy.sql','0011_manual_plans.sql']);
+  expect(await migrate(db.pool)).toEqual(['0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql']);
   expect((await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows).toEqual(forecast);expect((await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows).toEqual(members);
   const plan=(await new PlanningService(db.pool).plans(principals.personal,ids.personalDriver)).items[0]!;
   expect(plan).toMatchObject({planId,state:'draft',policyValidated:false,candidate,inputCurrent:true});expect(plan.routePolicy).toBeUndefined();expect(planningConforms('Plan',plan)).toBe(true);
@@ -182,7 +198,7 @@ test('P12 retained intake upgrades without losing command or task; legacy intent
    },async writeProgress(){}
   }));
   const original=(await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows;
-  expect(await migrate(db.pool)).toEqual(['0009_planning.sql','0010_route_policy.sql','0011_manual_plans.sql']);
+  expect(await migrate(db.pool)).toEqual(['0009_planning.sql','0010_route_policy.sql','0011_manual_plans.sql','0012_round_start.sql']);
   expect((await db.pool.query('SELECT status,job_id FROM tawsel.intake_replan_intents')).rows).toEqual([{status:'pending',job_id:null}]);
   expect(await materializeLegacyIntent(db.pool)).toBe(true);expect(await materializeLegacyIntent(db.pool)).toBe(false);
   expect((await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows).toEqual(original);

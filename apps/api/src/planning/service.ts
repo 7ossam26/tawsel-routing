@@ -55,6 +55,10 @@ export class PlanningService {
       return {status:'accepted',response:{status:200,body:result},summary:{planId:result.planId,driverId:p.driverId},audit:{driverId:p.driverId,planId:result.planId,manualRevision:result.manualRevision},resourceVersions:{planningInputRevision:result.inputRevision},intents:[]};
      }
      if(operation==='planning.saveDraft'){
+      const active=(await tx.query('SELECT round_id FROM tawsel.rounds WHERE tenant_id=$1 AND driver_id=$2 AND ended_at IS NULL',[input.tenantId,p.driverId])).rowCount;
+      // Changing active vehicle/endpoint requires a later execution transition
+      // that updates reserved branch capacity and the published route together.
+      if(active&&(p.settings.mode!==input.settings?.mode||canonicalJson(p.settings.endpoint)!==canonicalJson(input.settings?.endpoint)))throw new LifecycleDenied();
       if((input.accountKind==='company'&&p.settings.endpoint.kind==='fixed')||(input.accountKind==='personal'&&p.settings.endpoint.kind==='branch'))throw new PlanningError('validation_failed',400,'نقطة النهاية غير متاحة لهذا الحساب.');
       if(p.settings.endpoint.kind==='branch'){
        const branch=(await tx.query('SELECT branch_id FROM tawsel.branches WHERE tenant_id=$1 AND branch_id=$2 AND enabled',[input.tenantId,p.settings.endpoint.branchId])).rows[0];
