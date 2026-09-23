@@ -2409,6 +2409,282 @@ paths:
           description: Current scope or CSRF denied
         "409":
           description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+  /api/v1/outcomes/full:
+    post:
+      operationId: outcome.recordFull
+      summary: Record full outcome with exact collection
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutcomeFullCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+  /api/v1/outcomes/partial:
+    post:
+      operationId: outcome.recordPartial
+      summary: Record partial outcome with exact collection
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutcomePartialCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+  /api/v1/outcomes/refusal:
+    post:
+      operationId: outcome.recordRefusal
+      summary: Record refusal outcome with exact collection
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutcomeRefusalCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+  /api/v1/outcomes/no-answer:
+    post:
+      operationId: outcome.recordNoAnswer
+      summary: Record noanswer outcome with exact collection
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutcomeNoAnswerCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
+            stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionResult"
+  /api/v1/outcomes/rounds/{roundId}:
+    get:
+      operationId: outcome.getRound
+      summary: Effective own-round outcomes and exact reported progress
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeSnapshot"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+  /api/v1/outcomes/actions/{actionId}:
+    get:
+      operationId: outcome.getResult
+      summary: Recover retained outcome command by stable action ID
+      tags:
+        - Outcomes
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionStatus"
+        "202":
+          description: Unknown/uncommitted is pending, never acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutcomeActionStatus"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
 components:
   schemas:
     Uuid:
@@ -2769,6 +3045,46 @@ components:
       $ref: ./current-activity.schema.json#/$defs/HeadingEvent
     CurrentArrivalEvent:
       $ref: ./current-activity.schema.json#/$defs/ArrivalEvent
+    OutcomeMoney:
+      $ref: './outcomes.schema.json#/$defs/Money'
+    OutcomePiece:
+      $ref: './outcomes.schema.json#/$defs/Piece'
+    OutcomeFull:
+      $ref: './outcomes.schema.json#/$defs/Full'
+    OutcomePartial:
+      $ref: './outcomes.schema.json#/$defs/Partial'
+    OutcomeRefusal:
+      $ref: './outcomes.schema.json#/$defs/Refusal'
+    OutcomeNoAnswer:
+      $ref: './outcomes.schema.json#/$defs/NoAnswer'
+    OutcomeFullCommand:
+      $ref: './outcomes.schema.json#/$defs/FullCommand'
+    OutcomePartialCommand:
+      $ref: './outcomes.schema.json#/$defs/PartialCommand'
+    OutcomeRefusalCommand:
+      $ref: './outcomes.schema.json#/$defs/RefusalCommand'
+    OutcomeNoAnswerCommand:
+      $ref: './outcomes.schema.json#/$defs/NoAnswerCommand'
+    OutcomeLineResult:
+      $ref: './outcomes.schema.json#/$defs/LineResult'
+    OutcomeCollection:
+      $ref: './outcomes.schema.json#/$defs/Collection'
+    OutcomeCalculation:
+      $ref: './outcomes.schema.json#/$defs/Calculation'
+    OutcomeRecord:
+      $ref: './outcomes.schema.json#/$defs/Record'
+    OutcomeCommandResult:
+      $ref: './outcomes.schema.json#/$defs/CommandResult'
+    OutcomeActionResult:
+      $ref: './outcomes.schema.json#/$defs/ActionResult'
+    OutcomeActionStatus:
+      $ref: './outcomes.schema.json#/$defs/ActionStatus'
+    OutcomeProgress:
+      $ref: './outcomes.schema.json#/$defs/Progress'
+    OutcomeSnapshot:
+      $ref: './outcomes.schema.json#/$defs/Snapshot'
+    OutcomeEvent:
+      $ref: './outcomes.schema.json#/$defs/Event'
   securitySchemes:
     companySession:
       type: apiKey
@@ -2807,3 +3123,5 @@ tags:
     description: Online readiness, authoritative start, current workday/round and start action recovery.
   - name: Current activity
     description: Explicit heading, arrival and manual origin, with stable attempts and retained action recovery.
+  - name: Outcomes
+    description: Whole-piece results, exact reported collection, effective progress and durable action recovery.

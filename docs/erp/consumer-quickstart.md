@@ -84,3 +84,16 @@ Copy the generated `packages/api-client/src/schema.d.ts` plus canonical `routing
 Run `npm run current:demo`, then `npm run test:erp:current -- .local/phase-16-browser-demo.json`. The first drives real Chromium/HTTP/PostgreSQL with labelled account and planner fixtures; the second imports only public types/assertions and checks that actual report. Without a report, `npm run test:erp:current` checks canonical examples only. Neither proves native ERP/event transport.
 
 Copy `packages/api-client/src/{schema.d.ts,current.ts,rounds.ts}` and `tests/erp-conformance/current.ts` preserving relative paths. `CurrentClient` uses a human driver browser session and CSRF, not source bearer credentials. [Exact endpoint/envelope/retry sequence](../current-activity.md) and [mapping](field-and-status-mapping.md) distinguish current versus next, retained action-time provenance and physical origin. Treat heading/arrival intent as execution activity, never delivery/collection or inferred contact. P25 signs/delivers and P26–27 verify the external receiver/source.
+## P17 outcome consumer addition — 24 September 2026
+
+Use [outcomes.md](../outcomes.md) for the six implemented human-session operations, exact amounts and stable action recovery. Canonical `outcomes.schema.json` owns requests/results/events; generated OpenAPI/client types refer to it. `packages/api-client/src/outcomes.ts` supplies the portable session client. ERP service credentials are not a driver identity.
+
+```powershell
+npm run test:erp:outcomes
+npm run outcomes:demo
+npm run test:erp:outcomes -- .local/phase-17-demo.json
+```
+
+The first command checks public examples and deliberately invalid quantities/money. The demo uses two independent ERP shipments, real loopback HTTP start/current/outcome commands and isolated PostgreSQL; identity/bootstrap is explicitly a fixture and the plan is genuinely manual. It reports two accepted pieces for EGP250 plus a phone-only no-answer on the other task, four held return-required pieces and unchanged physical origin. A successful response is discarded and recovered with the original action. The last command checks actual public JSON with no server/domain/database imports. No real shipping ERP, signed event transport, production session setup or physical phone is claimed by this demo.
+
+When consuming the pending `outcome.recorded` payload, preserve original outcome/action/attempt identities and external cycle/line references. Treat partial remainder as held return-required, never customer-retry stock; distinguish reported money, explicit unpaid shipping and no collection claim. Schema acceptance is not receiver application. P25–27 supplies signed transport/inbox and native mock integration; P42 packages release artifacts. Earlier phase-specific limits are historical to their dates.

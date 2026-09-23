@@ -476,22 +476,19 @@
       "eventId": "10000000-0000-4000-8000-000000000050",
       "eventType": "outcome.recorded",
       "eventKind": "transition",
-      "tenantId": "10000000-0000-4000-8000-000000000001",
-      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "tenantId": "17000000-0000-4000-8000-000000000018",
+      "recipientIntegrationId": "17000000-0000-4000-8000-000000000024",
       "aggregate": {
         "type": "task",
-        "id": "10000000-0000-4000-8000-000000000010",
+        "id": "17000000-0000-4000-8000-000000000011",
         "recipientSequence": 4
       },
       "resources": {
-        "taskId": "10000000-0000-4000-8000-000000000010",
-        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
-        "assignmentId": "10000000-0000-4000-8000-000000000012",
-        "workdayId": "10000000-0000-4000-8000-000000000013",
-        "tripId": "10000000-0000-4000-8000-000000000014",
-        "planId": "10000000-0000-4000-8000-000000000015",
-        "stopId": "10000000-0000-4000-8000-000000000016",
-        "attemptId": "10000000-0000-4000-8000-000000000017"
+        "taskId": "17000000-0000-4000-8000-000000000011",
+        "attemptId": "17000000-0000-4000-8000-000000000012",
+        "tripId": "17000000-0000-4000-8000-000000000003",
+        "workdayId": "17000000-0000-4000-8000-000000000005",
+        "dispatchCycleId": "17000000-0000-4000-8000-000000000023"
       },
       "versions": {
         "sourceRevision": 1,
@@ -503,16 +500,103 @@
         "snapshotRevision": 5
       },
       "correlation": {
-        "actionId": "10000000-0000-4000-8000-000000000040",
+        "actionId": "17000000-0000-4000-8000-000000000017",
         "sourceReference": {
-          "tenantId": "10000000-0000-4000-8000-000000000001",
-          "integrationId": "10000000-0000-4000-8000-000000000002",
-          "externalId": "shipment-001"
+          "tenantId": "17000000-0000-4000-8000-000000000018",
+          "externalId": "shipment-0",
+          "integrationId": "17000000-0000-4000-8000-000000000024"
         }
       },
-      "committedAt": "2026-09-22T10:00:00Z",
+      "committedAt": "2026-09-24T08:00:00.000Z",
       "payload": {
-        "outcomeId": "10000000-0000-4000-8000-000000000060"
+        "outcome": {
+          "kind": "company",
+          "time": {
+            "actionId": "17000000-0000-4000-8000-000000000017",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 2,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 1
+            }
+          ],
+          "taskId": "17000000-0000-4000-8000-000000000011",
+          "arrival": {
+            "actionId": "17000000-0000-4000-8000-000000000016",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "heading": {
+            "actionId": "17000000-0000-4000-8000-000000000015",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "outcome": "partial",
+          "roundId": "17000000-0000-4000-8000-000000000003",
+          "branchId": "17000000-0000-4000-8000-000000000022",
+          "driverId": "17000000-0000-4000-8000-000000000004",
+          "revision": 1,
+          "attemptId": "17000000-0000-4000-8000-000000000012",
+          "outcomeId": "17000000-0000-4000-8000-000000000021",
+          "workdayId": "17000000-0000-4000-8000-000000000005",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 20000
+            },
+            "reported": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 25000
+            },
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            },
+            "shippingStatus": "collected",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            }
+          },
+          "returnRequired": true,
+          "sourceRevision": 1,
+          "dispatchCycleId": "17000000-0000-4000-8000-000000000023",
+          "sourceReference": {
+            "tenantId": "17000000-0000-4000-8000-000000000018",
+            "externalId": "shipment-0",
+            "integrationId": "17000000-0000-4000-8000-000000000024"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        }
       }
     }
   },
@@ -629,22 +713,19 @@
       "eventId": "10000000-0000-4000-8000-000000000053",
       "eventType": "outcome.corrected",
       "eventKind": "transition",
-      "tenantId": "10000000-0000-4000-8000-000000000001",
-      "recipientIntegrationId": "10000000-0000-4000-8000-000000000002",
+      "tenantId": "17000000-0000-4000-8000-000000000018",
+      "recipientIntegrationId": "17000000-0000-4000-8000-000000000024",
       "aggregate": {
         "type": "task",
-        "id": "10000000-0000-4000-8000-000000000010",
+        "id": "17000000-0000-4000-8000-000000000011",
         "recipientSequence": 7
       },
       "resources": {
-        "taskId": "10000000-0000-4000-8000-000000000010",
-        "dispatchCycleId": "10000000-0000-4000-8000-000000000011",
-        "assignmentId": "10000000-0000-4000-8000-000000000012",
-        "workdayId": "10000000-0000-4000-8000-000000000013",
-        "tripId": "10000000-0000-4000-8000-000000000014",
-        "planId": "10000000-0000-4000-8000-000000000015",
-        "stopId": "10000000-0000-4000-8000-000000000016",
-        "attemptId": "10000000-0000-4000-8000-000000000017"
+        "taskId": "17000000-0000-4000-8000-000000000011",
+        "attemptId": "17000000-0000-4000-8000-000000000012",
+        "tripId": "17000000-0000-4000-8000-000000000003",
+        "workdayId": "17000000-0000-4000-8000-000000000005",
+        "dispatchCycleId": "17000000-0000-4000-8000-000000000023"
       },
       "versions": {
         "sourceRevision": 1,
@@ -658,14 +739,14 @@
       "correlation": {
         "actionId": "10000000-0000-4000-8000-000000000044",
         "sourceReference": {
-          "tenantId": "10000000-0000-4000-8000-000000000001",
-          "integrationId": "10000000-0000-4000-8000-000000000002",
-          "externalId": "shipment-001"
+          "tenantId": "17000000-0000-4000-8000-000000000018",
+          "externalId": "shipment-0",
+          "integrationId": "17000000-0000-4000-8000-000000000024"
         }
       },
-      "committedAt": "2026-09-22T10:00:00Z",
+      "committedAt": "2026-09-24T08:05:00.000Z",
       "payload": {
-        "supersedesOutcomeId": "10000000-0000-4000-8000-000000000060",
+        "supersedesOutcomeId": "17000000-0000-4000-8000-000000000021",
         "outcomeId": "10000000-0000-4000-8000-000000000061"
       }
     }
@@ -3626,6 +3707,846 @@
           "address": null
         }
       ]
+    }
+  },
+  {
+    "id": "p17-full-command",
+    "schema": "outcomes.schema.json#/$defs/FullCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordFull",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "reportedCollection": {
+          "amountMinor": 35000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "p17-partial-command",
+    "schema": "outcomes.schema.json#/$defs/PartialCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordPartial",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "pieces": [
+          {
+            "sourceLineId": "pieces",
+            "delivered": 2
+          }
+        ],
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "p17-refused-paid-command",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "collected",
+        "reportedCollection": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "p17-refused-unpaid-command",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "refused",
+        "reportedCollection": {
+          "amountMinor": 0,
+          "currency": "EGP",
+          "exponent": 2
+        }
+      }
+    }
+  },
+  {
+    "id": "p17-no-answer-command",
+    "schema": "outcomes.schema.json#/$defs/NoAnswerCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordNoAnswer",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p17-partial-record",
+    "schema": "outcomes.schema.json#/$defs/Record",
+    "valid": true,
+    "data": {
+      "kind": "company",
+      "time": {
+        "actionId": "17000000-0000-4000-8000-000000000017",
+        "recordedAt": "2026-09-24T08:00:00.000Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "lines": [
+        {
+          "unitDue": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 10000
+          },
+          "delivered": 2,
+          "sourceLineId": "pieces",
+          "sourceQuantity": 3,
+          "heldReturnRequired": 1
+        }
+      ],
+      "taskId": "17000000-0000-4000-8000-000000000011",
+      "arrival": {
+        "actionId": "17000000-0000-4000-8000-000000000016",
+        "recordedAt": "2026-09-24T08:00:00.000Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "heading": {
+        "actionId": "17000000-0000-4000-8000-000000000015",
+        "recordedAt": "2026-09-24T08:00:00.000Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "outcome": "partial",
+      "roundId": "17000000-0000-4000-8000-000000000003",
+      "branchId": "17000000-0000-4000-8000-000000000022",
+      "driverId": "17000000-0000-4000-8000-000000000004",
+      "revision": 1,
+      "attemptId": "17000000-0000-4000-8000-000000000012",
+      "outcomeId": "17000000-0000-4000-8000-000000000021",
+      "workdayId": "17000000-0000-4000-8000-000000000005",
+      "collection": {
+        "goods": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 20000
+        },
+        "reported": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 25000
+        },
+        "shipping": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 5000
+        },
+        "shippingStatus": "collected",
+        "unpaidShipping": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 0
+        }
+      },
+      "returnRequired": true,
+      "sourceRevision": 1,
+      "dispatchCycleId": "17000000-0000-4000-8000-000000000023",
+      "sourceReference": {
+        "tenantId": "17000000-0000-4000-8000-000000000018",
+        "externalId": "shipment-0",
+        "integrationId": "17000000-0000-4000-8000-000000000024"
+      },
+      "assignmentRevision": 1,
+      "sourceDispatchCycleId": "cycle"
+    }
+  },
+  {
+    "id": "p17-no-answer-record",
+    "schema": "outcomes.schema.json#/$defs/Record",
+    "valid": true,
+    "data": {
+      "kind": "company",
+      "time": {
+        "actionId": "17000000-0000-4000-8000-000000000019",
+        "recordedAt": "2026-09-24T08:00:00.000Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "lines": [
+        {
+          "unitDue": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 10000
+          },
+          "delivered": 0,
+          "sourceLineId": "pieces",
+          "sourceQuantity": 3,
+          "heldReturnRequired": 3
+        }
+      ],
+      "taskId": "17000000-0000-4000-8000-000000000013",
+      "arrival": null,
+      "heading": null,
+      "outcome": "no-answer",
+      "roundId": "17000000-0000-4000-8000-000000000003",
+      "branchId": "17000000-0000-4000-8000-000000000022",
+      "driverId": "17000000-0000-4000-8000-000000000004",
+      "revision": 1,
+      "attemptId": "17000000-0000-4000-8000-000000000014",
+      "outcomeId": "17000000-0000-4000-8000-000000000026",
+      "workdayId": "17000000-0000-4000-8000-000000000005",
+      "collection": {
+        "goods": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 0
+        },
+        "reported": null,
+        "shipping": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 0
+        },
+        "shippingStatus": "not-attempted",
+        "unpaidShipping": {
+          "currency": "EGP",
+          "exponent": 2,
+          "amountMinor": 0
+        }
+      },
+      "returnRequired": true,
+      "sourceRevision": 1,
+      "dispatchCycleId": "17000000-0000-4000-8000-000000000027",
+      "sourceReference": {
+        "tenantId": "17000000-0000-4000-8000-000000000018",
+        "externalId": "shipment-1",
+        "integrationId": "17000000-0000-4000-8000-000000000024"
+      },
+      "assignmentRevision": 1,
+      "sourceDispatchCycleId": "cycle"
+    }
+  },
+  {
+    "id": "p17-two-task-progress",
+    "schema": "outcomes.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "roundId": "17000000-0000-4000-8000-000000000003",
+      "items": [
+        {
+          "kind": "company",
+          "time": {
+            "actionId": "17000000-0000-4000-8000-000000000017",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 2,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 1
+            }
+          ],
+          "taskId": "17000000-0000-4000-8000-000000000011",
+          "arrival": {
+            "actionId": "17000000-0000-4000-8000-000000000016",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "heading": {
+            "actionId": "17000000-0000-4000-8000-000000000015",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "outcome": "partial",
+          "roundId": "17000000-0000-4000-8000-000000000003",
+          "branchId": "17000000-0000-4000-8000-000000000022",
+          "driverId": "17000000-0000-4000-8000-000000000004",
+          "revision": 1,
+          "attemptId": "17000000-0000-4000-8000-000000000012",
+          "outcomeId": "17000000-0000-4000-8000-000000000021",
+          "workdayId": "17000000-0000-4000-8000-000000000005",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 20000
+            },
+            "reported": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 25000
+            },
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            },
+            "shippingStatus": "collected",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            }
+          },
+          "returnRequired": true,
+          "sourceRevision": 1,
+          "dispatchCycleId": "17000000-0000-4000-8000-000000000023",
+          "sourceReference": {
+            "tenantId": "17000000-0000-4000-8000-000000000018",
+            "externalId": "shipment-0",
+            "integrationId": "17000000-0000-4000-8000-000000000024"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "kind": "company",
+          "time": {
+            "actionId": "17000000-0000-4000-8000-000000000019",
+            "recordedAt": "2026-09-24T08:00:00.000Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 0,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 3
+            }
+          ],
+          "taskId": "17000000-0000-4000-8000-000000000013",
+          "arrival": null,
+          "heading": null,
+          "outcome": "no-answer",
+          "roundId": "17000000-0000-4000-8000-000000000003",
+          "branchId": "17000000-0000-4000-8000-000000000022",
+          "driverId": "17000000-0000-4000-8000-000000000004",
+          "revision": 1,
+          "attemptId": "17000000-0000-4000-8000-000000000014",
+          "outcomeId": "17000000-0000-4000-8000-000000000026",
+          "workdayId": "17000000-0000-4000-8000-000000000005",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "reported": null,
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "shippingStatus": "not-attempted",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            }
+          },
+          "returnRequired": true,
+          "sourceRevision": 1,
+          "dispatchCycleId": "17000000-0000-4000-8000-000000000027",
+          "sourceReference": {
+            "tenantId": "17000000-0000-4000-8000-000000000018",
+            "externalId": "shipment-1",
+            "integrationId": "17000000-0000-4000-8000-000000000024"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        }
+      ],
+      "progress": {
+        "processed": 2,
+        "full": 0,
+        "partial": 1,
+        "refused": 0,
+        "noAnswer": 1,
+        "deliveredPieces": 2,
+        "heldReturnRequiredPieces": 4,
+        "collection": [
+          {
+            "currency": "EGP",
+            "exponent": 2,
+            "reportedMinor": "25000",
+            "unpaidShippingMinor": "0"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p17-action-accepted",
+    "schema": "outcomes.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "17000000-0000-4000-8000-000000000017",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "actionId": "17000000-0000-4000-8000-000000000017",
+          "receiptId": "17000000-0000-4000-8000-000000000020",
+          "receivedAt": "2026-09-24T08:00:00.000Z",
+          "committedAt": "2026-09-24T08:00:00.000Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "accepted",
+          "evidenceStatus": "received",
+          "resourceVersions": {
+            "outcomeRevision": 1,
+            "deviceGeneration": 1,
+            "resourceRevision": 3
+          }
+        },
+        "operationId": "outcome.recordPartial",
+        "retention": "full",
+        "summary": {
+          "taskId": "17000000-0000-4000-8000-000000000011",
+          "roundId": "17000000-0000-4000-8000-000000000003",
+          "driverId": "17000000-0000-4000-8000-000000000004",
+          "outcomeId": "17000000-0000-4000-8000-000000000021",
+          "outcomeRevision": 1
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "current": {
+              "roundId": "17000000-0000-4000-8000-000000000003",
+              "revision": 3,
+              "physicalOrigin": {
+                "kind": "last-confirmed-stop",
+                "time": {
+                  "actionId": "17000000-0000-4000-8000-000000000016",
+                  "recordedAt": "2026-09-24T08:00:00.000Z",
+                  "observation": {
+                    "clock": {
+                      "quality": "unknown"
+                    },
+                    "observedAt": null
+                  }
+                },
+                "taskId": "17000000-0000-4000-8000-000000000011",
+                "roundId": "17000000-0000-4000-8000-000000000003",
+                "revision": 1,
+                "attemptId": "17000000-0000-4000-8000-000000000012",
+                "coordinates": {
+                  "latitude": 30.05,
+                  "longitude": 31.24
+                }
+              },
+              "currentActivity": null
+            },
+            "outcome": {
+              "kind": "company",
+              "time": {
+                "actionId": "17000000-0000-4000-8000-000000000017",
+                "recordedAt": "2026-09-24T08:00:00.000Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "lines": [
+                {
+                  "unitDue": {
+                    "currency": "EGP",
+                    "exponent": 2,
+                    "amountMinor": 10000
+                  },
+                  "delivered": 2,
+                  "sourceLineId": "pieces",
+                  "sourceQuantity": 3,
+                  "heldReturnRequired": 1
+                }
+              ],
+              "taskId": "17000000-0000-4000-8000-000000000011",
+              "arrival": {
+                "actionId": "17000000-0000-4000-8000-000000000016",
+                "recordedAt": "2026-09-24T08:00:00.000Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "heading": {
+                "actionId": "17000000-0000-4000-8000-000000000015",
+                "recordedAt": "2026-09-24T08:00:00.000Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "outcome": "partial",
+              "roundId": "17000000-0000-4000-8000-000000000003",
+              "branchId": "17000000-0000-4000-8000-000000000022",
+              "driverId": "17000000-0000-4000-8000-000000000004",
+              "revision": 1,
+              "attemptId": "17000000-0000-4000-8000-000000000012",
+              "outcomeId": "17000000-0000-4000-8000-000000000021",
+              "workdayId": "17000000-0000-4000-8000-000000000005",
+              "collection": {
+                "goods": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 20000
+                },
+                "reported": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 25000
+                },
+                "shipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 5000
+                },
+                "shippingStatus": "collected",
+                "unpaidShipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 0
+                }
+              },
+              "returnRequired": true,
+              "sourceRevision": 1,
+              "dispatchCycleId": "17000000-0000-4000-8000-000000000023",
+              "sourceReference": {
+                "tenantId": "17000000-0000-4000-8000-000000000018",
+                "externalId": "shipment-0",
+                "integrationId": "17000000-0000-4000-8000-000000000024"
+              },
+              "assignmentRevision": 1,
+              "sourceDispatchCycleId": "cycle"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p17-action-pending",
+    "schema": "outcomes.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "17000000-0000-4000-8000-000000000099",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "p17-event-payload",
+    "schema": "outcomes.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "outcome": {
+        "kind": "company",
+        "time": {
+          "actionId": "17000000-0000-4000-8000-000000000017",
+          "recordedAt": "2026-09-24T08:00:00.000Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "lines": [
+          {
+            "unitDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 10000
+            },
+            "delivered": 2,
+            "sourceLineId": "pieces",
+            "sourceQuantity": 3,
+            "heldReturnRequired": 1
+          }
+        ],
+        "taskId": "17000000-0000-4000-8000-000000000011",
+        "arrival": {
+          "actionId": "17000000-0000-4000-8000-000000000016",
+          "recordedAt": "2026-09-24T08:00:00.000Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "heading": {
+          "actionId": "17000000-0000-4000-8000-000000000015",
+          "recordedAt": "2026-09-24T08:00:00.000Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "outcome": "partial",
+        "roundId": "17000000-0000-4000-8000-000000000003",
+        "branchId": "17000000-0000-4000-8000-000000000022",
+        "driverId": "17000000-0000-4000-8000-000000000004",
+        "revision": 1,
+        "attemptId": "17000000-0000-4000-8000-000000000012",
+        "outcomeId": "17000000-0000-4000-8000-000000000021",
+        "workdayId": "17000000-0000-4000-8000-000000000005",
+        "collection": {
+          "goods": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 20000
+          },
+          "reported": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 25000
+          },
+          "shipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 5000
+          },
+          "shippingStatus": "collected",
+          "unpaidShipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 0
+          }
+        },
+        "returnRequired": true,
+        "sourceRevision": 1,
+        "dispatchCycleId": "17000000-0000-4000-8000-000000000023",
+        "sourceReference": {
+          "tenantId": "17000000-0000-4000-8000-000000000018",
+          "externalId": "shipment-0",
+          "integrationId": "17000000-0000-4000-8000-000000000024"
+        },
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      }
     }
   }
 ]

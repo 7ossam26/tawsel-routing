@@ -76,7 +76,10 @@
     "test:current": "npm run test:integration -- apps/api/test/integration/current-activity.test.ts",
     "test:browser:current": "npm run build -w @tawsel/shared && playwright test -c playwright.current.config.ts",
     "current:demo": "npm run test:browser:current",
-    "test:erp:current": "node --import tsx tests/erp-conformance/current.ts"
+    "test:erp:current": "node --import tsx tests/erp-conformance/current.ts",
+    "test:outcomes": "npm run test:integration -- apps/api/test/integration/outcome-progress-outbox.test.ts",
+    "outcomes:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/outcome-demo.ts",
+    "test:erp:outcomes": "node --import tsx tests/erp-conformance/outcomes.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

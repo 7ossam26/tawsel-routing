@@ -68,7 +68,8 @@ export class Locations {
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT(tenant_id,task_id) DO UPDATE SET revision=$5,source_revision=$6,latitude=$7,longitude=$8,provenance=$9,confirmed_by=$10,confirmed_at=clock_timestamp()`,
      [r.tenant_id,r.task_id,r.kind==='personal'?r.task_id:null,r.kind==='company'?r.task_id:null,revision,r.source_revision,coordinates.latitude,coordinates.longitude,provenance,a.context.sourceId]);
      if(r.driver_id){
-      if(r.state==='held'&&(!r.earliest_at||r.earliest_at<=new Date())){
+      const resolved=(await tx.query('SELECT 1 FROM tawsel.effective_task_outcomes WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,r.task_id])).rowCount;
+      if(!resolved&&r.state==='held'&&(!r.earliest_at||r.earliest_at<=new Date())){
        await tx.query(`INSERT INTO tawsel.driver_planned_stops (tenant_id,driver_id,stop_id,kind,dispatch_cycle_id,state) VALUES ($1,$2,$3,'customer',$3,'remaining') ON CONFLICT(tenant_id,dispatch_cycle_id) DO UPDATE SET driver_id=$2,state='remaining'`,[r.tenant_id,r.driver_id,r.dispatch_cycle_id]);
        const count=await tx.query(`SELECT count(*)::int AS n FROM tawsel.driver_planned_stops WHERE tenant_id=$1 AND driver_id=$2 AND state='remaining'`,[r.tenant_id,r.driver_id]);
        if(count.rows[0].n>50)throw new LocationError('capacity_exceeded',409,'خط السير ممتلئ؛ لم يُحفظ هذا التعديل.');

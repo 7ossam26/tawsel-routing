@@ -569,37 +569,45 @@
       "id": "outcome.recordFull",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "execution.own",
-      "description": "Full result with exact permitted collection and coherent progress/outbox."
+      "description": "Full result with exact permitted collection and coherent progress/outbox.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/full"
     },
     {
       "id": "outcome.recordPartial",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "execution.own",
-      "description": "B2B whole pieces only; rejected remainder is held return-required."
+      "description": "B2B whole pieces only; rejected remainder is held return-required.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/partial"
     },
     {
       "id": "outcome.recordRefusal",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "execution.own",
-      "description": "Refusal with shipping collection or explicit unpaid-shipping exception."
+      "description": "Refusal with shipping collection or explicit unpaid-shipping exception.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/refusal"
     },
     {
       "id": "outcome.recordNoAnswer",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "execution.own",
-      "description": "Simple no-answer; no call counters or implied fee refusal/arrival."
+      "description": "Simple no-answer; no call counters or implied fee refusal/arrival.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/no-answer"
     },
     {
       "id": "task.deferWhole",
@@ -1246,7 +1254,7 @@
       "id": "outcome.recorded",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "recipient-scope",
       "description": "Full/partial/refused/no-answer with quantity/collection transition."
@@ -1504,6 +1512,28 @@
       "description": "Recover only own current activity action results with current scope reauthorization.",
       "method": "GET",
       "path": "/api/v1/current/actions/{actionId}"
+    },
+    {
+      "id": "outcome.getRound",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Effective own-round outcomes and exact reported progress",
+      "method": "GET",
+      "path": "/api/v1/outcomes/rounds/{roundId}"
+    },
+    {
+      "id": "outcome.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Recover retained outcome command by stable action ID",
+      "method": "GET",
+      "path": "/api/v1/outcomes/actions/{actionId}"
     }
   ],
   "authorizationFoundation": {

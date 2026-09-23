@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P16 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P17 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -9356,6 +9356,1341 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 }
 ```
 
+### OutcomeMoney
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Money)
+
+```json
+{
+  "$ref": "./b2b-intake.schema.json#/$defs/Money"
+}
+```
+
+### OutcomePiece
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Piece)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "delivered": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "sourceLineId",
+    "delivered"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeFull
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Full)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reportedCollection": {
+      "$ref": "#/$defs/Money"
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomePartial
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Partial)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pieces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Piece"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "reportedCollection": {
+      "$ref": "#/$defs/Money"
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision",
+    "pieces",
+    "reportedCollection"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeRefusal
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Refusal)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "shippingPayment": {
+      "enum": [
+        "collected",
+        "refused"
+      ]
+    },
+    "reportedCollection": {
+      "$ref": "#/$defs/Money"
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeNoAnswer
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/NoAnswer)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeFullCommand
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/FullCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "outcome.recordFull"
+        },
+        "payload": {
+          "$ref": "#/$defs/Full"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### OutcomePartialCommand
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/PartialCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "outcome.recordPartial"
+        },
+        "payload": {
+          "$ref": "#/$defs/Partial"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### OutcomeRefusalCommand
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/RefusalCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "outcome.recordRefusal"
+        },
+        "payload": {
+          "$ref": "#/$defs/Refusal"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### OutcomeNoAnswerCommand
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/NoAnswerCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "outcome.recordNoAnswer"
+        },
+        "payload": {
+          "$ref": "#/$defs/NoAnswer"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      },
+      "required": []
+    }
+  ]
+}
+```
+
+### OutcomeLineResult
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/LineResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceQuantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "delivered": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "heldReturnRequired": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "unitDue": {
+      "$ref": "#/$defs/Money"
+    }
+  },
+  "required": [
+    "sourceLineId",
+    "sourceQuantity",
+    "delivered",
+    "heldReturnRequired",
+    "unitDue"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeCollection
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Collection)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "reported": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Money"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "goods": {
+      "$ref": "#/$defs/Money"
+    },
+    "shipping": {
+      "$ref": "#/$defs/Money"
+    },
+    "unpaidShipping": {
+      "$ref": "#/$defs/Money"
+    },
+    "shippingStatus": {
+      "enum": [
+        "collected",
+        "explicitly-unpaid",
+        "not-attempted",
+        "not-due",
+        "not-applicable"
+      ]
+    }
+  },
+  "required": [
+    "reported",
+    "goods",
+    "shipping",
+    "unpaidShipping",
+    "shippingStatus"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeCalculation
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Calculation)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "enum": [
+        "company",
+        "personal"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "full",
+        "partial",
+        "refused",
+        "no-answer"
+      ]
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LineResult"
+      },
+      "maxItems": 100
+    },
+    "collection": {
+      "$ref": "#/$defs/Collection"
+    },
+    "returnRequired": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "kind",
+    "outcome",
+    "lines",
+    "collection",
+    "returnRequired"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "personal"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "full",
+              "refused",
+              "no-answer"
+            ]
+          },
+          "lines": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "returnRequired": {
+            "const": false
+          },
+          "collection": {
+            "type": "object",
+            "properties": {
+              "shippingStatus": {
+                "const": "not-applicable"
+              }
+            }
+          }
+        },
+        "type": "object"
+      },
+      "else": {
+        "properties": {
+          "lines": {
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "full"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "returnRequired": {
+            "const": false
+          },
+          "lines": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "heldReturnRequired": {
+                  "const": 0
+                }
+              }
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "refused",
+              "no-answer"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "lines": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "delivered": {
+                  "const": 0
+                }
+              }
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "no-answer"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "collection": {
+            "type": "object",
+            "properties": {
+              "reported": {
+                "type": "null"
+              },
+              "shipping": {
+                "type": "object",
+                "properties": {
+                  "amountMinor": {
+                    "const": 0
+                  }
+                }
+              },
+              "unpaidShipping": {
+                "type": "object",
+                "properties": {
+                  "amountMinor": {
+                    "const": 0
+                  }
+                }
+              },
+              "shippingStatus": {
+                "enum": [
+                  "not-attempted",
+                  "not-applicable"
+                ]
+              }
+            }
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}
+```
+
+### OutcomeRecord
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Record)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "enum": [
+        "company",
+        "personal"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "full",
+        "partial",
+        "refused",
+        "no-answer"
+      ]
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LineResult"
+      },
+      "maxItems": 100
+    },
+    "collection": {
+      "$ref": "#/$defs/Collection"
+    },
+    "returnRequired": {
+      "type": "boolean"
+    },
+    "outcomeId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceReference": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/SourceReference"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "time": {
+      "$ref": "./current-activity.schema.json#/$defs/ActionTime"
+    },
+    "heading": {
+      "anyOf": [
+        {
+          "$ref": "./current-activity.schema.json#/$defs/ActionTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "arrival": {
+      "anyOf": [
+        {
+          "$ref": "./current-activity.schema.json#/$defs/ActionTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceDispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/ExternalId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "kind",
+    "outcome",
+    "lines",
+    "collection",
+    "returnRequired",
+    "outcomeId",
+    "revision",
+    "roundId",
+    "workdayId",
+    "driverId",
+    "taskId",
+    "attemptId",
+    "dispatchCycleId",
+    "branchId",
+    "sourceReference",
+    "sourceRevision",
+    "assignmentRevision",
+    "time",
+    "heading",
+    "arrival",
+    "sourceDispatchCycleId"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "personal"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "full",
+              "refused",
+              "no-answer"
+            ]
+          },
+          "lines": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "returnRequired": {
+            "const": false
+          },
+          "collection": {
+            "type": "object",
+            "properties": {
+              "shippingStatus": {
+                "const": "not-applicable"
+              }
+            }
+          }
+        },
+        "type": "object"
+      },
+      "else": {
+        "properties": {
+          "lines": {
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "full"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "returnRequired": {
+            "const": false
+          },
+          "lines": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "heldReturnRequired": {
+                  "const": 0
+                }
+              }
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "refused",
+              "no-answer"
+            ]
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "lines": {
+            "items": {
+              "type": "object",
+              "properties": {
+                "delivered": {
+                  "const": 0
+                }
+              }
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "no-answer"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "collection": {
+            "type": "object",
+            "properties": {
+              "reported": {
+                "type": "null"
+              },
+              "shipping": {
+                "type": "object",
+                "properties": {
+                  "amountMinor": {
+                    "const": 0
+                  }
+                }
+              },
+              "unpaidShipping": {
+                "type": "object",
+                "properties": {
+                  "amountMinor": {
+                    "const": 0
+                  }
+                }
+              },
+              "shippingStatus": {
+                "enum": [
+                  "not-attempted",
+                  "not-applicable"
+                ]
+              }
+            }
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}
+```
+
+### OutcomeCommandResult
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/CommandResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "outcome": {
+      "$ref": "#/$defs/Record"
+    },
+    "current": {
+      "$ref": "./current-activity.schema.json#/$defs/CommandResult"
+    }
+  },
+  "required": [
+    "outcome",
+    "current"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeActionResult
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-result.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "enum": [
+            "outcome.recordFull",
+            "outcome.recordPartial",
+            "outcome.recordRefusal",
+            "outcome.recordNoAnswer"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "receipt": {
+                "type": "object",
+                "properties": {
+                  "businessStatus": {
+                    "const": "accepted"
+                  }
+                },
+                "required": [
+                  "businessStatus"
+                ]
+              }
+            },
+            "required": [
+              "receipt"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "$ref": "#/$defs/CommandResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### OutcomeActionStatus
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "#/$defs/ActionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### OutcomeProgress
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Progress)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "processed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "full": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "partial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "refused": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "noAnswer": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "deliveredPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "heldReturnRequiredPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "collection": {
+      "type": "array",
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "const": "EGP"
+          },
+          "exponent": {
+            "const": 2
+          },
+          "reportedMinor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$"
+          },
+          "unpaidShippingMinor": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$"
+          }
+        },
+        "required": [
+          "currency",
+          "exponent",
+          "reportedMinor",
+          "unpaidShippingMinor"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "processed",
+    "full",
+    "partial",
+    "refused",
+    "noAnswer",
+    "deliveredPieces",
+    "heldReturnRequiredPieces",
+    "collection"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeSnapshot
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Record"
+      }
+    },
+    "progress": {
+      "$ref": "#/$defs/Progress"
+    }
+  },
+  "required": [
+    "roundId",
+    "items",
+    "progress"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutcomeEvent
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "outcome": {
+      "$ref": "#/$defs/Record"
+    }
+  },
+  "required": [
+    "outcome"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
@@ -9499,6 +10834,17 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p16-action-pending | current-activity.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p16-arrival-action-accepted | current-activity.schema.json#/$defs/ActionStatus | valid foundation shape |
 | p16-snapshot-arrived | current-activity.schema.json#/$defs/Snapshot | valid foundation shape |
+| p17-full-command | outcomes.schema.json#/$defs/FullCommand | valid foundation shape |
+| p17-partial-command | outcomes.schema.json#/$defs/PartialCommand | valid foundation shape |
+| p17-refused-paid-command | outcomes.schema.json#/$defs/RefusalCommand | valid foundation shape |
+| p17-refused-unpaid-command | outcomes.schema.json#/$defs/RefusalCommand | valid foundation shape |
+| p17-no-answer-command | outcomes.schema.json#/$defs/NoAnswerCommand | valid foundation shape |
+| p17-partial-record | outcomes.schema.json#/$defs/Record | valid foundation shape |
+| p17-no-answer-record | outcomes.schema.json#/$defs/Record | valid foundation shape |
+| p17-two-task-progress | outcomes.schema.json#/$defs/Snapshot | valid foundation shape |
+| p17-action-accepted | outcomes.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p17-action-pending | outcomes.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p17-event-payload | outcomes.schema.json#/$defs/Event | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -9589,5 +10935,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | current-next-is-not-stage | current-activity.schema.json#/$defs/Activity | invalid (enum) |
 | p16-no-arbitrary-selection | current-activity.schema.json#/$defs/SelectHeadingCommand | invalid (required) |
 | p16-arrival-must-identify-current | current-activity.schema.json#/$defs/ArrivalCommand | invalid (type) |
+| p17-invalid-fraction | outcomes.schema.json#/$defs/PartialCommand | invalid (type) |
+| p17-invalid-negative | outcomes.schema.json#/$defs/PartialCommand | invalid (minimum) |
+| p17-invalid-unsafe-money | outcomes.schema.json#/$defs/FullCommand | invalid (maximum) |
+| p17-invalid-unlike-currency | outcomes.schema.json#/$defs/FullCommand | invalid (const) |
+| p17-invalid-no-answer-fee-refusal | outcomes.schema.json#/$defs/NoAnswerCommand | invalid (additionalProperties) |
+| p17-invalid-no-answer-arrival | outcomes.schema.json#/$defs/NoAnswerCommand | invalid (additionalProperties) |
+| p17-no-answer-fabricated-collection | outcomes.schema.json#/$defs/Record | invalid (type) |
+| p17-personal-piece-result | outcomes.schema.json#/$defs/Record | invalid (maxItems) |
 
 [Canonical example data](../../contracts/examples/README.md)

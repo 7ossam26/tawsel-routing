@@ -112,11 +112,11 @@ def actions(document=None):
             or (phase == 12 and op['id'] in ('routing.getVehicleProfiles', 'routing.computeRoadRoute', 'routing.optimize'))
             or (phase == 13 and op['id'] in ('planning.saveDraft', 'planning.requestPreview', 'planning.requestReplan', 'planning.getJob', 'planning.getPlan', 'planning.publishRevision', 'plan.revisionPublished'))
             or (phase == 14 and op['id'] == 'planning.setManualOrder')
-            or (phase in (15, 16) and family == 'execution')
+            or (phase in (15, 16, 17) and family == 'execution')
         )
         if not implemented_scope:
-            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P16 scope promoted: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P16 scope only; no UI completion inferred.')
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P17 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P17 scope only; no UI completion inferred.')
 
 
 def states(document=None, demo=False):

@@ -13,7 +13,7 @@ export async function admitActiveWork(tx:Transaction,input:Input,sourceId:string
  const round=(await tx.query<{round_id:string}>(`SELECT round_id FROM tawsel.rounds WHERE tenant_id=$1 AND driver_id=$2 AND ended_at IS NULL`,[input.tenantId,input.driverId])).rows[0];
  if(!round)return false;
  const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
- const members=input.members.filter(m=>m.coordinates&&(!m.earliestAt||Date.parse(m.earliestAt)<=now.getTime())&&
+ const members=input.members.filter(m=>m.exclusionReason!=='resolved-or-paused'&&m.coordinates&&(!m.earliestAt||Date.parse(m.earliestAt)<=now.getTime())&&
   (input.accountKind==='personal'||(m.reservationState==='remaining'&&m.exclusionReason!=='not-held')));
  const reserved=Number((await tx.query(`SELECT count(*) AS n FROM tawsel.driver_planned_stops WHERE tenant_id=$1 AND driver_id=$2 AND state='remaining'`,[input.tenantId,input.driverId])).rows[0].n);
  if((input.accountKind==='personal'?members.length:reserved)>50)throw new DepartureCapacityError();

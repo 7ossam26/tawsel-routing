@@ -261,3 +261,25 @@ These normalized models are verified internally and exported for coherent handof
 | `current.getResult = pending` | Unknown/uncommitted, not success; retry exact original action |
 
 Schemas own fields and examples: [current](../../contracts/current-activity.schema.json), [examples](../../contracts/examples/valid.json). Local proof: real API/PostgreSQL/Chromium with labelled account/provider fixtures. Native ERP and event delivery remain unverified.
+
+## P17 effective outcome mapping — 24 September 2026
+
+| Public field/fact | Meaning and translation boundary |
+| --- | --- |
+| `outcomeId`, `revision`, `attemptId` | Stable accepted result and attempt; duplicate action returns the same result, no new delivery |
+| `sourceReference.externalId`, `sourceDispatchCycleId`, `lines[].sourceLineId` | ERP shipment, dispatch cycle and stable source line identities; preserve separately from Tawsel UUIDs |
+| `sourceRevision`, `assignmentRevision` | Immutable admitted source/assignment, checked against the frozen departure boundary |
+| `lines[].delivered` / `heldReturnRequired` | Whole pieces; sum equals `sourceQuantity`; rejected partial remainder cannot be scheduled again |
+| `collection.reported` | Exact driver-reported amount; null means no collection claim, explicit zero remains distinguishable |
+| `goods`, `shipping`, `unpaidShipping` | Separate EGP minor-unit components; no settlement, refund or merchant-charge command |
+| `shippingStatus = explicitly-unpaid` | Explicit refusal to pay a positive remaining shipping fee; zero reported collection |
+| `shippingStatus = not-attempted` | No-answer; no shipping collection/refusal assertion |
+| `shippingStatus = not-due` | Source prepaid shipping or already-collected fee; no second charge |
+| `kind = personal`, `lines = []` | Simple B2C outcome; no company item/return/fee-liability projection |
+| `heading`, `arrival`, `time` | Real preserved optional movement evidence plus outcome server time/original observation; no inferred timestamps |
+| `current.currentActivity = null` | Attempt resolved; next remains a suggestion and physical origin stays fixed |
+| `progress.processed/full/partial/refused/noAnswer` | Distinct effective task outcome counts; processed is not successful delivery |
+| `progress.collection[].reportedMinor/unpaidShippingMinor` | Decimal integer strings for exact aggregate minor units, with currency/exponent; never binary-float totals |
+| `outcome.recorded` pending intent | Schema-valid source payload `{outcome}` committed with state; not delivered/applied/settled |
+
+[Canonical ownership](../../contracts/outcomes.schema.json), [exact examples/client/demo](../outcomes.md) and [public-only conformance](../../tests/erp-conformance/outcomes.ts). The existing dispatch `state:held` is the P10 assignment/receipt state, not a piece-balance report. Actual branch receipt is P21; full report/filter/export semantics remain P36–37.

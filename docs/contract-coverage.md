@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P15 session/context, provisioning, intake, locations, routing metadata, durable planning and online round start are implemented locally; each row records its actual lifecycle.** Later current/arrival/outcome/takeover operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P17 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival and exact outcomes are implemented locally; each row records its actual lifecycle.** Later retry/takeover operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -134,10 +134,10 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `round.start` | http-command | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 | `current.selectHeading` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicitly select/change eligible target; protect arrived work until resolved. |
 | `current.recordArrival` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit arrival and physical-origin evidence; never inferred from outcome. |
-| `outcome.recordFull` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Full result with exact permitted collection and coherent progress/outbox. |
-| `outcome.recordPartial` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | B2B whole pieces only; rejected remainder is held return-required. |
-| `outcome.recordRefusal` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Refusal with shipping collection or explicit unpaid-shipping exception. |
-| `outcome.recordNoAnswer` | http-command | designed | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Simple no-answer; no call counters or implied fee refusal/arrival. |
+| `outcome.recordFull` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Full result with exact permitted collection and coherent progress/outbox. |
+| `outcome.recordPartial` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | B2B whole pieces only; rejected remainder is held return-required. |
+| `outcome.recordRefusal` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Refusal with shipping collection or explicit unpaid-shipping exception. |
+| `outcome.recordNoAnswer` | http-command | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Simple no-answer; no call counters or implied fee refusal/arrival. |
 | `task.deferWhole` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Defer untouched whole work to earliest time; no narrow appointment guarantee. |
 | `task.retryWhole` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Same-driver eligible untouched whole held return work, new attempt, before receipt. |
 | `task.setDriverUrgency` | http-command | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Assigned-driver urgency after departure; protect current/earliest eligibility. |
@@ -150,7 +150,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `round.started` | event | verified-local | [P15](phases/15-round-start-departure-lock.md) | recipient-scope | Accepted start/departure/owner and baseline forecast. |
 | `current.headingSelected` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit selection/change, not a next suggestion. |
 | `current.arrivalRecorded` | event | verified-local | [P16](phases/16-current-heading-arrival.md) | recipient-scope | Explicit observed arrival; time provenance retained. |
-| `outcome.recorded` | event | designed | [P17](phases/17-outcomes-quantities-collection.md) | recipient-scope | Full/partial/refused/no-answer with quantity/collection transition. |
+| `outcome.recorded` | event | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | recipient-scope | Full/partial/refused/no-answer with quantity/collection transition. |
 | `task.deferred` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Untouched whole work earliest-time change. |
 | `task.retryAdmitted` | event | designed | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | New attempt on eligible whole held work; preserve prior outcome. |
 | `round.ended` | event | designed | [P19](phases/19-workday-closure-carryover.md) | recipient-scope | Ended round, held work unchanged unless explicitly transitioned. |
@@ -163,6 +163,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `current.correctOrigin` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit owner-fenced manual physical-origin correction; no current activity or arrival is inferred. |
 | `current.getActivity` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. |
 | `current.getResult` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Recover only own current activity action results with current scope reauthorization. |
+| `outcome.getRound` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Effective own-round outcomes and exact reported progress |
+| `outcome.getResult` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Recover retained outcome command by stable action ID |
 
 ### returns
 
