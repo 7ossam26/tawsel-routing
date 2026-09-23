@@ -1,5 +1,5 @@
 import type { components } from './schema.js';
-export type PlanningCommand=components['schemas']['PlanningSaveDraftCommand']|components['schemas']['PlanningRequestPreviewCommand']|components['schemas']['PlanningRequestReplanCommand'];
+export type PlanningCommand=components['schemas']['PlanningSaveDraftCommand']|components['schemas']['PlanningRequestPreviewCommand']|components['schemas']['PlanningRequestReplanCommand']|components['schemas']['PlanningManualOrderCommand'];
 /** Browser-session consumer; never selects a human identity via a service token.
  * Retain the exact command/action ID on uncertain delivery and poll its job ID. */
 export class PlanningClient {

@@ -1,5 +1,7 @@
 # Requirement-driven action coverage
 
+P14 backend update: A10/A11/B01 and the manual planning action now have validated ready/partial history and revisioned `planning.setManualOrder` with retained valid order on failure. E05 accepts source-scoped ready/partial/manual notices. [Current policy/API](route-policy.md). Connected UI remains P28; no new render/browser/owner-review evidence.
+
 P13 backend update: A10/A11/B01 now have verified revisioned settings, durable jobs and stored candidate/forecast APIs. E05 has a source-scoped pending draft notice (`state=draft`, `policyValidated=false`); authoritative `round.started` is still P15. UI journeys remain P28; no new screen, browser/render/owner review is claimed. [Exact behavior and limits](planning-jobs.md), [evidence](phase-13-evidence.md).
 
 P10 backend update: A06–A08 now have verified source APIs and durable event intent; their native ERP UI remains P27. intake.getTask and intake.listTasks expose scoped upcoming/held/readiness data for those consumers; intake.getBatchResult distinguishes committed acceptance/rejection from unknown pending. No new UI, browser/render result or owner approval is claimed in P10. Departure race proof remains P15.

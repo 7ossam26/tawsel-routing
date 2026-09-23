@@ -20,6 +20,30 @@ import { readMigrations, migrate } from '../../src/db/migrate.js';
 import { withTransaction } from '../../src/db/transaction.js';
 import { executeCommandInTransaction, getCommandResult } from '../../src/commands/kernel.js';
 
+test('P14 upgrade retains a real P13 draft and forecast without promoting historical policy evidence',async()=>{
+ const db=await createTestDatabase(),directory=await mkdtemp(join(tmpdir(),'tawsel-p13-upgrade-')),url=pathToFileURL(directory+'/');
+ const files=(await readMigrations()).slice(0,9).map(m=>m.name),provider=await providerFixture();
+ try{
+  for(const name of files)await copyFile(new URL(`../../../../db/migrations/${name}`,import.meta.url),new URL(name,url));
+  await prepareAccessFixture(db.pool,undefined,url);await intake(db.pool);await draft(db.pool);
+  const claim=(await claimPlanningJob(db.pool))!,candidate=await provider.engine.optimize(engineInput(claim));
+  const planId=randomUUID(),forecastId=randomUUID(),workloadId=randomUUID(),member=claim.input.members[0]!;
+  // Exact P13 storage shape, committed before either P14 migration exists.
+  await withTransaction(db.pool,async tx=>{
+   await tx.query('INSERT INTO tawsel.plan_revisions (tenant_id,driver_id,plan_id,job_id,revision,fingerprint,candidate) VALUES ($1,$2,$3,$4,1,$5,$6)',[claim.tenant_id,claim.driver_id,planId,claim.job_id,claim.fingerprint,candidate]);
+   await tx.query("INSERT INTO tawsel.forecast_revisions (tenant_id,forecast_id,plan_id,workload_id,time_origin,expected_finish_at) VALUES ($1,$2,$3,$4,'2026-09-23T10:00:00Z','2026-09-23T10:10:10Z')",[claim.tenant_id,forecastId,planId,workloadId]);
+   await tx.query("INSERT INTO tawsel.forecast_members (tenant_id,forecast_id,attempt_id,task_id,source_revision,assignment_revision,pin_revision,membership,position,expected_arrival_at,expected_completion_at) VALUES ($1,$2,$3,$4,1,0,0,'assigned',1,'2026-09-23T10:00:10Z','2026-09-23T10:10:10Z')",[claim.tenant_id,forecastId,member.attemptId,member.taskId]);
+   await tx.query("UPDATE tawsel.planning_jobs SET status='complete',lease_id=null,lease_until=null,finished_at=clock_timestamp(),plan_id=$2,candidate=$3 WHERE job_id=$1",[claim.job_id,planId,candidate]);
+   await tx.query('UPDATE tawsel.planning_states SET current_plan_id=$1,next_plan_revision=2',[planId]);
+  });
+  const forecast=(await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows,members=(await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows;
+  expect(await migrate(db.pool)).toEqual(['0010_route_policy.sql','0011_manual_plans.sql']);
+  expect((await db.pool.query('SELECT * FROM tawsel.forecast_revisions')).rows).toEqual(forecast);expect((await db.pool.query('SELECT * FROM tawsel.forecast_members')).rows).toEqual(members);
+  const plan=(await new PlanningService(db.pool).plans(principals.personal,ids.personalDriver)).items[0]!;
+  expect(plan).toMatchObject({planId,state:'draft',policyValidated:false,candidate,inputCurrent:true});expect(plan.routePolicy).toBeUndefined();expect(planningConforms('Plan',plan)).toBe(true);
+ }finally{await provider.close();await db.close();for(const name of files)await unlink(new URL(name,url));await rmdir(directory);}
+});
+
 describe('P13 durable jobs — isolated PostgreSQL, no transaction mocks',()=>{
  let db:Awaited<ReturnType<typeof createTestDatabase>>;
  beforeEach(async()=>{db=await createTestDatabase();await prepareAccessFixture(db.pool);});
@@ -158,7 +182,7 @@ test('P12 retained intake upgrades without losing command or task; legacy intent
    },async writeProgress(){}
   }));
   const original=(await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows;
-  expect(await migrate(db.pool)).toEqual(['0009_planning.sql']);
+  expect(await migrate(db.pool)).toEqual(['0009_planning.sql','0010_route_policy.sql','0011_manual_plans.sql']);
   expect((await db.pool.query('SELECT status,job_id FROM tawsel.intake_replan_intents')).rows).toEqual([{status:'pending',job_id:null}]);
   expect(await materializeLegacyIntent(db.pool)).toBe(true);expect(await materializeLegacyIntent(db.pool)).toBe(false);
   expect((await db.pool.query('SELECT * FROM tawsel.b2c_tasks')).rows).toEqual(original);

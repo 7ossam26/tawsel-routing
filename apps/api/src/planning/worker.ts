@@ -2,13 +2,12 @@ import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { withTransaction, type Transaction } from '../db/transaction.js';
 import { lockInvariants } from '../commands/locks.js';
-import { payloadHash as fingerprintValue } from '../commands/json.js';
 import { EngineError, type OptimizationInput, type OptimizationResult } from '../engine/index.js';
-import { validateModel } from '../engine/models.js';
 import { enqueuePlanning, fingerprint, planningState, snapshot } from './queue.js';
 import type { JobRow, Job } from './models.js';
+import { instant, planRoute, validateCompleteRoute, type Planner } from './policy.js';
+export type { Planner } from './policy.js';
 
-export interface Planner { optimize(input:OptimizationInput,signal?:AbortSignal):Promise<OptimizationResult> }
 export interface Claim extends JobRow { lease_id:string; lease_until:Date }
 async function driverLock(tx:Transaction,tenantId:string,driverId:string) {
  // Access/provisioning lock first, then the same driver invariant as intake.
@@ -59,25 +58,6 @@ export function engineInput(job:JobRow):OptimizationInput {
  const s=job.input.settings!;
  return {mode:s.mode,accountKind:job.input.accountKind,origin:s.origin,endpoint:s.endpoint,tasks:job.input.members.filter(m=>m.eligible).map(m=>({taskId:m.taskId,coordinates:m.coordinates!,serviceEstimateSeconds:m.serviceEstimateSeconds}))};
 }
-function instant(anchor:string,seconds:number) {
- const time=Date.parse(anchor)+seconds*1000;
- if(!Number.isFinite(time)||time>Date.parse('9999-12-31T23:59:59.999Z')||time<Date.parse('0000-01-01T00:00:00Z'))throw new EngineError('invalid_response');
- return new Date(time).toISOString();
-}
-function validateCandidate(row:JobRow,candidate:OptimizationResult){
- validateModel('OptimizationResult',candidate,true);
- const expected=row.input.members.filter(m=>m.eligible),assigned=candidate.visits.map(v=>v.taskId),all=[...assigned,...candidate.unassignedTaskIds];
- if(new Set(all).size!==all.length||all.length!==expected.length||all.some(id=>!expected.some(m=>m.taskId===id))
-  ||candidate.mode!==row.input.settings!.mode||fingerprintValue(candidate.endpoint)!==fingerprintValue(row.input.settings!.endpoint)
-  ||candidate.status!==(candidate.unassignedTaskIds.length?'partial':'complete'))throw new EngineError('invalid_response');
- const anchor=row.input.settings!.plannedStartAt;
- instant(anchor,candidate.finishOffsetSeconds);
- for(const v of candidate.visits){
-  const member=expected.find(m=>m.taskId===v.taskId)!;
-  if(v.coordinates.latitude!==member.coordinates!.latitude||v.coordinates.longitude!==member.coordinates!.longitude||v.serviceEstimateSeconds!==member.serviceEstimateSeconds)throw new EngineError('invalid_response');
-  instant(anchor,v.arrivalOffsetSeconds);instant(anchor,v.arrivalOffsetSeconds+v.waitingSeconds+v.serviceEstimateSeconds);
- }
-}
 /** Atomic append and pointer update; the lease fence prevents duplicate
  * effective publication even if a lost worker later returns. */
 export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candidate:OptimizationResult}|{error:NonNullable<Job['error']>},maxAttempts=3):Promise<boolean> {
@@ -99,7 +79,7 @@ export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candida
   }
   let result=outcome;
   if('candidate' in result){
-   try{validateCandidate(row,result.candidate);}catch(error){if(!(error instanceof EngineError))throw error;result={error:error.toJSON()};}
+   try{validateCompleteRoute(row.input,result.candidate);}catch(error){if(!(error instanceof EngineError))throw error;result={error:error.toJSON()};}
   }
   if('error' in result){
    const retry=['busy','timeout','cancelled','unavailable','http_error'].includes(result.error.code)&&row.attempts<maxAttempts;
@@ -109,8 +89,11 @@ export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candida
    return true;
   }
   const candidate=result.candidate;
+  const planState=candidate.status==='complete'?'ready':'partial';
+  const currentMissing=!!row.input.currentTarget&&candidate.unassignedTaskIds.includes(row.input.currentTarget.taskId);
+  const routePolicy={version:1,method:'grouped-heuristic',orderedTaskIds:candidate.visits.map(v=>v.taskId),exceptions:candidate.unassignedTaskIds.map(taskId=>({taskId,reason:taskId===row.input.currentTarget?.taskId?'unassigned-current':currentMissing?'blocked-by-current':row.input.members.find(m=>m.taskId===taskId)!.priority==='urgent'?'unassigned-urgent':'unassigned-ordinary'}))};
   const planId=randomUUID(),forecastId=randomUUID(),workloadId=randomUUID(),revision=Number(state.next_plan_revision),anchor=row.input.settings!.plannedStartAt;
-  await tx.query(`INSERT INTO tawsel.plan_revisions (tenant_id,driver_id,plan_id,job_id,revision,fingerprint,candidate) VALUES ($1,$2,$3,$4,$5,$6,$7)`,[row.tenant_id,row.driver_id,planId,row.job_id,revision,row.fingerprint,candidate]);
+  await tx.query(`INSERT INTO tawsel.plan_revisions (tenant_id,driver_id,plan_id,job_id,revision,fingerprint,candidate,state,route_policy) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[row.tenant_id,row.driver_id,planId,row.job_id,revision,row.fingerprint,candidate,planState,routePolicy]);
   await tx.query(`INSERT INTO tawsel.forecast_revisions (tenant_id,forecast_id,plan_id,workload_id,time_origin,expected_finish_at) VALUES ($1,$2,$3,$4,$5,$6)`,
    [row.tenant_id,forecastId,planId,workloadId,anchor,candidate.status==='complete'?instant(anchor,candidate.finishOffsetSeconds):null]);
   for(const member of row.input.members){
@@ -128,7 +111,7 @@ export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candida
   for(const recipient of [...new Set(row.input.members.flatMap(m=>m.integrationId?[m.integrationId]:[]))].sort()){
    await tx.query(`INSERT INTO tawsel.outbox_intents (tenant_id,event_id,source_id,action_id,recipient_id,event_type,payload_version,payload)
     VALUES ($1,$2,$3,$4,$5,'plan.revisionPublished','1.0.0',$6)`,[row.tenant_id,randomUUID(),row.source_id,row.action_id,recipient,
-    {jobId:row.job_id,planId,driverId:row.driver_id,revision,forecastId,workloadId,state:'draft',status:candidate.status,policyValidated:false}]);
+    {jobId:row.job_id,planId,driverId:row.driver_id,revision,forecastId,workloadId,state:planState,status:candidate.status,policyValidated:true}]);
   }
   return true;
  });
@@ -142,7 +125,7 @@ export async function runPlanningOnce(pool:Pool,planner:Planner,options:{leaseMs
  let outcome:Parameters<typeof persistPlanningResult>[2];
  try {
   const timeout=AbortSignal.timeout(Math.max(1,leaseMs-100));
-  outcome={candidate:await planner.optimize(engineInput(job),options.signal?AbortSignal.any([timeout,options.signal]):timeout)};
+  outcome={candidate:await planRoute(job.input,planner,options.signal?AbortSignal.any([timeout,options.signal]):timeout)};
  }catch(error){outcome={error:error instanceof EngineError?error.toJSON():{code:'provider_error',provider:'boundary'}};}
  await persistPlanningResult(pool,job,outcome,options.maxAttempts??3);
  return true;

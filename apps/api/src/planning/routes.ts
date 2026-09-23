@@ -22,7 +22,7 @@ export async function planningRoutes(app:FastifyInstance,pool:Pool,config:AuthCo
   if((error as {validation?:unknown}).validation)return reply.status(400).send({error:{code:'validation_failed',message:'راجع بيانات الطلب.'}});
   return reply.status(500).send({error:{code:'request_failed',message:'تعذر إكمال التخطيط.'}});
  });
- for(const operation of ['planning.saveDraft','planning.requestPreview','planning.requestReplan']){
+ for(const operation of ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.setManualOrder']){
   app.post(`/api/v1/planning/commands/${operation}`,{schema:{querystring:query}},async(request,reply)=>{
    requireBrowserCsrf(request,config);
    if((request.body as {operationId?:string})?.operationId!==operation)throw new PlanningError('validation_failed',400,'نوع العملية غير متطابق.');

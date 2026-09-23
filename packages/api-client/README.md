@@ -1,5 +1,7 @@
 # Tawsel public client foundation 0.1.0
 
+P14 adds `PlanningManualOrderCommand`, ready/partial/manual plan states, route policy exceptions, resultKind and continuation types. Read all three optimistic revisions from `plans()`, then use the same `command()` method for `planning.setManualOrder`. Manual candidate/job and forecast times are null. [Current usage](../../docs/route-policy.md). The P13 paragraph below describes the retained historical draft shape.
+
 P13 adds public-only `src/planning.ts` / `PlanningClient` plus generated `Planning*` types. Human same-origin session + CSRF only; no ERP service impersonation. `plans(driverId)` discovers current settings revision/latest job and pages immutable forecasts, `command(envelope)` saves/requests work, `job(jobId)` polls durable actual status. Retain exact commands after uncertain responses. All P13 plans are draft candidates (`policyValidated:false`), not active rounds. [Usage and limits](../../docs/planning-jobs.md), [consumer conformance](../../tests/erp-conformance/planning.ts), [real HTTP/restart evidence](../../docs/phase-13-evidence.md).
 
 P10 adds the public-only src/intake.ts client with generated source/assignment/task/result types. Copy it with schema.d.ts; it imports no application/domain/database modules. Methods are command/get/list/result. Network errors leave the result unknown: retain the exact immutable command and retry it. [Consumer setup/conformance](../../docs/erp/consumer-quickstart.md), [wire semantics](../../docs/b2b-intake.md).

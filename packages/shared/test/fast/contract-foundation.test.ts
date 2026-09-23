@@ -100,6 +100,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
       || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
       || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
+      || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
       || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
   });
@@ -140,7 +141,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     for (const [path, content] of first) expect(await readFile(resolve(root, path), 'utf8'), path).toBe(content);
     const client = first.get('packages/api-client/src/schema.d.ts')!;
     expect(client).not.toMatch(/from ["'](?:@tawsel\/(?:domain|shared)|.*apps\/api)/);
-    expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores candidate drafts, not policy-approved active rounds.');
+    expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores validated ready/partial and explicit manual revisions; no active round is started.');
     expect(first.get('docs/reference/public-contract.md')).toContain('later execution and signed event delivery remain unavailable/unimplemented.');
   });
 });

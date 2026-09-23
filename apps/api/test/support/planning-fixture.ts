@@ -28,24 +28,30 @@ export async function draft(pool:Pool,revision=0,patch:Partial<Settings>={}){
 }
 /** Controlled HTTP provider, not live Engine route evidence. Builds an explicit
  * 10-second/100-metre leg per customer, reverse input order and 600s service. */
-export async function providerFixture(options:{beforeResponse?:()=>Promise<void>;partial?:boolean;status?:number}={}){
+export async function providerFixture(options:{beforeResponse?:()=>Promise<void>;partial?:boolean;status?:number;roadStatus?:number;waitingSeconds?:number}={}){
  const server=createServer(async(req,res)=>{
+  if(req.method==='GET'){
+   if(options.roadStatus){res.statusCode=options.roadStatus;res.end('controlled road failure');return;}
+   // Labelled OSRM HTTP endpoint fixture: one 25-second/250-metre leg.
+   const points=new URL(req.url!,'http://fixture').pathname.split('/').at(-1)!.split(';').map(p=>p.split(',').map(Number));
+   res.setHeader('content-type','application/json');res.end(JSON.stringify({code:'Ok',waypoints:points.map(location=>({location})),routes:[{duration:25,distance:250,legs:[{duration:25,distance:250}],geometry:{type:'LineString',coordinates:points}}]}));return;
+  }
   const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));
   const body=JSON.parse(Buffer.concat(chunks).toString()) as {jobs:{id:number;location:number[];service:number}[];vehicles:{start:number[];end?:number[]}[]};
   await options.beforeResponse?.();
   if(options.status){res.statusCode=options.status;res.end('controlled failure');return;}
   const jobs=[...body.jobs].reverse(),unassigned=options.partial?jobs.splice(-1).map(j=>({id:j.id,type:'job'})):[];
-  let arrival=0,duration=0,distance=0,service=0;
+  let arrival=0,duration=0,distance=0,service=0,waiting=0;
   const step=(type:string,location:number[],extra={})=>({type,location,arrival,duration,distance,service:0,setup:0,waiting_time:0,violations:[],...extra});
   const steps=[step('start',body.vehicles[0]!.start)];
-  for(const j of jobs){arrival+=10;duration+=10;distance+=100;steps.push(step('job',j.location,{id:j.id,service:j.service}));arrival+=j.service;service+=j.service;}
+  for(const j of jobs){const wait=options.waitingSeconds??0;arrival+=10;duration+=10;distance+=100;steps.push(step('job',j.location,{id:j.id,service:j.service,waiting_time:wait}));arrival+=j.service+wait;service+=j.service;waiting+=wait;}
   const end=body.vehicles[0]!.end??jobs.at(-1)?.location??body.vehicles[0]!.start;
   steps.push(step('end',end));
-  const totals={setup:0,service,duration,waiting_time:0,distance,violations:[]};
+  const totals={setup:0,service,duration,waiting_time:waiting,distance,violations:[]};
   res.setHeader('content-type','application/json');res.end(JSON.stringify({code:0,summary:{routes:jobs.length?1:0,unassigned:unassigned.length,...totals},unassigned,routes:jobs.length?[{vehicle:1,...totals,steps}]:[]}));
  });
  server.listen(0,'127.0.0.1');await once(server,'listening');
  const address=server.address();if(!address||typeof address==='string')throw new Error('Missing fixture address');
  const url=`http://127.0.0.1:${address.port}`;
- return {url,engine:new RoutingEngine(loadEngineConfig({TAWSEL_VROOM_URL:url,TAWSEL_ENGINE_TIMEOUT_MS:'10000'})),async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
+ return {url,engine:new RoutingEngine(loadEngineConfig({TAWSEL_VROOM_URL:url,TAWSEL_OSRM_BICYCLE_URL:url,TAWSEL_ENGINE_TIMEOUT_MS:'10000'})),async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
 }

@@ -2,10 +2,10 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, locations and durable planning
   version: 0.1.0
-  description: P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning
-    are locally implemented. Planning stores provider candidate drafts and forecasts, without route-policy approval
-    or round start. Live private Nominatim and Engine evidence remains unavailable. Later execution and signed
-    delivery remain designed. No production or real ERP compatibility claim.
+  description: P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable
+    planning are locally implemented. Planning stores provider candidate drafts and forecasts, without
+    route-policy approval or round start. Live private Nominatim and Engine evidence remains unavailable.
+    Later execution and signed delivery remain designed. No production or real ERP compatibility claim.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -1969,6 +1969,67 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/IntakeError"
+  /api/v1/planning/commands/planning.setManualOrder:
+    post:
+      operationId: planning.setManualOrder
+      tags:
+        - Planning
+      summary: Prepare an eligible manual order or select its first suggestion
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanningManualOrderCommand"
+      responses:
+        "200":
+          description: Idempotent confirmed manual revision; no round start or computed road estimate.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "401":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "403":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "404":
+          description: Durable result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
+        "409":
+          description: Revision or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeError"
 components:
   schemas:
     Uuid:
@@ -2229,6 +2290,8 @@ components:
       $ref: ./routing.schema.json#/$defs/Failure
     RoutingProfiles:
       $ref: ./routing.schema.json#/$defs/Profiles
+    PlanningRoutePolicy:
+      $ref: ./planning.schema.json#/$defs/RoutePolicy
     PlanningStatus:
       $ref: ./planning.schema.json#/$defs/Status
     PlanningSettings:
@@ -2261,6 +2324,14 @@ components:
       $ref: ./planning.schema.json#/$defs/RequestPreviewCommand
     PlanningRequestReplanCommand:
       $ref: ./planning.schema.json#/$defs/RequestReplanCommand
+    PlanningManualOrder:
+      $ref: ./planning.schema.json#/$defs/ManualOrder
+    PlanningManualOrderCommand:
+      $ref: ./planning.schema.json#/$defs/ManualOrderCommand
+    PlanningManualResult:
+      $ref: ./planning.schema.json#/$defs/ManualResult
+    PlanningContinuation:
+      $ref: ./planning.schema.json#/$defs/Continuation
   securitySchemes:
     companySession:
       type: apiKey

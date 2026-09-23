@@ -20,7 +20,7 @@ describe('real PostgreSQL migration lifecycle', () => {
 
   test('applies fresh SQL once, serializes concurrent runners, verifies checksums', async () => {
     const results = await Promise.all([migrate(db.pool), migrate(db.pool)]);
-    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql', '0009_planning.sql']);
+    expect(results.flat()).toEqual(['0001_command_foundation.sql', '0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql', '0009_planning.sql', '0010_route_policy.sql', '0011_manual_plans.sql']);
     await expect(assertMigrationsCurrent(db.pool)).resolves.toBeUndefined();
     const tables = await db.pool.query("SELECT tablename FROM pg_tables WHERE schemaname='tawsel' ORDER BY tablename");
     expect(tables.rows.map(r => r.tablename)).toEqual([
@@ -55,7 +55,7 @@ describe('real PostgreSQL migration lifecycle', () => {
         async writeDomain() { return { status: 'accepted', response: { status: 200, body: { retained: true } }, summary: { retained: true }, audit: { fixture: true }, resourceVersions: {}, intents: [] }; },
         async writeProgress() { /* No domain table in this migration-only fixture. */ }
       });
-      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql', '0009_planning.sql']);
+      expect(await migrate(old.pool)).toEqual(['0002_tenant_access.sql', '0003_identity_sessions.sql', '0004_erp_provisioning.sql', '0005_provisioning_subject_scope.sql', '0006_b2c_intake.sql', '0007_b2b_intake.sql', '0008_locations.sql', '0009_planning.sql', '0010_route_policy.sql', '0011_manual_plans.sql']);
       expect(await getCommandResult(old.pool, scopeA, command.actionId)).toEqual(before);
       expect(await migrate(old.pool)).toEqual([]);
       await expect(withAccess(old.pool, { kind: 'integration', integrationId: scopeA.sourceId }, async a => a.commandScope)).rejects.toMatchObject({ statusCode: 403 });

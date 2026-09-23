@@ -1,5 +1,9 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## Phase 14 manual and validated-route consumers
+
+Run `npm run planning:policy:demo`, inspect `.local/phase-14-demo.json`, then `npm run test:planning` and `npm run test:erp:planning`. The demo uses real isolated PostgreSQL and controlled HTTP providers, removes its database and preserves three identified forecasts. For a human session, call `client.plans(driverId)`, then `client.command()` with `planning.setManualOrder`, expected settings/input/manual revisions and either complete `order` IDs or `select-first`. Reuse the exact envelope after uncertain delivery. [Payload, error and continuation examples](../route-policy.md). Canonical `p14-*` examples and the public-only conformance checker cover ready, urgent partial and unknown-time manual plans. Real HTTP/session/API-restart tests exercise this same typed client. No external ERP, live Engine or signed webhook proof is claimed.
+
 ## Phase 13 planning consumers
 
 Run `npm run planning:demo` for a disposable real-PostgreSQL demonstration with explicitly labelled HTTP Engine fixtures. `.local/phase-13-demo.json` contains inspected committed job/plan/forecast/replan-intent rows; the demo removes its test database. `npm run test:planning` proves process kill/recovery, delayed stale results and publication atomicity. `npm run test:erp:planning` runs public-only schema-example semantics; the same checker runs on actual stored plans. No real road-route or external-ERP delivery proof is substituted by these fixtures.

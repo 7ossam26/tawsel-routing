@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P13 session/context, provisioning, intake, locations, routing metadata and durable planning are implemented locally; each row records its actual lifecycle.** Later execution/route-policy operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P14 session/context, provisioning, intake, locations, routing metadata and durable planning are implemented locally; each row records its actual lifecycle.** Later execution/route-policy operations and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -10,7 +10,7 @@ P05/P06 foundations: PostgreSQL command/retention and tenant/capability/resource
 
 P12 verifies authenticated profile metadata and internal OSRM route/table plus VROOM candidate adapters against controlled HTTP fixtures. Canonical routing schemas/types and [boundary evidence](phase-12-evidence.md) distinguish complete/partial/error, units and service estimates. Live Engine unavailable; jobs/publication/urgency remain P13/P14.
 
-P13 now verifies durable planning/status/history APIs, atomic intake/pin triggers, fenced worker recovery and immutable candidate/forecast/workload storage. plan.revisionPublished is a source-scoped draft identity intent, not an active round or delivered ERP fact. [Runbook](planning-jobs.md) and [evidence](phase-13-evidence.md) identify controlled providers and actual PostgreSQL/HTTP/process proof. Complete route validation/manual fallback remains P14, start/baseline P15.
+P13 now verifies durable planning/status/history APIs, atomic intake/pin triggers, fenced worker recovery and immutable candidate/forecast/workload storage. plan.revisionPublished is a source-scoped draft identity intent, not an active round or delivered ERP fact. [Runbook](planning-jobs.md) and [evidence](phase-13-evidence.md) identify controlled providers and actual PostgreSQL/HTTP/process proof. P14 now verifies grouped urgent/current policy, complete validation and revisioned manual fallback; start/baseline remains P15. See [P14 policy](route-policy.md) and [evidence](phase-14-evidence.md).
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
@@ -123,9 +123,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `planning.getJob` | http-read | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | planning.manage | Read queued/running/complete/partial/failed/obsolete result. |
 | `planning.getPlan` | http-read | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | planning.manage | Read plan ID, route revision, order, pending/manual status and forecasts. |
 | `planning.requestReplan` | http-command | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | planning.manage | Request optimization without clearing current or undoing accepted facts. |
-| `planning.setManualOrder` | http-command | designed | [P14](phases/14-route-policy-manual-fallback.md) | planning.manage | Explicit eligible manual first/remaining route when needed; same constraints. |
-| `planning.publishRevision` | internal-work | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | internal | Fence lease and input fingerprint under driver lock; atomically store immutable candidate draft, forecast and source-scoped intent. No policy approval or round start. |
-| `plan.revisionPublished` | event | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | recipient-scope | Durable notice of stored draft/forecast identity, scoped per source without other sources' workload. policyValidated=false; signed delivery remains P25. |
+| `planning.setManualOrder` | http-command | verified-local | [P14](phases/14-route-policy-manual-fallback.md) | planning.manage | Revision-checked complete eligible order or first suggestion; current/urgent/capacity constraints, unknown road metrics, immutable manual forecast membership and stale-optimizer fence. No heading or round start. |
+| `planning.publishRevision` | internal-work | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | internal | Fence lease/current input, validate complete grouped route and atomically append ready/partial plan, forecast and source-scoped intent. Manual publication uses the same driver fence; no round start. |
+| `plan.revisionPublished` | event | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | recipient-scope | Source-scoped immutable plan/forecast/workload identity notice: historical draft or validated ready/partial/manual. Pending outbox intent; signed delivery remains P25. |
 
 ### execution
 

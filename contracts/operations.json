@@ -515,10 +515,13 @@
       "id": "planning.setManualOrder",
       "family": "planning",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 14,
       "capability": "planning.manage",
-      "description": "Explicit eligible manual first/remaining route when needed; same constraints."
+      "description": "Revision-checked complete eligible order or first suggestion; current/urgent/capacity constraints, unknown road metrics, immutable manual forecast membership and stale-optimizer fence. No heading or round start.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.setManualOrder",
+      "payloadSchema": "./planning.schema.json#/$defs/ManualOrder"
     },
     {
       "id": "planning.publishRevision",
@@ -527,7 +530,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "internal",
-      "description": "Fence lease and input fingerprint under driver lock; atomically store immutable candidate draft, forecast and source-scoped intent. No policy approval or round start."
+      "description": "Fence lease/current input, validate complete grouped route and atomically append ready/partial plan, forecast and source-scoped intent. Manual publication uses the same driver fence; no round start."
     },
     {
       "id": "round.start",
@@ -1203,7 +1206,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 13,
       "capability": "recipient-scope",
-      "description": "Durable notice of stored draft/forecast identity, scoped per source without other sources' workload. policyValidated=false; signed delivery remains P25.",
+      "description": "Source-scoped immutable plan/forecast/workload identity notice: historical draft or validated ready/partial/manual. Pending outbox intent; signed delivery remains P25.",
       "payloadSchema": "./planning.schema.json#/$defs/PublishedEvent"
     },
     {

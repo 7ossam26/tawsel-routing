@@ -1,5 +1,21 @@
 # Field and status mapping — canonical foundation
 
+## P14 planning mapping
+
+| Public value | Consumer meaning |
+| --- | --- |
+| Plan `draft` / `policyValidated:false` | Retained P13 candidate; not approved for start |
+| Plan `ready` / `policyValidated:true` | Complete current/urgent/eligibility/endpoint/capacity validation; still no start |
+| Plan `partial` + `routePolicy.exceptions` | Explicit affected task IDs; not a ready complete route |
+| Plan `manual`, null `jobId`/`candidate` | Explicit complete eligible order; road distance/geometry and ETA unknown |
+| Forecast member `manual` | Preserved task/attempt identity and position, null arrival/completion |
+| Job `resultKind` | full / partial / invalid / dependency-failed / null, separate from lifecycle |
+| `plans.inputRevision` / `manualRevision` | Optimistic manual-command guards alongside settings revision |
+| `plans.continuation` | Rechecked retained sequence; requires manual confirmation, no transplanted road metrics |
+| Publication ready/partial/manual | Source-scoped pending intent only; P25 sends, P26 receives |
+
+[Complete semantics and constraints](../route-policy.md). The existing source-assignment/status boundary is unchanged; ERP-specific translation stays in the connector.
+
 ## P13 stored draft/job/forecast mapping — 23 September 2026
 
 | Tawsel field | Consumer meaning / ownership |

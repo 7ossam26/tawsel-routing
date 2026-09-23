@@ -28,7 +28,7 @@ try{
   intents:(await db.pool.query('SELECT driver_id,status,job_id FROM tawsel.intake_replan_intents ORDER BY created_at')).rows};
  const report={recordedAt:new Date().toISOString(),evidence:'isolated real PostgreSQL; controlled HTTP Engine and authenticated-principal fixtures; no live routing, round or baseline',pending,latest:await service.job(principals.personal,next.jobId),plans,rows};
  await mkdir('.local',{recursive:true});await writeFile('.local/phase-13-demo.json',JSON.stringify(report,null,2)+'\n');
- console.log('PASS: intake → durable pending → partial draft → revised complete candidate; two immutable forecasts retained.');
+ console.log('PASS: intake → durable pending → partial plan → validated ready revision; two immutable forecasts retained.');
  console.log('Inspected committed jobs/plans/forecasts/replan intents: .local/phase-13-demo.json. Disposable database is removed.');
  console.log('For actual worker-kill, delayed pin/source/assignment and HTTP restart proof: npm run test:planning.');
 }finally{await provider.close();await partial.close();await db.close();}

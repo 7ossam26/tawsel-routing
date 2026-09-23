@@ -30,6 +30,7 @@ export function planningConforms(name:string,value:unknown){return ajv.validate(
 export function requirePlanning(name:string,value:unknown){if(!planningConforms(name,value))throw new PlanningError('validation_failed',400,'راجع بيانات التخطيط والنسخة المطلوبة.');}
 export function jobView(r:JobRow,latest:string|null):Job {
  return {jobId:r.job_id,driverId:r.driver_id,status:r.status,fingerprint:r.fingerprint,settingsRevision:r.input.settingsRevision,
+  resultKind:r.status==='complete'?'full':r.status==='partial'?'partial':r.last_error?(r.last_error.code==='invalid_response'?'invalid':'dependency-failed'):null,
   blockedReason:r.blocked_reason,attempts:r.attempts,leaseExpiresAt:r.lease_until?.toISOString()??null,nextAttemptAt:r.next_attempt_at.toISOString(),
   error:r.last_error,planId:r.plan_id,supersededByJobId:r.status==='superseded'&&latest!==r.job_id?latest:null,
   createdAt:r.created_at.toISOString(),finishedAt:r.finished_at?.toISOString()??null};

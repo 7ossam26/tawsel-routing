@@ -1,5 +1,9 @@
 # ERP planning input — designed foundation
 
+## P14 implemented boundary — 23 September 2026
+
+Planning now validates current-first/eligible-urgent-first complete routes, distinguishes ready/partial/invalid/dependency failure, and exposes revisioned manual order/select-first through human session + CSRF. [Policy/API and demo](../route-policy.md), [evidence](../phase-14-evidence.md). `planningStatus=complete` still never means departure/delivery; inspect the plan because retained P13 jobs may reference drafts. Manual plans have null job/candidate and null arrival/finish estimates. `plan.revisionPublished` can carry ready/partial/manual with `policyValidated:true`, remains a source-scoped pending intent without mixed-source members, and is not signed delivery or ERP application proof. First start/baseline remains P15. The P13 section below records its earlier boundary.
+
 ## P13 durable planning boundary — 23 September 2026
 
 P13 now implements revisioned human planning commands, durable job polling and immutable candidate/forecast history. [Exact APIs and trigger semantics](../planning-jobs.md), [canonical schema](../../contracts/planning.schema.json), [ordered evidence](../phase-13-evidence.md). Service-owned receipt remains accepted even if calculation fails. Intake and location `planningStatus` now reports `pending`, `running`, `complete`, `partial`, `failed` or `superseded` (or `not-requested`). `complete` means provider coverage, not policy approval, departure, delivery or ERP application.

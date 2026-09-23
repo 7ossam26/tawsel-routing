@@ -1,5 +1,7 @@
 # Durable planning and forecast revisions — Phase 13
 
+**Current P14 behavior:** [urgent/current route policy and manual API](route-policy.md) now promote new valid complete results to `ready`, store explicit `partial` exceptions and permit revisioned `manual` plans with unknown road estimates. Historical P13 drafts remain unchanged. The P13 design/evidence below explains the original durability layer; its deferred P14 statements are historical. Worker uses one lease-wide deadline across all sequential provider calls; total work may time out even if individual calls fit their own limit.
+
 Accepted intake, calculation, stored draft and round start are separate facts. P13 stores **candidate drafts** with `policyValidated:false`. `complete` describes provider coverage of the eligible input only. Phase 14 validates complete route policy; Phase 15 starts a round and binds its first-start baseline. No P13 operation activates a round, changes a current target, implements manual fallback or claims an urgent-first guarantee.
 
 ## Run and inspect

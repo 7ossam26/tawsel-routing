@@ -2456,5 +2456,507 @@
       "status": "partial",
       "policyValidated": false
     }
+  },
+  {
+    "id": "p14-partial-urgent",
+    "schema": "planning.schema.json#/$defs/Plan",
+    "valid": true,
+    "data": {
+      "planId": "13000000-0000-4000-8000-000000000008",
+      "jobId": "13000000-0000-4000-8000-000000000005",
+      "driverId": "13000000-0000-4000-8000-000000000002",
+      "revision": 1,
+      "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "state": "partial",
+      "current": true,
+      "inputCurrent": true,
+      "policyValidated": true,
+      "candidate": {
+        "mode": "car",
+        "status": "partial",
+        "policyValidated": false,
+        "visits": [
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "arrivalOffsetSeconds": 10,
+            "travelDurationSeconds": 10,
+            "distanceMetres": 100,
+            "serviceEstimateSeconds": 600,
+            "waitingSeconds": 0
+          }
+        ],
+        "unassignedTaskIds": [
+          "13000000-0000-4000-8000-000000000003"
+        ],
+        "travelDurationSeconds": 10,
+        "distanceMetres": 100,
+        "customerServiceEstimateSeconds": 600,
+        "branchServiceEstimateSeconds": 0,
+        "waitingSeconds": 0,
+        "finishOffsetSeconds": 610,
+        "endpoint": {
+          "kind": "last-customer"
+        }
+      },
+      "input": {
+        "version": 1,
+        "tenantId": "13000000-0000-4000-8000-000000000001",
+        "driverId": "13000000-0000-4000-8000-000000000002",
+        "accountKind": "personal",
+        "inputRevision": 3,
+        "settingsRevision": 1,
+        "executionRevision": 0,
+        "manualRevision": 0,
+        "currentTarget": null,
+        "locationInputRevision": 1,
+        "settings": {
+          "mode": "car",
+          "origin": {
+            "kind": "manual-pin",
+            "coordinates": {
+              "latitude": 30.04,
+              "longitude": 31.23
+            }
+          },
+          "endpoint": {
+            "kind": "last-customer"
+          },
+          "plannedStartAt": "2026-09-23T10:00:00.000Z"
+        },
+        "members": [
+          {
+            "taskId": "13000000-0000-4000-8000-000000000003",
+            "attemptId": "13000000-0000-4000-8000-000000000004",
+            "dispatchCycleId": null,
+            "branchId": null,
+            "integrationId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "priority": "urgent",
+            "earliestAt": null,
+            "departureAt": null,
+            "reservationState": null,
+            "eligible": true,
+            "exclusionReason": null,
+            "serviceEstimateSeconds": 600
+          },
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "branchId": null,
+            "integrationId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "priority": "ordinary",
+            "earliestAt": null,
+            "departureAt": null,
+            "reservationState": null,
+            "eligible": true,
+            "exclusionReason": null,
+            "serviceEstimateSeconds": 600
+          }
+        ]
+      },
+      "forecast": {
+        "forecastId": "13000000-0000-4000-8000-000000000006",
+        "workloadId": "13000000-0000-4000-8000-000000000007",
+        "kind": "planning-estimate",
+        "timeOrigin": "2026-09-23T10:00:00.000Z",
+        "expectedFinishAt": null,
+        "members": [
+          {
+            "taskId": "13000000-0000-4000-8000-000000000003",
+            "attemptId": "13000000-0000-4000-8000-000000000004",
+            "dispatchCycleId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "membership": "unassigned",
+            "exclusionReason": null,
+            "position": null,
+            "expectedArrivalAt": null,
+            "expectedCompletionAt": null
+          },
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "membership": "assigned",
+            "exclusionReason": null,
+            "position": 1,
+            "expectedArrivalAt": "2026-09-23T10:00:10.000Z",
+            "expectedCompletionAt": "2026-09-23T10:10:10.000Z"
+          }
+        ]
+      },
+      "createdAt": "2026-09-23T10:00:00.000Z",
+      "routePolicy": {
+        "version": 1,
+        "method": "grouped-heuristic",
+        "orderedTaskIds": [
+          "14000000-0000-4000-8000-000000000001"
+        ],
+        "exceptions": [
+          {
+            "taskId": "13000000-0000-4000-8000-000000000003",
+            "reason": "unassigned-urgent"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p14-ready",
+    "schema": "planning.schema.json#/$defs/Plan",
+    "valid": true,
+    "data": {
+      "planId": "13000000-0000-4000-8000-000000000008",
+      "jobId": "13000000-0000-4000-8000-000000000005",
+      "driverId": "13000000-0000-4000-8000-000000000002",
+      "revision": 1,
+      "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "state": "ready",
+      "current": true,
+      "inputCurrent": true,
+      "policyValidated": true,
+      "candidate": {
+        "mode": "car",
+        "status": "complete",
+        "policyValidated": false,
+        "visits": [
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "arrivalOffsetSeconds": 10,
+            "travelDurationSeconds": 10,
+            "distanceMetres": 100,
+            "serviceEstimateSeconds": 600,
+            "waitingSeconds": 0
+          }
+        ],
+        "unassignedTaskIds": [],
+        "travelDurationSeconds": 10,
+        "distanceMetres": 100,
+        "customerServiceEstimateSeconds": 600,
+        "branchServiceEstimateSeconds": 0,
+        "waitingSeconds": 0,
+        "finishOffsetSeconds": 610,
+        "endpoint": {
+          "kind": "last-customer"
+        }
+      },
+      "input": {
+        "version": 1,
+        "tenantId": "13000000-0000-4000-8000-000000000001",
+        "driverId": "13000000-0000-4000-8000-000000000002",
+        "accountKind": "personal",
+        "inputRevision": 3,
+        "settingsRevision": 1,
+        "executionRevision": 0,
+        "manualRevision": 0,
+        "currentTarget": null,
+        "locationInputRevision": 1,
+        "settings": {
+          "mode": "car",
+          "origin": {
+            "kind": "manual-pin",
+            "coordinates": {
+              "latitude": 30.04,
+              "longitude": 31.23
+            }
+          },
+          "endpoint": {
+            "kind": "last-customer"
+          },
+          "plannedStartAt": "2026-09-23T10:00:00.000Z"
+        },
+        "members": [
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "branchId": null,
+            "integrationId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "priority": "ordinary",
+            "earliestAt": null,
+            "departureAt": null,
+            "reservationState": null,
+            "eligible": true,
+            "exclusionReason": null,
+            "serviceEstimateSeconds": 600
+          }
+        ]
+      },
+      "forecast": {
+        "forecastId": "13000000-0000-4000-8000-000000000006",
+        "workloadId": "13000000-0000-4000-8000-000000000007",
+        "kind": "planning-estimate",
+        "timeOrigin": "2026-09-23T10:00:00.000Z",
+        "expectedFinishAt": "2026-09-23T10:10:10.000Z",
+        "members": [
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "membership": "assigned",
+            "exclusionReason": null,
+            "position": 1,
+            "expectedArrivalAt": "2026-09-23T10:00:10.000Z",
+            "expectedCompletionAt": "2026-09-23T10:10:10.000Z"
+          }
+        ]
+      },
+      "createdAt": "2026-09-23T10:00:00.000Z",
+      "routePolicy": {
+        "version": 1,
+        "method": "grouped-heuristic",
+        "orderedTaskIds": [
+          "14000000-0000-4000-8000-000000000001"
+        ],
+        "exceptions": []
+      }
+    }
+  },
+  {
+    "id": "p14-manual",
+    "schema": "planning.schema.json#/$defs/Plan",
+    "valid": true,
+    "data": {
+      "planId": "13000000-0000-4000-8000-000000000008",
+      "jobId": null,
+      "driverId": "13000000-0000-4000-8000-000000000002",
+      "revision": 1,
+      "fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "state": "manual",
+      "current": true,
+      "inputCurrent": true,
+      "policyValidated": true,
+      "candidate": null,
+      "input": {
+        "version": 1,
+        "tenantId": "13000000-0000-4000-8000-000000000001",
+        "driverId": "13000000-0000-4000-8000-000000000002",
+        "accountKind": "personal",
+        "inputRevision": 3,
+        "settingsRevision": 1,
+        "executionRevision": 0,
+        "manualRevision": 1,
+        "currentTarget": null,
+        "locationInputRevision": 1,
+        "settings": {
+          "mode": "car",
+          "origin": {
+            "kind": "manual-pin",
+            "coordinates": {
+              "latitude": 30.04,
+              "longitude": 31.23
+            }
+          },
+          "endpoint": {
+            "kind": "last-customer"
+          },
+          "plannedStartAt": "2026-09-23T10:00:00.000Z"
+        },
+        "members": [
+          {
+            "taskId": "13000000-0000-4000-8000-000000000003",
+            "attemptId": "13000000-0000-4000-8000-000000000004",
+            "dispatchCycleId": null,
+            "branchId": null,
+            "integrationId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "priority": "urgent",
+            "earliestAt": null,
+            "departureAt": null,
+            "reservationState": null,
+            "eligible": true,
+            "exclusionReason": null,
+            "serviceEstimateSeconds": 600
+          },
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "branchId": null,
+            "integrationId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "priority": "ordinary",
+            "earliestAt": null,
+            "departureAt": null,
+            "reservationState": null,
+            "eligible": true,
+            "exclusionReason": null,
+            "serviceEstimateSeconds": 600
+          }
+        ]
+      },
+      "forecast": {
+        "forecastId": "13000000-0000-4000-8000-000000000006",
+        "workloadId": "13000000-0000-4000-8000-000000000007",
+        "kind": "planning-estimate",
+        "timeOrigin": "2026-09-23T10:00:00.000Z",
+        "expectedFinishAt": null,
+        "members": [
+          {
+            "taskId": "13000000-0000-4000-8000-000000000003",
+            "attemptId": "13000000-0000-4000-8000-000000000004",
+            "dispatchCycleId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "membership": "manual",
+            "exclusionReason": null,
+            "position": 1,
+            "expectedArrivalAt": null,
+            "expectedCompletionAt": null
+          },
+          {
+            "taskId": "14000000-0000-4000-8000-000000000001",
+            "attemptId": "14000000-0000-4000-8000-000000000002",
+            "dispatchCycleId": null,
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 1,
+            "membership": "manual",
+            "exclusionReason": null,
+            "position": 2,
+            "expectedArrivalAt": null,
+            "expectedCompletionAt": null
+          }
+        ]
+      },
+      "createdAt": "2026-09-23T10:00:00.000Z",
+      "routePolicy": {
+        "version": 1,
+        "method": "manual",
+        "orderedTaskIds": [
+          "13000000-0000-4000-8000-000000000003",
+          "14000000-0000-4000-8000-000000000001"
+        ],
+        "exceptions": []
+      }
+    }
+  },
+  {
+    "id": "p14-manual-order",
+    "schema": "planning.schema.json#/$defs/ManualOrderCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "13000000-0000-4000-8000-000000000009",
+      "operationId": "planning.setManualOrder",
+      "context": {
+        "kind": "device",
+        "tenantId": "90000000-0000-4000-8000-000000000002",
+        "accountId": "90000000-0000-4000-8000-000000000003",
+        "deviceId": "90000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverId": "13000000-0000-4000-8000-000000000002",
+        "expectedSettingsRevision": 1,
+        "expectedInputRevision": 3,
+        "expectedManualRevision": 0,
+        "selection": {
+          "kind": "order",
+          "taskIds": [
+            "13000000-0000-4000-8000-000000000003",
+            "14000000-0000-4000-8000-000000000001"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "p14-manual-first",
+    "schema": "planning.schema.json#/$defs/ManualOrderCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "13000000-0000-4000-8000-000000000009",
+      "operationId": "planning.setManualOrder",
+      "context": {
+        "kind": "device",
+        "tenantId": "90000000-0000-4000-8000-000000000002",
+        "accountId": "90000000-0000-4000-8000-000000000003",
+        "deviceId": "90000000-0000-4000-8000-000000000004",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "driverId": "13000000-0000-4000-8000-000000000002",
+        "expectedSettingsRevision": 1,
+        "expectedInputRevision": 3,
+        "expectedManualRevision": 0,
+        "selection": {
+          "kind": "select-first",
+          "taskId": "13000000-0000-4000-8000-000000000003"
+        }
+      }
+    }
   }
 ]

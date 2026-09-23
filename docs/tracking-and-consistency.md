@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P14 implementation update: [route policy/manual contracts](route-policy.md) now validate current prefix, eligible urgent groups, whole-route timing/IDs/endpoints/capacity, and explicit manual orders under the P13 driver/input fence. Manual publication does not enqueue replacement optimization; it atomically supersedes pending/running jobs. Newer accepted inputs or explicit replan may queue fresh work. P16–18 must supply authoritative current/outcome/retry eligibility; P22 still owns full-capacity branch interruption.
+
 P10 implementation update: [intake contract](b2b-intake.md) and [evidence](phase-10-evidence.md) now implement immutable source snapshots/lines, independent task/cycle identities, prepared/held/withdrawn assignment history, separate revision streams, per-driver remaining-stop reservations and atomic replan/event intent. The reserve ledger is not a published route. P13/P15/P18/P22 must reuse driver/task locks and capacity checks for planning/start/reactivation/branch work. Departure_at guards are exercised as future-phase fixtures; active start races are not yet claimed.
 
 

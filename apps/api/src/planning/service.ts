@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import { continuation, publishManual } from './manual.js';
 import type { components } from '@tawsel/api-client';
 import { AccessDenied, LifecycleDenied, withAccess, type AccessSession, type AuthenticatedPrincipal, type ResourcePolicy } from '../access/service.js';
 import { executeCommandInTransaction, type ActionEnvelope } from '../commands/kernel.js';
@@ -33,7 +34,7 @@ export class PlanningService {
  constructor(readonly pool:Pool){}
  async command(principal:AuthenticatedPrincipal,value:unknown) {
   const operation=(value as ActionEnvelope|undefined)?.operationId;
-  const name=operation==='planning.saveDraft'?'SaveDraftCommand':operation==='planning.requestPreview'?'RequestPreviewCommand':operation==='planning.requestReplan'?'RequestReplanCommand':null;
+  const name=operation==='planning.saveDraft'?'SaveDraftCommand':operation==='planning.requestPreview'?'RequestPreviewCommand':operation==='planning.requestReplan'?'RequestReplanCommand':operation==='planning.setManualOrder'?'ManualOrderCommand':null;
   if(!name)throw new PlanningError('validation_failed',400,'نوع عملية التخطيط غير صالح.');
   requirePlanning(name,value);
   const command=JSON.parse(canonicalJson(value)) as ActionEnvelope;
@@ -49,6 +50,10 @@ export class PlanningService {
      authorizeInput(a,input);
      if(input.members.some(m=>m.departureAt)&&a.context.driverId!==p.driverId)throw new LifecycleDenied();
      if(Number(state.settings_revision)!==p.expectedSettingsRevision)throw new PlanningError('stale_revision',409,'تغيّرت إعدادات التخطيط؛ أعد تحميل النسخة الحالية.');
+     if(operation==='planning.setManualOrder'){
+      const result=await publishManual(tx,state,input,command.payload as components['schemas']['PlanningManualOrder'],a.context.sourceId,command.actionId);
+      return {status:'accepted',response:{status:200,body:result},summary:{planId:result.planId,driverId:p.driverId},audit:{driverId:p.driverId,planId:result.planId,manualRevision:result.manualRevision},resourceVersions:{planningInputRevision:result.inputRevision},intents:[]};
+     }
      if(operation==='planning.saveDraft'){
       if((input.accountKind==='company'&&p.settings.endpoint.kind==='fixed')||(input.accountKind==='personal'&&p.settings.endpoint.kind==='branch'))throw new PlanningError('validation_failed',400,'نقطة النهاية غير متاحة لهذا الحساب.');
       if(p.settings.endpoint.kind==='branch'){
@@ -81,21 +86,24 @@ export class PlanningService {
    await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId}]);
    const state=await planningState(tx,a.context.tenantId,driverId),current=await snapshot(tx,state);
    authorizeInput(a,current);
-   const rows=(await tx.query<{plan_id:string;job_id:string;revision:string;fingerprint:string;candidate:Plan['candidate'];input:Input;created_at:Date}>(`SELECT p.*,j.input FROM tawsel.plan_revisions p
-    JOIN tawsel.planning_jobs j USING(tenant_id,job_id) WHERE p.tenant_id=$1 AND p.driver_id=$2 AND ($3::bigint IS NULL OR p.revision<$3)
+   const rows=(await tx.query<{plan_id:string;job_id:string|null;revision:string;fingerprint:string;state:Plan['state'];route_policy:Plan['routePolicy']|null;candidate:Plan['candidate'];input:Input;created_at:Date}>(`SELECT p.*,COALESCE(p.input,j.input) AS input FROM tawsel.plan_revisions p
+    LEFT JOIN tawsel.planning_jobs j USING(tenant_id,job_id) WHERE p.tenant_id=$1 AND p.driver_id=$2 AND ($3::bigint IS NULL OR p.revision<$3)
     ORDER BY p.revision DESC LIMIT $4`,[a.context.tenantId,driverId,beforeRevision??null,limit+1])).rows;
    const items:Plan[]=[];
    for(const r of rows.slice(0,limit)){
     authorizeInput(a,r.input);
     const f=(await tx.query<{forecast_id:string;workload_id:string;time_origin:Date;expected_finish_at:Date|null}>('SELECT * FROM tawsel.forecast_revisions WHERE tenant_id=$1 AND plan_id=$2',[a.context.tenantId,r.plan_id])).rows[0]!;
     const members=(await tx.query<{task_id:string;attempt_id:string;dispatch_cycle_id:string|null;source_revision:string;assignment_revision:string;pin_revision:string;membership:Plan['forecast']['members'][number]['membership'];exclusion_reason:string|null;position:number|null;expected_arrival_at:Date|null;expected_completion_at:Date|null}>(`SELECT * FROM tawsel.forecast_members WHERE tenant_id=$1 AND forecast_id=$2 ORDER BY position NULLS LAST,task_id`,[a.context.tenantId,f.forecast_id])).rows;
-    items.push({planId:r.plan_id,jobId:r.job_id,driverId,revision:Number(r.revision),fingerprint:r.fingerprint,state:'draft',current:state.current_plan_id===r.plan_id,
-     inputCurrent:r.fingerprint===fingerprint(current),policyValidated:false,candidate:r.candidate,input:r.input,createdAt:r.created_at.toISOString(),forecast:{forecastId:f.forecast_id,workloadId:f.workload_id,kind:'planning-estimate',timeOrigin:f.time_origin.toISOString(),expectedFinishAt:f.expected_finish_at?.toISOString()??null,
+    items.push({planId:r.plan_id,jobId:r.job_id,driverId,revision:Number(r.revision),fingerprint:r.fingerprint,state:r.state,current:state.current_plan_id===r.plan_id,
+     inputCurrent:r.fingerprint===fingerprint(current),policyValidated:r.route_policy!==null,...(r.route_policy?{routePolicy:r.route_policy}:{}),candidate:r.candidate,input:r.input,createdAt:r.created_at.toISOString(),forecast:{forecastId:f.forecast_id,workloadId:f.workload_id,kind:'planning-estimate',timeOrigin:f.time_origin.toISOString(),expectedFinishAt:f.expected_finish_at?.toISOString()??null,
       members:members.map(m=>({taskId:m.task_id,attemptId:m.attempt_id,dispatchCycleId:m.dispatch_cycle_id,sourceRevision:Number(m.source_revision),assignmentRevision:Number(m.assignment_revision),pinRevision:Number(m.pin_revision),membership:m.membership,exclusionReason:m.exclusion_reason,position:m.position,expectedArrivalAt:m.expected_arrival_at?.toISOString()??null,expectedCompletionAt:m.expected_completion_at?.toISOString()??null}))}});
    }
    const latest=state.latest_job_id?(await tx.query<JobRow>('SELECT * FROM tawsel.planning_jobs WHERE tenant_id=$1 AND job_id=$2',[a.context.tenantId,state.latest_job_id])).rows[0]:undefined;
    if(latest)authorizeInput(a,latest.input);
-   return {items,nextCursor:rows.length>limit?Number(rows[limit-1]!.revision):null,settingsRevision:Number(state.settings_revision),latestJob:latest?jobView(latest,state.latest_job_id):null};
+   const effective=(await tx.query<{fingerprint:string;state:Plan['state']}>('SELECT fingerprint,state FROM tawsel.plan_revisions WHERE tenant_id=$1 AND plan_id=$2',[a.context.tenantId,state.current_plan_id])).rows[0];
+   const alreadyUsable=effective&&['ready','manual'].includes(effective.state)&&effective.fingerprint===fingerprint(current);
+   const retained=!alreadyUsable&&latest&&(latest.status==='failed'||latest.status==='pending'||latest.status==='running'||latest.status==='partial')?await continuation(tx,current):null;
+   return {items,nextCursor:rows.length>limit?Number(rows[limit-1]!.revision):null,settingsRevision:Number(state.settings_revision),inputRevision:current.inputRevision,manualRevision:current.manualRevision,continuation:retained,latestJob:latest?jobView(latest,state.latest_job_id):null};
   });
  }
 }

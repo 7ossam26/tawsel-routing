@@ -68,6 +68,7 @@
     "planning:worker": "node --env-file-if-exists=.env.database.local --env-file-if-exists=.env --import tsx scripts/planning-worker.ts",
     "planning:worker:once": "npm run planning:worker -- --once",
     "planning:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/planning-demo.ts",
+    "planning:policy:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/route-policy-demo.ts",
     "test:erp:planning": "node --import tsx tests/erp-conformance/planning.ts"
   },
   "devDependencies": {

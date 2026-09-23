@@ -105,6 +105,15 @@ describe('session HTTP handlers with real PostgreSQL and labelled signed issuer 
       const history=await client.plans(context.driverId);
       expect(planningConforms('Plans',history)).toBe(true);expect(history.items[0]!.forecast.members).toHaveLength(1);
       expect(history.latestJob!.jobId).toBe(job.jobId);
+      const manual=envelope('planning.setManualOrder',{driverId:context.driverId,expectedSettingsRevision:history.settingsRevision,expectedInputRevision:history.inputRevision,expectedManualRevision:history.manualRevision,selection:{kind:'select-first',taskId:history.items[0]!.input.members[0]!.taskId}}) as components['schemas']['PlanningManualOrderCommand'];
+      const manualPath='/api/v1/planning/commands/planning.setManualOrder?kind=personal';
+      expect((await app.inject({method:'POST',url:manualPath,cookies,payload:manual})).statusCode).toBe(403);
+      const manualAccepted=await client.command(manual);expect(manualAccepted.response!.status).toBe(200);
+      expect(await client.command(manual)).toEqual(manualAccepted);
+      await app.close();app=buildApp(createDatabasePool(db.config),config);await app.ready();base=await app.listen({host:'127.0.0.1',port:0});
+      const retained=await client.plans(context.driverId);expect(planningConforms('Plans',retained)).toBe(true);
+      expect(retained.items[0]).toMatchObject({state:'manual',candidate:null,inputCurrent:true});
+      await expect(client.command({...manual,actionId:randomUUID()})).rejects.toMatchObject({status:409,code:'stale_revision'});
       const forged={...command,actionId:randomUUID(),payload:{...command.payload,driverId:ids.driver,expectedSettingsRevision:1}};
       await expect(client.command(forged)).rejects.toMatchObject({status:404});
     }finally{await provider.close();}

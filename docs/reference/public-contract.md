@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P13 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores candidate drafts, not policy-approved active rounds. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P14 sessions, ERP provisioning, intake, confirmed locations, routing metadata and durable planning are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions; no active round is started. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -6112,6 +6112,66 @@ Validated provider candidate only, not a published or policy-verified route, arr
 }
 ```
 
+### PlanningRoutePolicy
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/RoutePolicy)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "method": {
+      "enum": [
+        "grouped-heuristic",
+        "manual"
+      ]
+    },
+    "orderedTaskIds": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Uuid"
+      },
+      "maxItems": 50,
+      "uniqueItems": true
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "reason": {
+            "enum": [
+              "unassigned-current",
+              "unassigned-urgent",
+              "unassigned-ordinary",
+              "blocked-by-current"
+            ]
+          }
+        },
+        "required": [
+          "taskId",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "version",
+    "method",
+    "orderedTaskIds",
+    "exceptions"
+  ],
+  "additionalProperties": false
+}
+```
+
 ### PlanningStatus
 
 [Canonical definition](../../contracts/planning.schema.json#/$defs/Status)
@@ -6134,7 +6194,7 @@ Validated provider candidate only, not a published or policy-verified route, arr
 
 [Canonical definition](../../contracts/planning.schema.json#/$defs/Settings)
 
-Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is a forecast anchor, not a round start. Branch endpoint pin is explicitly selected and scoped; P14 validates its route policy.
+Explicit manual origin, never GPS or physical arrival. plannedStartAt is the eligibility and forecast anchor, not round start. Whole-route policy validates the endpoint.
 
 ```json
 {
@@ -6197,7 +6257,7 @@ Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is
     "plannedStartAt"
   ],
   "additionalProperties": false,
-  "description": "Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is a forecast anchor, not a round start. Branch endpoint pin is explicitly selected and scoped; P14 validates its route policy."
+  "description": "Explicit manual origin, never GPS or physical arrival. plannedStartAt is the eligibility and forecast anchor, not round start. Whole-route policy validates the endpoint."
 }
 ```
 
@@ -6523,7 +6583,7 @@ Explicit manual origin; never GPS or claimed physical arrival. plannedStartAt is
 
 [Canonical definition](../../contracts/planning.schema.json#/$defs/Job)
 
-Durable calculation state. complete means complete provider candidate, not policy-approved route or active round. Superseded work never becomes current. Poll by stable jobId after API/worker restart.
+Durable calculation state. resultKind distinguishes full, partial, invalid provider/policy response and dependency failure. Historical P13 complete jobs may still point to unvalidated drafts; inspect the plan state. Never implies an active round.
 
 ```json
 {
@@ -6625,6 +6685,21 @@ Durable calculation state. complete means complete provider candidate, not polic
           "type": "null"
         }
       ]
+    },
+    "resultKind": {
+      "anyOf": [
+        {
+          "enum": [
+            "full",
+            "partial",
+            "invalid",
+            "dependency-failed"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -6644,7 +6719,7 @@ Durable calculation state. complete means complete provider candidate, not polic
     "finishedAt"
   ],
   "additionalProperties": false,
-  "description": "Durable calculation state. complete means complete provider candidate, not policy-approved route or active round. Superseded work never becomes current. Poll by stable jobId after API/worker restart.",
+  "description": "Durable calculation state. resultKind distinguishes full, partial, invalid provider/policy response and dependency failure. Historical P13 complete jobs may still point to unvalidated drafts; inspect the plan state. Never implies an active round.",
   "allOf": [
     {
       "if": {
@@ -6862,7 +6937,8 @@ Durable calculation state. complete means complete provider candidate, not polic
       "enum": [
         "assigned",
         "unassigned",
-        "excluded"
+        "excluded",
+        "manual"
       ]
     },
     "exclusionReason": {
@@ -6954,16 +7030,44 @@ Durable calculation state. complete means complete provider candidate, not polic
         }
       },
       "else": {
-        "type": "object",
-        "properties": {
-          "position": {
-            "type": "null"
+        "if": {
+          "type": "object",
+          "properties": {
+            "membership": {
+              "const": "manual"
+            }
           },
-          "expectedArrivalAt": {
-            "type": "null"
-          },
-          "expectedCompletionAt": {
-            "type": "null"
+          "required": [
+            "membership"
+          ]
+        },
+        "then": {
+          "type": "object",
+          "properties": {
+            "position": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expectedArrivalAt": {
+              "type": "null"
+            },
+            "expectedCompletionAt": {
+              "type": "null"
+            }
+          }
+        },
+        "else": {
+          "type": "object",
+          "properties": {
+            "position": {
+              "type": "null"
+            },
+            "expectedArrivalAt": {
+              "type": "null"
+            },
+            "expectedCompletionAt": {
+              "type": "null"
+            }
           }
         }
       }
@@ -7027,7 +7131,7 @@ Durable calculation state. complete means complete provider candidate, not polic
 
 [Canonical definition](../../contracts/planning.schema.json#/$defs/Plan)
 
-Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen revision at first start. No baseline is overwritten.
+Immutable historical draft, validated ready or explicit partial plan. Only a current valid ready/manual revision may be considered for online start by P15. No baseline is overwritten.
 
 ```json
 {
@@ -7037,7 +7141,14 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "jobId": {
-      "$ref": "common.schema.json#/$defs/Uuid"
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "driverId": {
       "$ref": "common.schema.json#/$defs/Uuid"
@@ -7052,7 +7163,12 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "pattern": "^[a-f0-9]{64}$"
     },
     "state": {
-      "const": "draft"
+      "enum": [
+        "draft",
+        "ready",
+        "partial",
+        "manual"
+      ]
     },
     "current": {
       "type": "boolean"
@@ -7061,10 +7177,17 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "type": "boolean"
     },
     "policyValidated": {
-      "const": false
+      "type": "boolean"
     },
     "candidate": {
-      "$ref": "routing.schema.json#/$defs/OptimizationResult"
+      "anyOf": [
+        {
+          "$ref": "routing.schema.json#/$defs/OptimizationResult"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "input": {
       "$ref": "#/$defs/Input"
@@ -7075,6 +7198,9 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
     "createdAt": {
       "type": "string",
       "format": "date-time"
+    },
+    "routePolicy": {
+      "$ref": "#/$defs/RoutePolicy"
     }
   },
   "required": [
@@ -7093,33 +7219,42 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
     "createdAt"
   ],
   "additionalProperties": false,
-  "description": "Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen revision at first start. No baseline is overwritten.",
+  "description": "Immutable historical draft, validated ready or explicit partial plan. Only a current valid ready/manual revision may be considered for online start by P15. No baseline is overwritten.",
   "allOf": [
     {
       "if": {
         "type": "object",
         "properties": {
-          "candidate": {
-            "type": "object",
-            "properties": {
-              "status": {
-                "const": "partial"
-              }
-            },
-            "required": [
-              "status"
-            ]
+          "state": {
+            "const": "manual"
           }
-        }
+        },
+        "required": [
+          "state"
+        ]
       },
       "then": {
         "type": "object",
         "properties": {
+          "candidate": {
+            "type": "null"
+          },
+          "jobId": {
+            "type": "null"
+          },
           "forecast": {
             "type": "object",
             "properties": {
               "expectedFinishAt": {
                 "type": "null"
+              }
+            }
+          },
+          "routePolicy": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "const": "manual"
               }
             }
           }
@@ -7128,12 +7263,151 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "else": {
         "type": "object",
         "properties": {
-          "forecast": {
+          "candidate": {
+            "$ref": "routing.schema.json#/$defs/OptimizationResult"
+          },
+          "jobId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "type": "object",
+              "properties": {
+                "candidate": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "partial"
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "type": "object",
+              "properties": {
+                "forecast": {
+                  "type": "object",
+                  "properties": {
+                    "expectedFinishAt": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "type": "object",
+              "properties": {
+                "forecast": {
+                  "type": "object",
+                  "properties": {
+                    "expectedFinishAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "enum": [
+              "ready",
+              "partial",
+              "manual"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "policyValidated": {
+            "const": true
+          },
+          "routePolicy": {
+            "$ref": "#/$defs/RoutePolicy"
+          }
+        },
+        "required": [
+          "routePolicy"
+        ]
+      },
+      "else": {
+        "type": "object",
+        "properties": {
+          "policyValidated": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "candidate": {
             "type": "object",
             "properties": {
-              "expectedFinishAt": {
-                "type": "string",
-                "format": "date-time"
+              "status": {
+                "const": "complete"
+              },
+              "visits": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "const": "partial"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "candidate": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "const": "partial"
               }
             }
           }
@@ -7184,6 +7458,26 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "inputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "manualRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "continuation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Continuation"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -7205,7 +7499,14 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
   "type": "object",
   "properties": {
     "jobId": {
-      "$ref": "common.schema.json#/$defs/Uuid"
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "planId": {
       "$ref": "common.schema.json#/$defs/Uuid"
@@ -7225,16 +7526,22 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       "$ref": "common.schema.json#/$defs/Uuid"
     },
     "state": {
-      "const": "draft"
+      "enum": [
+        "draft",
+        "ready",
+        "partial",
+        "manual"
+      ]
     },
     "status": {
       "enum": [
         "complete",
-        "partial"
+        "partial",
+        "manual"
       ]
     },
     "policyValidated": {
-      "const": false
+      "type": "boolean"
     }
   },
   "required": [
@@ -7324,6 +7631,192 @@ Immutable draft and forecast. P14 owns policy validation; P15 binds a chosen rev
       }
     }
   ]
+}
+```
+
+### PlanningManualOrder
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/ManualOrder)
+
+An explicit complete eligible manual sequence, or a first suggestion followed by retained/grouped remaining work. Does not assert heading, physical arrival or round start. Current target and urgent order remain constraints. Unknown road metrics and times stay null.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedSettingsRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedInputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedManualRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "order"
+            },
+            "taskIds": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              },
+              "minItems": 1,
+              "maxItems": 50,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "kind",
+            "taskIds"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "select-first"
+            },
+            "taskId": {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "taskId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "driverId",
+    "expectedSettingsRevision",
+    "expectedInputRevision",
+    "expectedManualRevision",
+    "selection"
+  ],
+  "additionalProperties": false,
+  "description": "An explicit complete eligible manual sequence, or a first suggestion followed by retained/grouped remaining work. Does not assert heading, physical arrival or round start. Current target and urgent order remain constraints. Unknown road metrics and times stay null."
+}
+```
+
+### PlanningManualOrderCommand
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/ManualOrderCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "planning.setManualOrder"
+        },
+        "payload": {
+          "$ref": "#/$defs/ManualOrder"
+        }
+      }
+    }
+  ]
+}
+```
+
+### PlanningManualResult
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/ManualResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "planId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "manualRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "inputRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "planId",
+    "revision",
+    "manualRevision",
+    "inputRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### PlanningContinuation
+
+[Canonical definition](../../contracts/planning.schema.json#/$defs/Continuation)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourcePlanId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "orderedTaskIds": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/Uuid"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true
+    },
+    "mode": {
+      "const": "reoptimization-pending"
+    },
+    "requiresManualConfirmation": {
+      "const": true
+    },
+    "roadMetricsAvailable": {
+      "const": false
+    }
+  },
+  "required": [
+    "sourcePlanId",
+    "orderedTaskIds",
+    "mode",
+    "requiresManualConfirmation",
+    "roadMetricsAvailable"
+  ],
+  "additionalProperties": false
 }
 ```
 
@@ -7448,6 +7941,11 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p13-save-draft | planning.schema.json#/$defs/SaveDraftCommand | valid foundation shape |
 | p13-request | planning.schema.json#/$defs/RequestReplanCommand | valid foundation shape |
 | p13-publication-event | planning.schema.json#/$defs/PublishedEvent | valid foundation shape |
+| p14-partial-urgent | planning.schema.json#/$defs/Plan | valid foundation shape |
+| p14-ready | planning.schema.json#/$defs/Plan | valid foundation shape |
+| p14-manual | planning.schema.json#/$defs/Plan | valid foundation shape |
+| p14-manual-order | planning.schema.json#/$defs/ManualOrderCommand | valid foundation shape |
+| p14-manual-first | planning.schema.json#/$defs/ManualOrderCommand | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -7518,7 +8016,7 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | routing-gps-origin | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
 | routing-provider-label | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
 | routing-positional-coordinate | routing.schema.json#/$defs/OptimizationInput | invalid (type) |
-| p13-fake-active | planning.schema.json#/$defs/Plan | invalid (const) |
+| p13-fake-active | planning.schema.json#/$defs/Plan | invalid (enum) |
 | p13-fake-policy | planning.schema.json#/$defs/Plan | invalid (const) |
 | p13-gps-origin | planning.schema.json#/$defs/Settings | invalid (const) |
 | p13-missing-attempt | planning.schema.json#/$defs/Input | invalid (required) |
@@ -7526,5 +8024,10 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p13-negative-revision | planning.schema.json#/$defs/SaveDraftCommand | invalid (minimum) |
 | p13-impossible-complete | planning.schema.json#/$defs/Job | invalid (type) |
 | p13-impossible-running | planning.schema.json#/$defs/Job | invalid (type) |
+| p14-manual-fake-road | planning.schema.json#/$defs/Plan | invalid (type) |
+| p14-partial-ready | planning.schema.json#/$defs/Plan | invalid (const) |
+| p14-manual-eta | planning.schema.json#/$defs/Plan | invalid (type) |
+| p14-no-policy | planning.schema.json#/$defs/Plan | invalid (const) |
+| p14-duplicate-manual | planning.schema.json#/$defs/ManualOrderCommand | invalid (uniqueItems) |
 
 [Canonical example data](../../contracts/examples/README.md)
