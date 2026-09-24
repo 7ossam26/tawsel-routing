@@ -1,5 +1,11 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## Phase 24 coherent reads
+
+Ask the server operator to include `monitoringCapabilities:["monitor.read"]` in the next versioned source binding. Use the public `MonitoringClient({baseUrl, authorization})`, then `driver(driverId)`, `trip(roundId)`, `taskHistory(taskId)`, `workdayHistory(workdayId)` or `action(actionId, sourceId)`. Pass `{etag:previous.etag}` for conditional refresh; status 304 has no body. Preserve the previous data and store the new refresh time. On reconnect omit `etag`. Never compare revisions across different `scopeKey` values. Fetch each cursor page under the same filters, restarting on 409.
+
+Run `npm run monitoring:demo`, then `npm run test:erp:monitoring -- .local/phase-24-demo.json`. [Contract and fixture boundaries](../monitoring.md). For an independent capture check, copy `tests/erp-conformance/monitoring.ts`, `packages/api-client/src/monitoring.ts`, `packages/api-client/src/schema.d.ts` and the report, preserving relative paths. With Node 24 and tsx installed, run `node --import tsx tests/erp-conformance/monitoring.ts <report.json>`. No server code or database/operator credentials are needed to check a capture. It is not native ERP or event application proof.
+
 ## P23 correction consumer demonstration
 
 Run `npm run corrections:demo`, then `npm run test:erp:corrections -- .local/phase-23-demo.json`. The first command executes actual loopback HTTP, PostgreSQL, driver/public receiver clients, committed-response loss and API restart. The second validates captured public response/event data and negative history/double-counting controls. It does not send driver commands using an ERP token or claim live webhook delivery.

@@ -122,6 +122,10 @@ async function writeSource(tx: Transaction, b: ServiceBinding, command: ActionEn
       await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability IN ('intake.prepare','assignment.manage')", sourceKey(b));
       for (const cap of p.intakeCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
     }
+    if (p.monitoringCapabilities !== undefined) {
+      await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability='monitor.read'",sourceKey(b));
+      for (const cap of p.monitoringCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
+    }
     if (p.returnCapabilities !== undefined) {
       await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability IN ('return.receive','return.dispose')", sourceKey(b));
       for (const cap of p.returnCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);

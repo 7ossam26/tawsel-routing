@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P24 now implements [coherent conditional monitoring/history](monitoring.md) using one PostgreSQL repeatable-read snapshot and a durable revision ledger per authorized view. Shipment/attempt/piece counters are distinct; corrected history, current/next redaction, branch/source scope and received evidence are connected-tested. [Evidence](phase-24-evidence.md). Earlier designed-only monitoring statements are superseded within this API scope; P32 UI freshness and P38 measurements remain future.
+
 P23 implementation: immutable correction links replace effective per-attempt outcomes without changing original resolution rows. Receipt/disposition/redispatch/closure and claimed handover dependencies remain authoritative. [Exact corrected-state reconstruction, API and handoff](corrections.md); [ordered proof](phase-23-evidence.md). This supersedes earlier designed-only correction/adoption statements.
 
 ## P22 branch and cycle update — 24 September 2026

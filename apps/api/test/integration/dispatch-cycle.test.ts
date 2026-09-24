@@ -15,6 +15,8 @@ import {Eligibility} from '../../src/eligibility/service.js';
 import {CurrentActivity} from '../../src/current/service.js';
 import {WorkdayReads} from '../../src/closure/reads.js';
 import {money} from '../../src/outcomes/arithmetic.js';
+import {Monitoring} from '../../src/monitoring/service.js';
+import {Locations} from '../../src/locations/service.js';
 let db:Awaited<ReturnType<typeof createTestDatabase>>;
 const closers:(()=>Promise<unknown>)[]=[];
 beforeEach(async()=>{db=await createTestDatabase();await prepareAccessFixture(db.pool);});
@@ -97,7 +99,10 @@ test('C: two competing new cycles allocate stock once; source edits cannot infla
 });
 test('C: actual source return permits a different driver through a fresh receipt, never a direct transfer',async()=>{
  const f=await fixture();
- expect((await send(f.app,f.source.token,f.source.command('user.provision',{externalId:'policy-second',sourceRevision:1,subject:'policy-second',roleExternalId:'role',branchExternalIds:['branch'],enabled:true}))).statusCode).toBe(200);
+ expect((await send(f.app,f.source.token,f.source.command('role.defineCapabilities',{externalId:'role',sourceRevision:2,name:'Driver',capabilities:['execution.own','correction.own']}))).statusCode).toBe(200);
+ const locations=new Locations(db.pool),oldPin=f.planCommand('location.confirmPin',{taskId:f.old.taskId,expectedSourceRevision:1,expectedLocationRevision:0,confirmed:true,selection:{kind:'manual',coordinates:{latitude:30.1,longitude:31.1}}});delete oldPin.payload.driverId;oldPin.resources={taskId:f.old.taskId};
+ expect((await locations.confirm(f.principal,oldPin)).receipt.businessStatus).toBe('accepted');
+ const secondUser=await send(f.app,f.source.token,f.source.command('user.provision',{externalId:'policy-second',sourceRevision:1,subject:'policy-second',roleExternalId:'role',branchExternalIds:['branch'],enabled:true}));expect(secondUser.statusCode).toBe(200);
  const driver=await send(f.app,f.source.token,f.source.command('driver.provisionReference',{externalId:'policy-second',sourceRevision:1,userExternalId:'policy-second',enabled:true,profile:'bicycle',vehicleReference:null}));expect(driver.statusCode).toBe(200);
  const transfer=f.source.command('assignment.reassignBeforeDeparture',{externalId:f.old.externalId,sourceDispatchCycleId:f.old.sourceDispatchCycleId,expectedSourceRevision:1,expectedAssignmentRevision:1,assignmentRevision:2,driverExternalId:'policy-second',receiptAsserted:true});expect((await f.intake.command(f.authorization,'assignment.reassignBeforeDeparture',transfer)).receipt.businessStatus).toBe('rejected');
  expect((await f.intake.command(f.authorization,'dispatch.createFromReceipt',f.command)).receipt.businessStatus).toBe('accepted');
@@ -106,6 +111,17 @@ test('C: actual source return permits a different driver through a fresh receipt
  expect((await f.intake.cycles(f.authorization,'shipment-0')).items.find(c=>c.dispatchCycleId===f.old.dispatchCycleId)!.driverId).toBe(f.driverId);
  const groups=await f.returns.groups(f.principal);expect(groups.groups[0]!.items[0]!.custody.held).toBe(1);
  expect((await new WorkdayReads(db.pool).carryForward(f.principal,f.round.workdayId)).items.find(i=>i.dispatchCycleId===f.old.dispatchCycleId)?.heldPieces).toBe(1);
+ // P24: another holder's new-cycle pin/action/timing must not change old history.
+ const monitoring=new Monitoring(db.pool),before=await monitoring.read(f.principal,{kind:'task',id:f.old.taskId});
+ const beforeTrip=await monitoring.read(f.principal,{kind:'trip',id:f.round.roundId});
+ expect((beforeTrip.body as components['schemas']['MonitoringSnapshot']).items.find(t=>t.taskId===f.old.taskId)?.coordinates).toEqual({latitude:30.1,longitude:31.1});
+ await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE tenant_id=$1',[f.tenantId]);
+ const newer=structuredClone(oldPin);newer.actionId=randomUUID();newer.payload.expectedSourceRevision=2;newer.payload.expectedLocationRevision=1;newer.payload.selection={kind:'manual',coordinates:{latitude:32,longitude:33}};
+ if(newer.context.kind!=='device')throw new Error('fixture device');newer.context.accountId=secondUser.json().response.body.resourceId;newer.context.deviceId=randomUUID();
+ expect((await locations.confirm({kind:'account',issuer:'https://issuer.fixture.invalid',subject:'policy-second'},newer)).receipt.businessStatus).toBe('accepted');
+ const after=await monitoring.read(f.principal,{kind:'task',id:f.old.taskId});expect(after.body.snapshotRevision).toBe(before.body.snapshotRevision);expect(after.etag).toBe(before.etag);expect(JSON.stringify(after.body)).not.toContain(newer.actionId);
+ const afterTrip=await monitoring.read(f.principal,{kind:'trip',id:f.round.roundId});expect(afterTrip.etag).toBe(beforeTrip.etag);expect((afterTrip.body as components['schemas']['MonitoringSnapshot']).items.find(t=>t.taskId===f.old.taskId)?.coordinates).toEqual({latitude:30.1,longitude:31.1});
+ await expect(monitoring.read(f.principal,{kind:'action',id:newer.actionId,sourceId:newer.context.accountId})).rejects.toMatchObject({statusCode:404});
 });
 test('C: every redispatch write boundary rolls back allocation, source, cycle, history and event',async()=>{
  const f=await fixture();

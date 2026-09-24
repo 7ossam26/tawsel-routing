@@ -64,6 +64,17 @@
           },
           "uniqueItems": true,
           "description": "Operator-only full replacement of return grants; omitted preserves, [] clears. Separate from intakeCapabilities."
+        },
+        "monitoringCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 1,
+          "items": {
+            "enum": [
+              "monitor.read"
+            ]
+          },
+          "description": "Operator-only replacement of monitoring grants. Omitted preserves; [] revokes. Never permits another source or branch."
         }
       },
       "required": [

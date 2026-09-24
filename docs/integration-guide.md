@@ -1,5 +1,7 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+P24 adds locally verified [coherent monitoring/history](monitoring.md) and [consumer setup](erp/consumer-quickstart.md), including scoped totals, conditional revision headers and sanitized received action metadata. Sender delivery and receiver application remain separate future facts. See [ordered evidence](phase-24-evidence.md).
+
 P23: [bounded correction/adoption API and demo](corrections.md) now preserves original history and corrects effective quantities/collection atomically. Events are durable intent only; actual ERP transport remains unverified.
 
 ## P22 branch resume and actual-receipt redispatch

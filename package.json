@@ -97,7 +97,10 @@
     "test:erp:dispatch": "node --import tsx tests/erp-conformance/dispatch.ts",
     "test:corrections": "npm run test:integration -- apps/api/test/integration/partial-return-correction.test.ts",
     "corrections:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/correction-demo.ts",
-    "test:erp:corrections": "node --import tsx tests/erp-conformance/corrections.ts"
+    "test:erp:corrections": "node --import tsx tests/erp-conformance/corrections.ts",
+    "test:monitoring": "npm run test:integration -- apps/api/test/integration/monitoring-snapshot.test.ts apps/api/test/integration/authorization-isolation.test.ts",
+    "monitoring:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/monitoring-demo.ts",
+    "test:erp:monitoring": "node --import tsx tests/erp-conformance/monitoring.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

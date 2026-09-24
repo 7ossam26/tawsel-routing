@@ -21,7 +21,8 @@
     "src/devices.ts",
     "src/returns.ts",
     "src/branches.ts",
-    "src/corrections.ts"
+    "src/corrections.ts",
+    "src/monitoring.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

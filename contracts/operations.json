@@ -791,46 +791,56 @@
       "id": "monitoring.getDriverSnapshot",
       "family": "monitoring-history",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 24,
       "capability": "monitor.read",
-      "description": "Coherent current/next/progress/held/prepared/ownership snapshot, conditional refresh."
+      "description": "Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/drivers/{id}"
     },
     {
       "id": "monitoring.getTripSnapshot",
       "family": "monitoring-history",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 24,
       "capability": "monitor.read",
-      "description": "Scoped coherent trip/forecast view; redact unauthorized source details."
+      "description": "Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/trips/{id}"
     },
     {
       "id": "monitoring.getTaskHistory",
       "family": "monitoring-history",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 24,
       "capability": "monitor.read",
-      "description": "Task/cycle/attempt/effective outcome plus original correction history."
+      "description": "Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/tasks/{id}/history"
     },
     {
       "id": "monitoring.getWorkdayHistory",
       "family": "monitoring-history",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 24,
       "capability": "monitor.read",
-      "description": "Explicit day/round history with carryover and timestamps."
+      "description": "Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/workdays/{id}/history"
     },
     {
       "id": "integration.getExecutionProjection",
       "family": "monitoring-history",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 24,
       "capability": "monitor.read",
-      "description": "Recipient-scoped task/trip/assignment projection excluding other integrations."
+      "description": "Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/drivers/{id}"
     },
     {
       "id": "action.getResult",
@@ -1777,6 +1787,61 @@
       "description": "Recover the same driver correction result by action ID.",
       "method": "GET",
       "path": "/api/v1/corrections/actions/{actionId}"
+    },
+    {
+      "id": "monitoring.getAction",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/monitoring/actions/{id}",
+      "description": "Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
+    },
+    {
+      "id": "integration.getTripProjection",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/trips/{id}",
+      "description": "Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
+    },
+    {
+      "id": "integration.getTaskHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/tasks/{id}/history",
+      "description": "Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
+    },
+    {
+      "id": "integration.getWorkdayHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/workdays/{id}/history",
+      "description": "Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
+    },
+    {
+      "id": "integration.getMonitoringAction",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/actions/{id}",
+      "description": "Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
     }
   ],
   "authorizationFoundation": {

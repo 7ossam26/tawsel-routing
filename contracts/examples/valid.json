@@ -8449,5 +8449,1103 @@
       ],
       "message": "أكد الفرع استلامًا أو تصرفًا في القطع؛ السجل محفوظ والمراجعة التجارية لدى الشركة."
     }
+  },
+  {
+    "id": "monitoring-scoped",
+    "schema": "monitoring.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+      "workday": {
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "openedAt": "2026-09-24T12:19:59.849Z",
+        "endedAt": null
+      },
+      "round": {
+        "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "startedAt": "2026-09-24T12:19:59.850Z",
+        "endedAt": null
+      },
+      "current": null,
+      "nextSuggestion": null,
+      "plan": {
+        "planId": null,
+        "revision": null,
+        "orderedTaskIds": [
+          "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "d0b2c730-68bc-5590-adaf-2f4a82499d62"
+        ]
+      },
+      "owner": null,
+      "progress": {
+        "shipments": 2,
+        "attempts": 2,
+        "processedAttempts": 0,
+        "processedShipments": 0,
+        "fullDeliveredShipments": 0,
+        "partialShipments": 0,
+        "failedShipments": 0,
+        "remainingShipments": 2
+      },
+      "groups": {
+        "preparedShipments": 0,
+        "heldShipments": 2,
+        "deferredShipments": 0,
+        "returnRequiredShipments": 0,
+        "heldPieces": 6,
+        "returnRequiredPieces": 0
+      },
+      "items": [
+        {
+          "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+          "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        },
+        {
+          "taskId": "d0b2c730-68bc-5590-adaf-2f4a82499d62",
+          "dispatchCycleId": "af5f1cb0-ee40-4337-b495-beff1eb1c907",
+          "attemptId": "2aa9ba60-62e0-46c5-855b-1481af89c65f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        }
+      ],
+      "scopeKey": "607c38c17df8d70fb0b2f00a3618b8e2acea2eb98a09e3e49e702a8d89cf5d48",
+      "snapshotRevision": 1,
+      "lastCommittedChange": {
+        "recordedAt": "2026-09-24T12:19:59.863Z",
+        "correlationId": "2c899e242acbba308a26ab90d097bf89"
+      },
+      "nextCursor": null,
+      "freshness": {
+        "refreshedAt": "2026-09-24T12:20:00.062Z",
+        "receivedEvidenceOnly": true,
+        "deviceContactAt": null,
+        "lastReceivedActionAt": "2026-09-24T12:19:59.670Z",
+        "integrationDelivery": "unavailable"
+      }
+    }
+  },
+  {
+    "id": "monitoring-own",
+    "schema": "monitoring.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+      "workday": {
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "openedAt": "2026-09-24T12:19:59.849Z",
+        "endedAt": null
+      },
+      "round": {
+        "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "startedAt": "2026-09-24T12:19:59.850Z",
+        "endedAt": null
+      },
+      "current": null,
+      "nextSuggestion": {
+        "taskId": "80b67d20-7870-5086-a948-b1ab93dd6a14",
+        "dispatchCycleId": "34a4b9d1-4d4f-486c-b1e2-39b72a27a49b",
+        "attemptId": "1d372040-b061-4c58-8e97-4ce689c948d9",
+        "branchId": "bd99c8e9-bf83-4f59-a61e-2e7a7ef1e0d7",
+        "integrationId": "65b8066b-d84d-4dbb-be37-1d4affeb76f6",
+        "sourceRevision": 1,
+        "assignmentRevision": 1,
+        "recipientName": "SECRET RECIPIENT B",
+        "recipientPhone": "01099999999",
+        "coordinates": {
+          "latitude": 30.987,
+          "longitude": 31.987
+        },
+        "state": "held",
+        "earliestAt": null,
+        "deferred": false,
+        "outcome": null,
+        "outcomeRevision": 0,
+        "heldPieces": 3,
+        "returnRequiredPieces": 0,
+        "eligible": true
+      },
+      "plan": {
+        "planId": "d5a6fe01-aea4-4aca-9f4e-5aefccf0fa8a",
+        "revision": 2,
+        "orderedTaskIds": [
+          "80b67d20-7870-5086-a948-b1ab93dd6a14",
+          "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "d0b2c730-68bc-5590-adaf-2f4a82499d62"
+        ]
+      },
+      "owner": {
+        "accountId": "015d637a-f0e6-4b6e-9cc2-f19bbc66c5a9",
+        "deviceId": "1f4a4a50-ba61-416f-bbe1-b7cb37995675",
+        "generation": 1
+      },
+      "progress": {
+        "shipments": 3,
+        "attempts": 3,
+        "processedAttempts": 0,
+        "processedShipments": 0,
+        "fullDeliveredShipments": 0,
+        "partialShipments": 0,
+        "failedShipments": 0,
+        "remainingShipments": 3
+      },
+      "groups": {
+        "preparedShipments": 0,
+        "heldShipments": 3,
+        "deferredShipments": 0,
+        "returnRequiredShipments": 0,
+        "heldPieces": 9,
+        "returnRequiredPieces": 0
+      },
+      "items": [
+        {
+          "taskId": "80b67d20-7870-5086-a948-b1ab93dd6a14",
+          "dispatchCycleId": "34a4b9d1-4d4f-486c-b1e2-39b72a27a49b",
+          "attemptId": "1d372040-b061-4c58-8e97-4ce689c948d9",
+          "branchId": "bd99c8e9-bf83-4f59-a61e-2e7a7ef1e0d7",
+          "integrationId": "65b8066b-d84d-4dbb-be37-1d4affeb76f6",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "SECRET RECIPIENT B",
+          "recipientPhone": "01099999999",
+          "coordinates": {
+            "latitude": 30.987,
+            "longitude": 31.987
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        },
+        {
+          "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+          "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        },
+        {
+          "taskId": "d0b2c730-68bc-5590-adaf-2f4a82499d62",
+          "dispatchCycleId": "af5f1cb0-ee40-4337-b495-beff1eb1c907",
+          "attemptId": "2aa9ba60-62e0-46c5-855b-1481af89c65f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        }
+      ],
+      "scopeKey": "0e6955005bb2411feabf36b9a38922abd43580c7e3b13078a8b0a4016377ad0b",
+      "snapshotRevision": 1,
+      "lastCommittedChange": {
+        "recordedAt": "2026-09-24T12:19:59.971Z",
+        "correlationId": "352e3695977f5339a11802b0ae71cae8"
+      },
+      "nextCursor": null,
+      "freshness": {
+        "refreshedAt": "2026-09-24T12:20:00.142Z",
+        "receivedEvidenceOnly": true,
+        "deviceContactAt": null,
+        "lastReceivedActionAt": "2026-09-24T12:19:59.914Z",
+        "integrationDelivery": "unavailable"
+      }
+    }
+  },
+  {
+    "id": "monitoring-corrected",
+    "schema": "monitoring.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+      "workday": {
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "openedAt": "2026-09-24T12:19:59.849Z",
+        "endedAt": null
+      },
+      "round": {
+        "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+        "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+        "startedAt": "2026-09-24T12:19:59.850Z",
+        "endedAt": null
+      },
+      "current": null,
+      "nextSuggestion": null,
+      "plan": {
+        "planId": null,
+        "revision": null,
+        "orderedTaskIds": [
+          "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "d0b2c730-68bc-5590-adaf-2f4a82499d62"
+        ]
+      },
+      "owner": null,
+      "progress": {
+        "shipments": 2,
+        "attempts": 2,
+        "processedAttempts": 1,
+        "processedShipments": 1,
+        "fullDeliveredShipments": 1,
+        "partialShipments": 0,
+        "failedShipments": 0,
+        "remainingShipments": 1
+      },
+      "groups": {
+        "preparedShipments": 0,
+        "heldShipments": 1,
+        "deferredShipments": 0,
+        "returnRequiredShipments": 0,
+        "heldPieces": 3,
+        "returnRequiredPieces": 0
+      },
+      "items": [
+        {
+          "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+          "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+          "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": "full",
+          "outcomeRevision": 2,
+          "heldPieces": 0,
+          "returnRequiredPieces": 0,
+          "eligible": false
+        },
+        {
+          "taskId": "d0b2c730-68bc-5590-adaf-2f4a82499d62",
+          "dispatchCycleId": "af5f1cb0-ee40-4337-b495-beff1eb1c907",
+          "attemptId": "2aa9ba60-62e0-46c5-855b-1481af89c65f",
+          "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+          "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "state": "held",
+          "earliestAt": null,
+          "deferred": false,
+          "outcome": null,
+          "outcomeRevision": 0,
+          "heldPieces": 3,
+          "returnRequiredPieces": 0,
+          "eligible": true
+        }
+      ],
+      "scopeKey": "607c38c17df8d70fb0b2f00a3618b8e2acea2eb98a09e3e49e702a8d89cf5d48",
+      "snapshotRevision": 3,
+      "lastCommittedChange": {
+        "recordedAt": "2026-09-24T12:20:00.441Z",
+        "correlationId": "95f88a8c661c64278cbb2bede54490ef5069a60629c4ab4e0ea6736b9f9fcca9"
+      },
+      "nextCursor": null,
+      "freshness": {
+        "refreshedAt": "2026-09-24T12:20:00.482Z",
+        "receivedEvidenceOnly": true,
+        "deviceContactAt": null,
+        "lastReceivedActionAt": "2026-09-24T12:20:00.389Z",
+        "integrationDelivery": "unavailable"
+      }
+    }
+  },
+  {
+    "id": "monitoring-history",
+    "schema": "monitoring.schema.json#/$defs/History",
+    "valid": true,
+    "data": {
+      "resourceId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+      "progress": {
+        "shipments": 1,
+        "attempts": 1,
+        "processedAttempts": 1,
+        "processedShipments": 1,
+        "fullDeliveredShipments": 1,
+        "partialShipments": 0,
+        "failedShipments": 0,
+        "remainingShipments": 0
+      },
+      "items": [
+        {
+          "kind": "cycle",
+          "cycle": {
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "state": "held",
+            "receivedAt": "2026-09-24T12:19:59.628Z",
+            "departureAt": "2026-09-24T12:19:59.860Z",
+            "latest": true
+          }
+        },
+        {
+          "kind": "attempt",
+          "attempt": {
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "admittedAt": "2026-09-24T12:19:59.860Z",
+            "stage": "resolved"
+          }
+        },
+        {
+          "kind": "outcome",
+          "outcome": {
+            "kind": "company",
+            "time": {
+              "actionId": "0cc40c71-f0e6-488c-80c0-e1984d376bd8",
+              "recordedAt": "2026-09-24T12:20:00.221Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "delivered": 2,
+                "sourceLineId": "pieces",
+                "sourceQuantity": 3,
+                "heldReturnRequired": 1
+              }
+            ],
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "arrival": null,
+            "heading": null,
+            "outcome": "partial",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "revision": 1,
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "outcomeId": "55aa7108-f4ae-452a-b7d5-8cdfbcffd815",
+            "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+            "collection": {
+              "goods": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 20000
+              },
+              "reported": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 25000
+              },
+              "shipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 5000
+              },
+              "shippingStatus": "collected",
+              "unpaidShipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 0
+              }
+            },
+            "returnRequired": true,
+            "sourceRevision": 1,
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "sourceReference": {
+              "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+              "externalId": "shipment-0",
+              "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+            },
+            "assignmentRevision": 1,
+            "sourceDispatchCycleId": "cycle"
+          },
+          "effective": false
+        },
+        {
+          "kind": "outcome",
+          "outcome": {
+            "kind": "company",
+            "time": {
+              "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+              "recordedAt": "2026-09-24T12:20:00.423Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "delivered": 3,
+                "sourceLineId": "pieces",
+                "sourceQuantity": 3,
+                "heldReturnRequired": 0
+              }
+            ],
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "arrival": null,
+            "heading": null,
+            "outcome": "full",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "revision": 2,
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "outcomeId": "68241063-d069-45d9-b4e4-a74de9115876",
+            "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+            "collection": {
+              "goods": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 30000
+              },
+              "reported": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 35000
+              },
+              "shipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 5000
+              },
+              "shippingStatus": "collected",
+              "unpaidShipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 0
+              }
+            },
+            "returnRequired": false,
+            "sourceRevision": 1,
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "sourceReference": {
+              "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+              "externalId": "shipment-0",
+              "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+            },
+            "assignmentRevision": 1,
+            "sourceDispatchCycleId": "cycle"
+          },
+          "effective": true
+        },
+        {
+          "kind": "correction",
+          "correction": {
+            "outcome": {
+              "kind": "company",
+              "time": {
+                "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+                "recordedAt": "2026-09-24T12:20:00.423Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "lines": [
+                {
+                  "unitDue": {
+                    "currency": "EGP",
+                    "exponent": 2,
+                    "amountMinor": 10000
+                  },
+                  "delivered": 3,
+                  "sourceLineId": "pieces",
+                  "sourceQuantity": 3,
+                  "heldReturnRequired": 0
+                }
+              ],
+              "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+              "arrival": null,
+              "heading": null,
+              "outcome": "full",
+              "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+              "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+              "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+              "revision": 2,
+              "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+              "outcomeId": "68241063-d069-45d9-b4e4-a74de9115876",
+              "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+              "collection": {
+                "goods": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 30000
+                },
+                "reported": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 35000
+                },
+                "shipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 5000
+                },
+                "shippingStatus": "collected",
+                "unpaidShipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 0
+                }
+              },
+              "returnRequired": false,
+              "sourceRevision": 1,
+              "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+              "sourceReference": {
+                "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+                "externalId": "shipment-0",
+                "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+              },
+              "assignmentRevision": 1,
+              "sourceDispatchCycleId": "cycle"
+            },
+            "correctionId": "7b68c711-cc3d-4eb5-9ee5-44ddbe84d71b",
+            "evidenceActionId": null,
+            "previousRevision": 1,
+            "evidenceReceiptId": null,
+            "previousOutcomeId": "55aa7108-f4ae-452a-b7d5-8cdfbcffd815"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "a6d8439c-b79c-4a38-8701-01f7ae9a45cf",
+            "operationId": "intake.submitSnapshot",
+            "receivedAt": "2026-09-24T12:19:59.599Z",
+            "acceptedAt": "2026-09-24T12:19:59.613Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "e0a75ce4-88c8-41e5-8918-2c594772edb9",
+            "operationId": "assignment.receiveBatch",
+            "receivedAt": "2026-09-24T12:19:59.622Z",
+            "acceptedAt": "2026-09-24T12:19:59.654Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "015d637a-f0e6-4b6e-9cc2-f19bbc66c5a9",
+            "actionId": "0cc40c71-f0e6-488c-80c0-e1984d376bd8",
+            "operationId": "outcome.recordPartial",
+            "receivedAt": "2026-09-24T12:20:00.199Z",
+            "acceptedAt": "2026-09-24T12:20:00.287Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "015d637a-f0e6-4b6e-9cc2-f19bbc66c5a9",
+            "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+            "operationId": "outcome.correct",
+            "receivedAt": "2026-09-24T12:20:00.389Z",
+            "acceptedAt": "2026-09-24T12:20:00.441Z",
+            "businessStatus": "accepted"
+          }
+        }
+      ],
+      "scopeKey": "9bfb6089227fae46897f3efb3862b66d8c4d4a2ef95b6e3edcf4b654e68e6c77",
+      "snapshotRevision": 1,
+      "lastCommittedChange": {
+        "recordedAt": "2026-09-24T12:20:00.441Z",
+        "correlationId": "95f88a8c661c64278cbb2bede54490ef5069a60629c4ab4e0ea6736b9f9fcca9"
+      },
+      "nextCursor": null,
+      "freshness": {
+        "refreshedAt": "2026-09-24T12:20:00.517Z",
+        "receivedEvidenceOnly": true,
+        "deviceContactAt": null,
+        "lastReceivedActionAt": "2026-09-24T12:20:00.389Z",
+        "integrationDelivery": "unavailable"
+      }
+    }
+  },
+  {
+    "id": "monitoring-workday",
+    "schema": "monitoring.schema.json#/$defs/History",
+    "valid": true,
+    "data": {
+      "resourceId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+      "progress": {
+        "shipments": 2,
+        "attempts": 2,
+        "processedAttempts": 1,
+        "processedShipments": 1,
+        "fullDeliveredShipments": 1,
+        "partialShipments": 0,
+        "failedShipments": 0,
+        "remainingShipments": 1
+      },
+      "items": [
+        {
+          "kind": "round",
+          "round": {
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+            "startedAt": "2026-09-24T12:19:59.850Z",
+            "endedAt": null
+          }
+        },
+        {
+          "kind": "cycle",
+          "cycle": {
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "state": "held",
+            "receivedAt": "2026-09-24T12:19:59.628Z",
+            "departureAt": "2026-09-24T12:19:59.860Z",
+            "latest": true
+          }
+        },
+        {
+          "kind": "cycle",
+          "cycle": {
+            "dispatchCycleId": "af5f1cb0-ee40-4337-b495-beff1eb1c907",
+            "taskId": "d0b2c730-68bc-5590-adaf-2f4a82499d62",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "state": "held",
+            "receivedAt": "2026-09-24T12:19:59.675Z",
+            "departureAt": "2026-09-24T12:19:59.863Z",
+            "latest": true
+          }
+        },
+        {
+          "kind": "attempt",
+          "attempt": {
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "admittedAt": "2026-09-24T12:19:59.860Z",
+            "stage": "resolved"
+          }
+        },
+        {
+          "kind": "attempt",
+          "attempt": {
+            "attemptId": "2aa9ba60-62e0-46c5-855b-1481af89c65f",
+            "taskId": "d0b2c730-68bc-5590-adaf-2f4a82499d62",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "dispatchCycleId": "af5f1cb0-ee40-4337-b495-beff1eb1c907",
+            "admittedAt": "2026-09-24T12:19:59.863Z",
+            "stage": "available"
+          }
+        },
+        {
+          "kind": "outcome",
+          "outcome": {
+            "kind": "company",
+            "time": {
+              "actionId": "0cc40c71-f0e6-488c-80c0-e1984d376bd8",
+              "recordedAt": "2026-09-24T12:20:00.221Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "delivered": 2,
+                "sourceLineId": "pieces",
+                "sourceQuantity": 3,
+                "heldReturnRequired": 1
+              }
+            ],
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "arrival": null,
+            "heading": null,
+            "outcome": "partial",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "revision": 1,
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "outcomeId": "55aa7108-f4ae-452a-b7d5-8cdfbcffd815",
+            "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+            "collection": {
+              "goods": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 20000
+              },
+              "reported": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 25000
+              },
+              "shipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 5000
+              },
+              "shippingStatus": "collected",
+              "unpaidShipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 0
+              }
+            },
+            "returnRequired": true,
+            "sourceRevision": 1,
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "sourceReference": {
+              "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+              "externalId": "shipment-0",
+              "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+            },
+            "assignmentRevision": 1,
+            "sourceDispatchCycleId": "cycle"
+          },
+          "effective": false
+        },
+        {
+          "kind": "outcome",
+          "outcome": {
+            "kind": "company",
+            "time": {
+              "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+              "recordedAt": "2026-09-24T12:20:00.423Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "delivered": 3,
+                "sourceLineId": "pieces",
+                "sourceQuantity": 3,
+                "heldReturnRequired": 0
+              }
+            ],
+            "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+            "arrival": null,
+            "heading": null,
+            "outcome": "full",
+            "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+            "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+            "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+            "revision": 2,
+            "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+            "outcomeId": "68241063-d069-45d9-b4e4-a74de9115876",
+            "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+            "collection": {
+              "goods": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 30000
+              },
+              "reported": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 35000
+              },
+              "shipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 5000
+              },
+              "shippingStatus": "collected",
+              "unpaidShipping": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 0
+              }
+            },
+            "returnRequired": false,
+            "sourceRevision": 1,
+            "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+            "sourceReference": {
+              "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+              "externalId": "shipment-0",
+              "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+            },
+            "assignmentRevision": 1,
+            "sourceDispatchCycleId": "cycle"
+          },
+          "effective": true
+        },
+        {
+          "kind": "correction",
+          "correction": {
+            "outcome": {
+              "kind": "company",
+              "time": {
+                "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+                "recordedAt": "2026-09-24T12:20:00.423Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "lines": [
+                {
+                  "unitDue": {
+                    "currency": "EGP",
+                    "exponent": 2,
+                    "amountMinor": 10000
+                  },
+                  "delivered": 3,
+                  "sourceLineId": "pieces",
+                  "sourceQuantity": 3,
+                  "heldReturnRequired": 0
+                }
+              ],
+              "taskId": "c79ce8c9-6f4b-55e3-ac93-747367e22f60",
+              "arrival": null,
+              "heading": null,
+              "outcome": "full",
+              "roundId": "ba7c403e-e6e1-4793-a9bc-39767c06beb5",
+              "branchId": "9c6c8d0f-85f9-492f-bfc8-12a4a22bb01c",
+              "driverId": "4f8b6076-c226-44dc-816f-cadc4ab5c517",
+              "revision": 2,
+              "attemptId": "059a5006-addf-42e2-99dd-86a4d6c7270f",
+              "outcomeId": "68241063-d069-45d9-b4e4-a74de9115876",
+              "workdayId": "643f0648-1ba5-471a-a17c-a22933a8cf97",
+              "collection": {
+                "goods": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 30000
+                },
+                "reported": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 35000
+                },
+                "shipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 5000
+                },
+                "shippingStatus": "collected",
+                "unpaidShipping": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 0
+                }
+              },
+              "returnRequired": false,
+              "sourceRevision": 1,
+              "dispatchCycleId": "7c453587-5159-48f5-8979-5f51c1a50a9a",
+              "sourceReference": {
+                "tenantId": "c81068eb-447d-4dd9-9787-93e93cec206c",
+                "externalId": "shipment-0",
+                "integrationId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1"
+              },
+              "assignmentRevision": 1,
+              "sourceDispatchCycleId": "cycle"
+            },
+            "correctionId": "7b68c711-cc3d-4eb5-9ee5-44ddbe84d71b",
+            "evidenceActionId": null,
+            "previousRevision": 1,
+            "evidenceReceiptId": null,
+            "previousOutcomeId": "55aa7108-f4ae-452a-b7d5-8cdfbcffd815"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "a6d8439c-b79c-4a38-8701-01f7ae9a45cf",
+            "operationId": "intake.submitSnapshot",
+            "receivedAt": "2026-09-24T12:19:59.599Z",
+            "acceptedAt": "2026-09-24T12:19:59.613Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "e0a75ce4-88c8-41e5-8918-2c594772edb9",
+            "operationId": "assignment.receiveBatch",
+            "receivedAt": "2026-09-24T12:19:59.622Z",
+            "acceptedAt": "2026-09-24T12:19:59.654Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "4e26bf3d-2b4f-45d5-854d-19cd78dc6f7c",
+            "operationId": "intake.submitSnapshot",
+            "receivedAt": "2026-09-24T12:19:59.659Z",
+            "acceptedAt": "2026-09-24T12:19:59.666Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "3de3ac9b-dc3d-423d-aec7-2fefab0c8cf1",
+            "actionId": "6c9033d7-57a0-462a-86a2-abc2b1242e87",
+            "operationId": "assignment.receiveBatch",
+            "receivedAt": "2026-09-24T12:19:59.670Z",
+            "acceptedAt": "2026-09-24T12:19:59.690Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "015d637a-f0e6-4b6e-9cc2-f19bbc66c5a9",
+            "actionId": "0cc40c71-f0e6-488c-80c0-e1984d376bd8",
+            "operationId": "outcome.recordPartial",
+            "receivedAt": "2026-09-24T12:20:00.199Z",
+            "acceptedAt": "2026-09-24T12:20:00.287Z",
+            "businessStatus": "accepted"
+          }
+        },
+        {
+          "kind": "action",
+          "action": {
+            "sourceId": "015d637a-f0e6-4b6e-9cc2-f19bbc66c5a9",
+            "actionId": "53aa361c-4a5d-43b2-9cd1-8246f65f0744",
+            "operationId": "outcome.correct",
+            "receivedAt": "2026-09-24T12:20:00.389Z",
+            "acceptedAt": "2026-09-24T12:20:00.441Z",
+            "businessStatus": "accepted"
+          }
+        }
+      ],
+      "scopeKey": "3f9554c816ee6599d9c4fca8de68144b1659f459c0aa4d6969d72810f0cc2bbe",
+      "snapshotRevision": 1,
+      "lastCommittedChange": {
+        "recordedAt": "2026-09-24T12:20:00.441Z",
+        "correlationId": "95f88a8c661c64278cbb2bede54490ef5069a60629c4ab4e0ea6736b9f9fcca9"
+      },
+      "nextCursor": null,
+      "freshness": {
+        "refreshedAt": "2026-09-24T12:20:00.585Z",
+        "receivedEvidenceOnly": true,
+        "deviceContactAt": null,
+        "lastReceivedActionAt": "2026-09-24T12:20:00.389Z",
+        "integrationDelivery": "unavailable"
+      }
+    }
   }
 ]

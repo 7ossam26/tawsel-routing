@@ -1,5 +1,23 @@
 # Field and status mapping — canonical foundation
 
+## Phase 24 monitoring mapping
+
+| Public field | Consumer meaning |
+| --- | --- |
+| `scopeKey`, `snapshotRevision` | Compare only within the same authenticated resource/filter scope; replacement versions, not business-event sequence numbers |
+| `progress.shipments` / `attempts` | Unique admitted shipments / distinct attempts; retry adds an attempt |
+| `processedShipments` / `fullDeliveredShipments` / `partialShipments` / `failedShipments` | Distinct latest-attempt classifications; processed includes full, partial and failed |
+| `remainingShipments` | Latest admitted attempt has no effective outcome; not necessarily currently eligible |
+| `groups.heldPieces` / `returnRequiredPieces` | Current custody, including retained old-cycle discrepancies; return-required is a subset |
+| `current` / `nextSuggestion` | Explicit current stage versus actual planned suggestion; hidden and absent both null |
+| `lastCommittedChange.recordedAt` / `correlationId` | Write/acceptance time visible after commit and transaction/action correlation, not exact WAL commit instant |
+| `freshness.refreshedAt` | Successful server read time, never device presence or render proof |
+| `freshness.lastReceivedActionAt` | Scoped durable receipt time; unsent phone actions are unknown |
+| `freshness.integrationDelivery` | `unavailable` until actual transport/application persistence; not applied |
+| `nextCursor` | Opaque authorized-snapshot cursor; 409 means restart pagination |
+
+[API/counter semantics](../monitoring.md). Source/assignment/outcome revisions remain independent. This table adds no financial settlement, stock receipt or GPS inference.
+
 ## P23 effective corrections — locally verified
 
 | Public field / fact | Meaning for ERP / consumer | Real ERP field |

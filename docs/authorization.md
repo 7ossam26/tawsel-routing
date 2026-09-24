@@ -1,5 +1,7 @@
 # Authorization contract — Phase 06
 
+P24 applies the existing `monitor.read` / own-driver `execution.own` policy to coherent monitoring, exact round/day/task history and sanitized action IDs. Source credentials additionally require operator-granted `monitoringCapabilities`. Filters, totals, pagination and revision keys follow fresh tenant/branch/source/driver authorization. [API and redaction rules](monitoring.md), [real mixed-source evidence](phase-24-evidence.md).
+
 P10 adds explicit source-only service operations. Operator bootstrap's optional intakeCapabilities grants/revokes intake.prepare and assignment.manage without turning a provisioning credential into a human actor. Credentials, P06 current branch/source checks, mutation and replay disclosure share one transaction. Intake read policies allow either grant, while result recovery rechecks the original command capability. [Contract and examples](b2b-intake.md); [evidence](phase-10-evidence.md).
 
 

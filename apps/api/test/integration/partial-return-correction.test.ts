@@ -425,7 +425,7 @@ test('C: additive migration preserves a real P20 partial outcome and exposes its
  try{
   await mkdir(directory,{recursive:true});for(const name of (await readdir(source)).filter(n=>n.endsWith('.sql')&&n<'0019'))await copyFile(new URL(name,source),new URL(name,directory));
   await prepareAccessFixture(old.pool,undefined,directory);f=await outcomeCompanyFixture(old,[{}]);expect((await new Outcomes(old.pool).command(f.principal,f.make(0,'outcome.recordPartial',{pieces:[{sourceLineId:'pieces',delivered:2}],reportedCollection:money(25000)}))).receipt.businessStatus).toBe('accepted');
-  const before=(await old.pool.query('SELECT record FROM tawsel.delivery_outcomes')).rows;expect(await migrate(old.pool)).toEqual(['0019_source_returns.sql','0020_branch_activity.sql','0021_dispatch_cycles.sql','0022_driver_corrections.sql']);expect((await old.pool.query('SELECT record FROM tawsel.delivery_outcomes')).rows).toEqual(before);
+  const before=(await old.pool.query('SELECT record FROM tawsel.delivery_outcomes')).rows;expect(await migrate(old.pool)).toEqual(['0019_source_returns.sql','0020_branch_activity.sql','0021_dispatch_cycles.sql','0022_driver_corrections.sql','0023_monitoring_snapshots.sql']);expect((await old.pool.query('SELECT record FROM tawsel.delivery_outcomes')).rows).toEqual(before);
   expect((await new Returns(old.pool).groups(f.principal)).groups[0]!.items[0]).toMatchObject({availableToRequest:1,custody:{sourceQuantity:3,delivered:2,held:1,received:0,lost:0,damaged:0}});
  }finally{await f?.close();await old.close();await cleanupUpgrade(directory);}
 });

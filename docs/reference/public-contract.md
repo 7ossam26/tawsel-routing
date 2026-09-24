@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P23 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P24 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. Live Engine evidence and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -2207,6 +2207,17 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
       },
       "uniqueItems": true,
       "description": "Operator-only full replacement of return grants; omitted preserves, [] clears. Separate from intakeCapabilities."
+    },
+    "monitoringCapabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 1,
+      "items": {
+        "enum": [
+          "monitor.read"
+        ]
+      },
+      "description": "Operator-only replacement of monitoring grants. Omitted preserves; [] revokes. Never permits another source or branch."
     }
   },
   "required": [
@@ -15501,6 +15512,1156 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### MonitoringChange
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Change)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "correlationId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "recordedAt",
+    "correlationId"
+  ]
+}
+```
+
+### MonitoringFreshness
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Freshness)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "refreshedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receivedEvidenceOnly": {
+      "const": true
+    },
+    "deviceContactAt": {
+      "type": "null"
+    },
+    "lastReceivedActionAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "integrationDelivery": {
+      "const": "unavailable"
+    }
+  },
+  "required": [
+    "refreshedAt",
+    "receivedEvidenceOnly",
+    "deviceContactAt",
+    "lastReceivedActionAt",
+    "integrationDelivery"
+  ]
+}
+```
+
+### MonitoringProgress
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Progress)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "shipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "processedAttempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "processedShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "fullDeliveredShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "partialShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "failedShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "remainingShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "shipments",
+    "attempts",
+    "processedAttempts",
+    "processedShipments",
+    "fullDeliveredShipments",
+    "partialShipments",
+    "failedShipments",
+    "remainingShipments"
+  ]
+}
+```
+
+### MonitoringGroups
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Groups)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "preparedShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "heldShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "deferredShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "returnRequiredShipments": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "heldPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "returnRequiredPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "preparedShipments",
+    "heldShipments",
+    "deferredShipments",
+    "returnRequiredShipments",
+    "heldPieces",
+    "returnRequiredPieces"
+  ]
+}
+```
+
+### MonitoringRound
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Round)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "roundId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "workdayId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "roundId",
+    "workdayId",
+    "startedAt",
+    "endedAt"
+  ]
+}
+```
+
+### MonitoringWorkday
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Workday)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "workdayId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "openedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "workdayId",
+    "openedAt",
+    "endedAt"
+  ]
+}
+```
+
+### MonitoringTask
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Task)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "integrationId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "recipientName": {
+      "type": "string"
+    },
+    "recipientPhone": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "coordinates": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "prepared",
+        "held",
+        "unassigned",
+        "withdrawn",
+        "personal"
+      ]
+    },
+    "earliestAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deferred": {
+      "type": "boolean"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "enum": [
+            "full",
+            "partial",
+            "refused",
+            "no-answer"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcomeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "heldPieces": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "returnRequiredPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "eligible": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "taskId",
+    "dispatchCycleId",
+    "attemptId",
+    "branchId",
+    "integrationId",
+    "sourceRevision",
+    "assignmentRevision",
+    "recipientName",
+    "recipientPhone",
+    "coordinates",
+    "state",
+    "earliestAt",
+    "deferred",
+    "outcome",
+    "outcomeRevision",
+    "heldPieces",
+    "returnRequiredPieces",
+    "eligible"
+  ]
+}
+```
+
+### MonitoringCurrent
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Current)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "enum": [
+        "customer",
+        "branch"
+      ]
+    },
+    "taskId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "attemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "arrived",
+        "awaiting-receipt"
+      ]
+    }
+  },
+  "required": [
+    "kind",
+    "taskId",
+    "attemptId",
+    "branchId",
+    "stage"
+  ]
+}
+```
+
+### MonitoringPlan
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Plan)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "planId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revision": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "orderedTaskIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      }
+    }
+  },
+  "required": [
+    "planId",
+    "revision",
+    "orderedTaskIds"
+  ]
+}
+```
+
+### MonitoringOwner
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Owner)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "deviceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "accountId",
+    "deviceId",
+    "generation"
+  ]
+}
+```
+
+### MonitoringAction
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Action)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sourceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "actionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "operationId": {
+      "type": "string"
+    },
+    "receivedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "acceptedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "businessStatus": {
+      "enum": [
+        "accepted",
+        "rejected",
+        "review-required"
+      ]
+    }
+  },
+  "required": [
+    "sourceId",
+    "actionId",
+    "operationId",
+    "receivedAt",
+    "acceptedAt",
+    "businessStatus"
+  ]
+}
+```
+
+### MonitoringCycle
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Cycle)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "dispatchCycleId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "driverId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "enum": [
+        "unassigned",
+        "prepared",
+        "held",
+        "withdrawn"
+      ]
+    },
+    "receivedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "departureAt": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latest": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "dispatchCycleId",
+    "taskId",
+    "driverId",
+    "sourceRevision",
+    "assignmentRevision",
+    "state",
+    "receivedAt",
+    "departureAt",
+    "latest"
+  ]
+}
+```
+
+### MonitoringAttempt
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Attempt)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "taskId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "roundId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admittedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stage": {
+      "enum": [
+        "available",
+        "heading",
+        "arrived",
+        "paused",
+        "resolved"
+      ]
+    }
+  },
+  "required": [
+    "attemptId",
+    "taskId",
+    "roundId",
+    "dispatchCycleId",
+    "admittedAt",
+    "stage"
+  ]
+}
+```
+
+### MonitoringHistoryItem
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/HistoryItem)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "outcome"
+        },
+        "outcome": {
+          "$ref": "outcomes.schema.json#/$defs/Record"
+        },
+        "effective": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "outcome",
+        "effective"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "correction"
+        },
+        "correction": {
+          "$ref": "corrections.schema.json#/$defs/Record"
+        }
+      },
+      "required": [
+        "kind",
+        "correction"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "cycle"
+        },
+        "cycle": {
+          "$ref": "#/$defs/Cycle"
+        }
+      },
+      "required": [
+        "kind",
+        "cycle"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "attempt"
+        },
+        "attempt": {
+          "$ref": "#/$defs/Attempt"
+        }
+      },
+      "required": [
+        "kind",
+        "attempt"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "action"
+        },
+        "action": {
+          "$ref": "#/$defs/Action"
+        }
+      },
+      "required": [
+        "kind",
+        "action"
+      ]
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "round"
+        },
+        "round": {
+          "$ref": "#/$defs/Round"
+        }
+      },
+      "required": [
+        "kind",
+        "round"
+      ]
+    }
+  ]
+}
+```
+
+### MonitoringSnapshot
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "scopeKey": {
+      "type": "string"
+    },
+    "snapshotRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastCommittedChange": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Change"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "freshness": {
+      "$ref": "#/$defs/Freshness"
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "driverId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "workday": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Workday"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "round": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Round"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "current": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Current"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextSuggestion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Task"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "plan": {
+      "$ref": "#/$defs/Plan"
+    },
+    "owner": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Owner"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "progress": {
+      "$ref": "#/$defs/Progress"
+    },
+    "groups": {
+      "$ref": "#/$defs/Groups"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Task"
+      }
+    }
+  },
+  "required": [
+    "scopeKey",
+    "snapshotRevision",
+    "lastCommittedChange",
+    "freshness",
+    "nextCursor",
+    "driverId",
+    "workday",
+    "round",
+    "current",
+    "nextSuggestion",
+    "plan",
+    "owner",
+    "progress",
+    "groups",
+    "items"
+  ]
+}
+```
+
+### MonitoringHistory
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/History)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "scopeKey": {
+      "type": "string"
+    },
+    "snapshotRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastCommittedChange": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Change"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "freshness": {
+      "$ref": "#/$defs/Freshness"
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resourceId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "progress": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Progress"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/HistoryItem"
+      }
+    }
+  },
+  "required": [
+    "scopeKey",
+    "snapshotRevision",
+    "lastCommittedChange",
+    "freshness",
+    "nextCursor",
+    "resourceId",
+    "progress",
+    "items"
+  ]
+}
+```
+
+### MonitoringActionSnapshot
+
+[Canonical definition](../../contracts/monitoring.schema.json#/$defs/ActionSnapshot)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "scopeKey": {
+      "type": "string"
+    },
+    "snapshotRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastCommittedChange": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Change"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "freshness": {
+      "$ref": "#/$defs/Freshness"
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "action": {
+      "$ref": "#/$defs/Action"
+    }
+  },
+  "required": [
+    "scopeKey",
+    "snapshotRevision",
+    "lastCommittedChange",
+    "freshness",
+    "nextCursor",
+    "action"
+  ]
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -15724,6 +16885,11 @@ Examples include designed fixtures and captured local API results; consult contr
 | p23-captured-outcome.corrected-1 | corrections.schema.json#/$defs/Event | valid foundation shape |
 | p23-captured-evidence.adoptionResolved-2 | corrections.schema.json#/$defs/AdoptionEvent | valid foundation shape |
 | p23-receipt-denied-availability | corrections.schema.json#/$defs/Availability | valid foundation shape |
+| monitoring-scoped | monitoring.schema.json#/$defs/Snapshot | valid foundation shape |
+| monitoring-own | monitoring.schema.json#/$defs/Snapshot | valid foundation shape |
+| monitoring-corrected | monitoring.schema.json#/$defs/Snapshot | valid foundation shape |
+| monitoring-history | monitoring.schema.json#/$defs/History | valid foundation shape |
+| monitoring-workday | monitoring.schema.json#/$defs/History | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -15861,5 +17027,10 @@ Examples include designed fixtures and captured local API results; consult contr
 | p23-event-reject-0 | corrections.schema.json#/$defs/Event | invalid (minimum) |
 | p23-event-reject-1 | corrections.schema.json#/$defs/Event | invalid (minimum) |
 | p23-event-reject-2 | corrections.schema.json#/$defs/AdoptionEvent | invalid (required) |
+| monitoring-hidden-count | monitoring.schema.json#/$defs/Snapshot | invalid (additionalProperties) |
+| monitoring-false-presence | monitoring.schema.json#/$defs/Snapshot | invalid (additionalProperties) |
+| monitoring-false-applied | monitoring.schema.json#/$defs/Snapshot | invalid (const) |
+| monitoring-fractional-count | monitoring.schema.json#/$defs/Snapshot | invalid (type) |
+| monitoring-missing-revision | monitoring.schema.json#/$defs/Snapshot | invalid (required) |
 
 [Canonical example data](../../contracts/examples/README.md)

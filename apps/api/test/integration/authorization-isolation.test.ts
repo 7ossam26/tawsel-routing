@@ -8,12 +8,42 @@ import { deferred, observeDatabaseBlock } from '../support/barriers.js';
 import { createDatabasePool } from '../../src/db/pool.js';
 import { buildApp } from '../../src/app.js';
 import { bindSource, operatorToken, send } from '../support/provisioning-fixture.js';
+import {mixedMonitoringFixture} from '../support/monitoring-fixture.js';
+import {CurrentActivity} from '../../src/current/service.js';
+import {Outcomes} from '../../src/outcomes/service.js';
+import {money} from '../../src/outcomes/arithmetic.js';
 
 describe('P06 authorization isolation — real PostgreSQL, labelled principals and synthetic resources', () => {
   let db: Awaited<ReturnType<typeof createTestDatabase>>;
   beforeEach(async () => { db = await createTestDatabase(); await prepareAccessFixture(db.pool); });
   afterEach(async () => { await db?.close(); });
   const recordIds = async (principal: AuthenticatedPrincipal) => (await readFixture(db.pool, principal)).map(r => r.resource_id);
+  test('P24: actual mixed-trip projections filter before totals and direct history/action reads, including hidden-only changes',async()=>{
+    const f=await mixedMonitoringFixture(db);
+    try{
+      const before=await f.snapshotA();expect(before.progress.shipments).toBe(2);expect(before.items.map(i=>i.taskId).sort()).toEqual([...f.tasks].sort());
+      expect(before.nextSuggestion).toBeNull();expect(before.plan.planId).toBeNull();expect(before.plan.revision).toBeNull();expect(before.owner).toBeNull();
+      const heading=f.hiddenMake('current.selectHeading');expect((await new CurrentActivity(db.pool).command(f.principal,heading)).receipt.businessStatus).toBe('accepted');
+      const after=await f.snapshotA();expect(after.current).toBeNull();expect(after.nextSuggestion?.taskId).toBe(f.tasks[0]);
+      expect((await new CurrentActivity(db.pool).command(f.principal,f.hiddenMake('current.recordArrival',{},1,String(heading.payload.attemptId)))).receipt.businessStatus).toBe('accepted');
+      expect((await f.snapshotA()).snapshotRevision).toBe(after.snapshotRevision);
+      for(const secret of [f.hiddenId,f.hiddenBranchId,'SECRET RECIPIENT B','01099999999','30.987','31.987'])expect(JSON.stringify(after)).not.toContain(secret);
+      const shown=await f.monitorGet(f.second,`trips/${f.round.roundId}`);expect(shown.statusCode,shown.body).toBe(200);expect(shown.json().current.taskId).toBe(f.hiddenId);expect(shown.json().progress.shipments).toBe(1);
+      const hiddenHistory=await f.monitorGet(f.source,`tasks/${f.hiddenId}/history`),missing=await f.monitorGet(f.source,`tasks/${randomUUID()}/history`);
+      expect(hiddenHistory.statusCode).toBe(404);expect(missing.statusCode).toBe(404);expect(hiddenHistory.json().code).toBe(missing.json().code);
+      expect((await f.monitorGet(f.source,`actions/${heading.actionId}`,`?sourceId=${f.accountId}`)).statusCode).toBe(404);
+      const action=await f.monitorGet(f.second,`actions/${heading.actionId}`,`?sourceId=${f.accountId}`);expect(action.statusCode,action.body).toBe(200);expect(action.json().action.businessStatus).toBe('accepted');expect(action.body).not.toContain('payload');
+      const done=f.hiddenMake('outcome.recordFull',{reportedCollection:money(35000)},2,String(heading.payload.attemptId));expect((await new Outcomes(db.pool).command(f.principal,done)).receipt.businessStatus).toBe('accepted');
+      const day=await f.monitorGet(f.source,`workdays/${f.round.workdayId}/history`);expect(day.statusCode,day.body).toBe(200);expect(day.body).not.toContain(f.hiddenId);expect(day.json().progress).toMatchObject({shipments:2,processedAttempts:0});
+      const denied=await f.monitorGet(f.source,`drivers/${f.driverId}`,`?branchId=${f.hiddenBranchId}`);expect(denied.statusCode).toBe(403);
+      const fabricated=await f.monitorGet(f.source,`drivers/${f.driverId}`,`?tenantId=${ids.otherTenant}`);expect(fabricated.statusCode).toBe(400);
+      // A fresh unrelated tenant has real credentials but no resource visibility.
+      const foreign=await bindSource(f.app,[]);const grant=structuredClone(foreign.bootstrapCommand);grant.actionId=randomUUID();grant.payload.sourceRevision=2;grant.payload.monitoringCapabilities=['monitor.read'];expect((await send(f.app,operatorToken,grant)).statusCode).toBe(200);
+      expect((await f.monitorGet(foreign,`tasks/${f.tasks[0]}/history`)).statusCode).toBe(404);
+      const revoke=structuredClone(f.monitorGrant);revoke.actionId=randomUUID();revoke.payload.sourceRevision=4;revoke.payload.monitoringCapabilities=[];expect((await send(f.app,operatorToken,revoke)).statusCode).toBe(200);
+      expect((await f.monitorGet()).statusCode).toBe(403);
+    }finally{await f.close();}
+  });
   test('P08: public credentials isolate identical external references across companies and integrations', async () => {
     const app = buildApp(createDatabasePool(db.config), undefined, { issuer: 'https://issuer.example.test/company', operatorToken });
     try {

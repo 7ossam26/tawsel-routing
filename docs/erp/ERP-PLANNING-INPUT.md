@@ -1,5 +1,11 @@
 # ERP planning input — designed foundation
 
+## Phase 24 released local boundary — 24 September 2026
+
+Coherent source-scoped monitoring/history is implemented and locally verified. Use `/api/v1/erp/monitoring/{drivers|trips|tasks|workdays|actions}/...` with bearer service authentication and operator-granted `monitor.read`; task/workday paths end in `/history`, action reads require `sourceId`. [Exact paths, counters, pagination and demo](../monitoring.md), [ordered evidence and fixture limits](../phase-24-evidence.md). Scope/filter keys, observed replacement revisions, ETag/304 and successful-refresh timestamps support later native views. No full-trip totals, hidden current/next target, global plan revision or raw action envelope is exposed. There is no sender/received/applied claim: `integrationDelivery` remains `unavailable`. Connector translation/native ERP UI/storage remain external and later phases.
+
+The operator can grant or revoke `monitoringCapabilities` through versioned `integration.bindSource`; an ERP credential cannot self-grant. Cross-source shared-driver reference binding in the isolation/demo setup is a labelled fixture because the earlier public administration API does not yet provide that operator workflow. Consumer authorization is always rechecked in the coherent read transaction.
+
 ## P23 correction/adoption boundary — locally verified
 
 [Canonical correction schema](../../contracts/corrections.schema.json), [HTTP demo and exact semantics](../corrections.md), [ordered evidence](../phase-23-evidence.md). Tawsel owns appended outcome revisions; ERP owns commercial consequences. No staff/service correction endpoint exists. Driver commands require current ownership, live own correction capability, original open day and no dependent receipt/disposition/redispatch/later attempt/claimed handover.

@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P23 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; P22 branch/new-cycle dependencies and P23 correction/adoption are locally verified; signed event delivery remains unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P24 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; P22 branch/new-cycle dependencies and P23 correction/adoption are locally verified; signed event delivery remains unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -207,12 +207,17 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `monitoring.getDriverSnapshot` | http-read | designed | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent current/next/progress/held/prepared/ownership snapshot, conditional refresh. |
-| `monitoring.getTripSnapshot` | http-read | designed | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Scoped coherent trip/forecast view; redact unauthorized source details. |
-| `monitoring.getTaskHistory` | http-read | designed | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Task/cycle/attempt/effective outcome plus original correction history. |
-| `monitoring.getWorkdayHistory` | http-read | designed | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Explicit day/round history with carryover and timestamps. |
-| `integration.getExecutionProjection` | http-read | designed | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Recipient-scoped task/trip/assignment projection excluding other integrations. |
+| `monitoring.getDriverSnapshot` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `monitoring.getTripSnapshot` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `monitoring.getTaskHistory` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `monitoring.getWorkdayHistory` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `integration.getExecutionProjection` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
 | `progress.snapshot` | event | designed | [P24](phases/24-coherent-monitoring-api.md) | recipient-scope | Replacement scoped snapshot; never erases missing business events. |
+| `monitoring.getAction` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `integration.getTripProjection` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `integration.getTaskHistory` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `integration.getWorkdayHistory` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
+| `integration.getMonitoringAction` | http-read | verified-local | [P24](phases/24-coherent-monitoring-api.md) | monitor.read | Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim. |
 
 ### sync-recovery
 
