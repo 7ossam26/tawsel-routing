@@ -17,14 +17,13 @@ import {runOutboxOnce} from '../apps/api/src/outbox/worker.js';
 import {OutboxClient} from '../packages/api-client/src/outbox.js';
 import {checkOutboxCapture,type OutboxCapture} from '../tests/erp-conformance/outbox.js';
 
-/** Reproducible P25 only: actual prior domain commits, real PostgreSQL, public
- * sender operations and real signed HTTP. Identity is a labelled issuer fixture. */
-export async function outboxDemo(){
+/** Shared P25/P26 scenario preparation: actual prior domain commands/commits
+ * and real PostgreSQL. Identity/provider setup is a labelled fixture; the demo
+ * wrappers below and in receiver-demo.ts exercise the public signed HTTP boundary. */
+export async function prepareOutboxBusiness(){
  const db=await createTestDatabase();await prepareAccessFixture(db.pool);
  const f=await outcomeCompanyFixture(db,[{},{}]);
  const scope={tenantId:f.source.tenantId,integrationId:f.source.integrationId},key={keyId:'demo_v1',secret:randomBytes(32).toString('hex')};
- const receiver=await controlledReceiver(scope,[key]),app=Fastify();
- const config={encryptionKey:randomBytes(32),keys:[{...scope,...key}],destinations:[{...scope,url:receiver.url}],testLoopback:true};
  try{
   const bootstrap=structuredClone(f.source.bootstrapCommand);bootstrap.actionId=randomUUID();bootstrap.payload.sourceRevision=3;bootstrap.payload.returnCapabilities=['return.receive','return.dispose'];
   if((await send(f.app,operatorToken,bootstrap)).statusCode!==200)throw new Error('Return source grant');
@@ -39,6 +38,14 @@ export async function outboxDemo(){
   const returned=await returns.request(f.principal,requestCommand),request=returned.response!.body.request as components['schemas']['ReturnRequestView'];
   const receipt=f.source.command('return.confirmSubsetReceipt',{requestId:request.requestId,receivingBranchId:request.sourceBranchId,items:[{itemId:request.items[0]!.itemId,expectedRevision:request.items[0]!.revision,quantity:1}]});
   if((await new ReturnReceiver(db.pool).command(`Bearer ${f.source.token}`,'return.confirmSubsetReceipt',receipt)).receipt.businessStatus!=='accepted')throw new Error('Actual receipt failed');
+  return {db,f,scope,key,async close(){await f.close();await db.close();}};
+ }catch(e){await f.close();await db.close();throw e;}
+}
+export async function outboxDemo(){
+ const {db,f,scope,key,close}=await prepareOutboxBusiness();
+ const receiver=await controlledReceiver(scope,[key]),app=Fastify();
+ const config={encryptionKey:randomBytes(32),keys:[{...scope,...key}],destinations:[{...scope,url:receiver.url}],testLoopback:true};
+ try{
   // All business events above were committed before configuring/starting sender.
   await app.register(s=>outboxRoutes(s,db.pool,config));const baseUrl=await app.listen({host:'127.0.0.1',port:0});
   const client=new OutboxClient({baseUrl,authorization:`Bearer ${f.source.token}`});
@@ -54,6 +61,6 @@ export async function outboxDemo(){
   const result=checkOutboxCapture(capture);
   for(const name of ['task.snapshotAccepted','assignment.received','outcome.recorded','outcome.corrected','return.requested','return.subsetReceived'])if(!result.eventTypes.includes(name))throw new Error(`Missing real domain event: ${name}`);
   return {capture,result};
- }finally{await app.close();await receiver.close();await f.close();await db.close();}
+ }finally{await app.close();await receiver.close();await close();}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const {capture,result}=await outboxDemo();await mkdir('.local',{recursive:true});await writeFile('.local/phase-25-demo.json',JSON.stringify(capture,null,2)+'\n');console.log(JSON.stringify({...result,capture:'.local/phase-25-demo.json'},null,2));}

@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P26 (24 September 2026): the [independent durable receiver](receiver-protocol.md), [standalone install/start/conformance](consumer-quickstart.md), [real process/database proof](../verification/integration.md) and [ordered evidence](../phase-26-evidence.md) are available. Build artifacts: packages/api-client/dist, apps/mock-erp/dist and dist/erp-reference. Received, applied and snapshot-covered state remain distinct, with explicit historical gaps. P27 native source/forms/outbox and real vendor ERP integration remain later work. Earlier numbered summaries below describe their historical phase scope.
+
 P25 (24 September 2026): [signed sender protocol, exact-byte vector and recovery](../outbox-delivery.md), [public consumer slice](consumer-quickstart.md), [checkpoint evidence](../phase-25-evidence.md) and updated mapping/planning input are available. Sender receipt is locally verified; separate durable receiver/projection remains P26.
 
 P24 now supplies [coherent monitoring/history](../monitoring.md), public client, source grants, scoped counter/revision mapping and a real HTTP capture/conformance demo. [Evidence and remaining limits](../phase-24-evidence.md). P25 transport and P26–27 native receiver application remain future.

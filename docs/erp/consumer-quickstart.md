@@ -1,4 +1,87 @@
-# Public ERP consumer quickstart — provisioning and intake
+# External consumer quickstart — Phase 26
+
+The runnable receiver is **@tawsel/mock-erp 0.1.0**. It uses a separate database/role, verifies signed HTTP, commits inbox receipt, then applies in an independent worker. Native source commands/forms are Phase 27. See [protocol and limits](receiver-protocol.md), [actual verification](../verification/integration.md) and [public contract](../../contracts/consumer.schema.json). Earlier phase examples below remain available and are labelled by their scope.
+
+## Versions and build
+
+Verified local runtime: Node **24.19.0**, npm **11.6.2**, PostgreSQL **18.4**. Pins retained: Fastify **5.12.5**, pg **8.23.0**, Ajv **8.20.0**, TypeScript **6.0.2**, Vitest **5.0.1**, tsx **4.23.15**. Use Node 24 in the supported package range. On Windows, check both Node and npm's wrapper; a system npm.ps1 may launch a different Node.
+
+From the Tawsel checkout:
+
+```powershell
+npm ci
+npm run receiver:package
+```
+
+Outputs: compiled public client and canonical schema copies in `packages/api-client/dist/`; compiled receiver in `apps/mock-erp/dist/`; portable distribution in `dist/erp-reference/` containing `api-client/`, `mock-erp/`, `conformance/receiver.mjs` and a standalone package manifest. These are build copies, not independent schema owners. This is a locally verified reference artifact, not a published npm release.
+
+Copy only `dist/erp-reference` into a new directory outside Tawsel, then:
+
+```powershell
+npm install --ignore-scripts
+Copy-Item mock-erp/config.example.json receiver.json
+```
+
+No Tawsel server source, shared internal package or database URL belongs in that directory/environment. The consumer requires only its own PostgreSQL URL, recipient scope, webhook verification keys, consumer status token and Tawsel HTTPS URL/scoped service credential. A future vendor connector may use a different language/database while conforming to these contracts.
+
+## Separate database and configuration
+
+Have the database operator create a dedicated `mock_erp_<name>` database owned by a separate LOGIN role with NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOINHERIT, NOREPLICATION and NOBYPASSRLS. Grant no memberships or Tawsel schema/table privileges. Mark it with `COMMENT ON DATABASE mock_erp_reference IS 'tawsel:external-mock-erp:v1'`; revoke PUBLIC access to the consumer database. The consumer checks the marker, role privileges, owner and absence of a Tawsel schema before migrations. Use SCRAM/TLS according to the deployment. It never reads TAWSEL_DATABASE_URL.
+
+For a local disposable setup in this repository, `npm run db:local:start` then `npm run mock-erp:db:create` creates a random dedicated database/role and writes its URL to ignored `.local/mock-erp.database.env`. That administrative harness uses the marked test-control credential; it is **not** part of the distributed consumer. Do not give that admin credential to the consumer. Database/role names from this setup are retained for the operator; normal test/demo fixtures drop only their own created database/role.
+
+Edit `receiver.json`: use actual tenant/integration UUIDs, a random status token (at least 32 characters), and sender-provisioned key IDs plus 32-byte lowercase-hex secrets. Copy the sender's activation/verification-expiry times when rotating; both key lists must agree. Set `tawselBaseUrl` and `tawselAuthorization` to the scoped `integration.manage` credential. Use the [P08 setup](../provisioning.md) and [P25 endpoint/key commands](../outbox-delivery.md); no operator token is needed by the consumer. Use distinct status and service credentials. A loopback demonstration may explicitly set `testLoopback:true` with `http://127.0.0.1:<port>`; nonloopback API access requires HTTPS.
+
+## Start and observe
+
+From the standalone directory, set the two consumer variables in each terminal:
+
+```powershell
+$env:MOCK_ERP_DATABASE_URL='postgresql://receiver_role:REPLACE@127.0.0.1:55432/mock_erp_reference?sslmode=disable'
+$env:MOCK_ERP_CONFIG=(Resolve-Path receiver.json).Path
+node mock-erp/dist/main.js migrate
+node mock-erp/dist/main.js
+```
+
+In a second terminal with the same two variables: `node mock-erp/dist/main.js worker`. To drain once: `node mock-erp/dist/main.js worker --once`. From the checkout, equivalent scripts are `npm run mock-erp:migrate`, `npm run mock-erp:start` and `npm run mock-erp:worker`; these load the local receiver-only URL file. Startup applies only receiver migrations. Stop each local process with Ctrl+C.
+
+Configure the sender callback to `http://127.0.0.1:3010/api/v1/consumer/events` for the explicit local fixture, or the approved HTTPS callback for deployment. With the worker stopped, a signed event is acknowledged as received and GET `/api/v1/consumer/status?aggregateType=task&aggregateId=<task UUID>` using `Authorization: Bearer <statusToken>` shows received advancing while applied remains behind. Starting the worker advances applied, with quantities and the processed marker committed together. Tawsel's `/api/v1/integration/applied-checkpoint` exposes the separately reported result; its ordinary delivery queue still describes transport receipt.
+
+For a known gap or an entirely missing local stream: `node mock-erp/dist/main.js reconcile task <UUID>`. Recovery uses scoped HTTP only. An expired/unavailable history can restore current state from an available checkpoint while `historyComplete=false` and `lastError=history_unavailable` remain visible. It never fills missing transition history from a snapshot.
+
+## Reproduce and run conformance
+
+Repository demonstration (isolated databases and child processes; source/issuer preparation is explicitly a fixture):
+
+```powershell
+npm run db:local:start
+npm run receiver:demo
+npm run test:receiver
+```
+
+Expected demonstration: **19 unique events**, **2 delivered pieces**, **25000 reported minor units**, **1 actual return piece received**, both sides restarted, sender attempts `lease-expired, received`, and separate applied reports. Disposable setup uses actual previous domain commands and real PostgreSQL/HTTP; it does not use native ERP source forms. Capture: `.local/phase-26-demo.json` (fixture facts, no credentials). The tests additionally kill processes at commit boundaries and inject projection/retention faults.
+
+Reusable network checker: create `conformance.json` with these exact fields:
+
+```json
+{
+  "apiUrl":"http://127.0.0.1:3001",
+  "callbackUrl":"http://127.0.0.1:3010/api/v1/consumer/events",
+  "statusUrl":"http://127.0.0.1:3010/api/v1/consumer/status",
+  "authorization":"Bearer SOURCE_SCOPED_SERVICE_TOKEN",
+  "statusAuthorization":"Bearer RECEIVER_STATUS_TOKEN",
+  "tenantId":"11111111-1111-4111-8111-111111111111",
+  "integrationId":"22222222-2222-4222-8222-222222222222",
+  "signingKey":{"keyId":"reference_v1","secret":"64_LOWERCASE_HEX_CHARACTERS"},
+  "aggregates":[{"type":"task","id":"33333333-3333-4333-8333-333333333333"}],
+  "expected":{"deliveredPieces":2,"reportedMinor":25000,"receivedPieces":0}
+}
+```
+
+Use actual dedicated test data and include all aggregates whose totals you expect. The checker intentionally redelivers signed retained events twice and submits changed-payload/stale-signature negative cases, so use test credentials/data. It validates replay envelopes, acknowledgements, processed watermarks, snapshots and independent expected totals; it fails if a worker is absent or history is unavailable. Run `node conformance/receiver.mjs conformance.json` in the standalone directory, or `npm run test:erp:receiver -- <configuration path>` in the checkout. It needs no database or operator credential. The quickstart does not claim vendor ERP compatibility, production TLS/egress verification or measured freshness.
+
+## Earlier public integration examples
+
 
 ## P25 public sender consumer slice
 
@@ -6,7 +89,7 @@ Use Node 24.19/npm 11, `npm run db:local:start`, `npm run test:outbox`, `npm run
 
 Portable consumer inputs: `tests/erp-conformance/outbox.ts`, `packages/api-client/src/webhook-signature.ts`, `packages/api-client/src/schema.d.ts`, the capture and Node/tsx. Preserve relative directories when copying outside the repository. Run the checker without Tawsel DB/operator environment variables; it consumes only public captured bytes/status. `packages/api-client/src/outbox.ts` supplies live authenticated queue/detail/commands/replay. [Setup, complete headers/byte vector, versioning, overlap, endpoints and recovery](../outbox-delivery.md), [canonical schemas](../../contracts/outbox.schema.json), [evidence](../phase-25-evidence.md).
 
-A real receiver must implement P26 durable storage before claiming durable receipt. Captured-wire conformance does not prove projection atomicity, production TLS, ERP compatibility or freshness SLOs. Do not promote the memory harness to production.
+The older memory receiver below has no durable storage; use the Phase 26 consumer above for durable receipt. Captured-wire conformance does not prove projection atomicity, production TLS, ERP compatibility or freshness SLOs. Do not promote the memory harness to production.
 
 ## Phase 24 coherent reads
 

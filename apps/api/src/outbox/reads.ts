@@ -31,7 +31,10 @@ export class OutboxReads{
   return {delivery:delivery(row),attempts:attempts.slice(0,limit).map(a=>({attemptId:a.attempt_id as string,number:Number(a.attempt_number),startedAt:(a.started_at as Date).toISOString(),finishedAt:(a.finished_at as Date|null)?.toISOString()??null,keyId:a.key_id as string|null,deliveryTimestamp:String(a.delivery_timestamp),result:a.result as components['schemas']['OutboxAttempt']['result'],errorCode:a.error_code as string|null,httpStatus:a.http_status as number|null})),nextAttemptBefore:attempts.length>limit?Number(attempts[limit-1]!.attempt_number):null};
  });}
  replay(auth:string|undefined,kind:string,id:string,after:number,limit:number):Promise<components['schemas']['OutboxReplay']>{return this.access(auth,async(tx,b)=>{
+  const stream=(await tx.query('SELECT last_sequence FROM tawsel.outbox_streams WHERE tenant_id=$1 AND recipient_id=$2 AND aggregate_type=$3 AND aggregate_id=$4',[b.tenantId,b.integrationId,kind,id])).rows[0];
+  const head=Number(stream?.last_sequence??0);
   const rows=(await tx.query<Row>(`${base} WHERE o.tenant_id=$1 AND o.recipient_id=$2 AND o.aggregate_type=$3 AND o.aggregate_id=$4 AND o.recipient_sequence>$5 ORDER BY o.recipient_sequence LIMIT $6`,[b.tenantId,b.integrationId,kind,id,after,limit+1])).rows;
+  if(after<head&&(!rows.length||rows.some((r,i)=>Number(r.recipient_sequence)!==after+i+1)||(rows.length<=limit&&Number(rows.at(-1)!.recipient_sequence)<head)))throw new ProvisioningError('replay_expired',410,'Retained history is incomplete; use scoped reconciliation and retain historical limitations');
   const events=rows.slice(0,limit).map(r=>r.body?JSON.parse(r.body.toString('utf8')):envelope(r));
   if(!events.every(senderEventConforms))throw new ProvisioningError('dependency_unavailable',503,'Retained event requires a supported reader');
   return {events,nextAfterSequence:rows.length>limit?Number(rows[limit-1]!.recipient_sequence):null,retention:'indefinite-no-purge',projectionStatus:'unknown'};

@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P25 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; receiver durable projection remains P26. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P26 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -11,6 +11,576 @@ Envelope payload objects are deliberately extensible at this stage. Feature owne
 P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; P20 action.getResult covers scoped round execution/takeover records; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
+
+### ConsumerProblem
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Problem)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "format": "uri"
+    },
+    "title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "code": {
+      "type": "string",
+      "enum": [
+        "unsupported_event",
+        "event_identity_mismatch",
+        "payload_mismatch",
+        "sequence_collision",
+        "invalid_signature",
+        "invalid_json",
+        "unauthenticated",
+        "stream_unavailable",
+        "invalid_query",
+        "receiver_unavailable"
+      ]
+    },
+    "correlationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "retryable": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "type",
+    "title",
+    "status",
+    "code",
+    "correlationId",
+    "retryable"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerAggregate
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Aggregate)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "enum": [
+        "task",
+        "assignment",
+        "trip",
+        "workday",
+        "return-request",
+        "integration"
+      ]
+    },
+    "id": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    }
+  },
+  "required": [
+    "type",
+    "id"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerState
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/State)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "task": {
+      "anyOf": [
+        {
+          "$ref": "./b2b-intake.schema.json#/$defs/Task"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcomes": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "$ref": "./outcomes.schema.json#/$defs/Record"
+      }
+    },
+    "returnRequest": {
+      "anyOf": [
+        {
+          "$ref": "./returns.schema.json#/$defs/RequestView"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "returnItems": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "taskId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "sourceLineId": {
+            "$ref": "./common.schema.json#/$defs/ExternalId"
+          },
+          "requested": {
+            "$ref": "./common.schema.json#/$defs/PieceCount"
+          },
+          "received": {
+            "$ref": "./common.schema.json#/$defs/PieceCount"
+          },
+          "lost": {
+            "$ref": "./common.schema.json#/$defs/PieceCount"
+          },
+          "damaged": {
+            "$ref": "./common.schema.json#/$defs/PieceCount"
+          },
+          "unresolved": {
+            "$ref": "./common.schema.json#/$defs/PieceCount"
+          }
+        },
+        "required": [
+          "itemId",
+          "taskId",
+          "sourceLineId",
+          "requested",
+          "received",
+          "lost",
+          "damaged",
+          "unresolved"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "notices": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "event": {
+            "$ref": "./events/sender-event.v1.schema.json"
+          }
+        },
+        "required": [
+          "key",
+          "event"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "task",
+    "outcomes",
+    "returnRequest",
+    "returnItems",
+    "notices"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerCheckpoint
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Checkpoint)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "recipientIntegrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "aggregate": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "task",
+            "assignment",
+            "trip",
+            "workday",
+            "return-request",
+            "integration"
+          ]
+        },
+        "id": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "receivedThrough": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "receivedHigh": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "appliedThrough": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "projectedThrough": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "snapshotThrough": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "historyComplete": {
+      "type": "boolean"
+    },
+    "pendingCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "receivedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "appliedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastError": {
+      "anyOf": [
+        {
+          "enum": [
+            "sequence_gap",
+            "dependency_missing",
+            "projection_failed",
+            "projection_limit",
+            "history_unavailable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "recipientIntegrationId",
+    "aggregate",
+    "revision",
+    "receivedThrough",
+    "receivedHigh",
+    "appliedThrough",
+    "projectedThrough",
+    "snapshotThrough",
+    "historyComplete",
+    "pendingCount",
+    "receivedAt",
+    "appliedAt",
+    "lastError"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerStatus
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Status)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "checkpoint": {
+      "$ref": "#/$defs/Checkpoint"
+    },
+    "state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/State"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "checkpoint",
+    "state"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerSnapshot
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "recipientIntegrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "aggregate": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "task",
+            "assignment",
+            "trip",
+            "workday",
+            "return-request",
+            "integration"
+          ]
+        },
+        "id": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "type",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "throughSequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "capturedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "state": {
+      "$ref": "#/$defs/State"
+    },
+    "history": {
+      "const": "current-state-only"
+    },
+    "retention": {
+      "const": "indefinite-no-purge"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "recipientIntegrationId",
+    "aggregate",
+    "throughSequence",
+    "capturedAt",
+    "state",
+    "history",
+    "retention"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerReportCommand
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/ReportCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.reportAppliedCheckpoint"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Checkpoint"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerReport
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/Report)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "checkpoint": {
+      "$ref": "#/$defs/Checkpoint"
+    },
+    "reportedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "evidence": {
+      "const": "receiver-reported"
+    }
+  },
+  "required": [
+    "checkpoint",
+    "reportedAt",
+    "evidence"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ConsumerReportRead
+
+[Canonical definition](../../contracts/consumer.schema.json#/$defs/ReportRead)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "report": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Report"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "report"
+  ],
+  "additionalProperties": false
+}
+```
 
 ### OutboxConfigureWebhook
 
@@ -18350,6 +18920,18 @@ Examples include designed fixtures and captured local API results; consult contr
 | p25-plan.revisionPublished | events/sender-event.v1.schema.json | valid foundation shape |
 | p25-queue-received | outbox.schema.json#/$defs/Queue | valid foundation shape |
 | p25-receipt-only | outbox.schema.json#/$defs/Acknowledgement | valid foundation shape |
+| p26-captured-current-task-0 | consumer.schema.json#/$defs/Snapshot | valid foundation shape |
+| p26-captured-current-integration-1 | consumer.schema.json#/$defs/Snapshot | valid foundation shape |
+| p26-captured-current-task-2 | consumer.schema.json#/$defs/Snapshot | valid foundation shape |
+| p26-captured-current-trip-3 | consumer.schema.json#/$defs/Snapshot | valid foundation shape |
+| p26-captured-current-return-request-4 | consumer.schema.json#/$defs/Snapshot | valid foundation shape |
+| p26-captured-applied-report-0 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
+| p26-captured-applied-report-1 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
+| p26-captured-applied-report-2 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
+| p26-captured-applied-report-3 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
+| p26-captured-applied-report-4 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
+| p26-captured-consumer-status | consumer.schema.json#/$defs/Status | valid foundation shape |
+| p26-report-command-fixture | consumer.schema.json#/$defs/ReportCommand | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -18495,5 +19077,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | p25-ack-is-not-applied | outbox.schema.json#/$defs/Acknowledgement | invalid (additionalProperties) |
 | p25-unsupported-payload | events/sender-event.v1.schema.json | invalid (const) |
 | p25-unknown-event | events/sender-event.v1.schema.json | invalid (const) |
+| p26-status-without-applied-watermark | consumer.schema.json#/$defs/Status | invalid (required) |
+| p26-snapshot-invents-history | consumer.schema.json#/$defs/Snapshot | invalid (const) |
+| p26-invalid-report-source | consumer.schema.json#/$defs/ReportCommand | invalid (format) |
 
 [Canonical example data](../../contracts/examples/README.md)

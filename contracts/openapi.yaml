@@ -2,11 +2,11 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P25 locally implemented identity, intake, planning, execution, closure, device
+  description: P07–P26 locally implemented identity, intake, planning, execution, closure, device
     takeover, source returns, branch resume/redispatch and bounded driver correction/adoption.
     Evidence distinguishes PostgreSQL and HTTP from provider fixtures. Coherent monitoring and
-    history and signed durable sender are implemented. Full offline capture, UI and durable receiver
-    projection remain later phases.
+    history, signed durable sender and independent receiver projection are implemented. Full offline
+    capture and native ERP source UI remain later phases.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -228,7 +228,8 @@ paths:
   /api/v1/integration/replay:
     get:
       operationId: integration.replayEvents
-      summary: Scoped aggregate sequence replay with explicit retained-window/expired status.
+      summary: Scoped aggregate sequence replay with explicit retained-window/expired
+        status.
       tags:
         - Signed delivery
       security:
@@ -260,6 +261,13 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "409":
           description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "410":
+          description: Retained history unavailable; use scoped checkpoint and preserve
+            historical gap
           content:
             application/problem+json:
               schema:
@@ -5790,8 +5798,321 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /api/v1/integration/reconciliation:
+    get:
+      operationId: integration.getReconciliationSnapshot
+      summary: getReconciliationSnapshot
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      parameters: &a1
+        - in: query
+          name: aggregateType
+          required: true
+          schema:
+            enum:
+              - task
+              - assignment
+              - trip
+              - workday
+              - return-request
+              - integration
+        - in: query
+          name: aggregateId
+          required: true
+          schema:
+            $ref: "#/components/schemas/Uuid"
+      responses:
+        "200":
+          description: Scoped integration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumerSnapshot"
+        "400":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/integration/commands/integration.reportAppliedCheckpoint:
+    post:
+      operationId: integration.reportAppliedCheckpoint
+      summary: reportAppliedCheckpoint
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerReportCommand"
+      responses:
+        "200":
+          description: Scoped integration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/integration/applied-checkpoint:
+    get:
+      operationId: integration.getAppliedCheckpoint
+      summary: getAppliedCheckpoint
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      parameters: *a1
+      responses:
+        "200":
+          description: Scoped integration result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumerReportRead"
+        "400":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/consumer/events:
+    post:
+      operationId: consumer.receiveSignedEvent
+      summary: "External receiver: exact-byte signature validation and durable inbox
+        receipt"
+      tags:
+        - Signed delivery
+      servers:
+        - url: https://receiver.example.invalid
+          description: Consumer-owned base URL, not a Tawsel API route
+      security:
+        - WebhookSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SenderEvent"
+      responses:
+        "200":
+          description: Durable reference consumer result; receipt and application remain
+            separate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboxAcknowledgement"
+        "400":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "401":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "403":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "409":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "422":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "503":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+  /api/v1/consumer/status:
+    get:
+      operationId: consumer.getStatus
+      summary: "External receiver: read durable receipt and application checkpoint"
+      tags:
+        - Signed delivery
+      servers:
+        - url: https://receiver.example.invalid
+          description: Consumer-owned base URL, not a Tawsel API route
+      security:
+        - ReceiverStatus: []
+      parameters: *a1
+      responses:
+        "200":
+          description: Durable reference consumer result; receipt and application remain
+            separate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConsumerStatus"
+        "400":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "401":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "403":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "409":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "422":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
+        "503":
+          description: Explicit rejected or unavailable operation
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ConsumerProblem"
 components:
   schemas:
+    ConsumerProblem:
+      $ref: ./consumer.schema.json#/$defs/Problem
+    ConsumerAggregate:
+      $ref: ./consumer.schema.json#/$defs/Aggregate
+    ConsumerState:
+      $ref: ./consumer.schema.json#/$defs/State
+    ConsumerCheckpoint:
+      $ref: ./consumer.schema.json#/$defs/Checkpoint
+    ConsumerStatus:
+      $ref: ./consumer.schema.json#/$defs/Status
+    ConsumerSnapshot:
+      $ref: ./consumer.schema.json#/$defs/Snapshot
+    ConsumerReportCommand:
+      $ref: ./consumer.schema.json#/$defs/ReportCommand
+    ConsumerReport:
+      $ref: ./consumer.schema.json#/$defs/Report
+    ConsumerReportRead:
+      $ref: ./consumer.schema.json#/$defs/ReportRead
     OutboxConfigureWebhook:
       $ref: ./outbox.schema.json#/$defs/ConfigureWebhook
     OutboxRotateSigningKey:
@@ -6435,6 +6756,15 @@ components:
     MonitoringActionSnapshot:
       $ref: ./monitoring.schema.json#/$defs/ActionSnapshot
   securitySchemes:
+    ReceiverStatus:
+      type: http
+      scheme: bearer
+      description: Consumer-owned status token bound to one recipient; never a Tawsel service token.
+    WebhookSignature:
+      type: apiKey
+      in: header
+      name: X-Tawsel-Signature
+      description: Exact-byte HMAC plus scope, key ID and fresh timestamp headers; see outbox-delivery.md.
     companySession:
       type: apiKey
       in: cookie

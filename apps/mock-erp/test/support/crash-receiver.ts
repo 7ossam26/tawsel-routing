@@ -1,0 +1,10 @@
+import {readConfig} from '../../src/config.js';
+import {receiverPool,migrateReceiver} from '../../src/database.js';
+import {receiverApp} from '../../src/app.js';
+import {applyInboxOnce} from '../../src/projection.js';
+const config=readConfig(),pool=receiverPool();await migrateReceiver(pool,config);
+const crash=async()=>{process.exit(93);};
+const fault=process.env.MOCK_ERP_TEST_FAULT;
+const app=receiverApp(pool,config,fault==='before-inbox'?{beforeInboxCommit:crash}:fault==='after-inbox'?{afterInboxCommit:crash}:{});
+await app.listen({host:config.host,port:config.port});console.log(JSON.stringify({address:app.server.address()}));
+if(fault==='before-projection-commit'||fault==='after-projection-commit')await applyInboxOnce(pool,fault==='before-projection-commit'?{beforeProjectionCommit:crash}:{afterProjectionCommit:crash});

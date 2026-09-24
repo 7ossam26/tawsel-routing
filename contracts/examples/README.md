@@ -1,5 +1,7 @@
 # Canonical foundation examples
 
+P26 examples: p26-captured-current-*, p26-captured-applied-report-* and p26-captured-consumer-status are public outputs from the separate-process, separately installed durable receiver demonstration on 24 September 2026. p26-report-command-fixture and the invalid cases are labelled schema fixtures. Capture provenance and exact commands: [integration evidence](../../docs/verification/integration.md). Current snapshots explicitly carry current-state-only history semantics; they are not synthetic transition history.
+
 P25 `p25-*` valid examples are captured from the real isolated PostgreSQL/HTTP sender demo (controlled receiver, projection unknown). They include actual intake/outcome/correction/return events and delivery reads. Invalid examples reject unknown types/versions and receipt/application conflation. [webhook-signature.v1.json](webhook-signature.v1.json) is a published exact-byte vector with a **public test-only zero key**; the fast protocol test verifies it. Never use that key in deployment.
 
 P24 monitoring examples are captured from the isolated PostgreSQL/loopback HTTP demo: scoped/own/corrected snapshots and task/workday history. Negative examples reject hidden count fields, false presence/applied claims, fractional counters and missing revisions. Semantic arithmetic/isolation is also tested through real APIs and the portable monitoring conformance consumer.

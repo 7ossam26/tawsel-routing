@@ -1,5 +1,5 @@
 import type {components} from './schema.js';
-type Command=components['schemas']['OutboxConfigureWebhookCommand']|components['schemas']['OutboxRotateSigningKeyCommand']|components['schemas']['OutboxRetryDeliveryCommand'];
+type Command=components['schemas']['OutboxConfigureWebhookCommand']|components['schemas']['OutboxRotateSigningKeyCommand']|components['schemas']['OutboxRetryDeliveryCommand']|components['schemas']['ConsumerReportCommand'];
 /** No implicit retries or new identities. Retain the caller's command and replay
  * the same action after response loss. Public consumer needs no Tawsel internals. */
 export class OutboxClient{
@@ -13,4 +13,6 @@ export class OutboxClient{
  queue(page:{limit?:number;cursor?:string}={}){const q=new URLSearchParams();if(page.limit!==undefined)q.set('limit',String(page.limit));if(page.cursor)q.set('cursor',page.cursor);return this.request<components['schemas']['OutboxQueue']>(`deliveries?${q}`);}
  detail(eventId:string,page:{limit?:number;beforeAttempt?:number}={}){const q=new URLSearchParams();if(page.limit!==undefined)q.set('limit',String(page.limit));if(page.beforeAttempt!==undefined)q.set('beforeAttempt',String(page.beforeAttempt));return this.request<components['schemas']['OutboxDetail']>(`deliveries/${encodeURIComponent(eventId)}?${q}`);}
  replay(aggregateType:components['schemas']['EventEnvelope']['aggregate']['type'],aggregateId:string,afterSequence=0,limit=50){return this.request<components['schemas']['OutboxReplay']>(`replay?${new URLSearchParams({aggregateType,aggregateId,afterSequence:String(afterSequence),limit:String(limit)})}`);}
+ snapshot(aggregateType:components['schemas']['ConsumerAggregate']['type'],aggregateId:string){return this.request<components['schemas']['ConsumerSnapshot']>(`reconciliation?${new URLSearchParams({aggregateType,aggregateId})}`);}
+ applied(aggregateType:components['schemas']['ConsumerAggregate']['type'],aggregateId:string){return this.request<components['schemas']['ConsumerReportRead']>(`applied-checkpoint?${new URLSearchParams({aggregateType,aggregateId})}`);}
 }

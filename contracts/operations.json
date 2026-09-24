@@ -952,43 +952,51 @@
       "id": "integration.getReconciliationSnapshot",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 26,
       "capability": "integration.manage",
-      "description": "Scoped authoritative checkpoint/snapshot recovery after gaps/expired replay."
+      "description": "Scoped authoritative checkpoint/snapshot recovery after gaps/expired replay.",
+      "method": "GET",
+      "path": "/api/v1/integration/reconciliation"
     },
     {
       "id": "integration.reportAppliedCheckpoint",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 26,
       "capability": "integration.manage",
-      "description": "Authenticated receiver reports separately durable applied/failed state."
+      "description": "Authenticated receiver reports separately durable applied/failed state.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.reportAppliedCheckpoint"
     },
     {
       "id": "integration.getAppliedCheckpoint",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 26,
       "capability": "integration.manage",
-      "description": "Read receiver processing checkpoint without inferring it from HTTP receipt."
+      "description": "Read receiver processing checkpoint without inferring it from HTTP receipt.",
+      "method": "GET",
+      "path": "/api/v1/integration/applied-checkpoint"
     },
     {
       "id": "consumer.receiveSignedEvent",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 26,
       "capability": "external-consumer",
-      "description": "External ERP callback: verify, durable inbox, then acknowledge receipt."
+      "description": "External ERP callback: verify, durable inbox, then acknowledge receipt.",
+      "method": "POST",
+      "path": "/api/v1/consumer/events"
     },
     {
       "id": "consumer.applyInboxEvent",
       "family": "sync-recovery",
       "kind": "internal-work",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 26,
       "capability": "external-consumer",
       "description": "ERP-local atomic projection plus processed marker, deduplication and gap recovery."
@@ -1507,7 +1515,7 @@
       "lifecycle": "designed",
       "ownerPhase": 26,
       "capability": "recipient-scope",
-      "description": "Receiver application checkpoint evidence separate from receipt."
+      "description": "Reserved future application notification; P26 implements separately authenticated checkpoint HTTP reporting without recursive outbound events."
     },
     {
       "id": "workspace.getHealth",
@@ -1915,6 +1923,17 @@
       "description": "Inspect one scoped delivery and bounded retained attempts.",
       "method": "GET",
       "path": "/api/v1/integration/deliveries/{eventId}"
+    },
+    {
+      "id": "consumer.getStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "Authenticated external receiver status with separate durable received/applied watermarks and historical limitations.",
+      "method": "GET",
+      "path": "/api/v1/consumer/status"
     }
   ],
   "authorizationFoundation": {

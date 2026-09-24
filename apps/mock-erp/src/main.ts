@@ -1,0 +1,24 @@
+import {readConfig} from './config.js';
+import {receiverPool,migrateReceiver} from './database.js';
+import {receiverApp} from './app.js';
+import {runReceiverWorkerOnce,reconcileStream,reportCheckpoint} from './recovery.js';
+import {conforms} from './inbox.js';
+import type {components} from '@tawsel/api-client';
+const config=readConfig(),pool=receiverPool();
+await migrateReceiver(pool,config);
+if(process.argv[2]==='migrate'){await pool.end();console.log('External mock ERP migrations current');}
+else if(process.argv[2]==='worker'){
+ let stopped=false;process.once('SIGTERM',()=>{stopped=true;});process.once('SIGINT',()=>{stopped=true;});
+ do{try{await runReceiverWorkerOnce(pool,config);}catch{console.error('Mock ERP worker unavailable; durable inbox retained');}
+  if(process.argv.includes('--once'))break;if(!stopped)await new Promise(r=>setTimeout(r,1000));
+ }while(!stopped);await pool.end();
+}
+else if(process.argv[2]==='reconcile'){
+ const aggregate={type:process.argv[3],id:process.argv[4]};if(!conforms('consumer.schema.json#/$defs/Aggregate',aggregate))throw new Error('Usage: main.js reconcile <aggregateType> <aggregateId>');
+ const a=aggregate as components['schemas']['ConsumerAggregate'];console.log(JSON.stringify((await reconcileStream(pool,config,a)).checkpoint));await reportCheckpoint(pool,config,a);await pool.end();
+}
+else{
+ const app=receiverApp(pool,config);await app.listen({host:config.host,port:config.port});
+ console.log(JSON.stringify({service:'external-mock-erp',address:app.server.address()}));
+ const stop=async()=>{await app.close();await pool.end();};process.once('SIGTERM',()=>void stop());process.once('SIGINT',()=>void stop());
+}

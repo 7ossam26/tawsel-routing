@@ -1,0 +1,18 @@
+{
+  "name": "@tawsel/mock-erp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "External reference ERP receiver; public contracts and its own PostgreSQL only",
+  "files": ["dist", "migrations", "config.example.json", "README.md"],
+  "engines": {"node": ">=24.11.0 <25"},
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/main.js",
+    "migrate": "node dist/main.js migrate",
+    "worker": "node dist/main.js worker"
+  },
+  "dependencies": {"@tawsel/api-client":"0.1.0","fastify":"5.12.5","pg":"8.23.0"},
+  "devDependencies": {"@types/pg":"8.23.1"}
+}

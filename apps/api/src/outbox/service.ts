@@ -8,15 +8,21 @@ import {seal} from '../auth/crypto.js';
 import {requireOutbox} from './validation.js';
 import {resolveDestination,DeliveryFailure} from './destination.js';
 import type {OutboxConfig} from './config.js';
+import type {components} from '@tawsel/api-client';
+import {publicValidator} from '@tawsel/api-client/validation';
+import {recordCheckpoint} from './reconciliation.js';
+const conforms=publicValidator();
 
-const operations={'integration.configureWebhook':'ConfigureWebhookCommand','integration.rotateSigningKey':'RotateSigningKeyCommand','integration.retryDelivery':'RetryDeliveryCommand'} as const;
+const operations={'integration.configureWebhook':'ConfigureWebhookCommand','integration.rotateSigningKey':'RotateSigningKeyCommand','integration.retryDelivery':'RetryDeliveryCommand','integration.reportAppliedCheckpoint':'ReportCommand'} as const;
 export class OutboxService {
- constructor(readonly pool:Pool,readonly config:OutboxConfig){}
+ constructor(readonly pool:Pool,readonly config?:OutboxConfig){}
  async command(authorization:string|undefined,operation:string,value:unknown){
   if(!(operation in operations))throw unavailable();
-  requireOutbox(operations[operation as keyof typeof operations],value);
+  if(operation==='integration.reportAppliedCheckpoint'){if(!conforms('consumer.schema.json#/$defs/ReportCommand',value))throw new ProvisioningError('validation_failed',400,'Invalid receiver checkpoint');}
+  else requireOutbox(operations[operation as keyof typeof operations],value);
   const c=structuredClone(value) as ActionEnvelope;
   const thisConfig=this.config;
+  if(operation!=='integration.reportAppliedCheckpoint'&&!thisConfig)throw new ProvisioningError('dependency_unavailable',503,'Outbox operator configuration is missing');
   const initial=await withTransaction(this.pool,async tx=>{
    const binding=await authenticateService(tx,authorization,false,'integration.manage');
    if(c.context.kind!=='integration'||c.context.tenantId!==binding.tenantId||c.context.integrationId!==binding.integrationId||c.context.assertedActorId!==undefined)throw unavailable();
@@ -30,7 +36,7 @@ export class OutboxService {
   if(initial.result)return initial.result;
   const binding=initial.binding;
   if(operation==='integration.configureWebhook'){
-   try{await resolveDestination(String(c.payload.url),binding,this.config,AbortSignal.timeout(5000));}
+   try{await resolveDestination(String(c.payload.url),binding,thisConfig!,AbortSignal.timeout(5000));}
    catch(e){throw new ProvisioningError('validation_failed',400,e instanceof DeliveryFailure?e.code:'destination_unavailable');}
   }
   return withTransaction(this.pool,async tx=>{
@@ -38,7 +44,9 @@ export class OutboxService {
    return executeCommandInTransaction(tx,scope,c,{
     async writeDomain(){
      const p=c.payload,key=[b.tenantId,b.integrationId];let body:Record<string,unknown>;
-     if(operation==='integration.configureWebhook'){
+     if(operation==='integration.reportAppliedCheckpoint'){
+      body=await recordCheckpoint(tx,b,p as components['schemas']['ConsumerCheckpoint']);
+     }else if(operation==='integration.configureWebhook'){
       const row=(await tx.query('SELECT revision FROM tawsel.outbox_endpoints WHERE tenant_id=$1 AND integration_id=$2 FOR UPDATE',key)).rows[0];
       if(Number(row?.revision??0)!==p.expectedRevision)throw new ProvisioningError('stale_revision',409,'Endpoint revision changed');
       const revision=Number(row?.revision??0)+1;
@@ -46,14 +54,14 @@ export class OutboxService {
        ON CONFLICT(tenant_id,integration_id) DO UPDATE SET url=$3,enabled=$4,revision=$5`,[...key,p.url,p.enabled,revision]);
       body={revision,url:p.url,enabled:p.enabled};
      }else if(operation==='integration.rotateSigningKey'){
-      const material=thisConfig.keys.find(k=>k.tenantId===b.tenantId&&k.integrationId===b.integrationId&&k.keyId===p.keyId);
+      const material=thisConfig!.keys.find(k=>k.tenantId===b.tenantId&&k.integrationId===b.integrationId&&k.keyId===p.keyId);
       if(!material)throw new ProvisioningError('validation_failed',400,'Signing key is not provisioned for this source');
       if((await tx.query('SELECT 1 FROM tawsel.outbox_signing_keys WHERE tenant_id=$1 AND integration_id=$2 AND key_id=$3',[...key,p.keyId])).rowCount)throw new ProvisioningError('idempotency_conflict',409,'Key ID is permanently reserved; retry the original action');
       const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() now')).rows[0]!.now;
       const verifyUntil=new Date(now.getTime()+Number(p.overlapSeconds)*1000);
       const old=(await tx.query(`UPDATE tawsel.outbox_signing_keys SET retired_at=$3,verify_until=$4
        WHERE tenant_id=$1 AND integration_id=$2 AND retired_at IS NULL RETURNING key_id`,[...key,now,verifyUntil])).rows[0];
-      await tx.query('INSERT INTO tawsel.outbox_signing_keys(tenant_id,integration_id,key_id,encrypted_secret,activated_at) VALUES($1,$2,$3,$4,$5)',[...key,p.keyId,seal(JSON.stringify(material),thisConfig.encryptionKey),now]);
+      await tx.query('INSERT INTO tawsel.outbox_signing_keys(tenant_id,integration_id,key_id,encrypted_secret,activated_at) VALUES($1,$2,$3,$4,$5)',[...key,p.keyId,seal(JSON.stringify(material),thisConfig!.encryptionKey),now]);
       body={keyId:p.keyId,activatedAt:now.toISOString(),previousKeyId:old?.key_id??null,verifyUntil:old?verifyUntil.toISOString():null};
      }else{
       const delivery=(await tx.query('SELECT * FROM tawsel.outbox_deliveries WHERE tenant_id=$1 AND recipient_id=$2 AND event_id=$3 FOR UPDATE',[...key,p.eventId])).rows[0];

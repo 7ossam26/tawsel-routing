@@ -1,5 +1,23 @@
 # Field and status mapping — canonical foundation
 
+## Phase 26 receiver mapping — locally verified
+
+| Public fact/state | Reference consumer representation and rule | Real ERP mapping |
+| --- | --- | --- |
+| Tenant + recipient integration | One configured scope per isolated consumer database; nested source identities and status token cannot cross it | Unchosen; preserve recipient isolation |
+| Event ID + aggregate recipient sequence | Unique inbox identity and sequence; original wire bytes and semantic replay hash retained | Choose durable inbox/deduplication keys |
+| Signed delivery `received` | Inbox commit completed; same-ID/same-bytes returns prior receipt, never implies applied | Keep receipt separate from business application |
+| Task/assignment snapshot | Latest emitted source/assignment fact in `state.task`; no new native source command | Map external shipment/cycle/driver references |
+| Outcome and correction | Effective outcome per attempt; correction replaces effective quantities/report, originals remain in transition history | Whole pieces/minor-unit money; no cash settlement |
+| Return request / received / lost / damaged | Request identity plus distinct current item counters; required dependency and transitions retained | Actual subset receipt distinct from request/disposition |
+| `receivedThrough` / `receivedHigh` | Contiguous durable receipt versus maximum received sequence | Use transport sequence, never a domain revision |
+| `appliedThrough` / `projectedThrough` | Contiguous historical processing versus current-state coverage | Distinguish historical completeness from a usable current view |
+| `snapshotThrough` / `historyComplete` | Adopted replacement checkpoint; missing history remains explicit until actual transitions arrive | Never reconstruct a historical financial ledger from current totals |
+| `lastError`, received/applied times | Gap, dependency, projection/limit/history errors and actual local timestamps | Own operational visibility; freshness SLO not yet measured |
+| Receiver checkpoint report | Persisted stable command identity, scoped API and monotonic revision; response says `receiver-reported` | Authenticate/assert local processing; no remote DB certification |
+
+Worked actual reference case: original no-answer is corrected to partial delivery of **2 pieces** and **25000 minor units** reported collection; an actual subset receipt confirms **1 piece**. Duplicate transmissions retain those same values. An unavailable-history snapshot restores these current values while historical application remains incomplete; subsequent old required events enter history once without re-adding the amounts. A signed changed-payload reuse returns 409, foreign recipient/aggregate is denied and a missing checkpoint returns 503. [Protocol](receiver-protocol.md), [canonical captured examples](../../contracts/examples/valid.json), [reproducible conformance](consumer-quickstart.md). These are execution projections, not native ERP inventory/accounting tables.
+
 ## Phase 25 sender field/status mapping — locally verified
 
 [Complete protocol/catalog](../outbox-delivery.md), [canonical sender schema](../../contracts/events/sender-event.v1.schema.json), [operational schemas](../../contracts/outbox.schema.json), [exact signature vector](../../contracts/examples/webhook-signature.v1.json). These replace earlier designed sender statements. Actual ERP fields remain unchosen.

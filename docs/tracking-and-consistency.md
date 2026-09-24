@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P26 update: [external receipt/application/recovery](erp/receiver-protocol.md) is locally verified. Raw signed event identity, durable inbox receipt, atomic projection/transition history/processed marker and distinct contiguous received/applied versus snapshot coverage now have public schemas and actual separate-database proof. Current-state reconciliation never fabricates historical transitions; late mandatory events remain processable. Earlier phase descriptions below retain their historical scope.
+
 P25 sender update: [signed delivery](outbox-delivery.md) consumes existing committed integration intent with immutable event IDs/bytes, transactional recipient sequences and fenced attempts. Receipt is distinct from projection application; source intent remains unresolved/retained while application is unknown. No timer purges business/event history. Cross-aggregate dependencies and receiver projection remain P26.
 
 P24 now implements [coherent conditional monitoring/history](monitoring.md) using one PostgreSQL repeatable-read snapshot and a durable revision ledger per authorized view. Shipment/attempt/piece counters are distinct; corrected history, current/next redaction, branch/source scope and received evidence are connected-tested. [Evidence](phase-24-evidence.md). Earlier designed-only monitoring statements are superseded within this API scope; P32 UI freshness and P38 measurements remain future.

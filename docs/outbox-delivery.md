@@ -1,5 +1,7 @@
 # Durable signed delivery — Phase 25
 
+P26 update: the separate [durable receiver and applied/reconciliation protocol](erp/receiver-protocol.md) is now locally verified. P25 byte signatures and receipt acknowledgement remain unchanged. Three additional Tawsel operations provide scoped current checkpoints and separate receiver reports; the ordinary delivery queue still describes transport alone. Retention remains indefinite/no automatic purge; a real missing retained sequence now returns 410 with explicit reconciliation limits. Historical P25 statements below about future receiver work are superseded by this update.
+
 Implemented locally on 24 September 2026. [Ordered evidence](phase-25-evidence.md), [canonical operations](contract-coverage.md), [sender event catalog](../contracts/events/sender-event.v1.schema.json), [operational schemas](../contracts/outbox.schema.json), [public client](../packages/api-client/src/outbox.ts), [portable signature verifier](../packages/api-client/src/webhook-signature.ts). This phase transports committed intent. Phase 26 owns the external durable inbox, atomic projection and separate applied checkpoint.
 
 ## Reproduce

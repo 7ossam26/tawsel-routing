@@ -1,5 +1,9 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+## Phase 26 external receiver and reconciliation
+
+Use the [consumer quickstart](erp/consumer-quickstart.md) and [receiver protocol](erp/receiver-protocol.md) for the now-implemented independent durable consumer, worker, scoped status, replay/checkpoint recovery and separately authenticated applied reports. The [actual boundary evidence](verification/integration.md) includes real separate processes/databases and an externally installed compiled distribution. The P25 memory harness below remains sender-only evidence; its limits do not describe the P26 receiver. Native source workflows remain P27.
+
 ## Phase 25 signed sender — locally verified
 
 Committed integration events now have durable recipient streams, exact-byte signatures, recoverable leases, retained retries and source-scoped operations. See the [signed sender protocol, API and demo](outbox-delivery.md) and [ordered evidence](phase-25-evidence.md). Public consumer proof observes actual HTTP receipt, response loss and worker restart. The controlled receiver is process-memory only; projection remains unknown and Phase 26 owns durable inbox/application. P24 monitoring's existing `integrationDelivery=unavailable` field remains unchanged; use the new delivery APIs for sender state.

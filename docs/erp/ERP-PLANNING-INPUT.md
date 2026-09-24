@@ -1,5 +1,13 @@
 # ERP planning input — designed foundation
 
+## Phase 26 receiving boundary — locally verified, 24 September 2026
+
+The independent reference receiver now exists at `apps/mock-erp`, version 0.1.0. [Install/start/conformance](consumer-quickstart.md), [semantics and bounds](receiver-protocol.md), [real process/database evidence](../verification/integration.md). Build `npm run receiver:package` to obtain compiled public client/contracts, receiver/migrations and a portable checker in `dist/erp-reference`. The external consumer does not import Tawsel repositories or have Tawsel database credentials; its separate restricted database role is denied internal table access.
+
+It proves exact-byte authentication, durable receipt before acknowledgement, local atomic projection/processed marker, once-only transitions, quantity/collection correction, gap buffering, replay, checkpoint replacement and explicitly incomplete history. `integration.reportAppliedCheckpoint`/`getAppliedCheckpoint` keep application distinct from delivery receipt. Snapshots describe current published execution projection; they do not manufacture missing historical financial/receipt transitions or imply stock/settlement.
+
+ERP implementation slices now have a concrete receiving reference: install public contracts; provision a separate durable inbox; configure scoped keys/credentials and callback; apply received events transactionally; expose/report progress; exercise restart/duplicate/gap/retention conformance. The checker takes API/callback/status URLs, scoped test credentials and independent expected totals. Native source provisioning/assignment/return forms and source-command outbox remain P27. Real ERP entity/field mapping, connector ownership, TLS/secret operation and vendor compatibility remain choices/work for that separate project. Older phase sections below are historical scope statements, superseded by this update where applicable.
+
 ## Phase 25 available local boundary — 24 September 2026
 
 [Signed sender protocol and operations](../outbox-delivery.md) are implemented with real PostgreSQL/HTTP/process evidence. Your connector can rely on stable recipient-scoped event IDs/aggregate sequences, exact-byte HMAC-SHA256, explicit key IDs/rotation overlap, retained replay and distinct sender pending/sending/failed/received states. Six source-authenticated operations configure approved endpoints, rotate provisioned keys, inspect queue/attempts, retry and replay. No raw signing secret is accepted through command history. [Public consumer demonstration](consumer-quickstart.md) runs without consumer database/operator access.
