@@ -38,7 +38,7 @@ export async function snapshot(tx:Transaction,state:StateRow):Promise<Input> {
   LEFT JOIN tawsel.task_execution_options e ON e.tenant_id=t.tenant_id AND e.task_id=t.task_id
   JOIN tawsel.planning_attempts a ON a.tenant_id=t.tenant_id AND a.task_id=t.task_id
     AND a.latest AND (a.dispatch_cycle_id=t.dispatch_cycle_id OR a.b2c_task_id=t.task_id)
-  LEFT JOIN tawsel.delivery_outcomes o ON o.tenant_id=a.tenant_id AND o.attempt_id=a.attempt_id
+  LEFT JOIN tawsel.delivery_outcomes o ON o.tenant_id=a.tenant_id AND o.attempt_id=a.attempt_id AND NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision)
   WHERE t.tenant_id=$1 AND t.driver_id=$2 ORDER BY t.task_id,a.attempt_id`,ids)).rows;
  const meta=(await tx.query<{kind:Input['accountKind'];revision:string|null}>(`SELECT t.kind,l.revision FROM tawsel.tenants t
   LEFT JOIN tawsel.location_planning_inputs l ON l.tenant_id=t.tenant_id AND l.driver_id=$2 WHERE t.tenant_id=$1`,ids)).rows[0]!;

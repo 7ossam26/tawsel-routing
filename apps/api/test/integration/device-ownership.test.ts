@@ -165,7 +165,7 @@ test('B: all outcome endpoint variants retain evidence with only submitting-acco
 test('C: closed day is a hard recovery constraint, evidence remains durable and current account scoped',async()=>{
  const f=await startedFixture(db.pool,1),device=await transfer(f),devices=new Devices(db.pool),c=f.make(0,0,null,'outcome.recordNoAnswer');
  const receipt=await devices.receive(principals.personal,c),before=await devices.evidence(principals.personal,c.actionId,device.deviceId);
- expect(before).toMatchObject({durableReceipt:true,envelope:c,recovery:{adoptionImplemented:false,state:'requires-validation',constraints:[]}});
+ expect(before).toMatchObject({durableReceipt:true,envelope:c,recovery:{adoptionImplemented:true,state:'requires-validation',constraints:[]}});
  expect((await devices.evidence(principals.personal,c.actionId,f.round.owner.deviceId)).recovery.constraints).toContain('not-current-owner');
  const end=close(f);end.context=device;expect((await new Closures(db.pool).command(principals.personal,end)).receipt.businessStatus).toBe('accepted');
  const blocked=await devices.evidence(principals.personal,c.actionId,device.deviceId);expect(blocked.recovery.constraints).toContain('closed-workday');expect(blocked.result).toEqual(receipt.result);expect(blocked.envelope).toEqual(c);
@@ -227,7 +227,7 @@ test('C: additive migration preserves an actual P19 started round and enables ta
  try{
   await mkdir(directory,{recursive:true});for(const name of (await readdir(source)).filter(n=>n.endsWith('.sql')&&n<'0017'))await copyFile(new URL(name,source),new URL(name,directory));
   await prepareAccessFixture(old.pool,undefined,directory);const f=await startedFixture(old.pool,1),before=(await old.pool.query('SELECT to_jsonb(r) r FROM tawsel.rounds r')).rows;
-  expect(await migrate(old.pool)).toEqual(['0017_device_takeover.sql','0018_account_evidence_notifications.sql','0019_source_returns.sql','0020_branch_activity.sql','0021_dispatch_cycles.sql']);expect((await old.pool.query('SELECT to_jsonb(r) r FROM tawsel.rounds r')).rows).toEqual(before);
+  expect(await migrate(old.pool)).toEqual(['0017_device_takeover.sql','0018_account_evidence_notifications.sql','0019_source_returns.sql','0020_branch_activity.sql','0021_dispatch_cycles.sql','0022_driver_corrections.sql']);expect((await old.pool.query('SELECT to_jsonb(r) r FROM tawsel.rounds r')).rows).toEqual(before);
   const c=take(f);expect((await new Devices(old.pool).takeover(principals.personal,c)).receipt.businessStatus).toBe('accepted');
   expect((await new Rounds(old.pool).current(principals.personal)).round).toMatchObject({roundId:f.round.roundId,owner:{generation:2},firstForecastId:f.round.firstForecastId});
  }finally{

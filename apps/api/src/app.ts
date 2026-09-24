@@ -15,6 +15,7 @@ import { planningRoutes } from './planning/routes.js';
 import { roundRoutes } from './rounds/routes.js';
 import { currentRoutes } from './current/routes.js';
 import { outcomeRoutes } from './outcomes/routes.js';
+import { correctionRoutes } from './corrections/routes.js';
 import { eligibilityRoutes } from './eligibility/routes.js';
 import { closureRoutes } from './closure/routes.js';
 import { deviceRoutes } from './devices/routes.js';
@@ -47,6 +48,7 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && auth) app.register(async scope => { await roundRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await currentRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await outcomeRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await correctionRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await eligibilityRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await closureRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await deviceRoutes(scope, database, auth); });

@@ -313,7 +313,7 @@
       "type": "object",
       "properties": {
         "adoptionImplemented": {
-          "const": false
+          "const": true
         },
         "state": {
           "enum": [
@@ -333,7 +333,13 @@
               "changed-attempt",
               "not-current-owner",
               "correction-not-authorized",
-              "unsupported-operation"
+              "unsupported-operation",
+              "dependent-redispatch",
+              "unknown-generation",
+              "changed-pin",
+              "already-adopted",
+              "ended-round",
+              "claimed-handover"
             ]
           }
         },
@@ -349,6 +355,16 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "adoptedOutcomeId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -357,7 +373,8 @@
         "constraints",
         "currentGeneration",
         "effectiveOutcomeRevision",
-        "activityRevision"
+        "activityRevision",
+        "adoptedOutcomeId"
       ],
       "additionalProperties": false
     },
@@ -449,7 +466,7 @@
         "expectedPinRevision"
       ],
       "additionalProperties": false,
-      "description": "Designed P23/P34 contract only. Current authenticated owning driver with correction.own must fetch evidence and current state, reference the immutable receipt and validate relevant revisions/quantities/money/dependencies under the same locks. No endpoint exists in P20. Client timestamps never override closed-day or receipt/redispatch constraints."
+      "description": "P23 implemented: current assigned owner explicitly adopts a retained delivery outcome with the original receipt and unchanged source/assignment/pin. Expected revisions and current generation are revalidated. Open original day and no dependent receipt/disposition/redispatch or later attempt. Arrival-only evidence is retained but not adoptable. Client time grants no authority."
     },
     "AdoptionCommand": {
       "allOf": [

@@ -1,5 +1,14 @@
 # ERP planning input — designed foundation
 
+## P23 correction/adoption boundary — locally verified
+
+[Canonical correction schema](../../contracts/corrections.schema.json), [HTTP demo and exact semantics](../corrections.md), [ordered evidence](../phase-23-evidence.md). Tawsel owns appended outcome revisions; ERP owns commercial consequences. No staff/service correction endpoint exists. Driver commands require current ownership, live own correction capability, original open day and no dependent receipt/disposition/redispatch/later attempt/claimed handover.
+
+Consume source-scoped `outcome.corrected` as a replacement for the exact preceding effective revision. Preserve original event/outcome history; do not add both full collections or physical quantities. `previousOutcomeId`, `previousRevision`, corrected `outcome` and optional original evidence action/receipt IDs are canonical. No source prices, refunds or settlement are edited. `evidence.adoptionResolved` is a same-account notification, not an ERP execution override. Blocked proposals retain review evidence and an `evidence.received` account intent.
+
+The public-client demonstration verifies real HTTP/PostgreSQL, lost-response recovery and API restart; consumer conformance checks captured public data with negative controls. Outbound intents are stored, not delivered/signed until P25–26. Actual ERP fields/connector mapping remain unchosen. This section supersedes earlier future-P23 statements.
+
+
 ## P22 branch resume and redispatch available locally
 
 [API, capacity/subset examples and reproducible demo](../branch-interruption.md), [field/status mapping](field-and-status-mapping.md), [evidence](../phase-22-evidence.md). Tawsel now owns explicit source-branch interruption/arrival/resume in one round, retained customer sequence and forecast revisions, confirmed-claim gating, and new execution cycles allocated only from actual received stock. Full-capacity interruption retains all 50 accepted customers; it never admits part of an overflowing batch.

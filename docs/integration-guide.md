@@ -1,5 +1,7 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+P23: [bounded correction/adoption API and demo](corrections.md) now preserves original history and corrects effective quantities/collection atomically. Events are durable intent only; actual ERP transport remains unverified.
+
 ## P22 branch resume and actual-receipt redispatch
 
 [Public protocol/demo](branch-interruption.md), [mapping](erp/field-and-status-mapping.md), [consumer quickstart](erp/consumer-quickstart.md), [evidence](phase-22-evidence.md). Driver branch commands use session/CSRF and device fencing, with frozen claimed subsets checked against committed receipt under the same locks. The source uses assignment.manage for dispatch.createFromReceipt with stable external shipment identity, a new source cycle reference, expected source revision and exact snapshot. It receives an unassigned fresh cycle and then uses ordinary atomic receipt; this is not direct transfer or old-cycle reactivation. Cycle history preserves old holders/source snapshots and return reads preserve unresolved goods. Preserve immutable action IDs on uncertainty. Durable branch/new-cycle intents are locally verified; signed transport/receiver/native ERP source persistence remain P25–27.

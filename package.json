@@ -94,7 +94,10 @@
     "test:erp:returns": "node --import tsx tests/erp-conformance/returns.ts",
     "test:branches": "npm run test:integration -- apps/api/test/integration/branch-interruption.test.ts apps/api/test/integration/dispatch-cycle.test.ts",
     "branches:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/branch-demo.ts",
-    "test:erp:dispatch": "node --import tsx tests/erp-conformance/dispatch.ts"
+    "test:erp:dispatch": "node --import tsx tests/erp-conformance/dispatch.ts",
+    "test:corrections": "npm run test:integration -- apps/api/test/integration/partial-return-correction.test.ts",
+    "corrections:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/correction-demo.ts",
+    "test:erp:corrections": "node --import tsx tests/erp-conformance/corrections.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

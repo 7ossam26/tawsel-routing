@@ -1,5 +1,20 @@
 # Field and status mapping — canonical foundation
 
+## P23 effective corrections — locally verified
+
+| Public field / fact | Meaning for ERP / consumer | Real ERP field |
+| --- | --- | --- |
+| `correctionId`, `previousOutcomeId`, `previousRevision` | Immutable correction identity and exact prior effective report; preserve original history | Unchosen |
+| `correction.outcome` | Full validated replacement for that attempt, retaining task/cycle/source/driver IDs and frozen prices | Unchosen |
+| `outcome.revision` | Monotonic task report revision; neither device generation nor source revision | Unchosen |
+| `collection.reported`, line delivered/held counts | Effective reported facts; replace superseded values, preserve fees from other attempts; never issue refund/settlement automatically | Unchosen |
+| `evidenceActionId`, `evidenceReceiptId` | Optional retained original-device evidence linkage; original receipt status never becomes historical acceptance | Unchosen |
+| `recovery.adoptedOutcomeId` | Separate accepted adoption fact; duplicate adoption is prohibited | Unchosen |
+| availability / review-required | Actual receipt/disposition, redispatch, later attempt, closure or claimed handover block execution correction; commercial handling remains ERP-owned | Unchosen |
+
+Use [canonical schemas/client/API](../corrections.md) and [evidence](../phase-23-evidence.md). Source correction events are revision replacements; account adoption notifications are private. No actual ERP schema or signed delivery has been verified.
+
+
 ## P22 branch resume and dispatch cycles — locally verified
 
 [Public API and worked examples](../branch-interruption.md), [ordered PostgreSQL/HTTP evidence](../phase-22-evidence.md), [branch schema](../../contracts/branch-activity.schema.json), [cycle schema](../../contracts/b2b-intake.schema.json). This section supersedes older designed-only resume/redispatch statements. Actual ERP columns remain unchosen.

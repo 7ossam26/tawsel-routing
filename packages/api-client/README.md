@@ -1,5 +1,7 @@
 # Tawsel public client foundation 0.1.0
 
+P23: [CorrectionsClient](src/corrections.ts) supports driver availability, correction, explicit evidence adoption and result recovery. [API/demo and limits](../../docs/corrections.md). ERP tokens cannot execute driver corrections; consume source correction events as effective revision replacements.
+
 ## P22 branch and dispatch clients
 
 `src/branches.ts` exposes session/CSRF driver interruption, branch arrival and resume commands. `src/intake.ts` adds the typed `B2bRedispatchCommand` and `cycles(externalId, cursor?)` source read. Persist the complete immutable command before sending; recover an unknown result with the same action ID. Receipt-confirmed redispatch creates an unassigned new cycle, not possession. Driver recovery uses the existing action result API; current/takeover snapshots include visible branch state. [Runbook](../../docs/branch-interruption.md), [copied external consumer](../../tests/erp-conformance/dispatch.ts). No backend/database dependency is imported by these clients.

@@ -1,5 +1,12 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P23 correction consumer demonstration
+
+Run `npm run corrections:demo`, then `npm run test:erp:corrections -- .local/phase-23-demo.json`. The first command executes actual loopback HTTP, PostgreSQL, driver/public receiver clients, committed-response loss and API restart. The second validates captured public response/event data and negative history/double-counting controls. It does not send driver commands using an ERP token or claim live webhook delivery.
+
+Portable consumer: copy `packages/api-client/src/schema.d.ts` and `tests/erp-conformance/corrections.ts` with their relative paths plus the report. It imports no API/database code and needs no database credentials. Corrections are explicit assigned-driver session/CSRF/device commands; ERP consumes `outcome.corrected` revision replacements. See [API and examples](../corrections.md), [mapping](field-and-status-mapping.md), and [evidence](../phase-23-evidence.md). Real ERP connector/transport verification remains future work.
+
+
 ## P22 public redispatch and driver branch demonstration
 
 ```powershell

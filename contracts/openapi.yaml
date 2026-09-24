@@ -2,12 +2,11 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P21 locally implemented identity, intake, locations, planning,
-    round start, current activity, outcomes, eligibility, workday closure,
-    device takeover and source-branch return receipt/disposition. Provider,
-    browser and PostgreSQL evidence are distinguished in phase ledgers. Branch
-    resume/redispatch, corrections, full offline capture and signed delivery
-    remain designed.
+  description: P07–P23 locally implemented identity, intake, planning, execution,
+    closure, device takeover, source returns, branch resume/redispatch and
+    bounded driver correction/adoption. Evidence distinguishes PostgreSQL and
+    HTTP from provider fixtures. Full offline capture, monitoring, UI and signed
+    delivery remain later phases.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -4252,6 +4251,200 @@ paths:
                 $ref: "#/components/schemas/Problem"
         "422": *a20
         "503": *a20
+  /api/v1/corrections/outcomes:
+    post:
+      operationId: outcome.correct
+      summary: Driver appends correction in open day before dependent
+        receipt/redispatch.
+      tags:
+        - Corrections
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CorrectionCorrectCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionResult"
+  /api/v1/corrections/adopt:
+    post:
+      operationId: evidence.adoptCompatible
+      summary: Current owner adopts eligible former-device evidence under correction
+        bounds.
+      tags:
+        - Corrections
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceAdoptionCommand"
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionResult"
+        "400":
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+        "409":
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionResult"
+  /api/v1/corrections/attempts/{attemptId}:
+    get:
+      operationId: outcome.getCorrectionAvailability
+      summary: Read original/effective correction eligibility and permitted next steps.
+      tags:
+        - Corrections
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionAvailability"
+        "202":
+          description: Unknown/uncommitted is pending, never acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionAvailability"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
+  /api/v1/corrections/actions/{actionId}:
+    get:
+      operationId: correction.getResult
+      summary: Recover the same driver correction result by action ID.
+      tags:
+        - Corrections
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative response; pending is not acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionStatus"
+        "202":
+          description: Unknown/uncommitted is pending, never acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CorrectionActionStatus"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Current scope or CSRF denied
 components:
   schemas:
     Uuid:
@@ -4808,6 +5001,28 @@ components:
       $ref: ./b2b-intake.schema.json#/$defs/RedispatchCommand
     B2bCycleList:
       $ref: ./b2b-intake.schema.json#/$defs/CycleList
+    CorrectionReplacement:
+      $ref: ./corrections.schema.json#/$defs/Replacement
+    CorrectionCorrect:
+      $ref: ./corrections.schema.json#/$defs/Correct
+    CorrectionCorrectCommand:
+      $ref: ./corrections.schema.json#/$defs/CorrectCommand
+    CorrectionConstraint:
+      $ref: ./corrections.schema.json#/$defs/Constraint
+    CorrectionAvailability:
+      $ref: ./corrections.schema.json#/$defs/Availability
+    CorrectionRecord:
+      $ref: ./corrections.schema.json#/$defs/Record
+    CorrectionResult:
+      $ref: ./corrections.schema.json#/$defs/Result
+    CorrectionEvent:
+      $ref: ./corrections.schema.json#/$defs/Event
+    CorrectionAdoptionEvent:
+      $ref: ./corrections.schema.json#/$defs/AdoptionEvent
+    CorrectionActionResult:
+      $ref: ./corrections.schema.json#/$defs/ActionResult
+    CorrectionActionStatus:
+      $ref: ./corrections.schema.json#/$defs/ActionStatus
   securitySchemes:
     companySession:
       type: apiKey

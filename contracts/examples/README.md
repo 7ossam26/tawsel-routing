@@ -1,5 +1,7 @@
 # Canonical foundation examples
 
+P23 correction examples include a designed closed correction command and captured local HTTP demo correction/adoption events plus receipt-denied availability. Negative cases reject extra price fields, fractional pieces, missing expected revision and invalid event linkage fields. Semantic money/ownership/dependency checks are real PostgreSQL tests, not claims made by JSON Schema alone. See [evidence](../../docs/phase-23-evidence.md).
+
 ## P22 captured examples
 
 The `p22-*` valid examples were captured from `npm run branches:demo` against real HTTP/PostgreSQL: interruption, arrival, waiting/resume flow, new-cycle command, preserved cycle list, current state and durable event payloads. Driver identity/bootstrap are fixtures. Invalid p22 mutations cover empty/fractional claims, arbitrary branch injection and fractional redispatch quantities; they are schema rejection fixtures, not live commands. See [evidence](../../docs/phase-22-evidence.md) for database/consumer guarantees and exact limits. No signed-delivery/native-ERP/UI claim is implied.

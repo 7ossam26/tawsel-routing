@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P23: [bounded correction/adoption API and demo](../corrections.md) now preserves original history and corrects effective quantities/collection atomically. Events are durable intent only; actual ERP transport remains unverified.
+
 ## P22 available slice
 
 Branch interruption/arrival/resume and actual-receipt new cycles are locally implemented. Start with the [public runbook and full-capacity/subset cases](../branch-interruption.md), [field mapping](field-and-status-mapping.md), [consumer quickstart](consumer-quickstart.md) and [evidence](../phase-22-evidence.md). Stable shipment IDs and new execution IDs are explicitly mapped. The copied HTTP-only consumer proves this slice; a real ERP/native source outbox and signed event delivery remain later work.

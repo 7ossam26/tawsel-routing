@@ -8,7 +8,7 @@ export function assertDeviceDemo(r:DeviceDemoReport){
  assert.equal(r.view.mode,'view-only');assert.equal(r.view.mayTakeover,true);assert.equal(r.recovered.status,'accepted');assert.deepEqual(r.recovered.result,r.continued.result);
  const snapshot=r.continued.snapshot;assert.ok(snapshot);assert.equal(snapshot.context.owner.generation,r.takeover.payload.expectedGeneration+1);assert.equal(snapshot.context.mode,'owner');assert.ok(snapshot.snapshotToken);assert.equal(snapshot.current?.roundId,r.view.roundId);
  assert.equal(r.received.submissionStatus,'received');assert.equal(r.duplicate.submissionStatus,'duplicate');assert.deepEqual(r.received.result,r.duplicate.result);
- assert.equal(r.evidence.durableReceipt,true);assert.equal(r.evidence.result.receipt.evidenceStatus,'received');assert.equal(r.evidence.result.receipt.businessStatus,'review-required');assert.equal(r.evidence.result.receipt.committedAt,undefined);assert.deepEqual(r.evidence.envelope,r.oldOutcome);assert.equal(r.evidence.recovery.adoptionImplemented,false);
+ assert.equal(r.evidence.durableReceipt,true);assert.equal(r.evidence.result.receipt.evidenceStatus,'received');assert.equal(r.evidence.result.receipt.businessStatus,'review-required');assert.equal(r.evidence.result.receipt.committedAt,undefined);assert.deepEqual(r.evidence.envelope,r.oldOutcome);assert.equal(r.evidence.recovery.adoptionImplemented,true);
 }
 export function assertDeviceNotifications(events:{event_type:string;recipient_id:string;payload:Record<string,unknown>}[],accountId:string){
  assert.equal(events.length,3);assert.equal(events.filter(e=>e.event_type==='device.executionTransferred').length,1);

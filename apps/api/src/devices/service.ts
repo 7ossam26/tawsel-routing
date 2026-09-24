@@ -1,3 +1,4 @@
+import {correctionState} from '../corrections/state.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
@@ -21,7 +22,7 @@ async function context(tx:Transaction,r:RoundRow,deviceId:string):Promise<compon
 async function lockedRound(tx:Transaction,a:AccessSession,roundId:string){
  await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);return ownRound(tx,a,roundId);
 }
-const supportedResult=(op:string)=>op.startsWith('branch.')||op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
+const supportedResult=(op:string)=>op.startsWith('branch.')||op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||op==='outcome.correct'||op==='evidence.adoptCompatible'||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
 
 export class Devices {
  constructor(readonly pool:Pool,readonly observe?:Pick<CommandHooks,'afterWrite'>){}
@@ -57,7 +58,7 @@ export class Devices {
    const latest=(await tx.query<RoundRow>('SELECT * FROM tawsel.rounds WHERE tenant_id=$1 AND driver_id=$2 ORDER BY device_generation DESC LIMIT 1',[r.tenant_id,driverId])).rows[0]!;
    if(latest.owner_device_id!==deviceId)constraints.push('not-current-owner');
    if(!a.effectiveCapabilities.includes('correction.own'))constraints.push('correction-not-authorized');
-   if(!envelope||!['current.recordArrival','outcome.recordFull','outcome.recordPartial','outcome.recordRefusal','outcome.recordNoAnswer'].includes(envelope.operationId))constraints.push('unsupported-operation');
+   if(!envelope||!['outcome.recordFull','outcome.recordPartial','outcome.recordRefusal','outcome.recordNoAnswer'].includes(envelope.operationId))constraints.push('unsupported-operation');
    let effectiveOutcomeRevision=0;
    if(envelope?.payload.taskId){
     const p=envelope.payload;
@@ -77,7 +78,20 @@ export class Devices {
     }
    }
    const activityRevision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
-   const recovery:components['schemas']['DeviceRecovery']={adoptionImplemented:false,state:constraints.length?'blocked':'requires-validation',constraints,currentGeneration:Number(latest.device_generation),effectiveOutcomeRevision,activityRevision};
+   const adopted=(await tx.query('SELECT outcome_id FROM tawsel.outcome_corrections WHERE tenant_id=$1 AND evidence_source_id=$2 AND evidence_action_id=$3',[r.tenant_id,a.context.sourceId,actionId])).rows[0]?.outcome_id??null;
+   if(adopted)constraints.push('already-adopted');
+   if(envelope?.context.kind==='device'){
+    const d=envelope.context,known=(await tx.query('SELECT 1 FROM tawsel.device_takeovers WHERE tenant_id=$1 AND round_id=$2 AND ((generation=$3 AND device_id=$4) OR (generation=$3+1 AND former_device_id=$4))',[r.tenant_id,r.round_id,d.deviceGeneration,d.deviceId])).rowCount;
+    if(!known||d.deviceGeneration>=Number(r.device_generation))constraints.push('unknown-generation');
+   }
+   if(envelope?.payload.attemptId&&!constraints.includes('unsupported-operation')){
+    const state=await correctionState(tx,a,String(envelope.payload.attemptId),deviceId,true);
+    for(const constraint of state.view.constraints)if(constraint!=='outcome-required'&&!constraints.includes(constraint))constraints.push(constraint);
+    if(!state.view.effectiveOutcome&&r.ended_at)constraints.push('ended-round');
+    const pin=Number((await tx.query('SELECT revision FROM tawsel.task_locations WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,envelope.payload.taskId])).rows[0]?.revision??0);
+    if(pin!==envelope.payload.expectedPinRevision)constraints.push('changed-pin');
+   }
+   const recovery:components['schemas']['DeviceRecovery']={adoptionImplemented:true,state:constraints.length?'blocked':'requires-validation',constraints:[...new Set(constraints)],currentGeneration:Number(latest.device_generation),effectiveOutcomeRevision,activityRevision,adoptedOutcomeId:adopted};
    const response={actionId,result,envelope,durableReceipt:true as const,recovery};requireDevice('Evidence',response);return response;
   });
  }

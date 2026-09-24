@@ -118,9 +118,10 @@ def actions(document=None):
                             'device.executionTransferred', 'evidence.received')
         )
         if phase in (21, 22) and family == 'returns': implemented_scope = True
+        if phase == 23 and family in ('execution', 'sync-recovery'): implemented_scope = True
         if not implemented_scope:
-            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P22 scope promoted: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P22 scope only; no UI completion inferred.')
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P23 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P23 scope only; no UI completion inferred.')
 
 
 def states(document=None, demo=False):

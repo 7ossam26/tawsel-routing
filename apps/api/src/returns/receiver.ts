@@ -69,7 +69,7 @@ export class ReturnReceiver {
    a.requireResource(receiver,{tenant_id:b.tenantId,driver_id:driverId,branch_id:branchId,integration_id:b.integrationId});await lockDriver(tx,b.tenantId,driverId);
    const scope=a.sqlPredicate(receiver,'r'),n=scope.values.length;
    const rows=(await tx.query<RequestRow>(`SELECT r.* FROM tawsel.return_requests r WHERE ${scope.text} AND r.driver_id=$${n+1} AND r.branch_id=$${n+2} AND ($${n+3}::uuid IS NULL OR r.request_id>$${n+3})
-    AND EXISTS(SELECT 1 FROM tawsel.return_items i JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) JOIN tawsel.planning_attempts p USING(tenant_id,attempt_id) WHERE i.tenant_id=r.tenant_id AND i.request_id=r.request_id AND i.requested>i.received+i.lost+i.damaged AND p.latest)
+    AND EXISTS(SELECT 1 FROM tawsel.return_items i JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) JOIN tawsel.planning_attempts p USING(tenant_id,attempt_id) WHERE i.tenant_id=r.tenant_id AND i.request_id=r.request_id AND i.requested>i.received+i.lost+i.damaged AND p.latest AND NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision))
     ORDER BY r.request_id LIMIT 101`,[...scope.values,driverId,branchId,cursor??null])).rows;
    const items=[];for(const row of rows.slice(0,100))items.push(await requestView(tx,row));
    const result={items,nextCursor:rows.length>100?rows[99]!.request_id:null};requireReturn('RequestList',result);return result;

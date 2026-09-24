@@ -1,3 +1,4 @@
+import {appendOutcome} from './persistence.js';
 import {executionFence} from '../devices/fence.js';
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
@@ -62,8 +63,8 @@ export class Outcomes {
      if(m.dispatchCycleId){
       const source=(await tx.query<{payload:components['schemas']['B2bSourceSnapshot']}>('SELECT payload FROM tawsel.b2b_source_snapshots WHERE tenant_id=$1 AND task_id=$2 AND source_revision=$3',[r.tenant_id,p.taskId,admission.source_revision])).rows[0]!;
       const prior=(await tx.query(`SELECT COALESCE(sum(c.shipping_minor),0)::text AS shipping,
-       COALESCE((SELECT sum(q.delivered) FROM tawsel.outcome_quantities q JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE o.tenant_id=$1 AND o.dispatch_cycle_id=$2),0)::text AS pieces
-       FROM tawsel.outcome_collections c JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE o.tenant_id=$1 AND o.dispatch_cycle_id=$2`,[r.tenant_id,m.dispatchCycleId])).rows[0];
+       COALESCE((SELECT sum(q.delivered) FROM tawsel.outcome_quantities q JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision) AND o.tenant_id=$1 AND o.dispatch_cycle_id=$2),0)::text AS pieces
+       FROM tawsel.outcome_collections c JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision) AND o.tenant_id=$1 AND o.dispatch_cycle_id=$2`,[r.tenant_id,m.dispatchCycleId])).rows[0];
       frozen={kind:'company',snapshot:source.payload,previousShippingCollectedMinor:Number(prior.shipping),previousDeliveredPieces:Number(prior.pieces)};
       sourceReference={tenantId:r.tenant_id,integrationId:m.integrationId!,externalId:source.payload.externalId};
       sourceDispatchCycleId=source.payload.sourceDispatchCycleId;
@@ -79,11 +80,7 @@ export class Outcomes {
      requireOutcome('Record',accepted);
      await tx.query(`INSERT INTO tawsel.execution_attempts (tenant_id,round_id,attempt_id,task_id,stage,revision,resolution,resolved_outcome_id)
       VALUES ($1,$2,$3,$4,'resolved',$5,$6,$7) ON CONFLICT(tenant_id,round_id,attempt_id) DO UPDATE SET stage='resolved',revision=$5,resolution=$6,resolved_outcome_id=$7`,[r.tenant_id,r.round_id,p.attemptId,p.taskId,activityRevision+1,{outcomeId:accepted.outcomeId,time},accepted.outcomeId]);
-     await tx.query(`INSERT INTO tawsel.delivery_outcomes (tenant_id,outcome_id,round_id,attempt_id,task_id,driver_id,dispatch_cycle_id,branch_id,integration_id,source_revision,revision,kind,outcome,record,source_id,action_id)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,[r.tenant_id,accepted.outcomeId,r.round_id,p.attemptId,p.taskId,driverId,m.dispatchCycleId,m.branchId,m.integrationId,m.sourceRevision,revision,accepted.kind,accepted.outcome,accepted,a.context.sourceId,c.actionId]);
-     for(const l of accepted.lines)await tx.query('INSERT INTO tawsel.outcome_quantities (tenant_id,outcome_id,task_id,source_revision,source_line_id,source_quantity,delivered,held_return_required) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',[r.tenant_id,accepted.outcomeId,p.taskId,m.sourceRevision,l.sourceLineId,l.sourceQuantity,l.delivered,l.heldReturnRequired]);
-     const col=accepted.collection;
-     await tx.query('INSERT INTO tawsel.outcome_collections (tenant_id,outcome_id,currency,exponent,reported_minor,goods_minor,shipping_minor,unpaid_shipping_minor,shipping_status) VALUES ($1,$2,\'EGP\',2,$3,$4,$5,$6,$7)',[r.tenant_id,accepted.outcomeId,col.reported?.amountMinor??null,col.goods.amountMinor,col.shipping.amountMinor,col.unpaidShipping.amountMinor,col.shippingStatus]);
+     await appendOutcome(tx,r.tenant_id,a.context.sourceId,c.actionId,accepted);
      const body={outcome:accepted,current:{roundId:r.round_id,revision:activityRevision+1,currentActivity:null,physicalOrigin:await physicalOrigin(tx,r.tenant_id,driverId)}};
      requireOutcome('CommandResult',body);const event={outcome:accepted};requireOutcome('Event',event);
      return {status:'accepted',response:{status:200,body},summary:{roundId:r.round_id,driverId,taskId:p.taskId,outcomeId:accepted.outcomeId,outcomeRevision:revision},audit:{outcome:accepted,previousActivity:before},resourceVersions:{outcomeRevision:revision,resourceRevision:activityRevision+1,deviceGeneration:Number(r.device_generation)},intents:m.integrationId?[{eventId:randomUUID(),recipientId:m.integrationId,eventType:'outcome.recorded',payloadVersion:'1.0.0',payload:event}]:[]};
@@ -105,18 +102,18 @@ export class Outcomes {
  async read(principal:AuthenticatedPrincipal,roundId:string):Promise<components['schemas']['OutcomeSnapshot']>{
   uuid(roundId);return withAccess(this.pool,principal,async(a,tx)=>{
    await authorize(tx,a);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);await round(tx,a,roundId);
-   const rows=(await tx.query<{record:OutcomeRecord}>('SELECT o.record FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts e USING(tenant_id,attempt_id) WHERE e.latest AND o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->\'time\'->>\'recordedAt\',o.outcome_id',[a.context.tenantId,ownDriver(a),roundId])).rows;
+   const rows=(await tx.query<{record:OutcomeRecord}>('SELECT o.record FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts e USING(tenant_id,attempt_id) WHERE NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision) AND e.latest AND o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->\'time\'->>\'recordedAt\',o.outcome_id',[a.context.tenantId,ownDriver(a),roundId])).rows;
    const all=(await tx.query<{record:OutcomeRecord;latest:boolean}>(`SELECT o.record,a.latest FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts a USING(tenant_id,attempt_id) WHERE o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->'time'->>'recordedAt',o.outcome_id`,[a.context.tenantId,ownDriver(a),roundId])).rows;
-   const history=all.map(r=>r.record),latest=new Set(all.filter(r=>r.latest).map(r=>r.record.outcomeId));
+   const history=all.map(r=>r.record),effectiveHistory=history.filter(o=>!history.some(n=>n.attemptId===o.attemptId&&n.revision>o.revision)),latest=new Set(all.filter(r=>r.latest).map(r=>r.record.outcomeId));
    const items=rows.map(r=>r.record).filter(r=>latest.has(r.outcomeId));for(const o of history)a.requireResource(own,{tenant_id:a.context.tenantId,driver_id:o.driverId,branch_id:o.branchId,integration_id:o.sourceReference?.integrationId??null});
    const progress:components['schemas']['OutcomeProgress']={processed:items.length,full:0,partial:0,refused:0,noAnswer:0,deliveredPieces:0,heldReturnRequiredPieces:0,collection:[]};
    const custody=(await tx.query('SELECT * FROM tawsel.cycle_custody WHERE tenant_id=$1 AND outcome_id=ANY($2::uuid[])',[a.context.tenantId,items.map(o=>o.outcomeId)])).rows.map(q=>({outcomeId:q.outcome_id as string,dispatchCycleId:q.dispatch_cycle_id as string,sourceLineId:q.source_line_id as string,balance:{sourceQuantity:q.source_quantity as number,delivered:q.delivered as number,held:q.held as number,received:q.received as number,lost:q.lost as number,damaged:q.damaged as number}}));
    for(const o of items){if(o.outcome==='no-answer')progress.noAnswer++;else progress[o.outcome]++;for(const l of o.lines)progress.deliveredPieces+=l.delivered;}
    progress.heldReturnRequiredPieces=custody.reduce((n,q)=>n+q.balance.held,0);
    let reported=0n,unpaid=0n;const fees=new Map<string,{unpaid:bigint;paid:bigint}>();
-   for(const o of history){reported+=BigInt(o.collection.reported?.amountMinor??0);const key=o.dispatchCycleId??o.taskId,f=fees.get(key)??{unpaid:0n,paid:0n};f.unpaid=f.unpaid>BigInt(o.collection.unpaidShipping.amountMinor)?f.unpaid:BigInt(o.collection.unpaidShipping.amountMinor);f.paid+=BigInt(o.collection.shipping.amountMinor);fees.set(key,f);}
+   for(const o of effectiveHistory){reported+=BigInt(o.collection.reported?.amountMinor??0);const key=o.dispatchCycleId??o.taskId,f=fees.get(key)??{unpaid:0n,paid:0n};f.unpaid=f.unpaid>BigInt(o.collection.unpaidShipping.amountMinor)?f.unpaid:BigInt(o.collection.unpaidShipping.amountMinor);f.paid+=BigInt(o.collection.shipping.amountMinor);fees.set(key,f);}
    for(const f of fees.values())unpaid+=f.unpaid>f.paid?f.unpaid-f.paid:0n;
-   if(history.some(o=>o.collection.reported!==null||o.collection.unpaidShipping.amountMinor>0))progress.collection=[{currency:'EGP',exponent:2,reportedMinor:reported.toString(),unpaidShippingMinor:unpaid.toString()}];
+   if(effectiveHistory.some(o=>o.collection.reported!==null||o.collection.unpaidShipping.amountMinor>0))progress.collection=[{currency:'EGP',exponent:2,reportedMinor:reported.toString(),unpaidShippingMinor:unpaid.toString()}];
    const result={roundId,items,history,progress,custody};requireOutcome('Snapshot',result);return result;
   });
  }

@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P22 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P23 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -13176,7 +13176,7 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
   "type": "object",
   "properties": {
     "adoptionImplemented": {
-      "const": false
+      "const": true
     },
     "state": {
       "enum": [
@@ -13196,7 +13196,13 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
           "changed-attempt",
           "not-current-owner",
           "correction-not-authorized",
-          "unsupported-operation"
+          "unsupported-operation",
+          "dependent-redispatch",
+          "unknown-generation",
+          "changed-pin",
+          "already-adopted",
+          "ended-round",
+          "claimed-handover"
         ]
       }
     },
@@ -13212,6 +13218,16 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "adoptedOutcomeId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -13220,7 +13236,8 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
     "constraints",
     "currentGeneration",
     "effectiveOutcomeRevision",
-    "activityRevision"
+    "activityRevision",
+    "adoptedOutcomeId"
   ],
   "additionalProperties": false
 }
@@ -13272,7 +13289,7 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
 
 [Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Adoption)
 
-Designed P23/P34 contract only. Current authenticated owning driver with correction.own must fetch evidence and current state, reference the immutable receipt and validate relevant revisions/quantities/money/dependencies under the same locks. No endpoint exists in P20. Client timestamps never override closed-day or receipt/redispatch constraints.
+P23 implemented: current assigned owner explicitly adopts a retained delivery outcome with the original receipt and unchanged source/assignment/pin. Expected revisions and current generation are revalidated. Open original day and no dependent receipt/disposition/redispatch or later attempt. Arrival-only evidence is retained but not adoptable. Client time grants no authority.
 
 ```json
 {
@@ -13328,7 +13345,7 @@ Designed P23/P34 contract only. Current authenticated owning driver with correct
     "expectedPinRevision"
   ],
   "additionalProperties": false,
-  "description": "Designed P23/P34 contract only. Current authenticated owning driver with correction.own must fetch evidence and current state, reference the immutable receipt and validate relevant revisions/quantities/money/dependencies under the same locks. No endpoint exists in P20. Client timestamps never override closed-day or receipt/redispatch constraints."
+  "description": "P23 implemented: current assigned owner explicitly adopts a retained delivery outcome with the original receipt and unchanged source/assignment/pin. Expected revisions and current generation are revalidated. Open original day and no dependent receipt/disposition/redispatch or later attempt. Arrival-only evidence is retained but not adoptable. Client time grants no authority."
 }
 ```
 
@@ -15048,6 +15065,442 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### CorrectionReplacement
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Replacement)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "const": "full"
+        },
+        "reportedCollection": {
+          "$ref": "outcomes.schema.json#/$defs/Money"
+        }
+      },
+      "required": [
+        "outcome"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "const": "partial"
+        },
+        "pieces": {
+          "type": "array",
+          "items": {
+            "$ref": "outcomes.schema.json#/$defs/Piece"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "reportedCollection": {
+          "$ref": "outcomes.schema.json#/$defs/Money"
+        }
+      },
+      "required": [
+        "outcome",
+        "pieces",
+        "reportedCollection"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "const": "refused"
+        },
+        "reportedCollection": {
+          "$ref": "outcomes.schema.json#/$defs/Money"
+        },
+        "shippingPayment": {
+          "enum": [
+            "collected",
+            "refused"
+          ]
+        }
+      },
+      "required": [
+        "outcome"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "const": "no-answer"
+        }
+      },
+      "required": [
+        "outcome"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### CorrectionCorrect
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Correct)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedOutcomeRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replacement": {
+      "$ref": "#/$defs/Replacement"
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "expectedOutcomeRevision",
+    "replacement"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionCorrectCommand
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/CorrectCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "outcome.correct"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        },
+        "payload": {
+          "$ref": "#/$defs/Correct"
+        }
+      }
+    }
+  ]
+}
+```
+
+### CorrectionConstraint
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Constraint)
+
+```json
+{
+  "enum": [
+    "closed-workday",
+    "dependent-receipt",
+    "dependent-redispatch",
+    "changed-assignment",
+    "changed-source",
+    "changed-attempt",
+    "not-current-owner",
+    "correction-not-authorized",
+    "outcome-required",
+    "claimed-handover"
+  ]
+}
+```
+
+### CorrectionAvailability
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Availability)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "effectiveOutcomeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "effectiveOutcome": {
+      "anyOf": [
+        {
+          "$ref": "outcomes.schema.json#/$defs/Record"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "allowed": {
+      "type": "boolean"
+    },
+    "constraints": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/Constraint"
+      }
+    },
+    "nextSteps": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "refresh-state",
+          "view-history",
+          "erp-commercial-review"
+        ]
+      }
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "roundId",
+    "taskId",
+    "attemptId",
+    "effectiveOutcomeRevision",
+    "effectiveOutcome",
+    "allowed",
+    "constraints",
+    "nextSteps",
+    "message"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionRecord
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Record)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "correctionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "previousOutcomeId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "previousRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "outcome": {
+      "$ref": "outcomes.schema.json#/$defs/Record"
+    },
+    "evidenceActionId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "evidenceReceiptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "correctionId",
+    "previousOutcomeId",
+    "previousRevision",
+    "outcome",
+    "evidenceActionId",
+    "evidenceReceiptId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionResult
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Result)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "correction": {
+      "$ref": "#/$defs/Record"
+    }
+  },
+  "required": [
+    "correction"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionEvent
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "correction": {
+      "$ref": "#/$defs/Record"
+    },
+    "previousOutcome": {
+      "anyOf": [
+        {
+          "$ref": "outcomes.schema.json#/$defs/Record"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "correction",
+    "previousOutcome"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionAdoptionEvent
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/AdoptionEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "evidenceActionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "evidenceReceiptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "correctionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "outcomeId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "outcomeRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "evidenceActionId",
+    "evidenceReceiptId",
+    "correctionId",
+    "outcomeId",
+    "outcomeRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### CorrectionActionResult
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "$ref": "action-result.v1.schema.json"
+}
+```
+
+### CorrectionActionStatus
+
+[Canonical definition](../../contracts/corrections.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "review-required"
+      ]
+    },
+    "result": {
+      "$ref": "#/$defs/ActionResult"
+    }
+  },
+  "required": [
+    "actionId",
+    "status"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -15266,6 +15719,11 @@ Examples include designed fixtures and captured local API results; consult contr
 | p22-event-1 | branch-activity.schema.json#/$defs/Event | valid foundation shape |
 | p22-event-2 | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
 | p22-event-3 | branch-activity.schema.json#/$defs/Event | valid foundation shape |
+| p23-correct-one-piece | corrections.schema.json#/$defs/CorrectCommand | valid foundation shape |
+| p23-captured-outcome.corrected-0 | corrections.schema.json#/$defs/Event | valid foundation shape |
+| p23-captured-outcome.corrected-1 | corrections.schema.json#/$defs/Event | valid foundation shape |
+| p23-captured-evidence.adoptionResolved-2 | corrections.schema.json#/$defs/AdoptionEvent | valid foundation shape |
+| p23-receipt-denied-availability | corrections.schema.json#/$defs/Availability | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -15397,5 +15855,11 @@ Examples include designed fixtures and captured local API results; consult contr
 | p22-fractional-claim | branch-activity.schema.json#/$defs/InterruptCommand | invalid (type) |
 | p22-arbitrary-branch | branch-activity.schema.json#/$defs/InterruptCommand | invalid (additionalProperties) |
 | p22-fractional-redispatch | b2b-intake.schema.json#/$defs/RedispatchCommand | invalid (type) |
+| p23-deny-price-edit | corrections.schema.json#/$defs/CorrectCommand | invalid (additionalProperties) |
+| p23-deny-fraction | corrections.schema.json#/$defs/CorrectCommand | invalid (type) |
+| p23-deny-revision | corrections.schema.json#/$defs/CorrectCommand | invalid (required) |
+| p23-event-reject-0 | corrections.schema.json#/$defs/Event | invalid (minimum) |
+| p23-event-reject-1 | corrections.schema.json#/$defs/Event | invalid (minimum) |
+| p23-event-reject-2 | corrections.schema.json#/$defs/AdoptionEvent | invalid (required) |
 
 [Canonical example data](../../contracts/examples/README.md)

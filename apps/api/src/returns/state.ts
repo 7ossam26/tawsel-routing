@@ -19,7 +19,7 @@ export async function lockDriver(tx:Transaction,tenant:string,driver:string,roun
 }
 export async function requestView(tx:Transaction,row:RequestRow):Promise<RequestView>{
  const rows=(await tx.query(`SELECT i.*,o.attempt_id,o.source_revision,t.external_id,c.source_dispatch_cycle_id,c.state,c.driver_id AS holder,
- a.latest,q.source_quantity,COALESCE(current_quantity.delivered,0) AS delivered,q.source_quantity-COALESCE(current_quantity.delivered,0) AS held_return_required,COALESCE(b.received,0) AS all_received,COALESCE(b.lost,0) AS all_lost,COALESCE(b.damaged,0) AS all_damaged
+ (a.latest AND NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision)) AS latest,q.source_quantity,COALESCE(current_quantity.delivered,0) AS delivered,q.source_quantity-COALESCE(current_quantity.delivered,0) AS held_return_required,COALESCE(b.received,0) AS all_received,COALESCE(b.lost,0) AS all_lost,COALESCE(b.damaged,0) AS all_damaged
  FROM tawsel.return_items i JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id)
  JOIN tawsel.planning_attempts a USING(tenant_id,attempt_id)
  JOIN tawsel.b2b_tasks t ON t.tenant_id=i.tenant_id AND t.task_id=i.task_id

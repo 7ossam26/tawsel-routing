@@ -16,8 +16,8 @@ export const messages:Record<Blocker,string>={
  * under the same assignment/task locks; P21/P22 supply those commands. */
 export async function stateFor(tx:Transaction,tenant:string,driver:string,m:Member,current:string|null,remaining:number){
  const option=(await tx.query('SELECT revision,deferred FROM tawsel.task_execution_options WHERE tenant_id=$1 AND task_id=$2',[tenant,m.taskId])).rows[0];
- const outcome=(await tx.query(`SELECT o.outcome_id,o.outcome,o.driver_id FROM tawsel.delivery_outcomes o WHERE tenant_id=$1 AND attempt_id=$2`,[tenant,m.attemptId])).rows[0];
- const line=(await tx.query(`SELECT COALESCE(sum(q.delivered),0)::int delivered FROM tawsel.outcome_quantities q JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE o.tenant_id=$1 AND o.task_id=$2 AND o.dispatch_cycle_id=$3`,[tenant,m.taskId,m.dispatchCycleId])).rows[0];
+ const outcome=(await tx.query(`SELECT o.outcome_id,o.outcome,o.driver_id FROM tawsel.delivery_outcomes o WHERE tenant_id=$1 AND attempt_id=$2 ORDER BY revision DESC LIMIT 1`,[tenant,m.attemptId])).rows[0];
+ const line=(await tx.query(`SELECT COALESCE(sum(q.delivered),0)::int delivered FROM tawsel.outcome_quantities q JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id) WHERE NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision) AND o.tenant_id=$1 AND o.task_id=$2 AND o.dispatch_cycle_id=$3`,[tenant,m.taskId,m.dispatchCycleId])).rows[0];
  const cycle=m.dispatchCycleId?(await tx.query('SELECT state,driver_id FROM tawsel.b2b_dispatch_cycles WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[tenant,m.dispatchCycleId])).rows[0]:null;
  const dependency=m.dispatchCycleId?!!(await tx.query('SELECT 1 FROM tawsel.retry_dependencies WHERE tenant_id=$1 AND dispatch_cycle_id=$2 LIMIT 1',[tenant,m.dispatchCycleId])).rowCount:false;
  const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;

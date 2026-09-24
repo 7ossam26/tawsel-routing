@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P23 implementation: immutable correction links replace effective per-attempt outcomes without changing original resolution rows. Receipt/disposition/redispatch/closure and claimed handover dependencies remain authoritative. [Exact corrected-state reconstruction, API and handoff](corrections.md); [ordered proof](phase-23-evidence.md). This supersedes earlier designed-only correction/adoption statements.
+
 ## P22 branch and cycle update — 24 September 2026
 
 The labelled full-capacity proposal is now locally implemented and verified: [API/state/demo](branch-interruption.md), [ordered evidence](phase-22-evidence.md). Under common driver guards, branch heading pauses customers; unresolved arrival blocks interruption. Active branch plan has one branch stop and explicitly paused customer forecast membership. Customer reservations continue to constrain atomic intake; new accepted work appends to retained state and a new paused forecast. Branch arrival records branch-pin origin; resume checks immutable claims against committed receipts, retains unreceived discrepancies and creates fresh continuation forecasts in the same round/day. Old worker publications are fenced. Database activity-mode and active-round constraints supplement command checks.
