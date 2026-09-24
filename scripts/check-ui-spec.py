@@ -117,9 +117,10 @@ def actions(document=None):
                             'action.getResult', 'evidence.receiveFormerDevice', 'sync.getEvidenceReceipt',
                             'device.executionTransferred', 'evidence.received')
         )
+        if phase == 21 and family == 'returns': implemented_scope = True
         if not implemented_scope:
-            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P20 scope promoted: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P20 scope only; no UI completion inferred.')
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P21 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P21 scope only; no UI completion inferred.')
 
 
 def states(document=None, demo=False):

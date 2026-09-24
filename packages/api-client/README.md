@@ -1,5 +1,10 @@
 # Tawsel public client foundation 0.1.0
 
+## Phase 21 returns client
+
+`src/returns.ts` exports browser-session `ReturnsClient` and bearer-service `returnReceiverClient`, using only generated public types and HTTP. They expose offers, source groups, request/action reads, claimed-subset confirmation, native pending reads, actual receipt and separate disposition. Persist exact envelopes; a timeout must never mint a new action or mark receipt. See [protocol/demo](../../docs/returns.md) and [public-only consumer](../../tests/erp-conformance/returns.ts). New outcome snapshots include explicit current custody separately from historical outcome lines.
+
+
 P15 adds `src/rounds.ts`: session/CSRF readiness, start, current round and stable start-action status. Retained business rejections are returned as ActionResult; network failure remains uncertain. Preserve the original envelope/action ID; another device receives the existing owner. See [public sequence and P34 journal obligations](../../docs/round-start.md), `npm run rounds:demo`, and `npm run test:erp:rounds`.
 
 P14 adds `PlanningManualOrderCommand`, ready/partial/manual plan states, route policy exceptions, resultKind and continuation types. Read all three optimistic revisions from `plans()`, then use the same `command()` method for `planning.setManualOrder`. Manual candidate/job and forecast times are null. [Current usage](../../docs/route-policy.md). The P13 paragraph below describes the retained historical draft shape.

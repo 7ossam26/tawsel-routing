@@ -499,6 +499,8 @@
     "ErrorCode": {
       "type": "string",
       "enum": [
+        "wrong_source_branch",
+        "quantity_exceeded",
         "validation_failed",
         "idempotency_conflict",
         "capacity_exceeded",
@@ -1095,6 +1097,50 @@
       "required": [
         "nextCursor",
         "snapshotRevision"
+      ],
+      "additionalProperties": false
+    },
+    "PieceBalance": {
+      "type": "object",
+      "properties": {
+        "sourceQuantity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "delivered": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "held": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "received": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "lost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "damaged": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        }
+      },
+      "required": [
+        "sourceQuantity",
+        "delivered",
+        "held",
+        "received",
+        "lost",
+        "damaged"
       ],
       "additionalProperties": false
     }

@@ -1,5 +1,8 @@
 # Tawsel — current requirements and phase coverage
 
+P21 evidence, 24 September 2026: [ordered real PostgreSQL/HTTP checks](../phase-21-evidence.md) and [source-return API/demo](../returns.md) cover R-08 atomicity, R-12 narrow native receipt authority, R-16 preserved partial quantities, R-31 retry dependency races, R-32 source-only offers/B2C rejection, R-33 independent physical subsets/unresolved/loss/damage, R-34 native receiver public boundary, R-50 immutable pending/recovery protocol, R-58 connected transaction evidence and R-64/R-65 canonical ERP handoff/checkpoints. P22 resume/redispatch, P23 correction and P27 native ERP source-outbox/screens remain future.
+
+
 P20 evidence, 24 September 2026: [ordered PostgreSQL/HTTP checks](../phase-20-evidence.md) and [two-device protocol/demo](../device-ownership.md) cover R-27 existing-round visibility/no second start, R-38 explicit same-driver generation takeover and required snapshot, R-40 preserved original evidence with distinct receipt/business/duplicate status and hard recovery constraints, and R-65 ordered checks/canonical ERP handoff. P23 adoption and P33–35 browser persistence/replay/logout remain future.
 
 P18 evidence, 24 September 2026: [ordered checks](../phase-18-evidence.md) and [eligibility API/demo](../eligibility.md) cover R-12 assigned-driver departure authority, R-13 capacity-checked reactivation, R-16 partial-remnant exclusion, R-18 prior-fee preservation, R-24 earliest-time deferral, R-25 protected current/urgent eligibility, R-30 no call counters/caps, R-31 explicit whole-held retry and R-65 ordered contracts/ERP handoff. Receipt dependency producers and closure/carry-forward remain P19/P21/P22; full execution UI remains P29–31.

@@ -110,12 +110,14 @@ export class Outcomes {
    const history=all.map(r=>r.record),latest=new Set(all.filter(r=>r.latest).map(r=>r.record.outcomeId));
    const items=rows.map(r=>r.record).filter(r=>latest.has(r.outcomeId));for(const o of history)a.requireResource(own,{tenant_id:a.context.tenantId,driver_id:o.driverId,branch_id:o.branchId,integration_id:o.sourceReference?.integrationId??null});
    const progress:components['schemas']['OutcomeProgress']={processed:items.length,full:0,partial:0,refused:0,noAnswer:0,deliveredPieces:0,heldReturnRequiredPieces:0,collection:[]};
-   for(const o of items){if(o.outcome==='no-answer')progress.noAnswer++;else progress[o.outcome]++;for(const l of o.lines){progress.deliveredPieces+=l.delivered;progress.heldReturnRequiredPieces+=l.heldReturnRequired;}}
+   const custody=(await tx.query('SELECT * FROM tawsel.cycle_custody WHERE tenant_id=$1 AND outcome_id=ANY($2::uuid[])',[a.context.tenantId,items.map(o=>o.outcomeId)])).rows.map(q=>({outcomeId:q.outcome_id as string,dispatchCycleId:q.dispatch_cycle_id as string,sourceLineId:q.source_line_id as string,balance:{sourceQuantity:q.source_quantity as number,delivered:q.delivered as number,held:q.held as number,received:q.received as number,lost:q.lost as number,damaged:q.damaged as number}}));
+   for(const o of items){if(o.outcome==='no-answer')progress.noAnswer++;else progress[o.outcome]++;for(const l of o.lines)progress.deliveredPieces+=l.delivered;}
+   progress.heldReturnRequiredPieces=custody.reduce((n,q)=>n+q.balance.held,0);
    let reported=0n,unpaid=0n;const fees=new Map<string,{unpaid:bigint;paid:bigint}>();
    for(const o of history){reported+=BigInt(o.collection.reported?.amountMinor??0);const key=o.dispatchCycleId??o.taskId,f=fees.get(key)??{unpaid:0n,paid:0n};f.unpaid=f.unpaid>BigInt(o.collection.unpaidShipping.amountMinor)?f.unpaid:BigInt(o.collection.unpaidShipping.amountMinor);f.paid+=BigInt(o.collection.shipping.amountMinor);fees.set(key,f);}
    for(const f of fees.values())unpaid+=f.unpaid>f.paid?f.unpaid-f.paid:0n;
    if(history.some(o=>o.collection.reported!==null||o.collection.unpaidShipping.amountMinor>0))progress.collection=[{currency:'EGP',exponent:2,reportedMinor:reported.toString(),unpaidShippingMinor:unpaid.toString()}];
-   const result={roundId,items,history,progress};requireOutcome('Snapshot',result);return result;
+   const result={roundId,items,history,progress,custody};requireOutcome('Snapshot',result);return result;
   });
  }
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['OutcomeActionStatus']>{

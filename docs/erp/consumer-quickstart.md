@@ -1,5 +1,22 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P21 public receiver slice
+
+Run the existing workspace with its marked PostgreSQL, then `npm run returns:demo` and `npm run test:erp:returns -- .local/phase-21-demo.json`. The demo runs a copied public-only consumer as a separate process with only URL, scoped token and request/report IDs. It tests pending reads → two of three actual receipt → duplicate/result recovery → one separately lost, plus rejected branch/quantity/revision cases. Parent HTTP tests stop/restart the API; driver auth/bootstrap is a labelled fixture. No native ERP UI, ERP transactional outbox, signed transport, physical-device or production claim.
+
+For a separately prepared dedicated untouched three-piece request, copy `packages/api-client/src/{returns.ts,schema.d.ts}` and `tests/erp-conformance/returns.ts` preserving their relative layout, use Node 24 and the workspace-pinned tsx runtime (or compile the public TypeScript), then run:
+
+```powershell
+$env:TAWSEL_ERP_API_URL='https://your-test-tawsel.example'
+# Supply TAWSEL_ERP_SERVICE_TOKEN privately; never commit it.
+$env:TAWSEL_RETURN_REQUEST_ID='<dedicated-three-piece-request-uuid>'
+$env:TAWSEL_RETURN_REPORT='./receipt-proof.json'
+node --import tsx tests/erp-conformance/returns.ts --live
+```
+
+This command **mutates that dedicated request**: receives two and records the third lost. It requires explicit return.receive/return.dispose plus the existing integration configuration read grant; missing setup fails clearly. A rerun uses a fresh dedicated offer, because the first has already settled. The exact command/result/event mapping and unknown-response rules are in [returns.md](../returns.md). The consumer uses no Tawsel database, operator token, issuer credential, Engine adapter or backend module. P26/P27 still own durable separate-database ERP inbox/outbox and full native two-way proof.
+
+
 ## P19 closure/carry-forward consumer check
 
 Run `npm run workdays:demo`, then `npm run test:erp:workdays -- .local/phase-19-demo.json`. The first command uses actual loopback HTTP, public intake, manual plans and a disposable PostgreSQL database with labelled session/issuer fixtures. The second imports only public contract types and inspects the resulting protocol; `npm run test:erp:workdays` checks captured canonical examples. No real ERP receiver or signed transport is claimed.

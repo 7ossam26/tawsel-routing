@@ -1,5 +1,14 @@
 # ERP planning input — designed foundation
 
+## P21 receipt boundary available locally
+
+[Source returns](../returns.md) and [actual mapping](field-and-status-mapping.md) now implement driver offers, native source-scoped pending/request reads, actual subset receipt and separate lost/damaged disposition. [Evidence](../phase-21-evidence.md) includes real PostgreSQL locking/rollback and a copied independent HTTP-only consumer. These supersede historical designed-only P21 statements below. P22 redispatch/resume, P23 correction, P25–26 signed delivery/receiver and P27 native screens/outbox remain separate.
+
+The connector must obtain explicit operator return.receive/return.dispose grants, map the source branch and stable task/cycle/line/item UUIDs, authorize native staff and preserve each exact envelope/item expectedRevision in its own transactional source outbox. This phase uses an explicit service-operation identity with actorId=null, not claimed human delegation. Implement a native per-driver/source-branch pending list and actual received-subset entry; keep lost/damaged separate. Retain denied/missing pieces and pending command results. Retry unknown actions unchanged; read the current request after recovery because a duplicate returns its historical result.
+
+Implement receipt before new dispatch: only actual physically received quantities may later become redispatch provenance (P22). Do not treat requested, disposed, command-evidence-received, webhook-received or ERP-applied as equivalent. Commercial accounting, inventory availability/valuation and liability remain ERP-owned. The source outbox/native workflow and the real vendor schema, identity deployment and operations are still decisions for the separate ERP project; the CLI demonstration is no transactional ERP-outbox proof.
+
+
 ## P20 implemented boundary — 24 September 2026
 
 [Device takeover/evidence](../device-ownership.md) now has separate-session real HTTP/PostgreSQL/restart evidence. This transfers execution ownership between installations of the **same authenticated driver**, without changing shipment assignment, external source/cycle identities, current activity or accepted quantities/money. No ERP permission or old-phone approval is requested. Integration bearer credentials cannot call driver takeover/adoption.

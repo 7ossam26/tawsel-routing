@@ -1185,6 +1185,34 @@
             "$ref": "#/$defs/Record"
           },
           "description": "Preserved outcomes including earlier attempts. Collection totals include all history; items count latest resolved attempts only."
+        },
+        "custody": {
+          "type": "array",
+          "description": "P21 current custody for latest resolved company attempts in this snapshot. Original outcome lines retain historical return-required quantities.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "outcomeId": {
+                "$ref": "./common.schema.json#/$defs/Uuid"
+              },
+              "dispatchCycleId": {
+                "$ref": "./common.schema.json#/$defs/Uuid"
+              },
+              "sourceLineId": {
+                "$ref": "./common.schema.json#/$defs/ExternalId"
+              },
+              "balance": {
+                "$ref": "./common.schema.json#/$defs/PieceBalance"
+              }
+            },
+            "required": [
+              "outcomeId",
+              "dispatchCycleId",
+              "sourceLineId",
+              "balance"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [

@@ -25,6 +25,7 @@ export async function eligibleTarget(tx:Transaction,a:AccessSession,r:RoundRow,i
  const admitted=(await tx.query('SELECT 1 FROM tawsel.round_admissions WHERE tenant_id=$1 AND round_id=$2 AND attempt_id=$3 AND task_id=$4',[r.tenant_id,r.round_id,p.attemptId,p.taskId])).rowCount;
  const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
  if(!admitted||!m.eligible||!m.departureAt||(m.earliestAt&&Date.parse(m.earliestAt)>now.getTime()))throw new CurrentError('lifecycle_forbidden',409,'المحطة غير متاحة للتنفيذ الآن.');
+ if(m.dispatchCycleId&&(await tx.query('SELECT 1 FROM tawsel.retry_dependencies WHERE tenant_id=$1 AND dispatch_cycle_id=$2 LIMIT 1',[r.tenant_id,m.dispatchCycleId])).rowCount)throw new CurrentError('lifecycle_forbidden',409,'سُجّل استلام أو تصرف؛ القطع ليست متاحة للتوصيل.');
  if(m.sourceRevision!==p.expectedSourceRevision||m.assignmentRevision!==p.expectedAssignmentRevision||m.pinRevision!==p.expectedPinRevision)throw new CurrentError('stale_revision',409,'تغيّرت بيانات المحطة؛ حدّثها قبل المتابعة.');
  return m;
 }

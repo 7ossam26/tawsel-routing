@@ -1,5 +1,12 @@
 # Tracking and consistency contract
 
+## P21 actual receipt update — 24 September 2026
+
+[Source returns](returns.md) now implement offers, actual subset receipt and separate loss/damage. Migration 0019 adds scoped immutable history and monotone quantity counters. Driver → workday → assignment → task guards serialize actual transfer with retry/outcome/closure/takeover; receipt/disposition commits retry_dependencies in the same transaction. A winning whole retry supersedes its old offer without deleting its unresolved history. Per-item expectedRevision permits independent subset confirmation, with no whole-offered-batch gate.
+
+Current conservation is sourceQuantity = delivered + held + received + lost + damaged. Request conservation is requested = received + unresolved + lost + damaged. Immutable outcome lines describe the original physical result, while OutcomeSnapshot.custody/progress and carry-forward reflect current held pieces. Return request is no movement; loss/damage is no stock. The claimed-subset confirmation read waits on actual physical receipt only. P22 must recheck that predicate under lock in resume; P23 must reject dependent corrections under the same guards. P25 transports separate return.requested / return.subsetReceived / return.dispositionRecorded intent; transport is not implemented here. The older walkthrough below remains partly designed (correction and redispatch); P21 receipt/disposition arithmetic now has [real API/PostgreSQL evidence](phase-21-evidence.md).
+
+
 P20 runtime update (24 September 2026): online takeover/context/confirmed snapshot and scoped action/evidence recovery now have real PostgreSQL/HTTP proof. Original envelopes and business results are preserved separately from duplicate transport; current-owner generation and snapshot token fence all execution families. Recovery metadata exposes hard closed-day/dependency constraints without permitting adoption. The adoption schema is designed for P23, replay/logout UI for P33–35. [Protocol and demonstration](device-ownership.md), [ordered evidence](phase-20-evidence.md).
 
 P15 implementation: [online start/departure](round-start.md) now provides migration 0012, unique open-day/active-round constraints, immutable first forecast/workload publication, server readiness, shared-lock start/admission guards and start-specific action recovery. Generic action recovery, current/arrival/outcomes, takeover and full offline replay remain their assigned phases. [Ordered actual evidence](phase-15-evidence.md).

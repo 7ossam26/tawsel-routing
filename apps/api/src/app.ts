@@ -18,6 +18,7 @@ import { outcomeRoutes } from './outcomes/routes.js';
 import { eligibilityRoutes } from './eligibility/routes.js';
 import { closureRoutes } from './closure/routes.js';
 import { deviceRoutes } from './devices/routes.js';
+import {returnDriverRoutes,returnReceiverRoutes} from './returns/routes.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -49,8 +50,10 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && auth) app.register(async scope => { await eligibilityRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await closureRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await deviceRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await returnDriverRoutes(scope, database, auth); });
   if (database && provisioning) app.register(async scope => { await provisioningRoutes(scope, database, provisioning, writeProjection); });
   if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
+  if (database && provisioning) app.register(async scope => { await returnReceiverRoutes(scope, database); });
 
   app.setErrorHandler((error, _request, reply) => {
     const failure = error instanceof Error

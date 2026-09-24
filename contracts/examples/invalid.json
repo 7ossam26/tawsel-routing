@@ -4412,5 +4412,235 @@
         "expectedPinRevision": 0
       }
     }
+  },
+  {
+    "id": "p21-fractional-receipt",
+    "schema": "returns.schema.json#/$defs/ReceiveCommand",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "return.confirmSubsetReceipt",
+      "actionId": "8cf24011-6cd1-4dbf-a75b-457aeaf3c114",
+      "context": {
+        "kind": "integration",
+        "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+        "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "receivingBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "items": [
+          {
+            "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+            "expectedRevision": 0,
+            "quantity": 0.5
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p21-empty-subset",
+    "schema": "returns.schema.json#/$defs/ReceiveCommand",
+    "valid": false,
+    "keyword": "minItems",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "return.confirmSubsetReceipt",
+      "actionId": "8cf24011-6cd1-4dbf-a75b-457aeaf3c114",
+      "context": {
+        "kind": "integration",
+        "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+        "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "receivingBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "items": []
+      }
+    }
+  },
+  {
+    "id": "p21-forged-human",
+    "schema": "returns.schema.json#/$defs/ReceiveCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "return.confirmSubsetReceipt",
+      "actionId": "8cf24011-6cd1-4dbf-a75b-457aeaf3c114",
+      "context": {
+        "kind": "integration",
+        "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+        "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc",
+        "assertedActorId": "77777777-7777-4777-8777-777777777777"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "receivingBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "items": [
+          {
+            "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+            "expectedRevision": 0,
+            "quantity": 2
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p21-stock-claim",
+    "schema": "returns.schema.json#/$defs/ReceiveCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "return.confirmSubsetReceipt",
+      "actionId": "8cf24011-6cd1-4dbf-a75b-457aeaf3c114",
+      "context": {
+        "kind": "integration",
+        "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+        "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "receivingBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "items": [
+          {
+            "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+            "expectedRevision": 0,
+            "quantity": 2
+          }
+        ],
+        "availableStock": true
+      }
+    }
+  },
+  {
+    "id": "p21-receipt-as-loss",
+    "schema": "returns.schema.json#/$defs/ReceivedEvent",
+    "valid": false,
+    "keyword": "const",
+    "data": {
+      "transition": {
+        "kind": "lost",
+        "time": {
+          "actionId": "8cf24011-6cd1-4dbf-a75b-457aeaf3c114",
+          "recordedAt": "2026-09-24T09:49:05.197Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+        "taskId": "54ebc86b-17c4-5cd4-a502-3ae201e87b33",
+        "identity": {
+          "mode": "service-operation",
+          "actorId": null,
+          "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+          "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+        },
+        "quantity": 2,
+        "revision": 1,
+        "outcomeId": "8b01e1d3-c24d-4ec9-a8da-ac307e7f5f40",
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "sourceLineId": "pieces",
+        "transitionId": "e80ce45b-71aa-444a-9a25-5467467ba7ac",
+        "sourceBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "dispatchCycleId": "aa489647-277a-42ab-8503-829b5b7a593a",
+        "sourceReference": {
+          "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+          "externalId": "shipment-0",
+          "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+        },
+        "sourceDispatchCycleId": "cycle"
+      }
+    }
+  },
+  {
+    "id": "p21-loss-as-receipt",
+    "schema": "returns.schema.json#/$defs/DispositionEvent",
+    "valid": false,
+    "keyword": "enum",
+    "data": {
+      "transition": {
+        "kind": "received",
+        "time": {
+          "actionId": "52cdfe05-5e9e-47c8-84a2-51cfb3e53e21",
+          "recordedAt": "2026-09-24T09:49:05.294Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+        "taskId": "54ebc86b-17c4-5cd4-a502-3ae201e87b33",
+        "identity": {
+          "mode": "service-operation",
+          "actorId": null,
+          "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+          "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+        },
+        "quantity": 1,
+        "revision": 2,
+        "outcomeId": "8b01e1d3-c24d-4ec9-a8da-ac307e7f5f40",
+        "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+        "sourceLineId": "pieces",
+        "transitionId": "d05758d7-6c58-4200-9a4d-a13a7d893277",
+        "sourceBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+        "dispatchCycleId": "aa489647-277a-42ab-8503-829b5b7a593a",
+        "sourceReference": {
+          "tenantId": "0823e06e-0d1d-40d8-bf31-23db0f02faea",
+          "externalId": "shipment-0",
+          "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc"
+        },
+        "sourceDispatchCycleId": "cycle"
+      }
+    }
   }
 ]

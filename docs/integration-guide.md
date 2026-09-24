@@ -1,5 +1,10 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+## P21 source-return update
+
+Driver offers and native source-branch subset receipt/disposition are now locally implemented and verified. Use [returns.md](returns.md), [field mapping](erp/field-and-status-mapping.md), [consumer setup](erp/consumer-quickstart.md) and [ordered evidence](phase-21-evidence.md). Explicit service operations require operator return grants and audit actorId=null; caller-asserted humans remain denied. Per-item expectedRevision and stable action ID prevent duplicate quantities. Unreceived goods remain explicit; loss/damage does not confirm handback. Pending/503 is never receipt or resume permission. Native ERP source-outbox durability and signed delivery remain P27/P25–26. This supersedes older designed-only return statements below.
+
+
 P10 update, 22 September 2026: [source snapshots, receipt/admission and normal predeparture changes](b2b-intake.md) are implemented and locally verified through the same public service boundary, with [portable HTTP conformance](erp/consumer-quickstart.md). Source/assignment versions stay separate; prepared is not held; capacity rejects whole batches; pending planning is durable intent, not Engine success. Later execution, signed delivery, receiver/native source outboxes and real ERP compatibility remain unverified. General action.getResult is still designed; P10 intake.getBatchResult is available for this source's intake commands.
 
 

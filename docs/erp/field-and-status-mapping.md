@@ -1,5 +1,30 @@
 # Field and status mapping — canonical foundation
 
+## P21 actual source-branch receipt/disposition — locally verified
+
+[Wire API and retry/confirmation rules](../returns.md), [canonical schemas](../../contracts/returns.schema.json), [validated p21 examples](../../contracts/examples/README.md), [public client](../../packages/api-client/src/returns.ts), [real PostgreSQL/HTTP proof](../phase-21-evidence.md). This section supersedes older designed-only return statements below. Native mock screens remain P27 and new dispatch remains P22. Real ERP field names are unchosen.
+
+| ERP fact / Tawsel field | Authority, null/required semantics and revision | Public command/event/read | Real ERP field |
+| --- | --- | --- | --- |
+| Origin / sourceBranchId, receivingBranchId | Required UUID from P08/P10 source branch; receiving must equal the immutable origin despite multi-branch access | requestHandover / confirmSubsetReceipt / recordDisposition | Unchosen |
+| Shipment and dispatched stock / taskId, dispatchCycleId, sourceDispatchCycleId, sourceLineId | Required stable task/cycle/line identity; source external shipment ID retained in request item/transition; no new cycle here | listSourceBranchGroups, getRequest/getNativeRequest | Unchosen |
+| Driver / driverId; execution anchor / roundId | Authenticated own driver, latest round/device fence for offers; ERP cannot select a different holder through body identity | requestHandover, listPending(driverId, sourceBranchId) | Unchosen |
+| Offered / requested | Positive whole pieces; offer cannot exceed currently held unoffered pieces; creates no physical receipt/dependency or stock | return.requested | Unchosen |
+| Actually received / received | Cumulative count; command quantity is an incremental positive subset; expectedRevision per selected item prevents double count | confirmSubsetReceipt → return.subsetReceived | Unchosen |
+| Outstanding / unresolved | requested − received − lost − damaged; denial leaves it intact; pending/superseded/settled are distinct from receipt | getRequest/getNativeRequest/listPending | Unchosen |
+| Still held / custody.held | Cycle-wide original source quantity − delivered − physical receipt − loss − damage; may include unoffered pieces | Request item custody; OutcomeSnapshot.custody; carry-forward | Unchosen |
+| Loss and damage / lost, damaged | Separate cumulative counters; disposition=lost or damaged required; cannot also receive/dispose those same held pieces; never automatic stock | recordDisposition → return.dispositionRecorded | Unchosen |
+| Claim / claims[itemId,quantity] | Positive cumulative physical subset only; confirmed when every explicitly claimed quantity is received; unrelated offered items do not gate | return.checkConfirmation; P22 rechecks atomically before resume | Unchosen |
+| Actor / identity.mode, tenantId, integrationId, actorId | Explicit P08 service-operation, actorId is always null; credential/service audited; arbitrary asserted human rejected. Native ERP authorizes its staff locally | Operator returnCapabilities; receipt/disposition transition identity | Unchosen |
+| Native pending / actionId | Exact immutable envelope, expected item revision; HTTP uncertainty stays pending; duplicate recovers original result, not a fresh read | getNativeResult / same command replay | Unchosen |
+| Superseded offer / eligibility | A compatible whole retry before receipt retires the old attempt; old unresolved offer is retained but cannot receive | getRequest/getNativeRequest; retry_dependencies after actual transfer | Unchosen |
+| Server time / transition.time | Server recordedAt plus preserved device/source observation; client clock never orders competing transitions | Separate receipt/disposition event payloads | Unchosen |
+
+Verified worked case: request 3 pieces, receive 2 → requested 3 / received 2 / unresolved 1 / held 1. Lose the remaining 1 → received 2 / lost 1 / unresolved 0 / held 0. Two-piece claim confirms; three-piece claim waits. No available-stock/valuation/cash-settlement claim. A separate two-delivered/one-returned case preserves 25000 reported EGP minor units and the original outcome history.
+
+Verified rejected cases: branch A goods at B (even with access to A/B); 4 received from 3 offered; old expectedRevision under a fresh action; changed payload under a reused action; forged staff actor; B2C; cross-source/tenant access; former phone. Independent receipt/retry races commit one compatible transition. An unavailable API/receiver error retains the unresolved request. See the named tests and exact command results in the evidence; SQL/HTTP proof does not claim native ERP UI or signed webhook delivery.
+
+
 ## Phase 20 — device ownership and preserved evidence
 
 | Public field/fact | Consumer meaning |

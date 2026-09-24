@@ -19,11 +19,13 @@ async function carried(tx:Transaction,a:AccessSession,d:DayRow,asOf:string):Prom
  FROM tawsel.b2b_dispatch_cycles c JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) WHERE c.tenant_id=$1 AND c.driver_id=$2`,[d.tenant_id,d.driver_id])).rows.map(r=>[r.task_id,r]));
  const admitted=new Set((await tx.query<{task_id:string}>(`SELECT DISTINCT d.task_id FROM tawsel.round_admissions d JOIN tawsel.rounds r USING(tenant_id,round_id) WHERE r.tenant_id=$1 AND r.workday_id=$2`,[d.tenant_id,d.workday_id])).rows.map(r=>r.task_id));
  const items:CarryForward['items']=[];
+ const custody=new Map((await tx.query<{dispatch_cycle_id:string;held:number}>('SELECT dispatch_cycle_id,sum(held)::int held FROM tawsel.cycle_custody WHERE tenant_id=$1 AND driver_id=$2 GROUP BY dispatch_cycle_id',[d.tenant_id,d.driver_id])).rows.map(r=>[r.dispatch_cycle_id,r.held]));
  for(const m of input.members){
   const cycle=cycles.get(m.taskId);if(m.dispatchCycleId&&cycle?.state!=='held')continue;
   const history=histories.filter(o=>o.taskId===m.taskId&&o.dispatchCycleId===m.dispatchCycleId),outcome=history.find(o=>o.attemptId===m.attemptId);
   if(outcome?.outcome==='full')continue;
-  const deferred=options.get(m.taskId)??false,returned=outcome?.lines.reduce((n,l)=>n+l.heldReturnRequired,0)??0;
+  const deferred=options.get(m.taskId)??false,returned=m.dispatchCycleId?custody.get(m.dispatchCycleId)??0:0;
+  if(m.dispatchCycleId&&outcome&&returned===0)continue;
   const blocker:CarryForward['items'][number]['blocker']=cycle?.dependency?'receipt-or-disposition':outcome?'result-required':deferred?'deferred':m.earliestAt&&Date.parse(m.earliestAt)>Date.parse(asOf)?'earliest-time':!m.coordinates?'location-required':m.dispatchCycleId&&m.reservationState!=='remaining'?'capacity-admission':null;
   let unpaid=0n,paid=0n;for(const o of history){const amount=BigInt(o.collection.unpaidShipping.amountMinor);if(amount>unpaid)unpaid=amount;paid+=BigInt(o.collection.shipping.amountMinor);}
   items.push({taskId:m.taskId,attemptId:m.attemptId,dispatchCycleId:m.dispatchCycleId,

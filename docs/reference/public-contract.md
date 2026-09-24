@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P20 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P21 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -761,6 +761,8 @@ Body assertions must match authenticated bindings. An asserted actorId is not au
 {
   "type": "string",
   "enum": [
+    "wrong_source_branch",
+    "quantity_exceeded",
     "validation_failed",
     "idempotency_conflict",
     "capacity_exceeded",
@@ -2194,6 +2196,17 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
       "uniqueItems": true,
       "maxItems": 2,
       "description": "Operator-owned service grants. Omit to preserve existing grants; empty removes both."
+    },
+    "returnCapabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "return.receive",
+          "return.dispose"
+        ]
+      },
+      "uniqueItems": true,
+      "description": "Operator-only full replacement of return grants; omitted preserves, [] clears. Separate from intakeCapabilities."
     }
   },
   "required": [
@@ -10710,6 +10723,34 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
         "$ref": "#/$defs/Record"
       },
       "description": "Preserved outcomes including earlier attempts. Collection totals include all history; items count latest resolved attempts only."
+    },
+    "custody": {
+      "type": "array",
+      "description": "P21 current custody for latest resolved company attempts in this snapshot. Original outcome lines retain historical return-required quantities.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "outcomeId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "dispatchCycleId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "sourceLineId": {
+            "$ref": "./common.schema.json#/$defs/ExternalId"
+          },
+          "balance": {
+            "$ref": "./common.schema.json#/$defs/PieceBalance"
+          }
+        },
+        "required": [
+          "outcomeId",
+          "dispatchCycleId",
+          "sourceLineId",
+          "balance"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
@@ -13226,6 +13267,1020 @@ Durable submitting-account notification after rejected domain writes roll back. 
 }
 ```
 
+### ReturnOffer
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Offer)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "outcomeId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "taskId",
+    "dispatchCycleId",
+    "outcomeId",
+    "sourceLineId",
+    "quantity"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnRequest
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Request)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Offer"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "roundId",
+    "sourceBranchId",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnSubsetItem
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/SubsetItem)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "itemId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "itemId",
+    "expectedRevision",
+    "quantity"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnReceive
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Receive)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "receivingBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SubsetItem"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "requestId",
+    "receivingBranchId",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnDispose
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Dispose)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "receivingBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SubsetItem"
+      },
+      "minItems": 1
+    },
+    "disposition": {
+      "enum": [
+        "lost",
+        "damaged"
+      ]
+    }
+  },
+  "required": [
+    "requestId",
+    "receivingBranchId",
+    "items",
+    "disposition"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnRequestCommand
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/RequestCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "return.requestHandover"
+        },
+        "context": {
+          "$ref": "./common.schema.json#/$defs/DeviceContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Request"
+        }
+      },
+      "required": [
+        "operationId",
+        "context",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### ReturnReceiveCommand
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/ReceiveCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "return.confirmSubsetReceipt"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Receive"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnDisposeCommand
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/DisposeCommand)
+
+P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.
+
+```json
+{
+  "description": "P05 hash v1 includes every envelope field plus trusted actor identity: sorted object keys, original array order, UTF-8 JSON, no default insertion or Unicode normalization. Keep the immutable envelope across retries; source scope is authenticated and stable across token refresh. A generic valid envelope does not validate or authorize its feature payload.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "return.recordDisposition"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/Dispose"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnCustody
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Custody)
+
+```json
+{
+  "$ref": "./common.schema.json#/$defs/PieceBalance"
+}
+```
+
+### ReturnItem
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Item)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "itemId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "outcomeId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requested": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "received": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "lost": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "damaged": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "unresolved": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "eligibility": {
+      "enum": [
+        "pending",
+        "settled",
+        "superseded"
+      ]
+    },
+    "custody": {
+      "$ref": "#/$defs/Custody"
+    }
+  },
+  "required": [
+    "itemId",
+    "taskId",
+    "dispatchCycleId",
+    "outcomeId",
+    "attemptId",
+    "sourceLineId",
+    "externalId",
+    "sourceDispatchCycleId",
+    "sourceRevision",
+    "revision",
+    "requested",
+    "received",
+    "lost",
+    "damaged",
+    "unresolved",
+    "eligibility",
+    "custody"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnRequestView
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/RequestView)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "integrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "requestedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Item"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "requestId",
+    "driverId",
+    "sourceBranchId",
+    "integrationId",
+    "roundId",
+    "requestedAt",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnRequestList
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/RequestList)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RequestView"
+      },
+      "minItems": 0
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnGroupLine
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/GroupLine)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "outcomeId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "availableToRequest": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "custody": {
+      "$ref": "#/$defs/Custody"
+    }
+  },
+  "required": [
+    "taskId",
+    "dispatchCycleId",
+    "outcomeId",
+    "sourceLineId",
+    "externalId",
+    "sourceDispatchCycleId",
+    "availableToRequest",
+    "custody"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnGroup
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Group)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourceBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "integrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GroupLine"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "sourceBranchId",
+    "integrationId",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnGroups
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Groups)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Group"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "groups"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnClaim
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Claim)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "itemId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    }
+  },
+  "required": [
+    "itemId",
+    "quantity"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnConfirmationQuery
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/ConfirmationQuery)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Claim"
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "claims"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnConfirmation
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Confirmation)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "requestId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "state": {
+      "enum": [
+        "confirmed",
+        "waiting"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "claimed": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "confirmed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "waiting": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "itemId",
+          "claimed",
+          "confirmed",
+          "waiting"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "requestId",
+    "state",
+    "message",
+    "claims"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnTransition
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/Transition)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "transitionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "requestId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "itemId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "outcomeId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceLineId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceReference": {
+      "$ref": "./common.schema.json#/$defs/SourceReference"
+    },
+    "sourceDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "sourceBranchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "kind": {
+      "enum": [
+        "received",
+        "lost",
+        "damaged"
+      ]
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "time": {
+      "$ref": "./current-activity.schema.json#/$defs/ActionTime"
+    },
+    "identity": {
+      "$ref": "./provisioning.schema.json#/$defs/VerifiedService"
+    }
+  },
+  "required": [
+    "transitionId",
+    "requestId",
+    "itemId",
+    "taskId",
+    "dispatchCycleId",
+    "outcomeId",
+    "sourceLineId",
+    "sourceReference",
+    "sourceDispatchCycleId",
+    "sourceBranchId",
+    "kind",
+    "quantity",
+    "revision",
+    "time",
+    "identity"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnCommandResult
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/CommandResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "request": {
+      "$ref": "#/$defs/RequestView"
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Transition"
+      },
+      "minItems": 0
+    }
+  },
+  "required": [
+    "request",
+    "transitions"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnActionResult
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "$ref": "./action-result.v1.schema.json"
+}
+```
+
+### ReturnActionStatus
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "review-required"
+      ]
+    },
+    "result": {
+      "$ref": "#/$defs/ActionResult"
+    }
+  },
+  "required": [
+    "actionId",
+    "status"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnRequestedEvent
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/RequestedEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "request": {
+      "$ref": "#/$defs/RequestView"
+    }
+  },
+  "required": [
+    "request"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnReceivedEvent
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/ReceivedEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "transition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Transition"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "received"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "transition"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ReturnDispositionEvent
+
+[Canonical definition](../../contracts/returns.schema.json#/$defs/DispositionEvent)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "transition": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Transition"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "enum": [
+                "lost",
+                "damaged"
+              ]
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "transition"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -13417,6 +14472,20 @@ Examples include designed fixtures and captured local API results; consult contr
 | p20-notification-1 | device-ownership.schema.json#/$defs/TransferEvent | valid foundation shape |
 | p20-notification-2 | device-ownership.schema.json#/$defs/EvidenceEvent | valid foundation shape |
 | p20-notification-3 | device-ownership.schema.json#/$defs/EvidenceEvent | valid foundation shape |
+| p21-offer-command | returns.schema.json#/$defs/RequestCommand | valid foundation shape |
+| p21-receive-command | returns.schema.json#/$defs/ReceiveCommand | valid foundation shape |
+| p21-loss-command | returns.schema.json#/$defs/DisposeCommand | valid foundation shape |
+| p21-offered | returns.schema.json#/$defs/RequestView | valid foundation shape |
+| p21-received | returns.schema.json#/$defs/RequestView | valid foundation shape |
+| p21-disposed | returns.schema.json#/$defs/RequestView | valid foundation shape |
+| p21-waiting | returns.schema.json#/$defs/Confirmation | valid foundation shape |
+| p21-confirmed | returns.schema.json#/$defs/Confirmation | valid foundation shape |
+| p21-unconfirmed | returns.schema.json#/$defs/Confirmation | valid foundation shape |
+| p21-requested | returns.schema.json#/$defs/RequestedEvent | valid foundation shape |
+| p21-subsetReceived | returns.schema.json#/$defs/ReceivedEvent | valid foundation shape |
+| p21-dispositionRecorded | returns.schema.json#/$defs/DispositionEvent | valid foundation shape |
+| p21-accepted | returns.schema.json#/$defs/ActionResult | valid foundation shape |
+| p21-recovered | returns.schema.json#/$defs/ActionStatus | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -13538,5 +14607,11 @@ Examples include designed fixtures and captured local API results; consult contr
 | p20-takeover-fraction-generation | device-ownership.schema.json#/$defs/TakeoverCommand | invalid (type) |
 | p20-bad-snapshot-token | device-ownership.schema.json#/$defs/FormerSubmission | invalid (format) |
 | p20-adoption-no-receipt | device-ownership.schema.json#/$defs/AdoptionCommand | invalid (required) |
+| p21-fractional-receipt | returns.schema.json#/$defs/ReceiveCommand | invalid (type) |
+| p21-empty-subset | returns.schema.json#/$defs/ReceiveCommand | invalid (minItems) |
+| p21-forged-human | returns.schema.json#/$defs/ReceiveCommand | invalid (additionalProperties) |
+| p21-stock-claim | returns.schema.json#/$defs/ReceiveCommand | invalid (additionalProperties) |
+| p21-receipt-as-loss | returns.schema.json#/$defs/ReceivedEvent | invalid (const) |
+| p21-loss-as-receipt | returns.schema.json#/$defs/DispositionEvent | invalid (enum) |
 
 [Canonical example data](../../contracts/examples/README.md)

@@ -122,6 +122,10 @@ async function writeSource(tx: Transaction, b: ServiceBinding, command: ActionEn
       await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability IN ('intake.prepare','assignment.manage')", sourceKey(b));
       for (const cap of p.intakeCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
     }
+    if (p.returnCapabilities !== undefined) {
+      await tx.query("DELETE FROM tawsel.integration_capabilities WHERE tenant_id=$1 AND integration_id=$2 AND capability IN ('return.receive','return.dispose')", sourceKey(b));
+      for (const cap of p.returnCapabilities as string[]) await tx.query('INSERT INTO tawsel.integration_capabilities VALUES ($1,$2,$3)', [...sourceKey(b), cap]);
+    }
   } else {
     if (!prior) return rejection('dependency_missing', command.actionId);
     if (command.operationId === 'integration.rotateCredential') {
@@ -151,7 +155,9 @@ export async function sourceConfiguration(pool: Pool, authorization: string | un
       ...(grants.some(c=>c==='intake.prepare'||c==='assignment.manage') ? ['intake.getTask','intake.listTasks','intake.getBatchResult'] : [])
     ];
     return { identity: identityView(b), issuer: source.rows[0]!.issuer as string, supportedVersions: ['1.0.0'],
-      allowedOperations: [...Object.keys(operations).filter(o => o !== 'integration.bindSource'), 'integration.getConfiguration', 'provisioning.getStatus', ...intake], humanDelegation: false };
+      allowedOperations: [...Object.keys(operations).filter(o => o !== 'integration.bindSource'), 'integration.getConfiguration', 'provisioning.getStatus', ...intake,
+        ...(grants.includes('return.receive')?['return.confirmSubsetReceipt']:[]),...(grants.includes('return.dispose')?['return.recordDisposition']:[]),
+        ...(grants.some(c=>c==='return.receive'||c==='return.dispose')?['return.listPending','return.getNativeRequest','return.getNativeResult']:[])], humanDelegation: false };
   });
 }
 

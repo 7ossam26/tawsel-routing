@@ -53,6 +53,17 @@
           "uniqueItems": true,
           "maxItems": 2,
           "description": "Operator-owned service grants. Omit to preserve existing grants; empty removes both."
+        },
+        "returnCapabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "return.receive",
+              "return.dispose"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Operator-only full replacement of return grants; omitted preserves, [] clears. Separate from intakeCapabilities."
         }
       },
       "required": [

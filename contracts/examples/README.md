@@ -1,5 +1,10 @@
 # Canonical foundation examples
 
+## P21 captures
+
+`p21-*` valid examples are captured from the real isolated PostgreSQL/listening-HTTP `npm run returns:demo`: driver offer, native receipt/loss commands, offered/two-received/disposed reads, claimed-subset waiting/confirmation, durable action recovery and separate local event intents. Driver identity/bootstrap are fixtures; the native consumer uses real scoped service credentials through public HTTP. Invalid examples mutate the canonical captures (fractional/empty pieces, asserted actor, stock field and receipt/disposition confusion). Runtime scope/over-receipt/retry-race rejection belongs to `partial-return-correction.test.ts`, not a claim that JSON Schema enforces arithmetic. No native ERP UI or signed-delivery proof.
+
+
 P17 `p17-*` examples define full/partial/refusal/no-answer commands, exact frozen amounts and whole lines, effective records/progress, action status and source event payload. Negative fixtures reject fractional/negative/unsafe/unlike-currency inputs, B2C piece results and fabricated no-answer collection/arrival. [Outcome semantics](../../docs/outcomes.md) distinguish schema fixtures from the actual two-task HTTP/PostgreSQL report produced by `npm run outcomes:demo`. The `event-outcome-transition` envelope now contains the canonical P17 payload; its sequence/signature/delivery remains an illustrative P25 boundary.
 
 P15 `p15-*` examples define readiness, start command/result, current workday/round, accepted/rejected/pending start status, and invalid caller sync flags/local drafts. The HTTP demo records actual equivalents in `.local/phase-15-demo.json`; canonical examples are schema fixtures. See [start contract and queue limits](../../docs/round-start.md).

@@ -2,9 +2,10 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P19 locally implemented identity, intake, locations, planning, round start, current activity, outcomes,
-    eligibility and explicit workday closure/carry-forward. Provider, browser and PostgreSQL evidence are distinguished
-    in phase ledgers. Takeover, receipt, corrections, full offline capture and signed delivery remain designed.
+  description: P07–P21 locally implemented identity, intake, locations, planning, round start, current activity, outcomes,
+    eligibility, workday closure, device takeover and source-branch return receipt/disposition. Provider, browser and
+    PostgreSQL evidence are distinguished in phase ledgers. Branch resume/redispatch, corrections, full offline capture
+    and signed delivery remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -3433,6 +3434,484 @@ paths:
           description: Resource unavailable
         "409":
           description: Lifecycle or ownership conflict
+  /api/v1/returns/request:
+    post:
+      operationId: return.requestHandover
+      tags:
+        - Returns
+      summary: Driver offers source-branch pieces; request is not receipt/stock.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnRequestCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/returns/groups:
+    get:
+      operationId: return.listSourceBranchGroups
+      tags:
+        - Returns
+      summary: Group held return-required portions by originating branch.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnGroups"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/returns/requests/{requestId}:
+    get:
+      operationId: return.getRequest
+      tags:
+        - Returns
+      summary: Scoped request, offered/received/unresolved subsets and revisions.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnRequestView"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/returns/actions/{actionId}:
+    get:
+      operationId: return.getResult
+      tags:
+        - Returns
+      summary: Recover own driver offer command; pending is not physical receipt.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionStatus"
+        "202":
+          description: No committed action result visible.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionStatus"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/returns/requests/{requestId}/confirmation:
+    post:
+      operationId: return.checkConfirmation
+      tags:
+        - Returns
+      summary: Read server confirmation for an explicit cumulative claimed subset.
+        Waiting never grants resume; P22 rechecks under lock.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnConfirmationQuery"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnConfirmation"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/erp/returns/commands/return.confirmSubsetReceipt:
+    post:
+      operationId: return.confirmSubsetReceipt
+      tags:
+        - Returns
+      summary: Native ERP trusted actor confirms actually received requested subset.
+      security:
+        - ProvisioningService: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnReceiveCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/erp/returns/commands/return.recordDisposition:
+    post:
+      operationId: return.recordDisposition
+      tags:
+        - Returns
+      summary: ERP loss/damage disposition distinct from physical receipt and inventory.
+      security:
+        - ProvisioningService: []
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnDisposeCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/erp/returns/pending:
+    get:
+      operationId: return.listPending
+      tags:
+        - Returns
+      summary: Native source-scoped pending requests for one driver and originating
+        branch, paginated in pages of 100 without a returns quota.
+      security:
+        - ProvisioningService: []
+      parameters:
+        - name: driverId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sourceBranchId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnRequestList"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/erp/returns/requests/{requestId}:
+    get:
+      operationId: return.getNativeRequest
+      tags:
+        - Returns
+      summary: Native source-scoped accurate
+        requested/received/unresolved/lost/damaged state per item.
+      security:
+        - ProvisioningService: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnRequestView"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/erp/returns/actions/{actionId}:
+    get:
+      operationId: return.getNativeResult
+      tags:
+        - Returns
+      summary: Recover durable native source receipt/disposition command results; 202
+        means unknown pending.
+      security:
+        - ProvisioningService: []
+      parameters:
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionStatus"
+        "202":
+          description: No committed action result visible.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReturnActionStatus"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
 components:
   schemas:
     Uuid:
@@ -3917,6 +4396,56 @@ components:
       $ref: ./device-ownership.schema.json#/$defs/TransferEvent
     DeviceEvidenceEvent:
       $ref: ./device-ownership.schema.json#/$defs/EvidenceEvent
+    ReturnOffer:
+      $ref: ./returns.schema.json#/$defs/Offer
+    ReturnRequest:
+      $ref: ./returns.schema.json#/$defs/Request
+    ReturnSubsetItem:
+      $ref: ./returns.schema.json#/$defs/SubsetItem
+    ReturnReceive:
+      $ref: ./returns.schema.json#/$defs/Receive
+    ReturnDispose:
+      $ref: ./returns.schema.json#/$defs/Dispose
+    ReturnRequestCommand:
+      $ref: ./returns.schema.json#/$defs/RequestCommand
+    ReturnReceiveCommand:
+      $ref: ./returns.schema.json#/$defs/ReceiveCommand
+    ReturnDisposeCommand:
+      $ref: ./returns.schema.json#/$defs/DisposeCommand
+    ReturnCustody:
+      $ref: ./returns.schema.json#/$defs/Custody
+    ReturnItem:
+      $ref: ./returns.schema.json#/$defs/Item
+    ReturnRequestView:
+      $ref: ./returns.schema.json#/$defs/RequestView
+    ReturnRequestList:
+      $ref: ./returns.schema.json#/$defs/RequestList
+    ReturnGroupLine:
+      $ref: ./returns.schema.json#/$defs/GroupLine
+    ReturnGroup:
+      $ref: ./returns.schema.json#/$defs/Group
+    ReturnGroups:
+      $ref: ./returns.schema.json#/$defs/Groups
+    ReturnClaim:
+      $ref: ./returns.schema.json#/$defs/Claim
+    ReturnConfirmationQuery:
+      $ref: ./returns.schema.json#/$defs/ConfirmationQuery
+    ReturnConfirmation:
+      $ref: ./returns.schema.json#/$defs/Confirmation
+    ReturnTransition:
+      $ref: ./returns.schema.json#/$defs/Transition
+    ReturnCommandResult:
+      $ref: ./returns.schema.json#/$defs/CommandResult
+    ReturnActionResult:
+      $ref: ./returns.schema.json#/$defs/ActionResult
+    ReturnActionStatus:
+      $ref: ./returns.schema.json#/$defs/ActionStatus
+    ReturnRequestedEvent:
+      $ref: ./returns.schema.json#/$defs/RequestedEvent
+    ReturnReceivedEvent:
+      $ref: ./returns.schema.json#/$defs/ReceivedEvent
+    ReturnDispositionEvent:
+      $ref: ./returns.schema.json#/$defs/DispositionEvent
   securitySchemes:
     companySession:
       type: apiKey
@@ -3963,3 +4492,5 @@ tags:
     description: Explicit round/day closure, current-holder carry-forward and basic workday summary.
   - name: Device ownership
     description: Same-driver online takeover, confirmed snapshots and evidence-only recovery.
+  - name: Returns
+    description: Source-branch offers, native actual subset receipt and separate loss/damage; no stock claim.

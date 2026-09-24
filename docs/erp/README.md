@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P21 now supplies [source-branch offers, actual subset receipt and separate disposition](../returns.md), [ordered PostgreSQL/HTTP evidence](../phase-21-evidence.md), native pending/request/result reads and a copied public-only consumer demo. Use the current [field mapping](field-and-status-mapping.md) and [quickstart](consumer-quickstart.md). This supersedes older future-receipt statements below. P22 resume/redispatch, P23 correction, P25–26 transport and P27 native ERP screens/source outbox remain separate.
+
 P18 adds [explicit deferral, whole retry and driver urgency](../eligibility.md), [ordered evidence](../phase-18-evidence.md), typed client and public conformance/demo. Source events retain external identity and prior collection; actual signed transport, receipt dependencies and full driver UI remain their later phases.
 
 P16 now supplies [explicit current/arrival and physical origin](../current-activity.md), [browser/API/PostgreSQL evidence](../phase-16-evidence.md), the typed current client and public-only conformance. P17 now supplies [exact whole-piece outcomes and reported collection](../outcomes.md), [real PostgreSQL/HTTP evidence](../phase-17-evidence.md), typed outcome client and portable consumer checks. Signed delivery/receiver application remains P25–27.
@@ -11,7 +13,7 @@ P07 sessions, P08 ERP provisioning, P09 independent intake and P10 ERP snapshot/
 Read in this order:
 
 1. [ERP-PLANNING-INPUT.md](ERP-PLANNING-INPUT.md): implemented capability, responsibilities, ordered connector slices and ERP-specific unknowns.
-2. [field-and-status-mapping.md](field-and-status-mapping.md): verified identity/source/shipment/intake mapping, canonical fields and separately designed execution/return mappings.
+2. [field-and-status-mapping.md](field-and-status-mapping.md): verified identity/source/shipment/intake and actual subset receipt/disposition mapping, canonical fields and separately designed redispatch/correction mappings.
 3. [Consumer quickstart](consumer-quickstart.md) and [provisioning](../provisioning.md): working public HTTP setup, scoped identity, versions, rotation/disable, durable issuer status and reproducible proof.
 4. [Integration guide](../integration-guide.md), [state model](../tracking-and-consistency.md), [permission contract](../authorization.md) and [identity sessions](../identity.md): authority, transaction boundaries and later delivery obligations.
 5. [Operation ownership](../contract-coverage.md), [OpenAPI](../../contracts/openapi.yaml), [provisioning schema](../../contracts/provisioning.schema.json), [common schema](../../contracts/common.schema.json), [event envelope](../../contracts/events/envelope.v1.schema.json), [examples](../../contracts/examples/README.md), [generated reference](../reference/public-contract.md) and [public client](../../packages/api-client/README.md): canonical artifacts, never divergent ERP-owned copies.

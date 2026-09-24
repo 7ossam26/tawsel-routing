@@ -88,7 +88,10 @@
     "test:erp:workdays": "node --import tsx tests/erp-conformance/workdays.ts",
     "test:devices": "npm run test:integration -- apps/api/test/integration/device-ownership.test.ts",
     "devices:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/device-demo.ts",
-    "test:erp:devices": "node --import tsx tests/erp-conformance/devices.ts"
+    "test:erp:devices": "node --import tsx tests/erp-conformance/devices.ts",
+    "test:returns": "npm run test:integration -- apps/api/test/integration/partial-return-correction.test.ts",
+    "returns:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/return-demo.ts",
+    "test:erp:returns": "node --import tsx tests/erp-conformance/returns.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -699,46 +699,56 @@
       "id": "return.listSourceBranchGroups",
       "family": "returns",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "execution.own",
-      "description": "Group held return-required portions by originating branch."
+      "description": "Group held return-required portions by originating branch.",
+      "method": "GET",
+      "path": "/api/v1/returns/groups"
     },
     {
       "id": "return.requestHandover",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "execution.own",
-      "description": "Driver offers source-branch pieces; request is not receipt/stock."
+      "description": "Driver offers source-branch pieces; request is not receipt/stock.",
+      "method": "POST",
+      "path": "/api/v1/returns/request"
     },
     {
       "id": "return.getRequest",
       "family": "returns",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
-      "capability": "monitor.read",
-      "description": "Scoped request, offered/received/unresolved subsets and revisions."
+      "capability": "execution.own",
+      "description": "Scoped request, offered/received/unresolved subsets and revisions.",
+      "method": "GET",
+      "path": "/api/v1/returns/requests/{requestId}"
     },
     {
       "id": "return.confirmSubsetReceipt",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "return.receive",
-      "description": "Native ERP trusted actor confirms actually received requested subset."
+      "description": "Native ERP trusted actor confirms actually received requested subset.",
+      "method": "POST",
+      "path": "/api/v1/erp/returns/commands/return.confirmSubsetReceipt"
     },
     {
       "id": "return.recordDisposition",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "return.dispose",
-      "description": "ERP loss/damage disposition distinct from physical receipt and inventory."
+      "description": "ERP loss/damage disposition distinct from physical receipt and inventory.",
+      "method": "POST",
+      "path": "/api/v1/erp/returns/commands/return.recordDisposition"
     },
     {
       "id": "branch.interruptRound",
@@ -1337,7 +1347,7 @@
       "id": "return.requested",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
       "description": "Offered pieces only, never stock/received."
@@ -1346,7 +1356,7 @@
       "id": "return.subsetReceived",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
       "description": "Actual confirmed source-branch subset transition."
@@ -1355,7 +1365,7 @@
       "id": "return.dispositionRecorded",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
       "description": "Loss/damage separate from receipt."
@@ -1649,6 +1659,61 @@
       "description": "Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token.",
       "method": "GET",
       "path": "/api/v1/devices/rounds/{roundId}/snapshot"
+    },
+    {
+      "id": "return.getResult",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Recover own driver offer command; pending is not physical receipt.",
+      "method": "GET",
+      "path": "/api/v1/returns/actions/{actionId}"
+    },
+    {
+      "id": "return.checkConfirmation",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Read server confirmation for an explicit cumulative claimed subset. Waiting never grants resume; P22 rechecks under lock.",
+      "method": "POST",
+      "path": "/api/v1/returns/requests/{requestId}/confirmation"
+    },
+    {
+      "id": "return.listPending",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native source-scoped pending requests for one driver and originating branch, paginated in pages of 100 without a returns quota.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/pending"
+    },
+    {
+      "id": "return.getNativeRequest",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native source-scoped accurate requested/received/unresolved/lost/damaged state per item.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/requests/{requestId}"
+    },
+    {
+      "id": "return.getNativeResult",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Recover durable native source receipt/disposition command results; 202 means unknown pending.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/actions/{actionId}"
     }
   ],
   "authorizationFoundation": {
