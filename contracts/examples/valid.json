@@ -3707,7 +3707,10 @@
           "address": null,
           "delivery": {
             "kind": "personal",
-            "allowedActions": ["full", "no-answer"],
+            "allowedActions": [
+              "full",
+              "no-answer"
+            ],
             "fullCollection": null,
             "goodsDue": null,
             "shippingDue": null
@@ -6310,7 +6313,10 @@
             "address": null,
             "delivery": {
               "kind": "personal",
-              "allowedActions": ["full", "no-answer"],
+              "allowedActions": [
+                "full",
+                "no-answer"
+              ],
               "fullCollection": null,
               "goodsDue": null,
               "shippingDue": null
@@ -7623,10 +7629,27 @@
         "address": null,
         "delivery": {
           "kind": "company",
-          "allowedActions": ["full", "partial", "refusal", "no-answer"],
-          "fullCollection": { "amountMinor": 35000, "currency": "EGP", "exponent": 2 },
-          "goodsDue": { "amountMinor": 30000, "currency": "EGP", "exponent": 2 },
-          "shippingDue": { "amountMinor": 5000, "currency": "EGP", "exponent": 2 }
+          "allowedActions": [
+            "full",
+            "partial",
+            "refusal",
+            "no-answer"
+          ],
+          "fullCollection": {
+            "amountMinor": 35000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "goodsDue": {
+            "amountMinor": 30000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "shippingDue": {
+            "amountMinor": 5000,
+            "currency": "EGP",
+            "exponent": 2
+          }
         }
       },
       "planning": {
@@ -7649,10 +7672,27 @@
           "address": null,
           "delivery": {
             "kind": "company",
-            "allowedActions": ["full", "partial", "refusal", "no-answer"],
-            "fullCollection": { "amountMinor": 35000, "currency": "EGP", "exponent": 2 },
-            "goodsDue": { "amountMinor": 30000, "currency": "EGP", "exponent": 2 },
-            "shippingDue": { "amountMinor": 5000, "currency": "EGP", "exponent": 2 }
+            "allowedActions": [
+              "full",
+              "partial",
+              "refusal",
+              "no-answer"
+            ],
+            "fullCollection": {
+              "amountMinor": 35000,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "goodsDue": {
+              "amountMinor": 30000,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "shippingDue": {
+              "amountMinor": 5000,
+              "currency": "EGP",
+              "exponent": 2
+            }
           }
         }
       ]
@@ -11863,6 +11903,244 @@
           }
         }
       ]
+    }
+  },
+  {
+    "id": "p30-frozen-piece-delivery",
+    "schema": "current-activity.schema.json#/$defs/DeliveryAffordance",
+    "valid": true,
+    "data": {
+      "kind": "company",
+      "allowedActions": [
+        "full",
+        "partial",
+        "refusal",
+        "no-answer"
+      ],
+      "fullCollection": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "goodsDue": {
+        "amountMinor": 30000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "lines": [
+        {
+          "sourceLineId": "pieces",
+          "description": "قطع",
+          "quantity": 3,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "p30-correction-view-retained-original",
+    "schema": "corrections.schema.json#/$defs/Availability",
+    "valid": true,
+    "data": {
+      "roundId": "c0028d75-ff9d-4028-a3bb-b1a50e755af9",
+      "taskId": "5e0542e2-a971-5a1b-ac50-e15ab08b503b",
+      "attemptId": "e711b576-a9b3-4b97-a3e2-6e9177dad1d2",
+      "effectiveOutcomeRevision": 3,
+      "effectiveOutcome": {
+        "kind": "company",
+        "time": {
+          "actionId": "a640dfb0-d5c7-41d6-b150-6c457f8eee16",
+          "recordedAt": "2026-09-24T11:33:56.458Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "lines": [
+          {
+            "unitDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 10000
+            },
+            "delivered": 2,
+            "sourceLineId": "pieces",
+            "sourceQuantity": 3,
+            "heldReturnRequired": 1
+          }
+        ],
+        "taskId": "5e0542e2-a971-5a1b-ac50-e15ab08b503b",
+        "arrival": null,
+        "heading": null,
+        "outcome": "partial",
+        "roundId": "c0028d75-ff9d-4028-a3bb-b1a50e755af9",
+        "branchId": "3a8948d2-107a-424f-ba46-733d4b401439",
+        "driverId": "f1d2b12d-fdbd-4362-bbf2-450ef18a440b",
+        "revision": 3,
+        "attemptId": "e711b576-a9b3-4b97-a3e2-6e9177dad1d2",
+        "outcomeId": "c6b8f2a9-c57c-4096-a464-e10fd1af14b8",
+        "workdayId": "3a67ceb3-5fdf-4915-95f0-eabeaf128b1e",
+        "collection": {
+          "goods": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 20000
+          },
+          "reported": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 25000
+          },
+          "shipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 5000
+          },
+          "shippingStatus": "collected",
+          "unpaidShipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 0
+          }
+        },
+        "returnRequired": true,
+        "sourceRevision": 1,
+        "dispatchCycleId": "9c842f19-2bea-4664-97cc-aa57b38d00d7",
+        "sourceReference": {
+          "tenantId": "e35269cb-c0af-416b-9b8e-2e9f16188f77",
+          "externalId": "shipment-0",
+          "integrationId": "7e3ab24d-d38b-40ad-be5d-e4cf63c8dbb4"
+        },
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      },
+      "allowed": false,
+      "constraints": [
+        "dependent-receipt"
+      ],
+      "nextSteps": [
+        "view-history",
+        "erp-commercial-review"
+      ],
+      "message": "أكد الفرع استلامًا أو تصرفًا في القطع؛ السجل محفوظ والمراجعة التجارية لدى الشركة.",
+      "delivery": {
+        "kind": "company",
+        "allowedActions": [
+          "full",
+          "partial",
+          "refusal",
+          "no-answer"
+        ],
+        "fullCollection": {
+          "amountMinor": 35000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "goodsDue": {
+          "amountMinor": 30000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "shippingDue": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "lines": [
+          {
+            "sourceLineId": "pieces",
+            "description": "قطع",
+            "quantity": 3,
+            "unitDue": {
+              "amountMinor": 10000,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          }
+        ]
+      },
+      "originalOutcome": {
+        "kind": "company",
+        "time": {
+          "actionId": "11d3b921-94a9-417d-8762-7cf8045816c1",
+          "recordedAt": "2026-09-24T11:33:55.980Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "lines": [
+          {
+            "unitDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 10000
+            },
+            "delivered": 2,
+            "sourceLineId": "pieces",
+            "sourceQuantity": 3,
+            "heldReturnRequired": 1
+          }
+        ],
+        "taskId": "5e0542e2-a971-5a1b-ac50-e15ab08b503b",
+        "arrival": null,
+        "heading": null,
+        "outcome": "partial",
+        "roundId": "c0028d75-ff9d-4028-a3bb-b1a50e755af9",
+        "branchId": "3a8948d2-107a-424f-ba46-733d4b401439",
+        "driverId": "f1d2b12d-fdbd-4362-bbf2-450ef18a440b",
+        "revision": 1,
+        "attemptId": "e711b576-a9b3-4b97-a3e2-6e9177dad1d2",
+        "outcomeId": "bf8d6579-2dc1-4d42-b36b-65f8f95302a9",
+        "workdayId": "3a67ceb3-5fdf-4915-95f0-eabeaf128b1e",
+        "collection": {
+          "goods": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 20000
+          },
+          "reported": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 25000
+          },
+          "shipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 5000
+          },
+          "shippingStatus": "collected",
+          "unpaidShipping": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 0
+          }
+        },
+        "returnRequired": true,
+        "sourceRevision": 1,
+        "dispatchCycleId": "9c842f19-2bea-4664-97cc-aa57b38d00d7",
+        "sourceReference": {
+          "tenantId": "e35269cb-c0af-416b-9b8e-2e9f16188f77",
+          "externalId": "shipment-0",
+          "integrationId": "7e3ab24d-d38b-40ad-be5d-e4cf63c8dbb4"
+        },
+        "assignmentRevision": 1,
+        "sourceDispatchCycleId": "cycle"
+      },
+      "executionRoundId": "c0028d75-ff9d-4028-a3bb-b1a50e755af9"
     }
   }
 ]

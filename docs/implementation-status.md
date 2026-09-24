@@ -1,5 +1,13 @@
 # Tawsel implementation status
 
+## Phase 30 — 25 September 2026
+
+Implemented focused whole-piece partial delivery and paid/unpaid refusal, contextual scheduling/whole retry/urgency/pin/history, and bounded original/effective/proposed correction with retained review evidence. Ordinary full delivery keeps one dominant action; B2C has simple outcomes/corrections without piece, fee or branch controls. Added frozen line inputs and original/replacement read projections without changing command/event authority.
+
+Ordered checkpoints A/B/C, prerequisites **90 PostgreSQL tests + 15 UI tests**, focused UI progression **21 → 24 → 27 → 30 → 31**, post-change real PostgreSQL **63/63**, actual Keycloak/Chromium/Fastify/PostgreSQL scenarios, seven inspected screenshots and public-response consumer checks are in [Phase 30 evidence](phase-30-evidence.md). The clean supported-runtime broad run passed **44 files / 896 tests**; the final correction API/UI rerun passed **81/81**, including cross-round current-owner protection. Final real-API browser journey passed **1/1 (41.2s)**, with accepted/denied operations and retained task/draft/evidence after reload; final lint/types/build and public conformance passed. Exact failed/unrun checks are recorded there. Canonical inventory: **26 schemas / 249 valid / 151 invalid examples / 185 operations**. Updated generated client/reference, operation coverage and ERP planning/mapping/quickstart/conformance.
+
+Actual runtime initially resolved Node 25.2.1; final supported-runtime checks explicitly use bundled Node 24.19.0. The runtime identifies GPT-6 but cannot attest the picker variant/effort; requested Astra/high remains a recommendation. No dependency/migration, Engine/Stitch change, commit, push or publication. Session drafts are not durable offline capture; physical-device/owner acceptance, commercial ERP/live Engine and former-device adoption remain outside this evidence. Phase 31 may rely on the verified focused UI, exact delivery inputs, eligibility/ownership feedback and correction/history/recovery artifacts listed in the evidence; branch/closure screens were not implemented.
+
 ## Phase 29 — 25 September 2026
 
 Implemented the connected ordinary online driver journey at `/rounds/current`: real active destination map/list, explicit selected/current/next state, descriptive call/WhatsApp/navigation handoff with zero business transitions, one dominant heading → arrival → full-result action, B2C optional/no collection, exact server-calculated B2B goods/shipping/full collection, simple no-answer without invented arrival/fees/counters, progress, stable same-ID recovery and online ownership transfer with mandatory confirmed snapshot token. Partial/refusal/correction and closure remain Phases 30–31.

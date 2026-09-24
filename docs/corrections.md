@@ -46,3 +46,9 @@ The original evidence receipt permanently retains its original business status. 
 May rely on migration `0022_driver_corrections.sql`, immutable `outcome_corrections` and original outcome ledgers, `effective_attempt_outcomes`, corrected `cycle_custody`, effective task pointers, outcome/workday/planning/eligibility reads, correction/adoption routes and client, portable schema examples, connected tests and the HTTP demo above. Source `outcome.corrected` contains previous and corrected records; apply it as a revision replacement, never add its full amount to the prior report. `evidence.adoptionResolved` is an own-account notification; initial adoption emits `outcome.recorded` to the source, while adopted replacement emits `outcome.corrected`.
 
 These are durable local intents. Signed sender/receiver delivery, coherent monitoring endpoints, full reports/UI, native ERP integration and real-device behavior are not established here. Phase 24 is not executed.
+
+## Phase 30 focused comparison
+
+`executionRoundId` identifies the latest ownership round for generation/snapshot reads; correction payload `roundId` remains the original outcome round.
+
+`CorrectionAvailability` now adds `originalOutcome` (first immutable result of this attempt) and `delivery` (frozen replacement choices/amounts). Replacement shipping excludes this attempt from prior collections; changing two pieces to one still includes its one original shipping charge rather than charging it again or subtracting it twice. `allowed` and `constraints` remain authoritative, even when replacement inputs are supplied for read-only review. These additive fields are optional for older captures; P30 readers with no inputs disable submission. The UI retains the draft/base revision and rejected request evidence; it neither trusts client time nor reinterprets review-required as accepted. [Reproduce and screenshots](phase-30-evidence.md).

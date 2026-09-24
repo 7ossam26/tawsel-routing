@@ -161,7 +161,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `round.getCurrent` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 | `round.getStartResult` | http-read | verified-local | [P15](phases/15-round-start-departure-lock.md) | execution.own | Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20. |
 | `current.correctOrigin` | http-command | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Explicit owner-fenced manual physical-origin correction; no current activity or arrival is inferred. |
-| `current.getActivity` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. |
+| `current.getActivity` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. P30 includes frozen source piece quantities/unit due and simple personal refusal in delivery choices; command-time checks remain authoritative. |
 | `current.getResult` | http-read | verified-local | [P16](phases/16-current-heading-arrival.md) | execution.own | Recover only own current activity action results with current scope reauthorization. |
 | `outcome.getRound` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Effective own-round outcomes and exact reported progress |
 | `outcome.getResult` | http-read | verified-local | [P17](phases/17-outcomes-quantities-collection.md) | execution.own | Recover retained outcome command by stable action ID |
@@ -173,7 +173,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `workday.getSummary` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Basic explicit-workday outcome/collection summary with admission denominators. |
 | `workday.getCarryForward` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Current held work for the workday holder; no per-day cloning or implicit retry. |
 | `closure.getResult` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Recover a retained closure result; unknown action remains pending. |
-| `outcome.getCorrectionAvailability` | http-read | verified-local | [P23](phases/23-bounded-driver-corrections.md) | execution.own | Read original/effective correction eligibility and permitted next steps. |
+| `outcome.getCorrectionAvailability` | http-read | verified-local | [P23](phases/23-bounded-driver-corrections.md) | execution.own | Read original/effective correction eligibility and permitted next steps. P30 includes original outcome and replacement delivery inputs excluding the replaced attempt from prior shipping; allowed/constraints remain the authority. |
 | `correction.getResult` | http-read | verified-local | [P23](phases/23-bounded-driver-corrections.md) | execution.own | Recover the same driver correction result by action ID. |
 
 ### returns

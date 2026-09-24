@@ -299,6 +299,37 @@
               "type": "null"
             }
           ]
+        },
+        "lines": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "properties": {
+              "sourceLineId": {
+                "$ref": "common.schema.json#/$defs/ExternalId"
+              },
+              "description": {
+                "type": "string"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              },
+              "unitDue": {
+                "$ref": "#/$defs/DeliveryMoney"
+              }
+            },
+            "required": [
+              "sourceLineId",
+              "description",
+              "quantity",
+              "unitDue"
+            ],
+            "additionalProperties": false
+          },
+          "description": "Frozen source allocation for exact whole-piece selection; empty for personal tasks. Optional for compatibility with older readers."
         }
       },
       "required": [

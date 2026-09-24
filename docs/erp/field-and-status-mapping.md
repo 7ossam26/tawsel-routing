@@ -484,3 +484,15 @@ Schemas own fields and examples: [current](../../contracts/current-activity.sche
 | `outcome.recorded` pending intent | Schema-valid source payload `{outcome}` committed with state; not delivered/applied/settled |
 
 [Canonical ownership](../../contracts/outcomes.schema.json), [exact examples/client/demo](../outcomes.md) and [public-only conformance](../../tests/erp-conformance/outcomes.ts). The existing dispatch `state:held` is the P10 assignment/receipt state, not a piece-balance report. Actual branch receipt is P21; full report/filter/export semantics remain P36–37.
+
+## Phase 30 driver projections
+
+| Public field | Meaning / consumer obligation |
+| --- | --- |
+| `CurrentTarget.delivery.lines[]` | Frozen source `sourceLineId`, description, whole `quantity`, exact `unitDue`; no invented apportionment. Empty for personal tasks. |
+| `CorrectionAvailability.executionRoundId` | Latest round for owner/generation/snapshot reads; keep command `roundId` on the original outcome. |
+| `CorrectionAvailability.originalOutcome` | First result for this attempt; retain alongside effective history. |
+| `CorrectionAvailability.delivery` | Exact replacement inputs, excluding this attempt from prior shipping. Does not grant permission. |
+| `allowed`, `constraints`, review-required receipt | Current owner/open-day/dependency checks remain final; retain rejected evidence and effective result. |
+
+Fields are additive and optional in older examples. Current server reads supply them; connected forms refuse to infer absent prices. ERP source/receipt commands and outbound event shapes are unchanged. [Actual evidence](../phase-30-evidence.md).

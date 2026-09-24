@@ -6576,5 +6576,47 @@
         }
       ]
     }
+  },
+  {
+    "id": "p30-fractional-frozen-pieces",
+    "schema": "current-activity.schema.json#/$defs/DeliveryAffordance",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "kind": "company",
+      "allowedActions": [
+        "full",
+        "partial",
+        "refusal",
+        "no-answer"
+      ],
+      "fullCollection": {
+        "amountMinor": 35000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "goodsDue": {
+        "amountMinor": 30000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "shippingDue": {
+        "amountMinor": 5000,
+        "currency": "EGP",
+        "exponent": 2
+      },
+      "lines": [
+        {
+          "sourceLineId": "pieces",
+          "description": "قطع",
+          "quantity": 1.5,
+          "unitDue": {
+            "amountMinor": 10000,
+            "currency": "EGP",
+            "exponent": 2
+          }
+        }
+      ]
+    }
   }
 ]

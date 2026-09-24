@@ -78,3 +78,7 @@ At the Phase 16 stopping point, P17 was required to add resolved-attempt/outcome
 ## Phase 17 integration — 24 September 2026
 
 [Outcomes](outcomes.md) now implement that handoff in additive migration 0014. Accepted full/partial/refused/no-answer resolves the compatible attempt, appends current-history with null current, advances activity/execution revisions and enqueues planning atomically. First heading/arrival and physical origin are preserved; a phone-only result has no invented movement. Resolved personal tasks and rejected B2B remainders leave eligible targets and next suggestions. The production current component now supplies the P29 ordinary full/no-answer path with stable action recovery and mandatory takeover snapshot-token propagation. P30 owns partial/refusal/correction choices; P31 owns branch/closure.
+
+## Phase 30 delivery choices
+
+`CurrentTarget.delivery.lines` exposes the frozen source line ID, description, whole quantity and exact outstanding unit amount. Personal tasks return an empty list and now advertise the already-supported simple refusal; no personal splitting/shipping/custody controls. Lines are additive/optional in the schema for older captures, but the production read supplies them. The partial preview uses integer arithmetic from these inputs; outcome commands remain the final authority. A returned choice does not waive owner/current-target/revision validation.

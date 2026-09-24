@@ -1,3 +1,4 @@
+import {deliveryFor} from '../outcomes/delivery.js';
 import type {Pool} from 'pg';
 import {AccessDenied,withAccess,type AccessSession,type AuthenticatedPrincipal,type ResourcePolicy} from '../access/service.js';
 import type {Transaction} from '../db/transaction.js';
@@ -47,7 +48,9 @@ export async function correctionState(tx:Transaction,a:AccessSession,attemptId:s
  if(!admission.latest)constraints.push('changed-attempt');
  if(!effective&&!allowMissing)constraints.push('outcome-required');
  const commercial=constraints.some(c=>['closed-workday','dependent-receipt','dependent-redispatch','claimed-handover'].includes(c));
- const view:Availability={roundId:round.round_id,taskId:admission.task_id,attemptId,effectiveOutcomeRevision:effective?.revision??0,effectiveOutcome:effective,allowed:constraints.length===0,constraints,nextSteps:commercial?['view-history','erp-commercial-review']:constraints.length?['refresh-state','view-history']:['view-history'],message:constraints[0]?messages[constraints[0]]:'يمكنك تصحيح خطأ التسجيل مع حفظ السجل الأصلي.'};
+ const original=(await tx.query<{record:OutcomeRecord}>('SELECT record FROM tawsel.delivery_outcomes WHERE tenant_id=$1 AND attempt_id=$2 ORDER BY revision LIMIT 1',[round.tenant_id,attemptId])).rows[0]?.record??null;
+ const delivery=await deliveryFor(tx,round.tenant_id,admission.task_id,Number(admission.source_revision),admission.dispatch_cycle_id,attemptId);
+ const view:Availability={delivery,originalOutcome:original,executionRoundId:latest.round_id,roundId:round.round_id,taskId:admission.task_id,attemptId,effectiveOutcomeRevision:effective?.revision??0,effectiveOutcome:effective,allowed:constraints.length===0,constraints,nextSteps:commercial?['view-history','erp-commercial-review']:constraints.length?['refresh-state','view-history']:['view-history'],message:constraints[0]?messages[constraints[0]]:'يمكنك تصحيح خطأ التسجيل مع حفظ السجل الأصلي.'};
  requireCorrection('Availability',view);return {view,round,latest,admission};
 }
 export async function availability(pool:Pool,principal:AuthenticatedPrincipal,attemptId:string,deviceId:string){

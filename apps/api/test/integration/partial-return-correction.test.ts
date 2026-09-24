@@ -34,6 +34,8 @@ import {closureRoutes} from '../../src/closure/routes.js';
 import {CurrentActivity} from '../../src/current/service.js';
 import {correctionDemo} from '../../../../scripts/correction-demo.js';
 import {Branches} from '../../src/branch/service.js';
+import {Rounds} from '../../src/rounds/service.js';
+import {command,intake} from '../support/planning-fixture.js';
 
 let db:Awaited<ReturnType<typeof createTestDatabase>>;
 const closers:(()=>Promise<unknown>)[]=[];
@@ -106,6 +108,8 @@ test('P23 B: corrected piece count replaces its own report without recollecting 
  const c=f.correct({outcome:'partial',pieces:[{sourceLineId:'pieces',delivered:1}],reportedCollection:money(15000)},2),r=await f.postCorrection(c);expect(r.statusCode,r.body).toBe(200);
  const after=await f.outcomes.read(f.principal,f.round.roundId);expect(after.history).toHaveLength(4);expect(after.progress).toMatchObject({deliveredPieces:1,heldReturnRequiredPieces:5,collection:[{reportedMinor:'15000'}]});
  expect((await db.pool.query('SELECT payload FROM tawsel.b2b_source_snapshots WHERE task_id=$1',[f.original.taskId])).rows[0].payload).toMatchObject({lines:[{quantity:3,unitDue:money(10000)}],shippingDue:money(5000)});
+ const choices=await f.corrections.availability(f.principal,f.original.attemptId,f.round.owner.deviceId);
+ expect(choices).toMatchObject({originalOutcome:f.original,effectiveOutcome:{revision:3,outcome:'partial'},delivery:{fullCollection:money(35000),shippingDue:money(5000),lines:[{sourceLineId:'pieces',quantity:3,unitDue:money(10000)}]}});
  const wrong=f.correct({outcome:'full',reportedCollection:money(1)},3),denied=await f.postCorrection(wrong);expect(denied.statusCode,denied.body).toBe(400);expect(denied.json().receipt.businessStatus).toBe('review-required');
  expect((await f.outcomes.read(f.principal,f.round.roundId)).progress).toEqual(after.progress);
  expect((await db.pool.query('SELECT envelope FROM tawsel.command_evidence WHERE action_id=$1',[wrong.actionId])).rows[0].envelope).toEqual(wrong);
@@ -450,4 +454,25 @@ test('C: retained receipt identity after response compaction cannot receive twic
  await db.pool.query("UPDATE tawsel.outbox_intents SET state='resolved',resolved_at=clock_timestamp() WHERE action_id=$1",[c.actionId]);expect(await compactCommandResponses(db.pool)).toBe(1);
  const duplicate=await nativePost(f,c);expect(duplicate.statusCode,duplicate.body).toBe(200);expect(duplicate.json()).toMatchObject({retention:'compacted',receipt:r.json().receipt});expect(duplicate.json().response).toBeUndefined();
  expect((await f.service.read(f.principal,request.requestId)).items[0]).toMatchObject({received:2,unresolved:1});expect((await db.pool.query('SELECT * FROM tawsel.return_transitions')).rowCount).toBe(1);
+});
+
+
+test('P30: correction of an earlier round uses the latest owner while retaining its original round and history',async()=>{
+ const f=await startedFixture(db.pool,1),outcomes=new Outcomes(db.pool),corrections=new Corrections(db.pool),rounds=new Rounds(db.pool);
+ const original=f.make(0,0,null,'outcome.recordNoAnswer');expect((await outcomes.command(principals.personal,original)).receipt.businessStatus).toBe('accepted');
+ const end=command('round.end',{workdayId:f.round.workdayId,roundId:f.round.roundId,expectedActiveRoundId:f.round.roundId,expectedActivityRevision:1,expectedCurrentAttemptId:null,currentAction:'require-none'});end.context={...f.start.context};
+ expect((await new Closures(db.pool).command(principals.personal,end)).receipt.businessStatus).toBe('accepted');
+ const next=await intake(db.pool,4,'عميل الجولة التالية'),state=await f.planning.plans(principals.personal,f.round.driverId);
+ expect((await f.planning.command(principals.personal,command('planning.setManualOrder',{driverId:f.round.driverId,expectedSettingsRevision:state.settingsRevision,expectedInputRevision:state.inputRevision,expectedManualRevision:state.manualRevision,selection:{kind:'order',taskIds:[next.taskId]}}))).receipt.businessStatus).toBe('accepted');
+ const plan=(await f.planning.plans(principals.personal,f.round.driverId)).items[0]!,start=command('round.start',{driverId:f.round.driverId,planId:plan.planId,expectedPlanRevision:plan.revision});
+ if(start.context.kind!=='device')throw Error('device');start.context.deviceId=randomUUID();
+ const ready=await rounds.readiness(principals.personal,{driverId:f.round.driverId,deviceId:start.context.deviceId,planId:plan.planId,expectedPlanRevision:plan.revision,relevantActionIds:[]});start.payload.readinessId=ready.readinessId;
+ const started=await rounds.start(principals.personal,start);expect(started.receipt.businessStatus).toBe('accepted');const latest=(started.response!.body as components['schemas']['RoundStartResult']).round;
+ expect(latest.workdayId).toBe(f.round.workdayId);expect(latest.owner.generation).toBe(2);
+ const view=await corrections.availability(principals.personal,String(original.payload.attemptId),start.context.deviceId);
+ expect(view).toMatchObject({roundId:f.round.roundId,executionRoundId:latest.roundId,allowed:true,originalOutcome:{revision:1,outcome:'no-answer'}});
+ expect((await corrections.availability(principals.personal,String(original.payload.attemptId),f.round.owner.deviceId)).constraints).toContain('not-current-owner');
+ const correct={...original,actionId:randomUUID(),operationId:'outcome.correct',context:{...start.context,deviceGeneration:latest.owner.generation},payload:{roundId:f.round.roundId,taskId:original.payload.taskId,attemptId:original.payload.attemptId,expectedOutcomeRevision:1,replacement:{outcome:'full'}}};
+ expect((await corrections.command(principals.personal,correct)).receipt.businessStatus).toBe('accepted');
+ const after=await outcomes.read(principals.personal,f.round.roundId);expect(after.history).toHaveLength(2);expect(after.items[0]).toMatchObject({roundId:f.round.roundId,revision:2,outcome:'full'});
 });

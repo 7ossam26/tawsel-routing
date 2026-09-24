@@ -17376,6 +17376,25 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
     "message": {
       "type": "string",
       "minLength": 1
+    },
+    "delivery": {
+      "$ref": "current-activity.schema.json#/$defs/DeliveryAffordance",
+      "description": "Frozen replacement choices and exact amounts excluding this attempt from prior collections. Choices do not override availability.allowed."
+    },
+    "originalOutcome": {
+      "anyOf": [
+        {
+          "$ref": "outcomes.schema.json#/$defs/Record"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "First recorded result for this attempt; effectiveOutcome retains the latest correction."
+    },
+    "executionRoundId": {
+      "$ref": "common.schema.json#/$defs/Uuid",
+      "description": "Latest round anchoring current device ownership, generation and snapshot token; roundId remains the original outcome round."
     }
   },
   "required": [
@@ -18985,6 +19004,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | p26-report-command-fixture | consumer.schema.json#/$defs/ReportCommand | valid foundation shape |
 | p27-source-pending | source.schema.json#/$defs/Status | valid foundation shape |
 | p27-source-completed-capture | source.schema.json#/$defs/Status | valid foundation shape |
+| p30-frozen-piece-delivery | current-activity.schema.json#/$defs/DeliveryAffordance | valid foundation shape |
+| p30-correction-view-retained-original | corrections.schema.json#/$defs/Availability | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19135,5 +19156,6 @@ Examples include designed fixtures and captured local API results; consult contr
 | p26-invalid-report-source | consumer.schema.json#/$defs/ReportCommand | invalid (format) |
 | p27-source-phantom-acceptance | source.schema.json#/$defs/Status | invalid (type) |
 | p27-source-rejection-cannot-be-accepted | source.schema.json#/$defs/Status | invalid (const) |
+| p30-fractional-frozen-pieces | current-activity.schema.json#/$defs/DeliveryAffordance | invalid (type) |
 
 [Canonical example data](../../contracts/examples/README.md)

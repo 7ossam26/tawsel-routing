@@ -2549,10 +2549,16 @@ export interface components {
             allowed: boolean;
             attemptId: components["schemas"]["Uuid"];
             constraints: components["schemas"]["Constraint"][];
+            /** @description Frozen replacement choices and exact amounts excluding this attempt from prior collections. Choices do not override availability.allowed. */
+            delivery?: components["schemas"]["DeliveryAffordance"];
             effectiveOutcome: components["schemas"]["Record"] | null;
             effectiveOutcomeRevision: number;
+            /** @description Latest round anchoring current device ownership, generation and snapshot token; roundId remains the original outcome round. */
+            executionRoundId?: components["schemas"]["Uuid"];
             message: string;
             nextSteps: ("refresh-state" | "view-history" | "erp-commercial-review")[];
+            /** @description First recorded result for this attempt; effectiveOutcome retains the latest correction. */
+            originalOutcome?: components["schemas"]["Record"] | null;
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
@@ -3162,6 +3168,13 @@ export interface components {
             goodsDue: components["schemas"]["DeliveryMoney"] | null;
             /** @enum {unknown} */
             kind: "personal" | "company";
+            /** @description Frozen source allocation for exact whole-piece selection; empty for personal tasks. Optional for compatibility with older readers. */
+            lines?: {
+                description: string;
+                quantity: number;
+                sourceLineId: components["schemas"]["ExternalId"];
+                unitDue: components["schemas"]["DeliveryMoney"];
+            }[];
             shippingDue: components["schemas"]["DeliveryMoney"] | null;
         };
         DeliveryMoney: {

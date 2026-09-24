@@ -204,3 +204,7 @@ Paper demo: `python scripts/check-ui-spec.py demo` reads J01–J07 and the block
 ## P11 implemented focused location review
 
 /locations?kind=company is the scoped first-50 review list; /locations/:taskId?kind=personal|company is the focused original-address/candidate/pin page. Personal task cards and account screens link into it. Shared MapLibre picker keeps numeric and keyboard center selection available; explicit confirmation is the sole dominant action. Search empty/error and tile failure preserve address/current pin. Arabic provenance labels replace prototype match percentages/GPS/StreetView. [Runtime/browser evidence](phase-11-evidence.md); physical-device and owner review remain pending.
+
+## Phase 30 connected surfaces
+
+As-built navigation uses the current page's contextual task options for a full-width partial page or single refusal sheet, `/execution/options` for selected-task scheduling/pin/history, and `/execution/correction` for bounded comparison. Query parameters identify kind/round/task/attempt; server reads enforce ownership and scope. Original/effective result cards and neutral proposed amounts remain separate. Cancellation retains session drafts without commands; uncertain requests retain exact identities; receipt/day denial retains input and review evidence. This implements the proposed focused surfaces without adding branch/closure UI. [Interaction and render findings](phase-30-evidence.md).

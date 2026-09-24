@@ -1614,7 +1614,7 @@
       "ownerPhase": 16,
       "capability": "execution.own",
       "lifecycle": "verified-local",
-      "description": "Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver.",
+      "description": "Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. P30 includes frozen source piece quantities/unit due and simple personal refusal in delivery choices; command-time checks remain authoritative.",
       "method": "GET",
       "path": "/api/v1/current/rounds/{roundId}"
     },
@@ -1845,7 +1845,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 23,
       "capability": "execution.own",
-      "description": "Read original/effective correction eligibility and permitted next steps.",
+      "description": "Read original/effective correction eligibility and permitted next steps. P30 includes original outcome and replacement delivery inputs excluding the replaced attempt from prior shipping; allowed/constraints remain the authority.",
       "method": "GET",
       "path": "/api/v1/corrections/attempts/{attemptId}"
     },

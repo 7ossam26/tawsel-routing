@@ -58,3 +58,7 @@ The demo creates/drops only its own isolated test database. It uses actual loopb
 ## P19 preparation integration
 
 The latest ended round can now anchor same-owner preparation without reopening its round/workday. Read `mode` (`active-round`, `preparation`, `historical`); historical action affordances are disabled. Explicit activation/retry respects earliest, source, current, custody, location and capacity rules; start alone creates later admissions. Source-future held work without a reservation also requires explicit admission when due. See [carry-forward contract/evidence](workday-closure.md).
+
+## Phase 30 task context
+
+The connected `/execution/options` page reads all eligible/held/deferred/resolved task contexts from the existing eligibility API, displays its exact blocker message, and explicitly submits `task.deferWhole`, `task.activateDeferred`, `task.retryWhole` or `task.setDriverUrgency`. Every request carries expected activity/current-attempt/source/assignment/pin/eligibility revisions. Future time never auto-activates; capacity or receipt denial preserves history. Pin review uses the active owner generation and confirmed snapshot token. [Evidence and local demonstration](phase-30-evidence.md).
