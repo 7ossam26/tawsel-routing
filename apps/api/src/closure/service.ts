@@ -1,3 +1,4 @@
+import {executionFence} from '../devices/fence.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
@@ -36,7 +37,7 @@ export class Closures {
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driver])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driver},{kind:'workday',id:p.workdayId},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      await authorize(tx,a,p.workdayId);r=await round(tx,a,p.roundId,p.workdayId);const d=await day(tx,a,p.workdayId);
-     if(r.owner_account_id!==device.accountId||r.owner_device_id!==device.deviceId||Number(r.device_generation)!==device.deviceGeneration)throw new ClosureError('stale_device',409,'الجولة على جهاز آخر؛ حدّث حالتها قبل الإنهاء.');
+     const fenced=await executionFence(tx,c,r);if(fenced)return fenced;
      for(const id of c.dependsOnActionIds){
       if(id===c.actionId)throw new ClosureError('validation_failed',400,'الإجراء لا يمكن أن يعتمد على نفسه.');
       const dependency=await getCommandResult(tx,a.commandScope,id);

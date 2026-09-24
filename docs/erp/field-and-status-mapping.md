@@ -1,5 +1,22 @@
 # Field and status mapping — canonical foundation
 
+## Phase 20 — device ownership and preserved evidence
+
+| Public field/fact | Consumer meaning |
+| --- | --- |
+| `owner.accountId` / `driverId` | Same authenticated person/assignment; never link accounts by phone or contact. |
+| `owner.deviceId` / `owner.generation` | Logical installation and server execution generation; separate from source/assignment/route/schema revisions. |
+| `snapshotRequired` / `snapshotToken` | A takeover generation must fetch confirmed execution state; token goes in newly created command context. Never treat a historical successful takeover as current ownership. |
+| `receipt.evidenceStatus=received` | Server durably retained the result/evidence; not execution acceptance, branch receipt, money receipt or ERP application. |
+| `receipt.businessStatus=review-required|rejected` | No accepted domain mutation. Preserve original record and discrepancy. |
+| `submissionStatus=duplicate` | Repeat of the original immutable command/hash; receipt and business result stay unchanged. |
+| `envelope.observation` / `receipt.receivedAt` / `receipt.committedAt` | Captured time, server evidence receipt and accepted command commit remain separate. Rejected/review records have no business committedAt. |
+| `recovery.constraints` | Current closed-day/dependency/authority/revision constraints; no client-time exception or staff override. |
+| `recovery.adoptionImplemented=false` | Adoption remains P23/P34; `requires-validation` is not application permission. |
+| `device.executionTransferred` / `evidence.received` | Durable affected/submitting-account notification intent only; not an ERP business event, delivery guarantee or applied outcome. |
+
+Canonical ownership stays in [device schemas](../../contracts/device-ownership.schema.json) and [captured examples](../../contracts/examples/README.md). [Protocol/demo](../device-ownership.md), [conformance](../../tests/erp-conformance/devices.ts). Device changes never change ERP source task/cycle references or authorize stock/settlement changes.
+
 ## Phase 19 — explicit closure and retained holder work
 
 | Public field/fact | Consumer meaning |

@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P20 runtime update (24 September 2026): online takeover/context/confirmed snapshot and scoped action/evidence recovery now have real PostgreSQL/HTTP proof. Original envelopes and business results are preserved separately from duplicate transport; current-owner generation and snapshot token fence all execution families. Recovery metadata exposes hard closed-day/dependency constraints without permitting adoption. The adoption schema is designed for P23, replay/logout UI for P33–35. [Protocol and demonstration](device-ownership.md), [ordered evidence](phase-20-evidence.md).
+
 P15 implementation: [online start/departure](round-start.md) now provides migration 0012, unique open-day/active-round constraints, immutable first forecast/workload publication, server readiness, shared-lock start/admission guards and start-specific action recovery. Generic action recovery, current/arrival/outcomes, takeover and full offline replay remain their assigned phases. [Ordered actual evidence](phase-15-evidence.md).
 
 P14 implementation update: [route policy/manual contracts](route-policy.md) now validate current prefix, eligible urgent groups, whole-route timing/IDs/endpoints/capacity, and explicit manual orders under the P13 driver/input fence. Manual publication does not enqueue replacement optimization; it atomically supersedes pending/running jobs. Newer accepted inputs or explicit replan may queue fresh work. P16–18 must supply authoritative current/outcome/retry eligibility; P22 still owns full-capacity branch interruption.

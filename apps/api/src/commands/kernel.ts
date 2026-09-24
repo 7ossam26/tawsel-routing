@@ -16,6 +16,7 @@ export type CommandResult = components['schemas']['ActionResult'];
 export interface OutboundIntent {
   eventId: string;
   recipientId: string;
+  recipientKind?: 'integration' | 'account';
   eventType: string;
   payloadVersion: string;
   payload: JsonObject;
@@ -23,7 +24,7 @@ export interface OutboundIntent {
 interface DecisionBase { response: StoredResponse; summary: JsonObject; audit: JsonObject; retentionHold?: boolean }
 export type Decision =
   | DecisionBase & { status: 'accepted'; resourceVersions: EvidenceReceipt['resourceVersions']; intents: OutboundIntent[] }
-  | DecisionBase & { status: 'rejected' | 'review-required'; problem: NonNullable<EvidenceReceipt['problem']> };
+  | DecisionBase & { status: 'rejected' | 'review-required'; problem: NonNullable<EvidenceReceipt['problem']>; evidenceIntents?: (OutboundIntent & {eventType:'evidence.received'})[] };
 
 export type WriteStage = 'identity' | 'domain' | 'progress' | 'evidence' | 'audit' | 'outbox' | 'result';
 export interface CommandHooks {
@@ -125,13 +126,17 @@ export async function executeCommandInTransaction(tx: Transaction, scope: Comman
       VALUES ($1,$2,$3,$4,$5,$6::jsonb)`, [...key(binding, command.actionId), randomUUID(),
       decision.status === 'accepted' ? 'accepted-change' : decision.status === 'rejected' ? 'rejected-evidence' : 'review-evidence', canonicalJson(decision.audit)]);
     await hooks.afterWrite?.('audit', tx);
-    if (decision.status === 'accepted') {
+    {
+      // Rejected execution may notify durable evidence receipt, never emit a
+      // business-change event. This write follows the domain savepoint rollback.
+      const intents=decision.status==='accepted'?decision.intents:decision.evidenceIntents??[];
+      if(decision.status!=='accepted'&&intents.some(i=>i.eventType!=='evidence.received'))throw new Error('Rejected execution cannot emit business intent');
       // Later sender owns delivery. These immutable rows only mean durable intent.
-      for (const intent of [...decision.intents].sort((a, b) => a.recipientId.localeCompare(b.recipientId) || a.eventId.localeCompare(b.eventId))) {
+      for (const intent of [...intents].sort((a, b) => a.recipientId.localeCompare(b.recipientId) || a.eventId.localeCompare(b.eventId))) {
         await tx.query(`INSERT INTO tawsel.outbox_intents
-          (tenant_id,event_id,source_id,action_id,recipient_id,event_type,payload_version,payload)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb)`, [binding.tenantId, intent.eventId, binding.sourceId,
-          command.actionId, intent.recipientId, intent.eventType, intent.payloadVersion, canonicalJson(intent.payload)]);
+          (tenant_id,event_id,source_id,action_id,recipient_id,event_type,payload_version,payload,recipient_kind)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9)`, [binding.tenantId, intent.eventId, binding.sourceId,
+          command.actionId, intent.recipientId, intent.eventType, intent.payloadVersion, canonicalJson(intent.payload),intent.recipientKind??'integration']);
         await hooks.afterWrite?.('outbox', tx);
       }
     }

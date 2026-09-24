@@ -4200,5 +4200,217 @@
       "workdayEndedAt": null,
       "received": true
     }
+  },
+  {
+    "id": "p20-takeover-missing-generation",
+    "schema": "device-ownership.schema.json#/$defs/TakeoverCommand",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "device.takeOver",
+      "actionId": "4d5355fe-c12c-4389-9fd1-c70160b1fda3",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c"
+      }
+    }
+  },
+  {
+    "id": "p20-takeover-staff-override",
+    "schema": "device-ownership.schema.json#/$defs/TakeoverCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "device.takeOver",
+      "actionId": "4d5355fe-c12c-4389-9fd1-c70160b1fda3",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "expectedGeneration": 1,
+        "staffOverride": true
+      }
+    }
+  },
+  {
+    "id": "p20-takeover-client-time-winner",
+    "schema": "device-ownership.schema.json#/$defs/TakeoverCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "device.takeOver",
+      "actionId": "4d5355fe-c12c-4389-9fd1-c70160b1fda3",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "expectedGeneration": 1,
+        "useOldestTimestamp": true
+      }
+    }
+  },
+  {
+    "id": "p20-takeover-fraction-generation",
+    "schema": "device-ownership.schema.json#/$defs/TakeoverCommand",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "device.takeOver",
+      "actionId": "4d5355fe-c12c-4389-9fd1-c70160b1fda3",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "expectedGeneration": 1.5
+      }
+    }
+  },
+  {
+    "id": "p20-bad-snapshot-token",
+    "schema": "device-ownership.schema.json#/$defs/FormerSubmission",
+    "valid": false,
+    "keyword": "format",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordNoAnswer",
+      "actionId": "25a9c463-0f64-41a4-af5a-002265c2b6b7",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "81e4daa5-991d-467c-a8ee-ebf683cd25b0",
+        "deviceGeneration": 1,
+        "deviceSequence": 7,
+        "snapshotToken": "not-a-token"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": "2020-01-01T00:00:00Z",
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "taskId": "73a64008-1fe7-4b35-a27b-107aed322abf",
+        "attemptId": "64278f37-d8c1-4937-a1d0-00d7004d95ae",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "64278f37-d8c1-4937-a1d0-00d7004d95ae",
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p20-adoption-no-receipt",
+    "schema": "device-ownership.schema.json#/$defs/AdoptionCommand",
+    "valid": false,
+    "keyword": "required",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "evidence.adoptCompatible",
+      "actionId": "20000000-0000-4000-8000-000000000020",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "evidenceActionId": "25a9c463-0f64-41a4-af5a-002265c2b6b7",
+        "expectedGeneration": 2,
+        "expectedOutcomeRevision": 1,
+        "expectedActivityRevision": 3,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
   }
 ]

@@ -2,9 +2,9 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P19 locally implemented identity, intake, locations, planning, round start, current activity,
-    outcomes, eligibility and explicit workday closure/carry-forward. Provider, browser and PostgreSQL evidence
-    are distinguished in phase ledgers. Takeover, receipt, corrections, full offline capture and signed delivery remain designed.
+  description: P07–P19 locally implemented identity, intake, locations, planning, round start, current activity, outcomes,
+    eligibility and explicit workday closure/carry-forward. Provider, browser and PostgreSQL evidence are distinguished
+    in phase ledgers. Takeover, receipt, corrections, full offline capture and signed delivery remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -2452,8 +2452,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2501,8 +2501,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2550,8 +2550,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2599,8 +2599,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2728,8 +2728,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2777,8 +2777,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2826,8 +2826,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2875,8 +2875,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection;
-            stable action ID.
+          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
+            action ID.
           content:
             application/json:
               schema:
@@ -2980,15 +2980,13 @@ paths:
               - company
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no
-            delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionResult"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency
-            replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
           content:
             application/json:
               schema:
@@ -2998,8 +2996,7 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business
-            rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
       requestBody:
         required: true
         content:
@@ -3009,8 +3006,7 @@ paths:
   /api/v1/closure/day:
     post:
       operationId: workday.end
-      summary: Close open workday/active round after resolving or pausing current;
-        carry held work.
+      summary: Close open workday/active round after resolving or pausing current; carry held work.
       tags:
         - Workday closure
       security:
@@ -3026,15 +3022,13 @@ paths:
               - company
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no
-            delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionResult"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency
-            replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
           content:
             application/json:
               schema:
@@ -3044,8 +3038,7 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business
-            rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
       requestBody:
         required: true
         content:
@@ -3055,8 +3048,7 @@ paths:
   /api/v1/workdays/{workdayId}/summary:
     get:
       operationId: workday.getSummary
-      summary: Basic explicit-workday outcome/collection summary with admission
-        denominators.
+      summary: Basic explicit-workday outcome/collection summary with admission denominators.
       tags:
         - Workday closure
       security:
@@ -3078,8 +3070,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no
-            delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
           content:
             application/json:
               schema:
@@ -3089,13 +3080,11 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business
-            rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
   /api/v1/workdays/{workdayId}/carry-forward:
     get:
       operationId: workday.getCarryForward
-      summary: Current held work for the workday holder; no per-day cloning or
-        implicit retry.
+      summary: Current held work for the workday holder; no per-day cloning or implicit retry.
       tags:
         - Workday closure
       security:
@@ -3117,8 +3106,7 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no
-            delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
           content:
             application/json:
               schema:
@@ -3128,8 +3116,7 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business
-            rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
   /api/v1/closure/actions/{actionId}:
     get:
       operationId: closure.getResult
@@ -3155,15 +3142,13 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no
-            delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionStatus"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency
-            replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
           content:
             application/json:
               schema:
@@ -3173,8 +3158,281 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business
-            rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+  /api/v1/devices/takeover:
+    post:
+      operationId: device.takeOver
+      summary: device.takeOver
+      description: Explicit online transfer to a different installation of the same authenticated driver; expected generation
+        CAS; stable retry. Fetch snapshot before commands.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceTakeoverCommand"
+      responses:
+        "200": &a16
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409": *a16
+  /api/v1/devices/rounds/{roundId}:
+    get:
+      operationId: device.getContext
+      summary: device.getContext
+      description: Scoped view/owner state; no execution token is disclosed.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceContext"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409":
+          description: Lifecycle or ownership conflict
+  /api/v1/devices/rounds/{roundId}/snapshot:
+    get:
+      operationId: device.getSnapshot
+      summary: device.getSnapshot
+      description: Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives
+        the generation snapshot token.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceSnapshot"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409":
+          description: Lifecycle or ownership conflict
+  /api/v1/actions/{actionId}:
+    get:
+      operationId: action.getResult
+      summary: action.getResult
+      description: P20 scoped execution/takeover action result. Other operation families keep their feature adapters; unknown
+        action IDs return pending without leaking another account.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200": &a17
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceActionStatus"
+        "202": *a17
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409":
+          description: Lifecycle or ownership conflict
+  /api/v1/evidence/former-device:
+    post:
+      operationId: evidence.receiveFormerDevice
+      summary: evidence.receiveFormerDevice
+      description: Durably receive an original former-device envelope, without applying business state. Exact repeat is
+        duplicate and returns its established result.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceFormerSubmission"
+      responses:
+        "200": &a18
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceEvidenceSubmissionResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409": *a18
+  /api/v1/evidence/{actionId}:
+    get:
+      operationId: sync.getEvidenceReceipt
+      summary: sync.getEvidenceReceipt
+      description: Authenticated source/driver evidence and dynamically checked recovery constraints. A durable receipt is not
+        business acceptance or an adoption permission. No P20 adoption endpoint.
+      tags:
+        - Device ownership
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceEvidence"
+        "400":
+          description: Invalid request
+        "401":
+          description: Session required
+        "403":
+          description: Account scope or CSRF denied
+        "404":
+          description: Resource unavailable
+        "409":
+          description: Lifecycle or ownership conflict
 components:
   schemas:
     Uuid:
@@ -3222,7 +3480,7 @@ components:
     Observation:
       $ref: ./common.schema.json#/$defs/Observation
     DeviceContext:
-      $ref: ./common.schema.json#/$defs/DeviceContext
+      $ref: ./device-ownership.schema.json#/$defs/Context
     IntegrationContext:
       $ref: ./common.schema.json#/$defs/IntegrationContext
     CommandContext:
@@ -3536,103 +3794,129 @@ components:
     CurrentArrivalEvent:
       $ref: ./current-activity.schema.json#/$defs/ArrivalEvent
     OutcomeMoney:
-      $ref: './outcomes.schema.json#/$defs/Money'
+      $ref: ./outcomes.schema.json#/$defs/Money
     OutcomePiece:
-      $ref: './outcomes.schema.json#/$defs/Piece'
+      $ref: ./outcomes.schema.json#/$defs/Piece
     OutcomeFull:
-      $ref: './outcomes.schema.json#/$defs/Full'
+      $ref: ./outcomes.schema.json#/$defs/Full
     OutcomePartial:
-      $ref: './outcomes.schema.json#/$defs/Partial'
+      $ref: ./outcomes.schema.json#/$defs/Partial
     OutcomeRefusal:
-      $ref: './outcomes.schema.json#/$defs/Refusal'
+      $ref: ./outcomes.schema.json#/$defs/Refusal
     OutcomeNoAnswer:
-      $ref: './outcomes.schema.json#/$defs/NoAnswer'
+      $ref: ./outcomes.schema.json#/$defs/NoAnswer
     OutcomeFullCommand:
-      $ref: './outcomes.schema.json#/$defs/FullCommand'
+      $ref: ./outcomes.schema.json#/$defs/FullCommand
     OutcomePartialCommand:
-      $ref: './outcomes.schema.json#/$defs/PartialCommand'
+      $ref: ./outcomes.schema.json#/$defs/PartialCommand
     OutcomeRefusalCommand:
-      $ref: './outcomes.schema.json#/$defs/RefusalCommand'
+      $ref: ./outcomes.schema.json#/$defs/RefusalCommand
     OutcomeNoAnswerCommand:
-      $ref: './outcomes.schema.json#/$defs/NoAnswerCommand'
+      $ref: ./outcomes.schema.json#/$defs/NoAnswerCommand
     OutcomeLineResult:
-      $ref: './outcomes.schema.json#/$defs/LineResult'
+      $ref: ./outcomes.schema.json#/$defs/LineResult
     OutcomeCollection:
-      $ref: './outcomes.schema.json#/$defs/Collection'
+      $ref: ./outcomes.schema.json#/$defs/Collection
     OutcomeCalculation:
-      $ref: './outcomes.schema.json#/$defs/Calculation'
+      $ref: ./outcomes.schema.json#/$defs/Calculation
     OutcomeRecord:
-      $ref: './outcomes.schema.json#/$defs/Record'
+      $ref: ./outcomes.schema.json#/$defs/Record
     OutcomeCommandResult:
-      $ref: './outcomes.schema.json#/$defs/CommandResult'
+      $ref: ./outcomes.schema.json#/$defs/CommandResult
     OutcomeActionResult:
-      $ref: './outcomes.schema.json#/$defs/ActionResult'
+      $ref: ./outcomes.schema.json#/$defs/ActionResult
     OutcomeActionStatus:
-      $ref: './outcomes.schema.json#/$defs/ActionStatus'
+      $ref: ./outcomes.schema.json#/$defs/ActionStatus
     OutcomeProgress:
-      $ref: './outcomes.schema.json#/$defs/Progress'
+      $ref: ./outcomes.schema.json#/$defs/Progress
     OutcomeSnapshot:
-      $ref: './outcomes.schema.json#/$defs/Snapshot'
+      $ref: ./outcomes.schema.json#/$defs/Snapshot
     OutcomeEvent:
-      $ref: './outcomes.schema.json#/$defs/Event'
+      $ref: ./outcomes.schema.json#/$defs/Event
     EligibilityDefer:
-      $ref: './eligibility.schema.json#/$defs/Defer'
+      $ref: ./eligibility.schema.json#/$defs/Defer
     EligibilityDeferCommand:
-      $ref: './eligibility.schema.json#/$defs/DeferCommand'
+      $ref: ./eligibility.schema.json#/$defs/DeferCommand
     EligibilityRetry:
-      $ref: './eligibility.schema.json#/$defs/Retry'
+      $ref: ./eligibility.schema.json#/$defs/Retry
     EligibilityRetryCommand:
-      $ref: './eligibility.schema.json#/$defs/RetryCommand'
+      $ref: ./eligibility.schema.json#/$defs/RetryCommand
     EligibilityActivate:
-      $ref: './eligibility.schema.json#/$defs/Activate'
+      $ref: ./eligibility.schema.json#/$defs/Activate
     EligibilityActivateCommand:
-      $ref: './eligibility.schema.json#/$defs/ActivateCommand'
+      $ref: ./eligibility.schema.json#/$defs/ActivateCommand
     EligibilityUrgency:
-      $ref: './eligibility.schema.json#/$defs/Urgency'
+      $ref: ./eligibility.schema.json#/$defs/Urgency
     EligibilityUrgencyCommand:
-      $ref: './eligibility.schema.json#/$defs/UrgencyCommand'
+      $ref: ./eligibility.schema.json#/$defs/UrgencyCommand
     EligibilityAllowedAction:
-      $ref: './eligibility.schema.json#/$defs/AllowedAction'
+      $ref: ./eligibility.schema.json#/$defs/AllowedAction
     EligibilityState:
-      $ref: './eligibility.schema.json#/$defs/State'
+      $ref: ./eligibility.schema.json#/$defs/State
     EligibilityRecord:
-      $ref: './eligibility.schema.json#/$defs/Record'
+      $ref: ./eligibility.schema.json#/$defs/Record
     EligibilityCommandResult:
-      $ref: './eligibility.schema.json#/$defs/CommandResult'
+      $ref: ./eligibility.schema.json#/$defs/CommandResult
     EligibilityEvent:
-      $ref: './eligibility.schema.json#/$defs/Event'
+      $ref: ./eligibility.schema.json#/$defs/Event
     EligibilityActionResult:
-      $ref: './eligibility.schema.json#/$defs/ActionResult'
+      $ref: ./eligibility.schema.json#/$defs/ActionResult
     EligibilityActionStatus:
-      $ref: './eligibility.schema.json#/$defs/ActionStatus'
+      $ref: ./eligibility.schema.json#/$defs/ActionStatus
     EligibilitySnapshot:
-      $ref: './eligibility.schema.json#/$defs/Snapshot'
+      $ref: ./eligibility.schema.json#/$defs/Snapshot
     ClosureClose:
-      $ref: './workday-closure.schema.json#/$defs/Close'
+      $ref: ./workday-closure.schema.json#/$defs/Close
     ClosureEndRoundCommand:
-      $ref: './workday-closure.schema.json#/$defs/EndRoundCommand'
+      $ref: ./workday-closure.schema.json#/$defs/EndRoundCommand
     ClosureEndDayCommand:
-      $ref: './workday-closure.schema.json#/$defs/EndDayCommand'
+      $ref: ./workday-closure.schema.json#/$defs/EndDayCommand
     ClosureRecord:
-      $ref: './workday-closure.schema.json#/$defs/Record'
+      $ref: ./workday-closure.schema.json#/$defs/Record
     ClosureCommandResult:
-      $ref: './workday-closure.schema.json#/$defs/CommandResult'
+      $ref: ./workday-closure.schema.json#/$defs/CommandResult
     ClosureActionResult:
-      $ref: './workday-closure.schema.json#/$defs/ActionResult'
+      $ref: ./workday-closure.schema.json#/$defs/ActionResult
     ClosureActionStatus:
-      $ref: './workday-closure.schema.json#/$defs/ActionStatus'
+      $ref: ./workday-closure.schema.json#/$defs/ActionStatus
     ClosureSourceItem:
-      $ref: './workday-closure.schema.json#/$defs/SourceItem'
+      $ref: ./workday-closure.schema.json#/$defs/SourceItem
     ClosureEvent:
-      $ref: './workday-closure.schema.json#/$defs/Event'
+      $ref: ./workday-closure.schema.json#/$defs/Event
     ClosureCarryItem:
-      $ref: './workday-closure.schema.json#/$defs/CarryItem'
+      $ref: ./workday-closure.schema.json#/$defs/CarryItem
     ClosureCarryForward:
-      $ref: './workday-closure.schema.json#/$defs/CarryForward'
+      $ref: ./workday-closure.schema.json#/$defs/CarryForward
     ClosureRoundSummary:
-      $ref: './workday-closure.schema.json#/$defs/RoundSummary'
+      $ref: ./workday-closure.schema.json#/$defs/RoundSummary
     ClosureSummary:
-      $ref: './workday-closure.schema.json#/$defs/Summary'
+      $ref: ./workday-closure.schema.json#/$defs/Summary
+    DeviceTakeover:
+      $ref: ./device-ownership.schema.json#/$defs/Takeover
+    DeviceTakeoverCommand:
+      $ref: ./device-ownership.schema.json#/$defs/TakeoverCommand
+    DeviceTakeoverResult:
+      $ref: ./device-ownership.schema.json#/$defs/TakeoverResult
+    DeviceSnapshot:
+      $ref: ./device-ownership.schema.json#/$defs/Snapshot
+    DeviceActionStatus:
+      $ref: ./device-ownership.schema.json#/$defs/ActionStatus
+    DeviceFormerSubmission:
+      $ref: ./device-ownership.schema.json#/$defs/FormerSubmission
+    DeviceEvidenceSubmissionResult:
+      $ref: ./device-ownership.schema.json#/$defs/EvidenceSubmissionResult
+    DeviceRecovery:
+      $ref: ./device-ownership.schema.json#/$defs/Recovery
+    DeviceEvidence:
+      $ref: ./device-ownership.schema.json#/$defs/Evidence
+    DeviceAdoption:
+      $ref: ./device-ownership.schema.json#/$defs/Adoption
+    DeviceAdoptionCommand:
+      $ref: ./device-ownership.schema.json#/$defs/AdoptionCommand
+    DeviceTransferEvent:
+      $ref: ./device-ownership.schema.json#/$defs/TransferEvent
+    DeviceEvidenceEvent:
+      $ref: ./device-ownership.schema.json#/$defs/EvidenceEvent
   securitySchemes:
     companySession:
       type: apiKey
@@ -3677,3 +3961,5 @@ tags:
     description: Explicit earliest deferral, whole retry, activation, assigned-driver urgency and durable recovery.
   - name: Workday closure
     description: Explicit round/day closure, current-holder carry-forward and basic workday summary.
+  - name: Device ownership
+    description: Same-driver online takeover, confirmed snapshots and evidence-only recovery.

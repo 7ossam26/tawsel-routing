@@ -1,3 +1,4 @@
+import {executionFence} from '../devices/fence.js';
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import type { components } from '@tawsel/api-client';
@@ -46,8 +47,8 @@ export class CurrentActivity {
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driverId])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      r=await round(tx,a,p.roundId);
+     const fenced=await executionFence(tx,c,r);if(fenced)return fenced;
      if(r.ended_at)throw new CurrentError('lifecycle_forbidden',409,'الجولة انتهت.');
-     if(r.owner_account_id!==device.accountId||r.owner_device_id!==device.deviceId||Number(r.device_generation)!==device.deviceGeneration)throw new CurrentError('stale_device',409,'هذه الجولة تعمل على جهاز آخر؛ حدّث حالة الجولة.');
      const state=await planningState(tx,r.tenant_id,driverId),input=await snapshot(tx,state);inputAccess(a,input);
      const before=await activity(tx,r.tenant_id,r.round_id),rev=await revision(tx,r.tenant_id,r.round_id);
      const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
@@ -101,7 +102,9 @@ export class CurrentActivity {
  }
  async read(principal:AuthenticatedPrincipal,roundId:string):Promise<components['schemas']['CurrentSnapshot']>{
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(roundId))throw new CurrentError('validation_failed',400,'معرّف الجولة غير صالح.');
-  return withAccess(this.pool,principal,async(a,tx)=>{
+  return withAccess(this.pool,principal,(a,tx)=>this.readLocked(a,tx,roundId));
+ }
+ async readLocked(a:AccessSession,tx:Transaction,roundId:string):Promise<components['schemas']['CurrentSnapshot']>{
    const driverId=ownDriver(a);await authorizeDriver(tx,a,driverId);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId}]);
    const r=await round(tx,a,roundId);if(r.ended_at)throw new CurrentError('lifecycle_forbidden',409,'الجولة انتهت.');
    const state=await planningState(tx,r.tenant_id,driverId),input=await snapshot(tx,state);inputAccess(a,input);
@@ -116,8 +119,8 @@ export class CurrentActivity {
    const next=plan?.route_policy.orderedTaskIds.map(id=>targets.find(t=>t.taskId===id)).find(t=>t&&t.attemptId!==current?.attemptId)??null;
    const result={roundId,driverId,owner:{accountId:r.owner_account_id,deviceId:r.owner_device_id,generation:Number(r.device_generation)},revision:await revision(tx,r.tenant_id,roundId),currentActivity:current,physicalOrigin:origin,planningOrigin:input.settings!.origin,nextSuggestion:next,planning:{planId:plan?.plan_id??null,updating:plan?.fingerprint!==fingerprint(input)},targets};
    requireCurrent('Snapshot',result);return result;
-  });
  }
+
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['CurrentActionStatus']>{
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(actionId))throw new CurrentError('validation_failed',400,'معرّف الإجراء غير صالح.');
   return withAccess(this.pool,principal,async(a,tx)=>{

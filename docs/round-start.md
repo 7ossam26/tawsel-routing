@@ -1,5 +1,7 @@
 # Online round start — Phase 15
 
+P20 now implements online same-driver takeover and mandatory confirmed-snapshot fencing. See [device protocol/demo](device-ownership.md) and [evidence](phase-20-evidence.md); full queue/readiness barrier remains P34.
+
 P15 supplies authoritative online start and departure protection. [Ordered evidence](phase-15-evidence.md) separates real PostgreSQL/HTTP results from fixtures. Connected preparation UI remains P28; current/heading/arrival P16, closure P19, takeover P20 and full queue barrier P34.
 
 ## Reproduce

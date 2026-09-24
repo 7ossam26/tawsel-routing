@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|eligibility\/|closure\/|workdays\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|eligibility\/|closure\/|workdays\/|devices\/|actions\/|evidence\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -101,6 +101,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
       || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
       || ([15,16,17,18,19].includes(entry.ownerPhase) && entry.family === 'execution') || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
+      || ['device.takeOver','device.getSnapshot','action.getResult','evidence.receiveFormerDevice','sync.getEvidenceReceipt','device.executionTransferred','evidence.received'].includes(entry.id)
       || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
   });
@@ -116,7 +117,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     duplicate.catalog.operations.push(duplicate.catalog.operations[0]);
     expect(() => checkCatalog(duplicate, ajv)).toThrow('duplicate operation ID');
     const invented = structuredClone(bundle);
-    invented.api.paths = { '/test-only-mutation': { post: { operationId: 'device.takeOver' } } };
+    invented.api.paths = { '/test-only-mutation': { post: { operationId: 'evidence.adoptCompatible' } } };
     expect(() => checkCatalog(invented, ajv)).toThrow('Unimplemented operation exposed');
   });
 

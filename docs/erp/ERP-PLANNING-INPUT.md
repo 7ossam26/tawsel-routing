@@ -1,5 +1,13 @@
 # ERP planning input — designed foundation
 
+## P20 implemented boundary — 24 September 2026
+
+[Device takeover/evidence](../device-ownership.md) now has separate-session real HTTP/PostgreSQL/restart evidence. This transfers execution ownership between installations of the **same authenticated driver**, without changing shipment assignment, external source/cycle identities, current activity or accepted quantities/money. No ERP permission or old-phone approval is requested. Integration bearer credentials cannot call driver takeover/adoption.
+
+ERP must distinguish server evidence receipt, execution business acceptance and repeated delivery. A stale former-phone outcome stays review evidence and produces no accepted outcome event or effective overwrite. Closed workdays and dependent physical receipt/disposition/redispatch remain hard constraints even with earlier client timestamps. P21/P22 must write the tested `retry_dependencies` hook in their receipt transaction; their producers are not implemented by P20. P20 produces `device.executionTransferred` and `evidence.received` notification intents for the affected/submitting account only; these are not ERP business events and have no delivery guarantee yet. P23 adoption remains a designed correction contract; any commercial consequences remain ERP-owned.
+
+Use public `DevicesClient`, canonical `device-ownership.schema.json` and captured examples; `npm run devices:demo` followed by `npm run test:erp:devices -- .local/phase-20-demo.json` verifies this released local boundary. The conformance check uses public types/report fields only. It is not proof of a real ERP receiver, browser queue or physical phones.
+
 ## P19 implemented boundary — 24 September 2026
 
 [Explicit round/day closure and carry-forward](../workday-closure.md) now have real PostgreSQL/HTTP evidence. End day is independent of the calendar and does not request resubmission from ERP. Held tasks keep their external task/cycle references, source/assignment revisions, attempt history and effective earliest constraints. Closure means neither delivered scope, source-branch receipt nor financial settlement. ERP continues to own physical receipt/disposition and settlement.

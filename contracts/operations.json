@@ -136,10 +136,12 @@
       "id": "device.getContext",
       "family": "session-context",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "execution.own",
-      "description": "Read active round and execution generation on any signed-in phone."
+      "description": "Scoped view/owner state; no execution token is disclosed.",
+      "method": "GET",
+      "path": "/api/v1/devices/rounds/{roundId}"
     },
     {
       "id": "integration.bindSource",
@@ -668,10 +670,12 @@
       "id": "device.takeOver",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "execution.own",
-      "description": "Online same-driver takeover increments generation, preserves former-device evidence."
+      "description": "Explicit online transfer to a different installation of the same authenticated driver; expected generation CAS; stable retry. Fetch snapshot before commands.",
+      "method": "POST",
+      "path": "/api/v1/devices/takeover"
     },
     {
       "id": "outcome.correct",
@@ -812,19 +816,23 @@
       "id": "action.getResult",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 5,
       "capability": "authenticated",
-      "description": "Read durable full/compacted command result for the authenticated source, rechecking current capability and associated resource visibility before disclosing stored details. P05/P06 primitives verified internally; HTTP adapter remains unavailable."
+      "description": "P20 scoped execution/takeover action result. Other operation families keep their feature adapters; unknown action IDs return pending without leaking another account.",
+      "method": "GET",
+      "path": "/api/v1/actions/{actionId}"
     },
     {
       "id": "evidence.receiveFormerDevice",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "execution.own",
-      "description": "Durably receive old-generation evidence without accepting execution."
+      "description": "Durably receive an original former-device envelope, without applying business state. Exact repeat is duplicate and returns its established result.",
+      "method": "POST",
+      "path": "/api/v1/evidence/former-device"
     },
     {
       "id": "sync.submitActions",
@@ -839,10 +847,12 @@
       "id": "sync.getEvidenceReceipt",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 34,
       "capability": "execution.own",
-      "description": "Recover durable received/rejected/review evidence without implying acceptance."
+      "description": "Authenticated source/driver evidence and dynamically checked recovery constraints. A durable receipt is not business acceptance or an adoption permission. No P20 adoption endpoint.",
+      "method": "GET",
+      "path": "/api/v1/evidence/{actionId}"
     },
     {
       "id": "sync.listConflicts",
@@ -1309,19 +1319,19 @@
       "id": "device.executionTransferred",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "recipient-scope",
-      "description": "New device generation within same driver/round."
+      "description": "Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25."
     },
     {
       "id": "evidence.received",
       "family": "sync-recovery",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "recipient-scope",
-      "description": "Evidence-only durable receipt; not business acceptance."
+      "description": "Durable submitting-account notification after rejected domain writes roll back. Query the scoped original action receipt; never imply business acceptance. No envelope/contact/money data in the notification."
     },
     {
       "id": "return.requested",
@@ -1628,6 +1638,17 @@
       "lifecycle": "verified-local",
       "method": "GET",
       "path": "/api/v1/closure/actions/{actionId}"
+    },
+    {
+      "id": "device.getSnapshot",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token.",
+      "method": "GET",
+      "path": "/api/v1/devices/rounds/{roundId}/snapshot"
     }
   ],
   "authorizationFoundation": {

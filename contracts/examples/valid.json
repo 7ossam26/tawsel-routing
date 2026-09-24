@@ -6086,5 +6086,529 @@
       "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
       "status": "pending"
     }
+  },
+  {
+    "id": "p20-view",
+    "schema": "device-ownership.schema.json#/$defs/Context",
+    "valid": true,
+    "data": {
+      "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+      "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+      "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+      "owner": {
+        "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+        "deviceId": "93ff0067-a153-4d1e-9d98-14af64d400fa",
+        "generation": 1
+      },
+      "viewerDeviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+      "mode": "view-only",
+      "roundState": "active",
+      "workdayState": "open",
+      "mayTakeover": true,
+      "snapshotRequired": false
+    }
+  },
+  {
+    "id": "p20-takeover-command",
+    "schema": "device-ownership.schema.json#/$defs/TakeoverCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "device.takeOver",
+      "actionId": "e86d8e6d-bceb-48da-812c-f1f044280b1f",
+      "context": {
+        "kind": "device",
+        "tenantId": "07665749-74f8-4ff5-b177-82bc624c5ac5",
+        "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+        "deviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+        "expectedGeneration": 1
+      }
+    }
+  },
+  {
+    "id": "p20-action-status",
+    "schema": "device-ownership.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "data": {
+      "actionId": "e86d8e6d-bceb-48da-812c-f1f044280b1f",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "actionId": "e86d8e6d-bceb-48da-812c-f1f044280b1f",
+          "receiptId": "ae7db83d-a47e-4bae-b492-3021b46e64b2",
+          "receivedAt": "2026-09-24T08:53:31.403Z",
+          "committedAt": "2026-09-24T08:53:31.418Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "accepted",
+          "evidenceStatus": "received",
+          "resourceVersions": {
+            "deviceGeneration": 2
+          }
+        },
+        "operationId": "device.takeOver",
+        "retention": "full",
+        "summary": {
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+          "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+          "generation": 2
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "owner": {
+              "deviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+              "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+              "generation": 2
+            },
+            "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+            "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+            "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+            "snapshotRequired": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p20-takeover-result",
+    "schema": "action-result.v1.schema.json",
+    "valid": true,
+    "data": {
+      "receipt": {
+        "actionId": "e86d8e6d-bceb-48da-812c-f1f044280b1f",
+        "receiptId": "ae7db83d-a47e-4bae-b492-3021b46e64b2",
+        "receivedAt": "2026-09-24T08:53:31.403Z",
+        "committedAt": "2026-09-24T08:53:31.418Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "accepted",
+        "evidenceStatus": "received",
+        "resourceVersions": {
+          "deviceGeneration": 2
+        }
+      },
+      "operationId": "device.takeOver",
+      "retention": "full",
+      "summary": {
+        "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+        "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+        "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+        "generation": 2
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "owner": {
+            "deviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+            "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+            "generation": 2
+          },
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+          "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+          "snapshotRequired": true
+        }
+      }
+    }
+  },
+  {
+    "id": "p20-snapshot",
+    "schema": "device-ownership.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "context": {
+        "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+        "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd",
+        "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+        "owner": {
+          "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+          "deviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+          "generation": 2
+        },
+        "viewerDeviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+        "mode": "owner",
+        "roundState": "active",
+        "workdayState": "open",
+        "mayTakeover": false,
+        "snapshotRequired": true
+      },
+      "confirmedAt": "2026-09-24T08:53:31.588Z",
+      "current": {
+        "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+        "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+        "owner": {
+          "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+          "deviceId": "a72c4b0a-21aa-4137-b761-40d6a59d0419",
+          "generation": 2
+        },
+        "revision": 1,
+        "currentActivity": {
+          "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+          "attemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+          "stage": "heading",
+          "revision": 1,
+          "heading": {
+            "actionId": "dde4b5d8-09f8-4342-ac94-9c5b596c5428",
+            "recordedAt": "2026-09-24T08:53:31.260Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "arrival": null
+        },
+        "physicalOrigin": null,
+        "planningOrigin": {
+          "kind": "manual-pin",
+          "coordinates": {
+            "latitude": 30.04,
+            "longitude": 31.23
+          }
+        },
+        "nextSuggestion": null,
+        "planning": {
+          "planId": "83691e2c-d7b5-47c6-a3ce-295c1344a6be",
+          "updating": true
+        },
+        "targets": [
+          {
+            "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+            "attemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+            "sourceRevision": 1,
+            "assignmentRevision": 0,
+            "pinRevision": 0,
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            },
+            "recipientName": "عميل التجربة",
+            "recipientPhone": "+201012345678",
+            "address": null
+          }
+        ]
+      },
+      "snapshotToken": "a7984fcf-66b3-4120-a760-17e82157f30e"
+    }
+  },
+  {
+    "id": "p20-received",
+    "schema": "device-ownership.schema.json#/$defs/EvidenceSubmissionResult",
+    "valid": true,
+    "data": {
+      "submissionStatus": "received",
+      "result": {
+        "receipt": {
+          "problem": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          },
+          "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+          "receiptId": "a355a541-6463-40dc-91db-ac959b02b97c",
+          "receivedAt": "2026-09-24T08:53:31.917Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "review-required",
+          "evidenceStatus": "received"
+        },
+        "operationId": "outcome.recordNoAnswer",
+        "retention": "full",
+        "summary": {
+          "code": "stale_device",
+          "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+          "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd"
+        },
+        "response": {
+          "status": 409,
+          "body": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p20-duplicate",
+    "schema": "device-ownership.schema.json#/$defs/EvidenceSubmissionResult",
+    "valid": true,
+    "data": {
+      "submissionStatus": "duplicate",
+      "result": {
+        "receipt": {
+          "problem": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          },
+          "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+          "receiptId": "a355a541-6463-40dc-91db-ac959b02b97c",
+          "receivedAt": "2026-09-24T08:53:31.917Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "review-required",
+          "evidenceStatus": "received"
+        },
+        "operationId": "outcome.recordNoAnswer",
+        "retention": "full",
+        "summary": {
+          "code": "stale_device",
+          "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+          "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd"
+        },
+        "response": {
+          "status": 409,
+          "body": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p20-evidence",
+    "schema": "device-ownership.schema.json#/$defs/Evidence",
+    "valid": true,
+    "data": {
+      "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+      "result": {
+        "receipt": {
+          "problem": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          },
+          "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+          "receiptId": "a355a541-6463-40dc-91db-ac959b02b97c",
+          "receivedAt": "2026-09-24T08:53:31.917Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "review-required",
+          "evidenceStatus": "received"
+        },
+        "operationId": "outcome.recordNoAnswer",
+        "retention": "full",
+        "summary": {
+          "code": "stale_device",
+          "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+          "workdayId": "182ed354-6ad6-482b-ada3-55a0be15dabd"
+        },
+        "response": {
+          "status": 409,
+          "body": {
+            "code": "stale_device",
+            "type": "https://schemas.tawsel.invalid/problems/stale-device",
+            "title": "Device execution unavailable",
+            "detail": "حُفظ سجل الهاتف السابق للمراجعة؛ لم يُطبّق.",
+            "status": 409,
+            "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+            "retryable": false,
+            "correlationId": "461c147a-31f1-47ea-9e31-ec29d8a81834"
+          }
+        }
+      },
+      "envelope": {
+        "context": {
+          "kind": "device",
+          "deviceId": "93ff0067-a153-4d1e-9d98-14af64d400fa",
+          "tenantId": "07665749-74f8-4ff5-b177-82bc624c5ac5",
+          "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+          "deviceSequence": 7,
+          "deviceGeneration": 1
+        },
+        "payload": {
+          "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+          "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+          "attemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+          "expectedPinRevision": 0,
+          "expectedSourceRevision": 1,
+          "expectedActivityRevision": 2,
+          "expectedCurrentAttemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+          "expectedAssignmentRevision": 0
+        },
+        "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+        "resources": {},
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": "2020-01-01T00:00:00Z"
+        },
+        "operationId": "outcome.recordNoAnswer",
+        "baseVersions": {},
+        "schemaVersion": "1.0.0",
+        "payloadVersion": "1.0.0",
+        "dependsOnActionIds": []
+      },
+      "durableReceipt": true,
+      "recovery": {
+        "adoptionImplemented": false,
+        "state": "requires-validation",
+        "constraints": [],
+        "currentGeneration": 2,
+        "effectiveOutcomeRevision": 1,
+        "activityRevision": 3
+      }
+    }
+  },
+  {
+    "id": "p20-former-outcome",
+    "schema": "device-ownership.schema.json#/$defs/FormerSubmission",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "outcome.recordNoAnswer",
+      "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+      "context": {
+        "kind": "device",
+        "tenantId": "07665749-74f8-4ff5-b177-82bc624c5ac5",
+        "accountId": "194968b3-a95d-4a9d-a926-ed31f31d3dcd",
+        "deviceId": "93ff0067-a153-4d1e-9d98-14af64d400fa",
+        "deviceGeneration": 1,
+        "deviceSequence": 7
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": "2020-01-01T00:00:00Z",
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+        "taskId": "dab8ef13-3f48-4c90-8a92-2f5d38948b3b",
+        "attemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "e49d88e0-39f4-46e9-a286-7dcd310a09c5",
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p20-adoption-designed-only",
+    "schema": "device-ownership.schema.json#/$defs/AdoptionCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "operationId": "evidence.adoptCompatible",
+      "actionId": "20000000-0000-4000-8000-000000000020",
+      "context": {
+        "kind": "device",
+        "tenantId": "1ca98984-b3b3-43ed-807c-faf20a9f5d7c",
+        "accountId": "2f8f221d-5de3-4e52-9c2d-fb61cd34785d",
+        "deviceId": "c78f6af5-a71c-444c-887a-4bdee8085322",
+        "deviceGeneration": 1,
+        "deviceSequence": 4
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "d2e6b119-4c58-4dd3-b275-90fe91f1576c",
+        "evidenceActionId": "25a9c463-0f64-41a4-af5a-002265c2b6b7",
+        "evidenceReceiptId": "adac757d-8306-48a9-8966-4a6430ed9a44",
+        "expectedGeneration": 2,
+        "expectedOutcomeRevision": 1,
+        "expectedActivityRevision": 3,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0
+      }
+    }
+  },
+  {
+    "id": "p20-notification-1",
+    "schema": "device-ownership.schema.json#/$defs/TransferEvent",
+    "valid": true,
+    "data": {
+      "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+      "actionId": "e86d8e6d-bceb-48da-812c-f1f044280b1f",
+      "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+      "generation": 2
+    }
+  },
+  {
+    "id": "p20-notification-2",
+    "schema": "device-ownership.schema.json#/$defs/EvidenceEvent",
+    "valid": true,
+    "data": {
+      "code": "stale_device",
+      "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+      "actionId": "b567d447-32e9-4b64-ab35-de666670190e",
+      "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+      "businessStatus": "review-required"
+    }
+  },
+  {
+    "id": "p20-notification-3",
+    "schema": "device-ownership.schema.json#/$defs/EvidenceEvent",
+    "valid": true,
+    "data": {
+      "code": "stale_device",
+      "roundId": "6e8b1baf-c58a-464d-8b9d-e72f21780e98",
+      "actionId": "1dfa3075-bf05-4609-b621-0b6e9a05d6de",
+      "driverId": "95d31b5c-8ac9-4f70-a2e7-39395b1922f2",
+      "businessStatus": "review-required"
+    }
   }
 ]

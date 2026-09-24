@@ -1,3 +1,4 @@
+import {executionFence} from '../devices/fence.js';
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import type { components } from '@tawsel/api-client';
@@ -44,9 +45,9 @@ export class Outcomes {
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driverId])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      r=await round(tx,a,p.roundId);
+     const fenced=await executionFence(tx,c,r);if(fenced)return fenced;
      const day=(await tx.query('SELECT ended_at FROM tawsel.workdays WHERE tenant_id=$1 AND workday_id=$2',[r.tenant_id,r.workday_id])).rows[0];
      if(r.ended_at||day.ended_at)throw new OutcomeError('lifecycle_forbidden',409,'الجولة أو يوم العمل انتهى.');
-     if(r.owner_account_id!==device.accountId||r.owner_device_id!==device.deviceId||Number(r.device_generation)!==device.deviceGeneration)throw new OutcomeError('stale_device',409,'هذه الجولة تعمل على جهاز آخر؛ حدّث حالة الجولة.');
      before=await activity(tx,r.tenant_id,r.round_id);
      activityRevision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
      if(p.expectedActivityRevision!==activityRevision||p.expectedCurrentAttemptId!==(before?.attemptId??null))throw new OutcomeError('stale_revision',409,'تغيّرت المحطة الحالية؛ حدّث الجولة.');

@@ -2,13 +2,13 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P19 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P20 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
 Envelope payload objects are deliberately extensible at this stage. Feature owners must add exact versioned payload schemas and cross-field/domain checks before handlers. A valid envelope is not an accepted command. TypeScript types cannot enforce numeric bounds, formats or all conditional rules.
 
-P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; general action.getResult remains later work; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
+P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; P20 action.getResult covers scoped round execution/takeover records; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
 
@@ -563,38 +563,80 @@ Nonnegative integer minor units, never a decimal amount or arbitrary underpaymen
 
 ### DeviceContext
 
-[Canonical definition](../../contracts/common.schema.json#/$defs/DeviceContext)
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Context)
 
 ```json
 {
   "type": "object",
   "properties": {
-    "kind": {
-      "const": "device"
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "tenantId": {
-      "$ref": "#/$defs/Uuid"
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "accountId": {
-      "$ref": "#/$defs/Uuid"
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "deviceId": {
-      "$ref": "#/$defs/Uuid"
+    "owner": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "deviceId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "generation": {
+          "$ref": "common.schema.json#/$defs/Generation"
+        }
+      },
+      "required": [
+        "accountId",
+        "deviceId",
+        "generation"
+      ],
+      "additionalProperties": false
     },
-    "deviceGeneration": {
-      "$ref": "#/$defs/Generation"
+    "viewerDeviceId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
     },
-    "deviceSequence": {
-      "$ref": "#/$defs/Sequence"
+    "mode": {
+      "enum": [
+        "owner",
+        "view-only"
+      ]
+    },
+    "roundState": {
+      "enum": [
+        "active",
+        "ended"
+      ]
+    },
+    "workdayState": {
+      "enum": [
+        "open",
+        "closed"
+      ]
+    },
+    "mayTakeover": {
+      "type": "boolean"
+    },
+    "snapshotRequired": {
+      "type": "boolean"
     }
   },
   "required": [
-    "kind",
-    "tenantId",
-    "accountId",
-    "deviceId",
-    "deviceGeneration",
-    "deviceSequence"
+    "roundId",
+    "workdayId",
+    "driverId",
+    "owner",
+    "viewerDeviceId",
+    "mode",
+    "roundState",
+    "workdayState",
+    "mayTakeover",
+    "snapshotRequired"
   ],
   "additionalProperties": false
 }
@@ -1563,14 +1605,14 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 
 [Canonical definition](../../contracts/action-result.v1.schema.json)
 
-P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.
+Durable scoped command result. P20 exposes action.getResult for authorized round execution/takeover actions; other families retain their feature adapters. Compacted results preserve identity and never execute again; unresolved evidence is held, full responses last at least 30 days.
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/action-result.v1.schema.json",
   "title": "Durable command result v1",
-  "description": "P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.",
+  "description": "Durable scoped command result. P20 exposes action.getResult for authorized round execution/takeover actions; other families retain their feature adapters. Compacted results preserve identity and never execute again; unresolved evidence is held, full responses last at least 30 days.",
   "type": "object",
   "properties": {
     "receipt": {
@@ -12628,6 +12670,562 @@ Workday admissions define distinct shipment and attempt denominators; each attem
 }
 ```
 
+### DeviceTakeover
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Takeover)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedGeneration": {
+      "$ref": "common.schema.json#/$defs/Generation"
+    }
+  },
+  "required": [
+    "roundId",
+    "expectedGeneration"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceTakeoverCommand
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/TakeoverCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "device.takeOver"
+        },
+        "payload": {
+          "$ref": "#/$defs/Takeover"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### DeviceTakeoverResult
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/TakeoverResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "owner": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "deviceId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "generation": {
+          "$ref": "common.schema.json#/$defs/Generation"
+        }
+      },
+      "required": [
+        "accountId",
+        "deviceId",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "snapshotRequired": {
+      "const": true
+    }
+  },
+  "required": [
+    "roundId",
+    "workdayId",
+    "driverId",
+    "owner",
+    "snapshotRequired"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceSnapshot
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Snapshot)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "context": {
+      "$ref": "#/$defs/Context"
+    },
+    "confirmedAt": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "current": {
+      "anyOf": [
+        {
+          "$ref": "current-activity.schema.json#/$defs/Snapshot"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "snapshotToken": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "context",
+    "confirmedAt",
+    "current",
+    "snapshotToken"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceActionStatus
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "action-result.v1.schema.json"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### DeviceFormerSubmission
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/FormerSubmission)
+
+Submit the ORIGINAL immutable execution envelope and action ID. This evidence-only endpoint never executes it, including when it is still owned. Exact duplicate returns the original business result. Not a second wrapper action.
+
+```json
+{
+  "description": "Submit the ORIGINAL immutable execution envelope and action ID. This evidence-only endpoint never executes it, including when it is still owned. Exact duplicate returns the original business result. Not a second wrapper action.",
+  "oneOf": [
+    {
+      "$ref": "current-activity.schema.json#/$defs/SelectHeadingCommand"
+    },
+    {
+      "$ref": "current-activity.schema.json#/$defs/ArrivalCommand"
+    },
+    {
+      "$ref": "current-activity.schema.json#/$defs/CorrectOriginCommand"
+    },
+    {
+      "$ref": "outcomes.schema.json#/$defs/FullCommand"
+    },
+    {
+      "$ref": "outcomes.schema.json#/$defs/PartialCommand"
+    },
+    {
+      "$ref": "outcomes.schema.json#/$defs/RefusalCommand"
+    },
+    {
+      "$ref": "outcomes.schema.json#/$defs/NoAnswerCommand"
+    },
+    {
+      "$ref": "eligibility.schema.json#/$defs/DeferCommand"
+    },
+    {
+      "$ref": "eligibility.schema.json#/$defs/RetryCommand"
+    },
+    {
+      "$ref": "eligibility.schema.json#/$defs/ActivateCommand"
+    },
+    {
+      "$ref": "eligibility.schema.json#/$defs/UrgencyCommand"
+    },
+    {
+      "$ref": "workday-closure.schema.json#/$defs/EndRoundCommand"
+    },
+    {
+      "$ref": "workday-closure.schema.json#/$defs/EndDayCommand"
+    }
+  ]
+}
+```
+
+### DeviceEvidenceSubmissionResult
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/EvidenceSubmissionResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "submissionStatus": {
+      "enum": [
+        "received",
+        "duplicate"
+      ]
+    },
+    "result": {
+      "$ref": "action-result.v1.schema.json"
+    }
+  },
+  "required": [
+    "submissionStatus",
+    "result"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceRecovery
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Recovery)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "adoptionImplemented": {
+      "const": false
+    },
+    "state": {
+      "enum": [
+        "blocked",
+        "requires-validation"
+      ]
+    },
+    "constraints": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "closed-workday",
+          "dependent-receipt",
+          "changed-assignment",
+          "changed-source",
+          "changed-attempt",
+          "not-current-owner",
+          "correction-not-authorized",
+          "unsupported-operation"
+        ]
+      }
+    },
+    "currentGeneration": {
+      "$ref": "common.schema.json#/$defs/Generation"
+    },
+    "effectiveOutcomeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "adoptionImplemented",
+    "state",
+    "constraints",
+    "currentGeneration",
+    "effectiveOutcomeRevision",
+    "activityRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceEvidence
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Evidence)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "result": {
+      "$ref": "action-result.v1.schema.json"
+    },
+    "envelope": {
+      "anyOf": [
+        {
+          "$ref": "action-envelope.v1.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "durableReceipt": {
+      "const": true
+    },
+    "recovery": {
+      "$ref": "#/$defs/Recovery"
+    }
+  },
+  "required": [
+    "actionId",
+    "result",
+    "envelope",
+    "durableReceipt",
+    "recovery"
+  ],
+  "additionalProperties": false
+}
+```
+
+### DeviceAdoption
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/Adoption)
+
+Designed P23/P34 contract only. Current authenticated owning driver with correction.own must fetch evidence and current state, reference the immutable receipt and validate relevant revisions/quantities/money/dependencies under the same locks. No endpoint exists in P20. Client timestamps never override closed-day or receipt/redispatch constraints.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "evidenceActionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "evidenceReceiptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedGeneration": {
+      "$ref": "common.schema.json#/$defs/Generation"
+    },
+    "expectedOutcomeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedSourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedAssignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedPinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "evidenceActionId",
+    "evidenceReceiptId",
+    "expectedGeneration",
+    "expectedOutcomeRevision",
+    "expectedActivityRevision",
+    "expectedSourceRevision",
+    "expectedAssignmentRevision",
+    "expectedPinRevision"
+  ],
+  "additionalProperties": false,
+  "description": "Designed P23/P34 contract only. Current authenticated owning driver with correction.own must fetch evidence and current state, reference the immutable receipt and validate relevant revisions/quantities/money/dependencies under the same locks. No endpoint exists in P20. Client timestamps never override closed-day or receipt/redispatch constraints."
+}
+```
+
+### DeviceAdoptionCommand
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/AdoptionCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "evidence.adoptCompatible"
+        },
+        "payload": {
+          "$ref": "#/$defs/Adoption"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### DeviceTransferEvent
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/TransferEvent)
+
+Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "generation": {
+      "$ref": "common.schema.json#/$defs/Generation"
+    }
+  },
+  "required": [
+    "actionId",
+    "roundId",
+    "driverId",
+    "generation"
+  ],
+  "additionalProperties": false,
+  "description": "Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25."
+}
+```
+
+### DeviceEvidenceEvent
+
+[Canonical definition](../../contracts/device-ownership.schema.json#/$defs/EvidenceEvent)
+
+Durable submitting-account notification after rejected domain writes roll back. Query the scoped original action receipt; never imply business acceptance. No envelope/contact/money data in the notification.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actionId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "businessStatus": {
+      "enum": [
+        "rejected",
+        "review-required"
+      ]
+    },
+    "code": {
+      "$ref": "common.schema.json#/$defs/Problem/properties/code"
+    }
+  },
+  "required": [
+    "actionId",
+    "roundId",
+    "driverId",
+    "businessStatus",
+    "code"
+  ],
+  "additionalProperties": false,
+  "description": "Durable submitting-account notification after rejected domain writes roll back. Query the scoped original action receipt; never imply business acceptance. No envelope/contact/money data in the notification."
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -12806,6 +13404,19 @@ Examples include designed fixtures and captured local API results; consult contr
 | p19-round-event | workday-closure.schema.json#/$defs/Event | valid foundation shape |
 | p19-day-event | workday-closure.schema.json#/$defs/Event | valid foundation shape |
 | p19-pending | workday-closure.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p20-view | device-ownership.schema.json#/$defs/Context | valid foundation shape |
+| p20-takeover-command | device-ownership.schema.json#/$defs/TakeoverCommand | valid foundation shape |
+| p20-action-status | device-ownership.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p20-takeover-result | action-result.v1.schema.json | valid foundation shape |
+| p20-snapshot | device-ownership.schema.json#/$defs/Snapshot | valid foundation shape |
+| p20-received | device-ownership.schema.json#/$defs/EvidenceSubmissionResult | valid foundation shape |
+| p20-duplicate | device-ownership.schema.json#/$defs/EvidenceSubmissionResult | valid foundation shape |
+| p20-evidence | device-ownership.schema.json#/$defs/Evidence | valid foundation shape |
+| p20-former-outcome | device-ownership.schema.json#/$defs/FormerSubmission | valid foundation shape |
+| p20-adoption-designed-only | device-ownership.schema.json#/$defs/AdoptionCommand | valid foundation shape |
+| p20-notification-1 | device-ownership.schema.json#/$defs/TransferEvent | valid foundation shape |
+| p20-notification-2 | device-ownership.schema.json#/$defs/EvidenceEvent | valid foundation shape |
+| p20-notification-3 | device-ownership.schema.json#/$defs/EvidenceEvent | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -12921,5 +13532,11 @@ Examples include designed fixtures and captured local API results; consult contr
 | p19-negative-denominator | workday-closure.schema.json#/$defs/Summary | invalid (minimum) |
 | p19-deferred-cannot-be-executable | workday-closure.schema.json#/$defs/CarryItem | invalid (type) |
 | p19-closure-not-receipt | workday-closure.schema.json#/$defs/Event | invalid (additionalProperties) |
+| p20-takeover-missing-generation | device-ownership.schema.json#/$defs/TakeoverCommand | invalid (required) |
+| p20-takeover-staff-override | device-ownership.schema.json#/$defs/TakeoverCommand | invalid (additionalProperties) |
+| p20-takeover-client-time-winner | device-ownership.schema.json#/$defs/TakeoverCommand | invalid (additionalProperties) |
+| p20-takeover-fraction-generation | device-ownership.schema.json#/$defs/TakeoverCommand | invalid (type) |
+| p20-bad-snapshot-token | device-ownership.schema.json#/$defs/FormerSubmission | invalid (format) |
+| p20-adoption-no-receipt | device-ownership.schema.json#/$defs/AdoptionCommand | invalid (required) |
 
 [Canonical example data](../../contracts/examples/README.md)

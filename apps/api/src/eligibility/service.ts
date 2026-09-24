@@ -1,3 +1,4 @@
+import {executionFence} from '../devices/fence.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
@@ -52,9 +53,9 @@ export class Eligibility {
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driver])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driver},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      r=await round(tx,a,p.roundId);
+     const fenced=await executionFence(tx,c,r);if(fenced)return fenced;
      const executionMode=await mode(tx,r);
      if(executionMode==='historical')throw new EligibilityError('lifecycle_forbidden',409,'اختر الجولة الحالية أو آخر جولة لإعداد العمل المحتفظ به.');
-     if(r.owner_account_id!==device.accountId||r.owner_device_id!==device.deviceId||Number(r.device_generation)!==device.deviceGeneration)throw new EligibilityError('stale_device',409,'الجولة على جهاز آخر؛ حدّث حالتها.');
      const current=await activity(tx,r.tenant_id,r.round_id),revision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
      if(p.expectedActivityRevision!==revision||p.expectedCurrentAttemptId!==(current?.attemptId??null))throw new EligibilityError('stale_revision',409,'تغيّر العميل الحالي؛ حدّث الجولة.');
      const planning=await planningState(tx,r.tenant_id,driver),input=await snapshot(tx,planning),m=input.members.find(m=>m.taskId===p.taskId&&m.attemptId===p.attemptId);

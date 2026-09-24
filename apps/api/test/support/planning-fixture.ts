@@ -11,9 +11,12 @@ import { RoutingEngine } from '../../src/engine/index.js';
 import { loadEngineConfig } from '../../src/engine/config.js';
 
 export const settings:Settings={mode:'bicycle',origin:{kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},endpoint:{kind:'last-customer'},plannedStartAt:'2026-09-23T10:00:00.000Z'};
+// One logical installation per fixture account. Multi-phone tests override this
+// explicitly; generating an unrelated installation for every action hid fences.
+const deviceId=randomUUID();
 export function command(operationId:string,payload:Record<string,unknown>):ActionEnvelope {
  return {schemaVersion:'1.0.0',payloadVersion:'1.0.0',actionId:randomUUID(),operationId,
-  context:{kind:'device',tenantId:ids.personalTenant,accountId:ids.personalAccount,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1},
+  context:{kind:'device',tenantId:ids.personalTenant,accountId:ids.personalAccount,deviceId,deviceGeneration:1,deviceSequence:1},
   resources:{},baseVersions:{},dependsOnActionIds:[],observation:{observedAt:null,clock:{quality:'unknown'}},payload};
 }
 export async function intake(pool:Pool,index=0,recipientName='عميل'){

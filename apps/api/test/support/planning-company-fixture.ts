@@ -22,7 +22,8 @@ export async function companyPlanningFixture(db:Awaited<ReturnType<typeof create
   await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE tenant_id=$1',[source.tenantId]);
   const principal={kind:'account' as const,issuer:'https://issuer.fixture.invalid',subject:'policy-driver'},service=new PlanningService(db.pool);
   const post=(op:string,payload:object)=>checked(app.inject({method:'POST',url:`/api/v1/intake/commands/${op}`,headers:{authorization:`Bearer ${source.token}`},payload:source.command(op,payload)}));
-  const planCommand=(op:string,payload:object)=>{const c=command(op,{driverId,...payload});c.context={kind:'device',tenantId:source.tenantId,accountId,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1};return c;};
+  const deviceId=randomUUID();
+  const planCommand=(op:string,payload:object)=>{const c=command(op,{driverId,...payload});c.context={kind:'device',tenantId:source.tenantId,accountId,deviceId,deviceGeneration:1,deviceSequence:1};return c;};
   return {tenantId:source.tenantId,driverId,accountId,source,app,post,service,principal,planCommand,async close(){await app.close();},async save(){return service.command(principal,planCommand('planning.saveDraft',{expectedSettingsRevision:0,settings}));},
    async task(name:string,priority:'urgent'|'ordinary',state:'held'|'prepared'='held',earliestAt?:string){
     const item={externalId:name,sourceDispatchCycleId:'cycle',expectedSourceRevision:1,expectedAssignmentRevision:0,assignmentRevision:1};

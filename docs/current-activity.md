@@ -1,5 +1,7 @@
 # Explicit heading, arrival and physical origin
 
+P20 shared generation/snapshot fencing now covers all current actions plus outcomes, eligibility, closure and active planning/pins. Stale submissions become durable review evidence; [device protocol](device-ownership.md). No takeover UI was added to this P16 component.
+
 Phase 16, locally verified 24 September 2026. [Ordered evidence](phase-16-evidence.md). The focused production component is `/rounds/current?kind=personal|company`; it requires a P15 started round. Full preparation/outcome/execution UI remains P28–31.
 
 `nextSuggestion` never creates current activity. Choosing a recipient in the local selector only previews details. `current.selectHeading` explicitly begins heading. `current.recordArrival` is a separate action. Calls, WhatsApp and external navigation are ordinary links and create no application commands. The server does not collect GPS or infer contact success.

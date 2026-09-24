@@ -1,3 +1,4 @@
+import {activeExecutionFence} from '../devices/fence.js';
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { Ajv2020 } from 'ajv/dist/2020.js';
@@ -59,6 +60,7 @@ export class Locations {
      const r=a.requireResource(editPolicy,await load(tx,a.context.tenantId,p.taskId));
      if(r.driver_id!==before.driver_id)throw new LocationError('stale_revision',409,'تغيّر المندوب؛ أعد تحميل المهمة.');
      if(!editable(a,r))throw new LifecycleDenied();
+     const fenced=r.driver_id?await activeExecutionFence(tx,command,r.driver_id):null;if(fenced)return fenced;
      if(Number(r.source_revision)!==p.expectedSourceRevision||Number(r.location_revision??0)!==p.expectedLocationRevision)throw new LocationError('stale_revision',409,'تغيّر العنوان أو الموقع؛ راجع النسخة الحالية.');
      const candidate=p.selection.kind==='candidate'?this.geocoder.candidate(scope(a,r),p.selection.candidateId):undefined;
      const coordinates=candidate?.coordinates??(p.selection as {coordinates:Pin['coordinates']}).coordinates;

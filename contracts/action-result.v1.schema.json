@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/action-result.v1.schema.json",
   "title": "Durable command result v1",
-  "description": "P05 verifies this result in the internal PostgreSQL kernel. Authenticated action.getResult HTTP delivery remains designed pending P06-P08. A compacted result preserves the receipt and feature-owned summary; it never permits executing the action again. Full responses last at least 30 days and unresolved work is held.",
+  "description": "Durable scoped command result. P20 exposes action.getResult for authorized round execution/takeover actions; other families retain their feature adapters. Compacted results preserve identity and never execute again; unresolved evidence is held, full responses last at least 30 days.",
   "type": "object",
   "properties": {
     "receipt": { "$ref": "./evidence-receipt.v1.schema.json" },

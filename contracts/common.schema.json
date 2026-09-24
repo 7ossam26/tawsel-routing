@@ -413,6 +413,10 @@
         },
         "deviceSequence": {
           "$ref": "#/$defs/Sequence"
+        },
+        "snapshotToken": {
+          "$ref": "common.schema.json#/$defs/Uuid",
+          "description": "P20: opaque token obtained with the confirmed snapshot for a takeover generation. Installation UUID is not authentication; the server binds tenant/account to the session."
         }
       },
       "required": [

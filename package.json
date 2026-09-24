@@ -85,7 +85,10 @@
     "test:erp:eligibility": "node --import tsx tests/erp-conformance/eligibility.ts",
     "test:workdays": "npm run test:integration -- apps/api/test/integration/workday-carryover.test.ts",
     "workdays:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/workday-demo.ts",
-    "test:erp:workdays": "node --import tsx tests/erp-conformance/workdays.ts"
+    "test:erp:workdays": "node --import tsx tests/erp-conformance/workdays.ts",
+    "test:devices": "npm run test:integration -- apps/api/test/integration/device-ownership.test.ts",
+    "devices:demo": "node --env-file-if-exists=.env.database.local --import tsx scripts/device-demo.ts",
+    "test:erp:devices": "node --import tsx tests/erp-conformance/devices.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

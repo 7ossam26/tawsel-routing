@@ -1,3 +1,4 @@
+import {activeExecutionFence} from '../devices/fence.js';
 import type { Pool } from 'pg';
 import { continuation, publishManual } from './manual.js';
 import type { components } from '@tawsel/api-client';
@@ -49,6 +50,7 @@ export class PlanningService {
      const state=await planningState(tx,a.context.tenantId,p.driverId),input=await snapshot(tx,state);
      authorizeInput(a,input);
      if(input.members.some(m=>m.departureAt)&&a.context.driverId!==p.driverId)throw new LifecycleDenied();
+     const fenced=await activeExecutionFence(tx,command,p.driverId);if(fenced)return fenced;
      if(Number(state.settings_revision)!==p.expectedSettingsRevision)throw new PlanningError('stale_revision',409,'تغيّرت إعدادات التخطيط؛ أعد تحميل النسخة الحالية.');
      if(operation==='planning.setManualOrder'){
       const result=await publishManual(tx,state,input,command.payload as components['schemas']['PlanningManualOrder'],a.context.sourceId,command.actionId);
