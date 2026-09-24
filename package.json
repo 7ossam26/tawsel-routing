@@ -117,6 +117,7 @@
     "test:erp:receiver": "node --import tsx tests/erp-conformance/receiver.ts",
     "test:source": "npm run test:integration -- apps/mock-erp/test/integration/mock-source-outbox.test.ts apps/mock-erp/test/integration/native-session.test.ts",
     "test:browser:source": "npm run build -w @tawsel/mock-erp && playwright test -c playwright.source.config.ts",
+    "test:browser:preparation": "npm run build:foundation && playwright test -c playwright.preparation.config.ts",
     "source:demo": "npm run receiver:package && node --env-file=.env.database.local --import tsx scripts/source-demo.ts",
     "mock-erp:source-worker": "node --env-file-if-exists=.local/mock-erp.database.env apps/mock-erp/dist/main.js source-worker",
     "test:erp:source": "node --import tsx tests/erp-conformance/source.ts"

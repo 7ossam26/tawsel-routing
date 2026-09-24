@@ -364,3 +364,35 @@ h2 { line-height: 1.55; }
 .maplibregl-ctrl-attrib { font-family: var(--font-sans); font-size: 11px; }
 .location-details button:focus-visible,.pin-picker button:focus-visible,.pin-picker summary:focus-visible,.candidate:focus-within { outline: 3px solid var(--ring); outline-offset: 3px; }
 @media (max-width: 760px) { .locations-shell { padding: 1rem; } .location-layout { grid-template-columns: minmax(0,1fr); gap: 1rem; } .pin-map { height: 340px; } .location-details,.pin-picker { padding: 1rem; } }
+
+/* P28 connected daily work and preparation. */
+.preparation-shell { max-inline-size: 64rem; margin-inline: auto; padding-block-end: 4rem; }
+.preparation-stage,.daily-group,.daily-summary { background: var(--card); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: 1.25rem; margin-block: 1rem; }
+.preparation-stage--active { border-inline-start: 5px solid var(--accent); }
+.preparation-heading,.daily-summary,.preparation-actions,.plan-summary,.manual-order li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.preparation-heading h2,.preparation-stage h2,.daily-group h2 { margin-block: .25rem; }
+.revision-chip { white-space: nowrap; border-radius: 999px; padding: .35rem .7rem; background: var(--muted); color: var(--muted-foreground); font-size: .8rem; }
+.preparation-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-block: 1rem; }
+.preparation-grid select,.preparation-shell select { inline-size: 100%; min-block-size: 48px; padding: .65rem; border: 1px solid var(--border); border-radius: .65rem; background: white; color: var(--foreground); font: inherit; }
+.preparation-stage > .action-button,.preparation-start > .action-button { inline-size: 100%; }
+.plan-summary { flex-wrap: wrap; background: var(--brand-soft); padding: 1rem; border-radius: var(--radius-control); margin-block: 1rem; }
+.manual-order { border-block-start: 1px solid var(--border); margin-block-start: 1rem; padding-block-start: 1rem; }
+.manual-order ol { display: grid; gap: .5rem; padding-inline-start: 1.5rem; }
+.manual-order li { min-block-size: 48px; border: 1px solid var(--border); border-radius: .65rem; padding: .4rem .65rem; }
+.manual-order li button,.icon-text-button,.daily-summary button { min-inline-size: 44px; min-block-size: 44px; border: 0; border-radius: .6rem; background: transparent; color: var(--foreground); font: inherit; }
+.manual-order li button:disabled { opacity: .35; }
+.icon-text-button,.daily-summary button { display: inline-flex; align-items: center; gap: .4rem; color: var(--brand); }
+.icon-text-button svg,.daily-summary button svg,.manual-order li svg { inline-size: 1.1rem; }
+.daily-summary { display: grid; grid-template-columns: repeat(3,1fr) auto; }
+.daily-summary > div { display: grid; text-align: center; }
+.daily-summary strong { font-size: 1.6rem; }
+.daily-summary span { color: var(--muted-foreground); font-size: .85rem; }
+.daily-groups { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.daily-group { margin: 0; min-width: 0; }
+.daily-group:first-child { grid-column: 1 / -1; }
+.daily-group .task-list { margin-block-start: 1rem; }
+.action-link { display: inline-flex; align-items: center; justify-content: center; min-block-size: 48px; border: 1px solid var(--border); border-radius: var(--radius-control); padding: .7rem 1.2rem; color: var(--foreground); text-decoration: none; font-weight: 700; }
+.action-link--primary { background: var(--brand); color: white; border-color: var(--brand); flex: 1; }
+.preparation-actions { margin-block: 1rem; flex-wrap: wrap; }
+.preparation-actions > * { min-inline-size: min(100%,14rem); }
+@media (max-width: 700px) { .preparation-grid,.daily-groups { grid-template-columns: minmax(0,1fr); } .daily-group:first-child { grid-column: auto; } .daily-summary { grid-template-columns: repeat(3,1fr); } .daily-summary button { grid-column: 1 / -1; justify-self: center; } .preparation-heading { align-items: start; } .preparation-actions { align-items: stretch; flex-direction: column; } .preparation-actions > * { inline-size: 100%; } }

@@ -8,19 +8,20 @@ import type { createTestDatabase } from './database.js';
 
 /** Real public ERP projection/intake boundary; issuer reconciliation is a labelled
  * enabled-subject fixture. No direct shipment or planning-row seeding. */
-export async function companyPlanningFixture(db:Awaited<ReturnType<typeof createTestDatabase>>) {
- const app=buildApp(createDatabasePool(db.config),undefined,{issuer:'https://issuer.fixture.invalid',operatorToken});await app.ready();
+export async function companyPlanningFixture(db:Awaited<ReturnType<typeof createTestDatabase>>,options:{issuer?:string;driverSubject?:string}={}) {
+ const issuer=options.issuer??'https://issuer.fixture.invalid',driverSubject=options.driverSubject??'policy-driver';
+ const app=buildApp(createDatabasePool(db.config),undefined,{issuer,operatorToken});await app.ready();
  try{
-  const source=await bindSource(app,['policy-driver','policy-staff','policy-second']),bootstrap=structuredClone(source.bootstrapCommand);
+  const source=await bindSource(app,[driverSubject,'policy-staff','policy-second']),bootstrap=structuredClone(source.bootstrapCommand);
   const checked=async(p:Promise<{statusCode:number;body:string;json():unknown}>)=>{const r=await p;if(r.statusCode!==200)throw new Error(r.body);return r;};
   bootstrap.actionId=randomUUID();bootstrap.payload.sourceRevision=2;bootstrap.payload.intakeCapabilities=['intake.prepare','assignment.manage'];await checked(send(app,operatorToken,bootstrap));
   await checked(send(app,source.token,source.command('branch.provision',{externalId:'branch',sourceRevision:1,name:'فرع',enabled:true,location:null})));
   await checked(send(app,source.token,source.command('role.defineCapabilities',{externalId:'role',sourceRevision:1,name:'Driver',capabilities:['execution.own']})));
-  const user=await send(app,source.token,source.command('user.provision',{externalId:'policy-driver',sourceRevision:1,subject:'policy-driver',roleExternalId:'role',branchExternalIds:['branch'],enabled:true}));await checked(Promise.resolve(user));
+  const user=await send(app,source.token,source.command('user.provision',{externalId:'policy-driver',sourceRevision:1,subject:driverSubject,roleExternalId:'role',branchExternalIds:['branch'],enabled:true}));await checked(Promise.resolve(user));
   const driver=await send(app,source.token,source.command('driver.provisionReference',{externalId:'policy-driver',sourceRevision:1,userExternalId:'policy-driver',enabled:true,profile:'bicycle',vehicleReference:null}));await checked(Promise.resolve(driver));
   const driverId=driver.json().response.body.resourceId as string,accountId=user.json().response.body.resourceId as string;
   await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE tenant_id=$1',[source.tenantId]);
-  const principal={kind:'account' as const,issuer:'https://issuer.fixture.invalid',subject:'policy-driver'},service=new PlanningService(db.pool);
+  const principal={kind:'account' as const,issuer,subject:driverSubject},service=new PlanningService(db.pool);
   const post=(op:string,payload:object)=>checked(app.inject({method:'POST',url:`/api/v1/intake/commands/${op}`,headers:{authorization:`Bearer ${source.token}`},payload:source.command(op,payload)}));
   const deviceId=randomUUID();
   const planCommand=(op:string,payload:object)=>{const c=command(op,{driverId,...payload});c.context={kind:'device',tenantId:source.tenantId,accountId,deviceId,deviceGeneration:1,deviceSequence:1};return c;};

@@ -4,7 +4,7 @@ export type LocationConfirmation=components['schemas']['LocationConfirmCommand']
 /** Browser-session boundary. ERP service credentials cannot impersonate reviewers.
  * The caller persists each exact command until the authoritative result is known. */
 export class LocationClient {
- constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=fetch){}
+ constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=(...args)=>globalThis.fetch(...args)){}
  private async request(path:string,method='GET',body?:unknown){
   const headers:Record<string,string>={};
   if(method!=='GET'){

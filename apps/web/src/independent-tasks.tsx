@@ -99,7 +99,7 @@ export function IndependentTasksPage() {
         <button className="edit-link" onClick={() => navigate(`/tasks/${task.taskId}/edit`)} disabled={!task.editable}><Pencil aria-hidden="true" />{task.editable ? 'تصحيح البيانات' : 'للعرض فقط'}</button>
         <a className="edit-link" href={`/locations/${task.taskId}?kind=personal`}>مراجعة الموقع</a>
       </article>)}</div>}
-    </section><nav className="tasks-foot"><a href="/account?kind=personal">الحساب</a><span aria-current="page">المهام</span></nav></main>;
+    </section><nav className="tasks-foot"><a href="/account?kind=personal">الحساب</a><span aria-current="page">المهام</span><a href="/day?kind=personal">عمل اليوم</a></nav></main>;
 }
 
 function TaskForm({ context, task, taskId, loading, loadError, onSaved }: { context: Context | null; task: Task | undefined; taskId: string | undefined; loading: boolean; loadError: string; onSaved: () => Promise<void> }) {

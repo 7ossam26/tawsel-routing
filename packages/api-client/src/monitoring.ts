@@ -9,7 +9,8 @@ export class MonitoringClient {
   const query=new URLSearchParams();if(this.options.kind)query.set('kind',this.options.kind);
   if(page.branchId)query.set('branchId',page.branchId);if(page.limit!==undefined)query.set('limit',String(page.limit));if(page.cursor)query.set('cursor',page.cursor);if(sourceId)query.set('sourceId',sourceId);
   const headers:Record<string,string>={};if(this.options.authorization)headers.Authorization=this.options.authorization;if(page.etag)headers['If-None-Match']=page.etag;
-  const response=await (this.options.fetcher??globalThis.fetch)(`${this.options.baseUrl??''}/api/v1/${this.options.kind?'':'erp/'}monitoring/${path}?${query}`,{credentials:'same-origin',cache:'no-cache',headers});
+  const fetcher=this.options.fetcher??((...args:Parameters<typeof fetch>)=>globalThis.fetch(...args));
+  const response=await fetcher(`${this.options.baseUrl??''}/api/v1/${this.options.kind?'':'erp/'}monitoring/${path}?${query}`,{credentials:'same-origin',cache:'no-cache',headers});
   if(response.status!==200&&response.status!==304){const problem=await response.json();throw Object.assign(new Error(problem.detail??'Refresh failed.'),{status:response.status,code:problem.code});}
   const etag=response.headers.get('etag'),scopeKey=response.headers.get('x-snapshot-scope'),refreshedAt=response.headers.get('x-refreshed-at'),revision=Number(response.headers.get('x-snapshot-revision'));
   if(!etag||!scopeKey||!refreshedAt||!Number.isSafeInteger(revision)||revision<1)throw new Error('Missing monitoring revision metadata.');

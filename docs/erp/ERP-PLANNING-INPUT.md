@@ -1,5 +1,7 @@
 # ERP planning input — verified reference and vendor decisions
 
+Phase 28 consumes the existing public/session contracts in the connected driver `/day` and `/prepare` screens. Company `prepared` remains upcoming work and is explicitly not driver custody; only accepted received/held work participates as held work. The driver may review route choices, observe planning failure and set a complete manual order, but Tawsel does not add an ERP assignment, commercial order or warehouse administration form. The actual browser proof uses the labelled P27 mock-B2B public source boundary and a controlled Engine HTTP failure, not a commercial ERP or live routing profile. See [Phase 28 evidence](../phase-28-evidence.md).
+
 ## Phase 27 two-way reference and ordered ERP implementation slices
 
 The source implementation is now `apps/mock-erp/src/source.ts`, native OIDC/forms are `native-auth.ts`, `native.ts` and `ui/main.tsx`, and separate migrations 0003/0004 own source durability/sessions. It composes with P26's inbox/projection/reconciliation through the released public client. [Two-task setup/checker](consumer-quickstart.md), [source authority and recovery](source-protocol.md), [ordered actual evidence](../phase-27-evidence.md). The bundle is `dist/erp-reference`; `tests/erp-conformance/source.ts` and `source-driver.ts` compile into its independent conformance folder. This supplies planning input now, before the Phase 42 release audit. Historical designed/future statements below are superseded only within this implemented reference scope.

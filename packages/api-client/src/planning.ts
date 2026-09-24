@@ -3,7 +3,7 @@ export type PlanningCommand=components['schemas']['PlanningSaveDraftCommand']|co
 /** Browser-session consumer; never selects a human identity via a service token.
  * Retain the exact command/action ID on uncertain delivery and poll its job ID. */
 export class PlanningClient {
- constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=fetch){}
+ constructor(private readonly kind:'personal'|'company',private readonly fetcher:typeof fetch=(...args)=>globalThis.fetch(...args)){}
  private async request(path:string,method='GET',body?:PlanningCommand){
   const headers:Record<string,string>={};
   if(method!=='GET'){

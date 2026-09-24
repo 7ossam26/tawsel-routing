@@ -1,5 +1,13 @@
 # Tawsel implementation status
 
+## Phase 28 — 24 September 2026
+
+Implemented the connected Arabic RTL driver journey at `/day` and `/prepare`: coherent daily work grouped as ready/unresolved/prepared/held/deferred, explicit preparation choices, durable planning states, partial-plan blocking, honest Engine failure and complete manual fallback, current-plan readiness, stable same-ID start recovery, current-round continuation and explicit other-phone takeover. Personal creation and native ERP remain their existing source-owned entry points; no duplicate commercial administration surface was added.
+
+Focused component coverage is **6 passed**. The actual local Keycloak 26.7.4/Chromium/HTTP/PostgreSQL proof passes both a personal stale-plan recovery/start and a company mock-B2B controlled Engine-503/manual-order/start journey, producing exactly two rounds and two accepted start actions. A real browser run exposed and drove fixes for unbound native fetch defaults, incomplete manual fallback membership and draft/server revision synchronization. [Ordered evidence, captures, reproducible commands and exact limits](phase-28-evidence.md), [UI action map](ui-actions.md), [ERP handoff](erp/ERP-PLANNING-INPUT.md).
+
+Final equivalent gate: audit zero vulnerabilities; lint/contracts/types passed; **43 files / 873 tests passed**, 779.36s with the documented scoped 30-second allowance; all production builds and fixture isolation passed with the required explicit local API base. Two unrelated older additive-migration cases first hit the default 10-second limit, then passed in their two-file **59/59** rerun and in the complete accepted run. No schema, operation or migration changed. Live Engine profiles, commercial ERP, physical-device/owner review and production deployment remain unverified. The runtime identifies the GPT-5 family; exact picker suffix/effort is unavailable and is not asserted. Earlier phase entries below retain their historical boundaries.
+
 ## Phase 27 — 24 September 2026
 
 Implemented the private labelled native ERP with independent OIDC staff sessions, Arabic RTL provisioning/task/return views, local source records and atomic outgoing command outbox (consumer migrations 0003–0004), immutable IDs/revisions and durable pending/accepted/rejected/review-required results. All execution uses the published client and authenticated public API. Received/applied projections remain distinct from command acceptance.

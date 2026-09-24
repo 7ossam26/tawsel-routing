@@ -19,14 +19,14 @@ export function command(operationId:string,payload:Record<string,unknown>):Actio
   context:{kind:'device',tenantId:ids.personalTenant,accountId:ids.personalAccount,deviceId,deviceGeneration:1,deviceSequence:1},
   resources:{},baseVersions:{},dependsOnActionIds:[],observation:{observedAt:null,clock:{quality:'unknown'}},payload};
 }
-export async function intake(pool:Pool,index=0,recipientName='عميل'){
+export async function intake(pool:Pool,index=0,recipientName='عميل',principal=principals.personal){
  const c=command('task.createIndependent',{recipientName,recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.05+index*0.01,longitude:31.24+index*0.01}}});
- const result=await new IndependentIntakeService(pool).create(principals.personal,c);
+ const result=await new IndependentIntakeService(pool).create(principal,c);
  return {command:c,result,taskId:(result.response!.body.task as {taskId:string}).taskId};
 }
-export async function draft(pool:Pool,revision=0,patch:Partial<Settings>={}){
+export async function draft(pool:Pool,revision=0,patch:Partial<Settings>={},principal=principals.personal){
  const c=command('planning.saveDraft',{driverId:ids.personalDriver,expectedSettingsRevision:revision,settings:{...settings,...patch}});
- const result=await new PlanningService(pool).command(principals.personal,c);
+ const result=await new PlanningService(pool).command(principal,c);
  return {command:c,result,jobId:(result.response!.body.job as {jobId:string}).jobId};
 }
 /** Controlled HTTP provider, not live Engine route evidence. Builds an explicit

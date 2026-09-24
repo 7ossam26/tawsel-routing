@@ -28,7 +28,7 @@ export const principals = {
   integration: { kind: 'integration' as const, integrationId: ids.integration }
 };
 
-export async function prepareAccessFixture(pool: Pool, issuer = principals.staff.issuer, migrationDirectory?: URL) {
+export async function prepareAccessFixture(pool: Pool, issuer = principals.staff.issuer, migrationDirectory?: URL, identityOverrides: Partial<Record<'staff'|'driver'|'driver-2'|'other'|'personal', { issuer: string; subject: string }>> = {}) {
   await migrate(pool, migrationDirectory);
   for (const [tenant, kind] of [[ids.tenant, 'company'], [ids.otherTenant, 'company'], [ids.personalTenant, 'personal']]) {
     await pool.query('INSERT INTO tawsel.tenant_keys VALUES ($1)', [tenant]);
@@ -55,7 +55,8 @@ export async function prepareAccessFixture(pool: Pool, issuer = principals.staff
     await pool.query("INSERT INTO tawsel.command_sources VALUES ($1,$2,'account')", [tenant, account]);
     await pool.query('INSERT INTO tawsel.accounts (tenant_id,account_id,tenant_kind) VALUES ($1,$2,$3)', [tenant, account, kind]);
     await pool.query('INSERT INTO tawsel.memberships (tenant_id,account_id,tenant_kind,role_id) VALUES ($1,$2,$3,$4)', [tenant, account, kind, role]);
-    await pool.query('INSERT INTO tawsel.identity_subjects (issuer,subject,tenant_id,account_id) VALUES ($1,$2,$3,$4)', [issuer, subject, tenant, account]);
+    const identity = identityOverrides[subject as keyof typeof identityOverrides] ?? { issuer, subject };
+    await pool.query('INSERT INTO tawsel.identity_subjects (issuer,subject,tenant_id,account_id) VALUES ($1,$2,$3,$4)', [identity.issuer, identity.subject, tenant, account]);
   }
   for (const account of [ids.staff, ids.driverAccount, ids.secondDriverAccount]) {
     for (const branch of [ids.branch, ids.secondBranch]) {
