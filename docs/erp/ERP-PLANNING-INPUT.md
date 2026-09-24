@@ -1,5 +1,14 @@
 # ERP planning input — designed foundation
 
+## P19 implemented boundary — 24 September 2026
+
+[Explicit round/day closure and carry-forward](../workday-closure.md) now have real PostgreSQL/HTTP evidence. End day is independent of the calendar and does not request resubmission from ERP. Held tasks keep their external task/cycle references, source/assignment revisions, attempt history and effective earliest constraints. Closure means neither delivered scope, source-branch receipt nor financial settlement. ERP continues to own physical receipt/disposition and settlement.
+
+`round.ended` / `workday.ended` commit recipient-scoped `ClosureEvent` intent: closure/workday/driver IDs, affected round (nullable between rounds), UTC end times, original action observation and only the recipient's task/cycle source references. Day end of an active round produces both facts in one transaction. Same-ID retries and already-closed requests do not duplicate those events. Network delivery, signing and ERP application remain P25–27. Browser-session `ClosureClient` is for the driver; an integration bearer token cannot close their day.
+
+Basic summaries separate admitted shipments, attempts, processed outcomes, full/partial/failed results, reported collection and current held work. `reportedMinor` aggregates are exact integer strings; collection is not cash remittance. Run `npm run workdays:demo` and `npm run test:erp:workdays -- .local/phase-19-demo.json`. [Mapping](field-and-status-mapping.md), [quickstart](consumer-quickstart.md), [evidence](../phase-19-evidence.md). Native ERP/physical receipt, full offline capture and full report UI remain later work.
+
+
 ## P18 implemented boundary — 24 September 2026
 
 [Deferral/retry/driver urgency](../eligibility.md) now has real API/PostgreSQL evidence and public-only consumer checks. ERP still supplies frozen outstanding per-unit allocation and predeparture source urgency. After departure only the authenticated assigned driver may change execution urgency; an ERP service token cannot impersonate that driver. Whole retry preserves the ERP external task/cycle and original source/assignment revisions while adding a server attempt identity. Rejected partial remainders never become customer stops. Future deferral is earliest availability, not a guaranteed appointment; explicit activation/retry still requires remaining capacity.

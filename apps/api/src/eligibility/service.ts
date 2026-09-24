@@ -19,6 +19,14 @@ const events:Record<Operation,string>={'task.deferWhole':'task.deferred','task.r
 async function round(tx:Transaction,a:AccessSession,id:string){
  const row=(await tx.query<RoundRow>('SELECT * FROM tawsel.rounds WHERE tenant_id=$1 AND round_id=$2 AND driver_id=$3',[a.context.tenantId,id,ownDriver(a)])).rows[0];if(!row)throw new AccessDenied(true);return row;
 }
+/** The last ended round is only an ownership anchor for preparing retained
+ * work. It does not reopen that round/day or admit execution before new start. */
+async function mode(tx:Transaction,r:RoundRow):Promise<'active-round'|'preparation'|'historical'>{
+ const latest=(await tx.query('SELECT round_id,ended_at FROM tawsel.rounds WHERE tenant_id=$1 AND driver_id=$2 ORDER BY device_generation DESC LIMIT 1',[r.tenant_id,r.driver_id])).rows[0];
+ if(latest?.round_id!==r.round_id)return 'historical';
+ if(r.ended_at)return 'preparation';
+ return (await tx.query('SELECT ended_at FROM tawsel.workdays WHERE tenant_id=$1 AND workday_id=$2',[r.tenant_id,r.workday_id])).rows[0].ended_at?'historical':'active-round';
+}
 async function authorize(tx:Transaction,a:AccessSession){
  const driver=ownDriver(a);await authorizeDriver(tx,a,driver);
  for(const row of (await tx.query('SELECT tenant_id,driver_id,branch_id,integration_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driver])).rows)a.requireResource(own,row);
@@ -44,7 +52,8 @@ export class Eligibility {
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driver])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driver},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      r=await round(tx,a,p.roundId);
-     if(r.ended_at||(await tx.query('SELECT ended_at FROM tawsel.workdays WHERE tenant_id=$1 AND workday_id=$2',[r.tenant_id,r.workday_id])).rows[0].ended_at)throw new EligibilityError('lifecycle_forbidden',409,'انتهت الجولة أو يوم العمل.');
+     const executionMode=await mode(tx,r);
+     if(executionMode==='historical')throw new EligibilityError('lifecycle_forbidden',409,'اختر الجولة الحالية أو آخر جولة لإعداد العمل المحتفظ به.');
      if(r.owner_account_id!==device.accountId||r.owner_device_id!==device.deviceId||Number(r.device_generation)!==device.deviceGeneration)throw new EligibilityError('stale_device',409,'الجولة على جهاز آخر؛ حدّث حالتها.');
      const current=await activity(tx,r.tenant_id,r.round_id),revision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
      if(p.expectedActivityRevision!==revision||p.expectedCurrentAttemptId!==(current?.attemptId??null))throw new EligibilityError('stale_revision',409,'تغيّر العميل الحالي؛ حدّث الجولة.');
@@ -73,7 +82,7 @@ export class Eligibility {
      if(m.dispatchCycleId&&(choice==='retry'||choice==='activate'))await tx.query(`INSERT INTO tawsel.driver_planned_stops (tenant_id,stop_id,driver_id,kind,dispatch_cycle_id,state) VALUES ($1,$2,$3,'customer',$4,'remaining') ON CONFLICT(tenant_id,dispatch_cycle_id) DO NOTHING`,[r.tenant_id,randomUUID(),driver,m.dispatchCycleId]);
      const updated=await snapshot(tx,planning),member=updated.members.find(x=>x.taskId===m.taskId)!;
      const source=m.dispatchCycleId?(await tx.query('SELECT t.external_id,c.source_dispatch_cycle_id FROM tawsel.b2b_tasks t JOIN tawsel.b2b_dispatch_cycles c USING(tenant_id,task_id) WHERE t.tenant_id=$1 AND c.dispatch_cycle_id=$2',[r.tenant_id,m.dispatchCycleId])).rows[0]:null;
-     change={operationId:op,roundId:r.round_id,driverId:driver,taskId:m.taskId,previousAttemptId:m.attemptId,attemptId,revision:state.revision+1,earliestAt:member.earliestAt,urgency:member.priority,deferred:isDeferred,
+     change={operationId:op,mode:executionMode,roundId:r.round_id,driverId:driver,taskId:m.taskId,previousAttemptId:m.attemptId,attemptId,revision:state.revision+1,earliestAt:member.earliestAt,urgency:member.priority,deferred:isDeferred,
       sourceReference:source?{tenantId:r.tenant_id,integrationId:m.integrationId!,externalId:source.external_id}:null,sourceDispatchCycleId:source?.source_dispatch_cycle_id??null,sourceRevision:m.sourceRevision,assignmentRevision:m.assignmentRevision,dispatchCycleId:m.dispatchCycleId,
       time:{actionId:c.actionId,recordedAt:now.toISOString(),observation:c.observation}};
      requireEligibility('Record',change);
@@ -94,9 +103,13 @@ export class Eligibility {
   uuid(roundId);return withAccess(this.pool,principal,async(a,tx)=>{
    await authorize(tx,a);const driver=ownDriver(a);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driver}]);const r=await round(tx,a,roundId),current=await activity(tx,r.tenant_id,r.round_id);
    const input=await snapshot(tx,await planningState(tx,r.tenant_id,driver)),n=await remaining(tx,input),items=[];
-   for(const m of input.members)items.push((await stateFor(tx,r.tenant_id,driver,m,current?.attemptId??null,n)).state);
+   const executionMode=await mode(tx,r);
+   for(const m of input.members){const state=(await stateFor(tx,r.tenant_id,driver,m,current?.attemptId??null,n)).state;
+    if(executionMode==='historical')for(const choice of Object.keys(state.actions) as Choice[])state.actions[choice]={allowed:false,blocker:'round-closed',message:'افتح الجولة الحالية لإجراء التغيير.'};
+    items.push(state);
+   }
    const history=(await tx.query<{record:Change}>("SELECT h.record FROM tawsel.task_eligibility_history h JOIN tawsel.location_tasks t USING(tenant_id,task_id) WHERE h.tenant_id=$1 AND t.driver_id=$2 ORDER BY h.record->'time'->>'recordedAt',h.task_id,h.revision",[r.tenant_id,driver])).rows.map(x=>x.record);
-   const result={roundId,activityRevision:Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,roundId])).rows[0]?.revision??0),currentAttemptId:current?.attemptId??null,items,history};requireEligibility('Snapshot',result);return result;
+   const result={roundId,mode:executionMode,activityRevision:Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,roundId])).rows[0]?.revision??0),currentAttemptId:current?.attemptId??null,items,history};requireEligibility('Snapshot',result);return result;
   });
  }
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['EligibilityActionStatus']>{

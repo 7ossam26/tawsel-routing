@@ -1,10 +1,10 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — identity, intake, locations and durable planning
+  title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P15 locally implemented identity, intake, locations, validated planning and online authoritative round
-    start. Provider, browser and PostgreSQL evidence are distinguished in phase ledgers. Later execution and signed
-    delivery remain designed.
+  description: P07–P19 locally implemented identity, intake, locations, planning, round start, current activity,
+    outcomes, eligibility and explicit workday closure/carry-forward. Provider, browser and PostgreSQL evidence
+    are distinguished in phase ledgers. Takeover, receipt, corrections, full offline capture and signed delivery remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -2961,6 +2961,220 @@ paths:
           description: Session required
         "403":
           description: Current scope or CSRF denied
+  /api/v1/closure/round:
+    post:
+      operationId: round.end
+      summary: End round explicitly with held unfinished work preserved.
+      tags:
+        - Workday closure
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            enum:
+              - personal
+              - company
+      responses:
+        "200":
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionResult"
+        "202":
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionStatus"
+        "400":
+          description: Invalid request.
+        "403":
+          description: Current authorization denied.
+        "409":
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClosureEndRoundCommand"
+  /api/v1/closure/day:
+    post:
+      operationId: workday.end
+      summary: Close open workday/active round after resolving or pausing current;
+        carry held work.
+      tags:
+        - Workday closure
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            enum:
+              - personal
+              - company
+      responses:
+        "200":
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionResult"
+        "202":
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionStatus"
+        "400":
+          description: Invalid request.
+        "403":
+          description: Current authorization denied.
+        "409":
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClosureEndDayCommand"
+  /api/v1/workdays/{workdayId}/summary:
+    get:
+      operationId: workday.getSummary
+      summary: Basic explicit-workday outcome/collection summary with admission
+        denominators.
+      tags:
+        - Workday closure
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            enum:
+              - personal
+              - company
+        - name: workdayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureSummary"
+        "400":
+          description: Invalid request.
+        "403":
+          description: Current authorization denied.
+        "409":
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
+  /api/v1/workdays/{workdayId}/carry-forward:
+    get:
+      operationId: workday.getCarryForward
+      summary: Current held work for the workday holder; no per-day cloning or
+        implicit retry.
+      tags:
+        - Workday closure
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            enum:
+              - personal
+              - company
+        - name: workdayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureCarryForward"
+        "400":
+          description: Invalid request.
+        "403":
+          description: Current authorization denied.
+        "409":
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
+  /api/v1/closure/actions/{actionId}:
+    get:
+      operationId: closure.getResult
+      summary: Recover a retained closure result; unknown action remains pending.
+      tags:
+        - Workday closure
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            enum:
+              - personal
+              - company
+        - name: actionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionStatus"
+        "202":
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClosureActionStatus"
+        "400":
+          description: Invalid request.
+        "403":
+          description: Current authorization denied.
+        "409":
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
 components:
   schemas:
     Uuid:
@@ -3393,6 +3607,32 @@ components:
       $ref: './eligibility.schema.json#/$defs/ActionStatus'
     EligibilitySnapshot:
       $ref: './eligibility.schema.json#/$defs/Snapshot'
+    ClosureClose:
+      $ref: './workday-closure.schema.json#/$defs/Close'
+    ClosureEndRoundCommand:
+      $ref: './workday-closure.schema.json#/$defs/EndRoundCommand'
+    ClosureEndDayCommand:
+      $ref: './workday-closure.schema.json#/$defs/EndDayCommand'
+    ClosureRecord:
+      $ref: './workday-closure.schema.json#/$defs/Record'
+    ClosureCommandResult:
+      $ref: './workday-closure.schema.json#/$defs/CommandResult'
+    ClosureActionResult:
+      $ref: './workday-closure.schema.json#/$defs/ActionResult'
+    ClosureActionStatus:
+      $ref: './workday-closure.schema.json#/$defs/ActionStatus'
+    ClosureSourceItem:
+      $ref: './workday-closure.schema.json#/$defs/SourceItem'
+    ClosureEvent:
+      $ref: './workday-closure.schema.json#/$defs/Event'
+    ClosureCarryItem:
+      $ref: './workday-closure.schema.json#/$defs/CarryItem'
+    ClosureCarryForward:
+      $ref: './workday-closure.schema.json#/$defs/CarryForward'
+    ClosureRoundSummary:
+      $ref: './workday-closure.schema.json#/$defs/RoundSummary'
+    ClosureSummary:
+      $ref: './workday-closure.schema.json#/$defs/Summary'
   securitySchemes:
     companySession:
       type: apiKey
@@ -3435,3 +3675,5 @@ tags:
     description: Whole-piece results, exact reported collection, effective progress and durable action recovery.
   - name: Eligibility
     description: Explicit earliest deferral, whole retry, activation, assigned-driver urgency and durable recovery.
+  - name: Workday closure
+    description: Explicit round/day closure, current-holder carry-forward and basic workday summary.

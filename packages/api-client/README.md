@@ -37,3 +37,5 @@ Copy `src/current.ts`, `src/rounds.ts` and generated `src/schema.d.ts` for the h
 ## P18 eligibility client
 
 `src/eligibility.ts` exports `EligibilityClient.read/defer/retry/activate/urgency/result`. Closed generated `Eligibility*` types separate earliest-time deferral, explicit unresolved activation, whole return-required retry and driver urgency. Use authenticated human session/CSRF and the active owner's device generation; ERP tokens cannot impersonate drivers. `OutcomeSnapshot.history` now preserves earlier attempts, and reported totals include their fees. [Sequence/demo](../../docs/eligibility.md), [public conformance](../../tests/erp-conformance/eligibility.ts). Earlier dated retry exclusions above describe their original phase boundary.
+
+P19 adds [`ClosureClient`](src/closure.ts) for explicit round/day commands, exact pending/replay recovery, current-holder carry-forward and basic workday summaries; `formatWorkdayInstant` uses Africa/Cairo rules. See [contract/demo/limits](../../docs/workday-closure.md). No client-local offline queue or settlement behavior is implied.

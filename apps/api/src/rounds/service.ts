@@ -82,8 +82,10 @@ export class Rounds {
      // Discover complete guards before acquisition. Any intervening assignment
      // change is detected by locked fingerprint validation before mutation.
      const before=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2 ORDER BY task_id',[a.context.tenantId,p.driverId])).rows;
-     const day=await workday(tx,a.context.tenantId,p.driverId),dayId=day?.workdayId??randomUUID();
-     await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:p.driverId},{kind:'workday',id:dayId},...before.flatMap(m=>m.dispatch_cycle_id?[{kind:'assignment' as const,id:m.dispatch_cycle_id}]:[]),...before.map(m=>({kind:'task' as const,id:m.task_id}))]);
+     const day=await workday(tx,a.context.tenantId,p.driverId),dayId=randomUUID();
+     // Closure can end the observed day while start waits for the driver lock.
+     // Reserve a fresh candidate too; never recreate the now-closed day ID.
+     await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:p.driverId},{kind:'workday',id:dayId},...(day?[{kind:'workday' as const,id:day.workdayId}]:[]),...before.flatMap(m=>m.dispatch_cycle_id?[{kind:'assignment' as const,id:m.dispatch_cycle_id}]:[]),...before.map(m=>({kind:'task' as const,id:m.task_id}))]);
      const existing=await active(tx,a.context.tenantId,p.driverId);
      if(existing){
       inputAccess(a,await snapshot(tx,await planningState(tx,a.context.tenantId,p.driverId)));

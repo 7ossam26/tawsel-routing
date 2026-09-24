@@ -49,3 +49,5 @@ All ordinary ERP source/recipient/content/price/urgency/assignment updates are d
 ## P16 handoff
 
 P16 may rely on migration 0012, `Rounds`, `rounds/departure.ts`, the four authenticated APIs, typed client, stable start/action recovery, immutable baseline/admission references and the shared driver guard with P05 audit/outbox atomicity. It must add explicit current/heading/arrival without treating plan order or `currentActivity=null` as movement; advance execution/input revisions under the same locks and preserve first baseline references. No P16 action or P20 takeover has been implemented here.
+
+P19 closes rounds/workdays explicitly and retains held work. Start rechecks the open day under its driver lock, reserves a fresh candidate day identity and cannot attach an active round to a closed day. Closure invalidates stale plans/readiness fingerprints. Accepted relevant closure IDs remain a prerequisite for subsequent start; the complete device queue barrier remains P34. [Closure/carry-forward and handoff](workday-closure.md).

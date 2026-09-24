@@ -8,7 +8,7 @@ export const messages:Record<Blocker,string>={
  'partial-or-delivered':'لا يمكن إعادة تسليم الباقي المرفوض أو العمل المنتهي.',
  'current-customer':'أكمل العميل الحالي أو غيّر وجهتك صراحةً أولاً.',
  'result-required':'سجّل نتيجة المحاولة قبل طلب إعادة المحاولة.',
- 'not-deferred':'هذا العمل ليس مؤجلاً بلا نتيجة؛ راجع الإجراء المتاح.',
+ 'not-deferred':'هذا العمل ليس بحاجة للإتاحة بلا نتيجة؛ راجع الإجراء المتاح.',
  'earliest-time':'لم يحن وقت الإتاحة بعد.','location-required':'حدّد موقعاً صالحاً أولاً.',
  'capacity':'الجولة بها ٥٠ محطة متبقية؛ أكمل محطة قبل الإضافة.'
 };
@@ -22,6 +22,7 @@ export async function stateFor(tx:Transaction,tenant:string,driver:string,m:Memb
  const dependency=m.dispatchCycleId?!!(await tx.query('SELECT 1 FROM tawsel.retry_dependencies WHERE tenant_id=$1 AND dispatch_cycle_id=$2 LIMIT 1',[tenant,m.dispatchCycleId])).rowCount:false;
  const now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
  const facts:Facts={held:!m.dispatchCycleId||cycle?.state==='held',sameDriver:(!cycle||cycle.driver_id===driver)&&(!outcome||outcome.driver_id===driver),current:current===m.attemptId,deferred:option?.deferred??false,outcome:outcome?.outcome??null,whole:Number(line.delivered)===0,dependency,future:!!m.earliestAt&&Date.parse(m.earliestAt)>now.getTime(),located:!!m.coordinates,remaining};
+ facts.needsAdmission=!!m.dispatchCycleId&&cycle?.state==='held'&&!outcome&&m.reservationState!=='remaining';
  const actions={} as State['actions'];for(const choice of ['defer','retry','activate','urgency'] as Choice[]){const blocker=denied(facts,choice);actions[choice]={allowed:blocker===null,blocker,message:blocker?messages[blocker]:null};}
  const state:State={taskId:m.taskId,attemptId:m.attemptId,revision:Number(option?.revision??0),sourceRevision:m.sourceRevision,assignmentRevision:m.assignmentRevision,pinRevision:m.pinRevision,earliestAt:m.earliestAt,urgency:m.priority,deferred:facts.deferred,latestOutcomeId:outcome?.outcome_id??null,actions};
  return {state,facts};

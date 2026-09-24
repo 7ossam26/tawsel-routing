@@ -386,7 +386,8 @@
                 "not-deferred",
                 "earliest-time",
                 "location-required",
-                "capacity"
+                "capacity",
+                "round-closed"
               ]
             },
             {
@@ -602,6 +603,13 @@
               "type": "null"
             }
           ]
+        },
+        "mode": {
+          "enum": [
+            "active-round",
+            "preparation"
+          ],
+          "description": "Preparation uses the last ended round only as an ownership anchor; it never reopens its execution or workday."
         }
       },
       "required": [
@@ -784,6 +792,13 @@
           "items": {
             "$ref": "#/$defs/Record"
           }
+        },
+        "mode": {
+          "enum": [
+            "active-round",
+            "preparation",
+            "historical"
+          ]
         }
       },
       "required": [

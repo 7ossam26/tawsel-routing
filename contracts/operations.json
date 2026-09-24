@@ -646,19 +646,23 @@
       "id": "round.end",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "execution.own",
-      "description": "End round explicitly with held unfinished work preserved."
+      "description": "End round explicitly with held unfinished work preserved.",
+      "method": "POST",
+      "path": "/api/v1/closure/round"
     },
     {
       "id": "workday.end",
       "family": "execution",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "execution.own",
-      "description": "Close open workday/active round after resolving or pausing current; carry held work."
+      "description": "Close open workday/active round after resolving or pausing current; carry held work.",
+      "method": "POST",
+      "path": "/api/v1/closure/day"
     },
     {
       "id": "device.takeOver",
@@ -1287,7 +1291,7 @@
       "id": "round.ended",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "recipient-scope",
       "description": "Ended round, held work unchanged unless explicitly transitioned."
@@ -1296,7 +1300,7 @@
       "id": "workday.ended",
       "family": "execution",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "recipient-scope",
       "description": "Explicit day closure/carryover; not automatic midnight."
@@ -1591,6 +1595,39 @@
       "capability": "recipient-scope",
       "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
       "lifecycle": "verified-local"
+    },
+    {
+      "id": "workday.getSummary",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Basic explicit-workday outcome/collection summary with admission denominators.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/workdays/{workdayId}/summary"
+    },
+    {
+      "id": "workday.getCarryForward",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Current held work for the workday holder; no per-day cloning or implicit retry.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/workdays/{workdayId}/carry-forward"
+    },
+    {
+      "id": "closure.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Recover a retained closure result; unknown action remains pending.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/closure/actions/{actionId}"
     }
   ],
   "authorizationFoundation": {

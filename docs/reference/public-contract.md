@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P18 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P19 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -11142,7 +11142,8 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
             "not-deferred",
             "earliest-time",
             "location-required",
-            "capacity"
+            "capacity",
+            "round-closed"
           ]
         },
         {
@@ -11372,6 +11373,13 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
           "type": "null"
         }
       ]
+    },
+    "mode": {
+      "enum": [
+        "active-round",
+        "preparation"
+      ],
+      "description": "Preparation uses the last ended round only as an ownership anchor; it never reopens its execution or workday."
     }
   },
   "required": [
@@ -11589,6 +11597,13 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
       "items": {
         "$ref": "#/$defs/Record"
       }
+    },
+    "mode": {
+      "enum": [
+        "active-round",
+        "preparation",
+        "historical"
+      ]
     }
   },
   "required": [
@@ -11602,9 +11617,1020 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 }
 ```
 
+### ClosureClose
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/Close)
+
+roundId anchors execution ownership. Day end without an active round must name the most recent round in that day. A heading needs explicit pause-heading; an arrived customer requires an outcome first. Unknown dependencies keep the action pending and are replayed with its original ID.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActiveRoundId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "currentAction": {
+      "enum": [
+        "require-none",
+        "pause-heading"
+      ]
+    }
+  },
+  "required": [
+    "workdayId",
+    "roundId",
+    "expectedActiveRoundId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "currentAction"
+  ],
+  "additionalProperties": false,
+  "description": "roundId anchors execution ownership. Day end without an active round must name the most recent round in that day. A heading needs explicit pause-heading; an arrived customer requires an outcome first. Unknown dependencies keep the action pending and are replayed with its original ID."
+}
+```
+
+### ClosureEndRoundCommand
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/EndRoundCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "round.end"
+        },
+        "payload": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Close"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "expectedActiveRoundId": {
+                  "$ref": "common.schema.json#/$defs/Uuid"
+                }
+              }
+            }
+          ]
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+### ClosureEndDayCommand
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/EndDayCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "workday.end"
+        },
+        "payload": {
+          "$ref": "#/$defs/Close"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "device"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+### ClosureRecord
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/Record)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "closureId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "enum": [
+        "round.end",
+        "workday.end"
+      ]
+    },
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "ownerRoundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "endedRoundId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "roundEndedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workdayEndedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pausedActivity": {
+      "anyOf": [
+        {
+          "$ref": "current-activity.schema.json#/$defs/Activity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "time": {
+      "$ref": "current-activity.schema.json#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "closureId",
+    "operationId",
+    "workdayId",
+    "driverId",
+    "ownerRoundId",
+    "endedRoundId",
+    "roundEndedAt",
+    "workdayEndedAt",
+    "pausedActivity",
+    "activityRevision",
+    "time"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operationId": {
+            "const": "round.end"
+          }
+        },
+        "required": [
+          "operationId"
+        ]
+      },
+      "then": {
+        "properties": {
+          "endedRoundId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "roundEndedAt": {
+            "$ref": "common.schema.json#/$defs/UtcInstant"
+          },
+          "workdayEndedAt": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "workdayEndedAt": {
+            "$ref": "common.schema.json#/$defs/UtcInstant"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "endedRoundId": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "endedRoundId"
+        ]
+      },
+      "then": {
+        "properties": {
+          "roundEndedAt": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "roundEndedAt": {
+            "$ref": "common.schema.json#/$defs/UtcInstant"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### ClosureCommandResult
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/CommandResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "disposition": {
+      "enum": [
+        "closed",
+        "already-closed"
+      ]
+    },
+    "closure": {
+      "$ref": "#/$defs/Record"
+    }
+  },
+  "required": [
+    "disposition",
+    "closure"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ClosureActionResult
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/ActionResult)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-result.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "enum": [
+            "round.end",
+            "workday.end"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "receipt": {
+                "type": "object",
+                "properties": {
+                  "businessStatus": {
+                    "const": "accepted"
+                  }
+                },
+                "required": [
+                  "businessStatus"
+                ]
+              }
+            },
+            "required": [
+              "receipt"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "$ref": "#/$defs/CommandResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### ClosureActionStatus
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/ActionStatus)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "pending"
+        }
+      },
+      "required": [
+        "actionId",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "rejected",
+            "review-required"
+          ]
+        },
+        "result": {
+          "$ref": "#/$defs/ActionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### ClosureSourceItem
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/SourceItem)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "sourceReference": {
+      "$ref": "common.schema.json#/$defs/SourceReference"
+    },
+    "sourceDispatchCycleId": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "taskId",
+    "dispatchCycleId",
+    "sourceReference",
+    "sourceDispatchCycleId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ClosureEvent
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "closureId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "endedRoundId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "roundEndedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workdayEndedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "time": {
+      "$ref": "current-activity.schema.json#/$defs/ActionTime"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/SourceItem"
+      }
+    }
+  },
+  "required": [
+    "closureId",
+    "driverId",
+    "workdayId",
+    "endedRoundId",
+    "roundEndedAt",
+    "workdayEndedAt",
+    "time",
+    "tasks"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ClosureCarryItem
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/CarryItem)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "taskId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceReference": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/SourceReference"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceDispatchCycleId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "earliestAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deferred": {
+      "type": "boolean"
+    },
+    "admittedInWorkday": {
+      "type": "boolean"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "enum": [
+            "full",
+            "partial",
+            "refused",
+            "no-answer"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "unfinished",
+        "return-required",
+        "unsuccessful"
+      ]
+    },
+    "eligibleNow": {
+      "type": "boolean"
+    },
+    "blocker": {
+      "anyOf": [
+        {
+          "enum": [
+            "result-required",
+            "deferred",
+            "earliest-time",
+            "location-required",
+            "receipt-or-disposition",
+            "capacity-admission"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "heldReturnRequiredPieces": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "heldPieces": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "unpaidShippingMinor": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "dispatchCycleId",
+    "sourceReference",
+    "sourceDispatchCycleId",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "earliestAt",
+    "deferred",
+    "admittedInWorkday",
+    "outcome",
+    "disposition",
+    "eligibleNow",
+    "blocker",
+    "heldReturnRequiredPieces",
+    "heldPieces",
+    "unpaidShippingMinor"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "eligibleNow": {
+            "const": true
+          }
+        },
+        "required": [
+          "eligibleNow"
+        ]
+      },
+      "then": {
+        "properties": {
+          "blocker": {
+            "type": "null"
+          },
+          "deferred": {
+            "const": false
+          },
+          "outcome": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "blocker": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "sourceReference": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "sourceReference"
+        ]
+      },
+      "then": {
+        "properties": {
+          "dispatchCycleId": {
+            "type": "null"
+          },
+          "sourceDispatchCycleId": {
+            "type": "null"
+          },
+          "heldPieces": {
+            "type": "null"
+          },
+          "heldReturnRequiredPieces": {
+            "const": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "dispatchCycleId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "sourceDispatchCycleId": {
+            "type": "string"
+          },
+          "heldPieces": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### ClosureCarryForward
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/CarryForward)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "asOf": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CarryItem"
+      }
+    }
+  },
+  "required": [
+    "workdayId",
+    "driverId",
+    "asOf",
+    "items"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ClosureRoundSummary
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/RoundSummary)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "startedAt": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "firstPlanId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstForecastId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "firstWorkloadId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    }
+  },
+  "required": [
+    "roundId",
+    "startedAt",
+    "endedAt",
+    "firstPlanId",
+    "firstForecastId",
+    "firstWorkloadId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### ClosureSummary
+
+[Canonical definition](../../contracts/workday-closure.schema.json#/$defs/Summary)
+
+Workday admissions define distinct shipment and attempt denominators; each attempt is counted once across rounds. Outcomes are retained day-scoped history; shipment buckets use the latest outcome in this workday. Collections sum only amounts reported in this workday, never settlement. Carry-forward is a separately labelled current-holder read at asOf, not historical day inventory.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "workdayId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "displayTimeZone": {
+      "const": "Africa/Cairo"
+    },
+    "openedAt": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "asOf": {
+      "$ref": "common.schema.json#/$defs/UtcInstant"
+    },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RoundSummary"
+      }
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "shipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "processedAttempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "fullShipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "partialShipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "refusedShipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "noAnswerShipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "unfinishedShipments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "shipments",
+        "attempts",
+        "processedAttempts",
+        "fullShipments",
+        "partialShipments",
+        "refusedShipments",
+        "noAnswerShipments",
+        "unfinishedShipments"
+      ],
+      "additionalProperties": false
+    },
+    "collection": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "const": "EGP"
+          },
+          "exponent": {
+            "const": 2
+          },
+          "reportedMinor": {
+            "type": "string",
+            "pattern": "^[0-9]+$"
+          },
+          "unreportedAttempts": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "currency",
+          "exponent",
+          "reportedMinor",
+          "unreportedAttempts"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "outcomes": {
+      "type": "array",
+      "items": {
+        "$ref": "outcomes.schema.json#/$defs/Record"
+      }
+    },
+    "carryForward": {
+      "$ref": "#/$defs/CarryForward"
+    }
+  },
+  "required": [
+    "workdayId",
+    "driverId",
+    "displayTimeZone",
+    "openedAt",
+    "endedAt",
+    "asOf",
+    "rounds",
+    "scope",
+    "collection",
+    "outcomes",
+    "carryForward"
+  ],
+  "additionalProperties": false,
+  "description": "Workday admissions define distinct shipment and attempt denominators; each attempt is counted once across rounds. Outcomes are retained day-scoped history; shipment buckets use the latest outcome in this workday. Collections sum only amounts reported in this workday, never settlement. Carry-forward is a separately labelled current-holder read at asOf, not historical day inventory."
+}
+```
+
 ## Validated examples
 
-All are designed examples. Invalid cases are rejection fixtures, not requests to a live service.
+Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
 
 | Example | Schema | Expected |
 | --- | --- | --- |
@@ -11770,6 +12796,16 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p18-event-2 | eligibility.schema.json#/$defs/Event | valid foundation shape |
 | p18-state | eligibility.schema.json#/$defs/State | valid foundation shape |
 | p18-record | eligibility.schema.json#/$defs/Record | valid foundation shape |
+| p19-end-round | workday-closure.schema.json#/$defs/EndRoundCommand | valid foundation shape |
+| p19-end-day | workday-closure.schema.json#/$defs/EndDayCommand | valid foundation shape |
+| p19-round-result | workday-closure.schema.json#/$defs/ActionResult | valid foundation shape |
+| p19-day-result | workday-closure.schema.json#/$defs/ActionResult | valid foundation shape |
+| p19-action-status | workday-closure.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p19-summary | workday-closure.schema.json#/$defs/Summary | valid foundation shape |
+| p19-carry-forward | workday-closure.schema.json#/$defs/CarryForward | valid foundation shape |
+| p19-round-event | workday-closure.schema.json#/$defs/Event | valid foundation shape |
+| p19-day-event | workday-closure.schema.json#/$defs/Event | valid foundation shape |
+| p19-pending | workday-closure.schema.json#/$defs/ActionStatus | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -11877,5 +12913,13 @@ All are designed examples. Invalid cases are rejection fixtures, not requests to
 | p18-bad-urgency | eligibility.schema.json#/$defs/UrgencyCommand | invalid (enum) |
 | p18-missing-revision | eligibility.schema.json#/$defs/RetryCommand | invalid (required) |
 | p18-operation-mismatch | eligibility.schema.json#/$defs/RetryCommand | invalid (const) |
+| p19-missing-current-choice | workday-closure.schema.json#/$defs/EndDayCommand | invalid (required) |
+| p19-fabricated-settlement | workday-closure.schema.json#/$defs/EndDayCommand | invalid (additionalProperties) |
+| p19-round-without-active-expectation | workday-closure.schema.json#/$defs/EndRoundCommand | invalid (type) |
+| p19-negative-revision | workday-closure.schema.json#/$defs/EndRoundCommand | invalid (minimum) |
+| p19-non-utc-server-time | workday-closure.schema.json#/$defs/Record | invalid (pattern) |
+| p19-negative-denominator | workday-closure.schema.json#/$defs/Summary | invalid (minimum) |
+| p19-deferred-cannot-be-executable | workday-closure.schema.json#/$defs/CarryItem | invalid (type) |
+| p19-closure-not-receipt | workday-closure.schema.json#/$defs/Event | invalid (additionalProperties) |
 
 [Canonical example data](../../contracts/examples/README.md)

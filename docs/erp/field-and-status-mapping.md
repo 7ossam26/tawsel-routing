@@ -1,5 +1,23 @@
 # Field and status mapping — canonical foundation
 
+## Phase 19 — explicit closure and retained holder work
+
+| Public field/fact | Consumer meaning |
+| --- | --- |
+| `workdayId` | Explicit driver period, including across Cairo midnight; never replace it with a date key. |
+| `ClosureRecord.time` | UTC server recording instant plus original device observation/clock quality; delayed receipt is not alleged action time. |
+| `endedRoundId` / `roundEndedAt` | The round actually ended by this closure; null when End day happens between rounds. |
+| `workdayEndedAt` | Explicit End day, not task delivery, physical branch receipt or cash settlement. |
+| `ClosureEvent.tasks[].sourceReference`, `sourceDispatchCycleId`, `dispatchCycleId` | Original source/cycle identities scoped to that recipient; preserve them and do not resubmit/clone held work daily. |
+| Carry item `attemptId`, `earliestAt`, `deferred`, `blocker` | Retained execution identity and eligibility; earliest-time passage does not auto-activate driver deferral or retry a failed shipment. |
+| `scope.shipments`, `attempts`, `processedAttempts`, `fullShipments` | Distinct admitted tasks, distinct attempts, resolved attempts, fully delivered tasks; these are different denominators/numerators. |
+| `collection.reportedMinor`, `unreportedAttempts` | Exact day-reported amounts and missing reports; neither bank confirmation nor settlement. |
+| Carry `heldPieces`, `heldReturnRequiredPieces`, `unpaidShippingMinor` | Current company held work/unpaid fee projection; B2C has `heldPieces=null` and no return pieces. A return request/closure cannot clear these facts. |
+| `asOf` / `carryForward.asOf` | Current holder read, separately labelled from the selected day's preserved outcomes/scope. |
+
+`round.ended` and `workday.ended` currently prove only durable source-specific intent. Unknown/202 closure is pending until accepted; a new round requires accepted relevant actions and fresh planning/readiness. P19's seeded pending-return intent is not a P21 receipt implementation. [Contract, examples, demo and limits](../workday-closure.md).
+
+
 ## P18 current mapping — 24 September 2026
 
 | Public field/status | Consumer meaning |

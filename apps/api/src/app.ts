@@ -16,6 +16,7 @@ import { roundRoutes } from './rounds/routes.js';
 import { currentRoutes } from './current/routes.js';
 import { outcomeRoutes } from './outcomes/routes.js';
 import { eligibilityRoutes } from './eligibility/routes.js';
+import { closureRoutes } from './closure/routes.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -45,6 +46,7 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && auth) app.register(async scope => { await currentRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await outcomeRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await eligibilityRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await closureRoutes(scope, database, auth); });
   if (database && provisioning) app.register(async scope => { await provisioningRoutes(scope, database, provisioning, writeProjection); });
   if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
 

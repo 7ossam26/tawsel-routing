@@ -16,7 +16,8 @@
     "src/rounds.ts",
     "src/current.ts",
     "src/outcomes.ts",
-    "src/eligibility.ts"
+    "src/eligibility.ts",
+    "src/closure.ts"
   ],
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

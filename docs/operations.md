@@ -180,3 +180,7 @@ Use [the Engine boundary guide](engine-boundary.md) for private per-profile orig
 ## P15 round start
 
 `npm run test:rounds`, `npm run rounds:demo` and `npm run test:erp:rounds` reproduce start/action recovery, real PostgreSQL races and portable conformance. [Runbook](round-start.md) and [evidence](phase-15-evidence.md) explain local PostgreSQL PATH setup, session/provider fixtures and future queue/takeover limits. Apply additive migration 0012 with the ordinary app migration runner; Engine setup is unnecessary.
+
+## Phase 19 local workday verification
+
+Run `npm run test:workdays`, `npm run workdays:demo` and `npm run test:erp:workdays -- .local/phase-19-demo.json`; these require the dedicated PostgreSQL 18 control database and create/drop isolated test databases. This checkout obtained 18.6 runtime tools at `.local/postgres-tools-18.6/pgsql/bin`; prepend that directory to PATH before `npm run db:local:start`. Installed system PostgreSQL 17 and Engine services remain untouched. Migration 0016 is additive and enforced by the normal migration runner. [Contract and phase evidence](workday-closure.md).

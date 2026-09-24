@@ -32,3 +32,5 @@ P16 adds `current-heading`, `current-arrived`, `current-manual-origin`, `p16-sel
 ## P18 captured examples
 
 `p18-*` valid examples capture request/result/status/read/source-event shapes from the real local HTTP/PostgreSQL eligibility demo (fixture identity; manual plan; no signed transport). They include whole retry recovery and a future urgent task with a denied activation. Nine invalid examples reject counters, windows, invalid time/urgency and missing/fractional/negative/overflow revisions. Run `npm run eligibility:demo` for fresh dynamic IDs/times and `npm run test:erp:eligibility -- .local/phase-18-demo.json`; checked-in examples are reproducible contract fixtures, not production data.
+
+P19 examples (`p19-*`) capture the actual disposable HTTP/PostgreSQL demonstration for closure commands/results/status, workday summary, retained holder work and source-filtered event payloads. `p19-pending` is a contract shape; future offline/device behavior remains unverified. Invalid examples reject generic current disappearance, non-UTC server timestamps, invented settlement/receipt and inconsistent deferred eligibility.

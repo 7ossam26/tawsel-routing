@@ -5325,5 +5325,766 @@
       "assignmentRevision": 1,
       "sourceDispatchCycleId": "cycle"
     }
+  },
+  {
+    "id": "p19-end-round",
+    "schema": "workday-closure.schema.json#/$defs/EndRoundCommand",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "ae98765b-8f68-4c67-8e4e-a89da6bc42b3",
+      "operationId": "round.end",
+      "context": {
+        "kind": "device",
+        "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+        "accountId": "01efa9b6-cfd2-4000-80ae-bccae5f26073",
+        "deviceId": "d697d232-9738-4455-9218-343b1d1cdf25",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+        "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+        "expectedActiveRoundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+        "expectedActivityRevision": 3,
+        "expectedCurrentAttemptId": "c11d2b33-5010-4459-bb2f-815471de86ae",
+        "currentAction": "pause-heading"
+      }
+    }
+  },
+  {
+    "id": "p19-end-day",
+    "schema": "workday-closure.schema.json#/$defs/EndDayCommand",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+      "operationId": "workday.end",
+      "context": {
+        "kind": "device",
+        "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+        "accountId": "01efa9b6-cfd2-4000-80ae-bccae5f26073",
+        "deviceId": "d697d232-9738-4455-9218-343b1d1cdf25",
+        "deviceGeneration": 2,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+        "roundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+        "expectedActiveRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "currentAction": "require-none"
+      }
+    }
+  },
+  {
+    "id": "p19-round-result",
+    "schema": "workday-closure.schema.json#/$defs/ActionResult",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "receipt": {
+        "actionId": "ae98765b-8f68-4c67-8e4e-a89da6bc42b3",
+        "receiptId": "153292d4-9309-4a60-9804-66e30627310a",
+        "receivedAt": "2026-09-24T08:00:46.150Z",
+        "committedAt": "2026-09-24T08:00:46.193Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "accepted",
+        "evidenceStatus": "received",
+        "resourceVersions": {
+          "deviceGeneration": 1,
+          "resourceRevision": 4
+        }
+      },
+      "operationId": "round.end",
+      "retention": "full",
+      "summary": {
+        "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+        "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+        "closureId": "f440877d-ae01-41a6-8cf5-b68bd81a5d45",
+        "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "closure": {
+            "time": {
+              "actionId": "ae98765b-8f68-4c67-8e4e-a89da6bc42b3",
+              "recordedAt": "2026-09-24T08:00:46.163Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+            "closureId": "f440877d-ae01-41a6-8cf5-b68bd81a5d45",
+            "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+            "operationId": "round.end",
+            "endedRoundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+            "ownerRoundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+            "roundEndedAt": "2026-09-24T08:00:46.163Z",
+            "pausedActivity": {
+              "stage": "heading",
+              "taskId": "91116103-f626-57a0-a16d-766cce068b8b",
+              "arrival": null,
+              "heading": {
+                "actionId": "c715cb52-bbf0-473d-bc18-826abac45fa9",
+                "recordedAt": "2026-09-24T08:00:46.063Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "revision": 3,
+              "attemptId": "c11d2b33-5010-4459-bb2f-815471de86ae"
+            },
+            "workdayEndedAt": null,
+            "activityRevision": 4
+          },
+          "disposition": "closed"
+        }
+      }
+    }
+  },
+  {
+    "id": "p19-day-result",
+    "schema": "workday-closure.schema.json#/$defs/ActionResult",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "receipt": {
+        "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+        "receiptId": "f77bda35-406b-44f9-9fa0-f72d1040e864",
+        "receivedAt": "2026-09-24T08:00:46.451Z",
+        "committedAt": "2026-09-24T08:00:46.475Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "accepted",
+        "evidenceStatus": "received",
+        "resourceVersions": {
+          "deviceGeneration": 2
+        }
+      },
+      "operationId": "workday.end",
+      "retention": "full",
+      "summary": {
+        "roundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+        "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+        "closureId": "608b5d55-ab17-4730-a5e6-2bd4ce6da2c8",
+        "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "closure": {
+            "time": {
+              "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+              "recordedAt": "2026-09-24T08:00:46.461Z",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              }
+            },
+            "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+            "closureId": "608b5d55-ab17-4730-a5e6-2bd4ce6da2c8",
+            "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+            "operationId": "workday.end",
+            "endedRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+            "ownerRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+            "roundEndedAt": "2026-09-24T08:00:46.461Z",
+            "pausedActivity": null,
+            "workdayEndedAt": "2026-09-24T08:00:46.461Z",
+            "activityRevision": 0
+          },
+          "disposition": "closed"
+        }
+      }
+    }
+  },
+  {
+    "id": "p19-action-status",
+    "schema": "workday-closure.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+      "status": "accepted",
+      "result": {
+        "receipt": {
+          "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+          "receiptId": "f77bda35-406b-44f9-9fa0-f72d1040e864",
+          "receivedAt": "2026-09-24T08:00:46.451Z",
+          "committedAt": "2026-09-24T08:00:46.475Z",
+          "schemaVersion": "1.0.0",
+          "businessStatus": "accepted",
+          "evidenceStatus": "received",
+          "resourceVersions": {
+            "deviceGeneration": 2
+          }
+        },
+        "operationId": "workday.end",
+        "retention": "full",
+        "summary": {
+          "roundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+          "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+          "closureId": "608b5d55-ab17-4730-a5e6-2bd4ce6da2c8",
+          "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225"
+        },
+        "response": {
+          "status": 200,
+          "body": {
+            "closure": {
+              "time": {
+                "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+                "recordedAt": "2026-09-24T08:00:46.461Z",
+                "observation": {
+                  "clock": {
+                    "quality": "unknown"
+                  },
+                  "observedAt": null
+                }
+              },
+              "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+              "closureId": "608b5d55-ab17-4730-a5e6-2bd4ce6da2c8",
+              "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+              "operationId": "workday.end",
+              "endedRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+              "ownerRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+              "roundEndedAt": "2026-09-24T08:00:46.461Z",
+              "pausedActivity": null,
+              "workdayEndedAt": "2026-09-24T08:00:46.461Z",
+              "activityRevision": 0
+            },
+            "disposition": "closed"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "p19-summary",
+    "schema": "workday-closure.schema.json#/$defs/Summary",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+      "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+      "displayTimeZone": "Africa/Cairo",
+      "openedAt": "2026-09-24T08:00:45.714Z",
+      "endedAt": "2026-09-24T08:00:46.461Z",
+      "asOf": "2026-09-24T08:00:46.532Z",
+      "rounds": [
+        {
+          "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+          "startedAt": "2026-09-24T08:00:45.716Z",
+          "endedAt": "2026-09-24T08:00:46.163Z",
+          "firstPlanId": "8a034001-a3f2-406a-b7c6-a02f311ca136",
+          "firstForecastId": "d50f23d8-9b79-41d0-9344-51a5a8d74727",
+          "firstWorkloadId": "d60eecfd-d878-4359-876a-264af8caa8d7"
+        },
+        {
+          "roundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+          "startedAt": "2026-09-24T08:00:46.398Z",
+          "endedAt": "2026-09-24T08:00:46.461Z",
+          "firstPlanId": "7d525169-86f8-41d6-bc5b-5cb5cce3bdc4",
+          "firstForecastId": "57316909-a393-4fc1-bc20-aaafe002038b",
+          "firstWorkloadId": "107f3f89-5b1a-4b14-a549-a56b12469ebb"
+        }
+      ],
+      "scope": {
+        "shipments": 4,
+        "attempts": 4,
+        "processedAttempts": 2,
+        "fullShipments": 1,
+        "partialShipments": 0,
+        "refusedShipments": 1,
+        "noAnswerShipments": 0,
+        "unfinishedShipments": 2
+      },
+      "collection": [
+        {
+          "currency": "EGP",
+          "exponent": 2,
+          "reportedMinor": "35000",
+          "unreportedAttempts": 0
+        }
+      ],
+      "outcomes": [
+        {
+          "kind": "company",
+          "time": {
+            "actionId": "cef29c59-351f-4385-87a0-391b76a6d025",
+            "recordedAt": "2026-09-24T08:00:45.800Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 3,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 0
+            }
+          ],
+          "taskId": "454fd69a-7038-54b9-ada7-d859bdfd4c9a",
+          "arrival": null,
+          "heading": null,
+          "outcome": "full",
+          "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+          "branchId": "d0cd0606-5b37-4713-9639-2d7c50bc4347",
+          "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+          "revision": 1,
+          "attemptId": "1c17d992-d2d1-40a6-897d-e061529a9794",
+          "outcomeId": "eba3d148-1d84-44a8-a0f2-52026dc13f3d",
+          "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 30000
+            },
+            "reported": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 35000
+            },
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            },
+            "shippingStatus": "collected",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            }
+          },
+          "returnRequired": false,
+          "sourceRevision": 1,
+          "dispatchCycleId": "59ddb5c0-324b-49b0-b5de-322b570761b8",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-0",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "kind": "company",
+          "time": {
+            "actionId": "27a6e937-f183-4855-8f21-9b68e1cc56ed",
+            "recordedAt": "2026-09-24T08:00:45.900Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 0,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 3
+            }
+          ],
+          "taskId": "730a1809-b4d3-55a8-a42e-8ff70377d3c1",
+          "arrival": null,
+          "heading": null,
+          "outcome": "refused",
+          "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+          "branchId": "d0cd0606-5b37-4713-9639-2d7c50bc4347",
+          "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+          "revision": 1,
+          "attemptId": "44f02168-97f9-4089-a13e-5db213d740b1",
+          "outcomeId": "61774f7f-4cee-43e5-9f52-90441bda1088",
+          "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "reported": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "shippingStatus": "explicitly-unpaid",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            }
+          },
+          "returnRequired": true,
+          "sourceRevision": 1,
+          "dispatchCycleId": "314b83e1-2db3-40d6-b94d-b3905e52b5ad",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-1",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        }
+      ],
+      "carryForward": {
+        "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+        "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+        "asOf": "2026-09-24T08:00:46.532Z",
+        "items": [
+          {
+            "taskId": "336a3f2d-1db4-5fe8-ada7-c299af082eca",
+            "attemptId": "26318815-d73f-4b40-814e-57ee3bbec56c",
+            "dispatchCycleId": "f2feceb8-00f6-435d-b48b-55972a58da62",
+            "sourceReference": {
+              "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+              "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+              "externalId": "shipment-3"
+            },
+            "sourceDispatchCycleId": "cycle",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "pinRevision": 0,
+            "earliestAt": "2026-09-25T08:00:45.915Z",
+            "deferred": true,
+            "admittedInWorkday": true,
+            "outcome": null,
+            "disposition": "unfinished",
+            "eligibleNow": false,
+            "blocker": "deferred",
+            "heldReturnRequiredPieces": 0,
+            "heldPieces": 3,
+            "unpaidShippingMinor": "0"
+          },
+          {
+            "taskId": "730a1809-b4d3-55a8-a42e-8ff70377d3c1",
+            "attemptId": "44f02168-97f9-4089-a13e-5db213d740b1",
+            "dispatchCycleId": "314b83e1-2db3-40d6-b94d-b3905e52b5ad",
+            "sourceReference": {
+              "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+              "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+              "externalId": "shipment-1"
+            },
+            "sourceDispatchCycleId": "cycle",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "pinRevision": 0,
+            "earliestAt": null,
+            "deferred": false,
+            "admittedInWorkday": true,
+            "outcome": "refused",
+            "disposition": "return-required",
+            "eligibleNow": false,
+            "blocker": "result-required",
+            "heldReturnRequiredPieces": 3,
+            "heldPieces": 3,
+            "unpaidShippingMinor": "5000"
+          },
+          {
+            "taskId": "91116103-f626-57a0-a16d-766cce068b8b",
+            "attemptId": "c11d2b33-5010-4459-bb2f-815471de86ae",
+            "dispatchCycleId": "99d6636a-5e7d-47ce-863a-37b0175a3077",
+            "sourceReference": {
+              "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+              "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+              "externalId": "shipment-2"
+            },
+            "sourceDispatchCycleId": "cycle",
+            "sourceRevision": 1,
+            "assignmentRevision": 1,
+            "pinRevision": 0,
+            "earliestAt": null,
+            "deferred": false,
+            "admittedInWorkday": true,
+            "outcome": null,
+            "disposition": "unfinished",
+            "eligibleNow": true,
+            "blocker": null,
+            "heldReturnRequiredPieces": 0,
+            "heldPieces": 3,
+            "unpaidShippingMinor": "0"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "p19-carry-forward",
+    "schema": "workday-closure.schema.json#/$defs/CarryForward",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "workdayId": "1cde66f1-8633-4292-8028-692dc04058b5",
+      "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+      "asOf": "2026-09-24T08:00:46.783Z",
+      "items": [
+        {
+          "taskId": "336a3f2d-1db4-5fe8-ada7-c299af082eca",
+          "attemptId": "26318815-d73f-4b40-814e-57ee3bbec56c",
+          "dispatchCycleId": "f2feceb8-00f6-435d-b48b-55972a58da62",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+            "externalId": "shipment-3"
+          },
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "earliestAt": "2026-09-25T08:00:45.915Z",
+          "deferred": true,
+          "admittedInWorkday": false,
+          "outcome": null,
+          "disposition": "unfinished",
+          "eligibleNow": false,
+          "blocker": "deferred",
+          "heldReturnRequiredPieces": 0,
+          "heldPieces": 3,
+          "unpaidShippingMinor": "0"
+        },
+        {
+          "taskId": "730a1809-b4d3-55a8-a42e-8ff70377d3c1",
+          "attemptId": "44f02168-97f9-4089-a13e-5db213d740b1",
+          "dispatchCycleId": "314b83e1-2db3-40d6-b94d-b3905e52b5ad",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+            "externalId": "shipment-1"
+          },
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "earliestAt": null,
+          "deferred": false,
+          "admittedInWorkday": false,
+          "outcome": "refused",
+          "disposition": "return-required",
+          "eligibleNow": false,
+          "blocker": "result-required",
+          "heldReturnRequiredPieces": 3,
+          "heldPieces": 3,
+          "unpaidShippingMinor": "5000"
+        },
+        {
+          "taskId": "91116103-f626-57a0-a16d-766cce068b8b",
+          "attemptId": "c11d2b33-5010-4459-bb2f-815471de86ae",
+          "dispatchCycleId": "99d6636a-5e7d-47ce-863a-37b0175a3077",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1",
+            "externalId": "shipment-2"
+          },
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "earliestAt": null,
+          "deferred": false,
+          "admittedInWorkday": true,
+          "outcome": null,
+          "disposition": "unfinished",
+          "eligibleNow": true,
+          "blocker": null,
+          "heldReturnRequiredPieces": 0,
+          "heldPieces": 3,
+          "unpaidShippingMinor": "0"
+        }
+      ]
+    }
+  },
+  {
+    "id": "p19-round-event",
+    "schema": "workday-closure.schema.json#/$defs/Event",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "time": {
+        "actionId": "ae98765b-8f68-4c67-8e4e-a89da6bc42b3",
+        "recordedAt": "2026-09-24T08:00:46.163Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "tasks": [
+        {
+          "taskId": "336a3f2d-1db4-5fe8-ada7-c299af082eca",
+          "dispatchCycleId": "f2feceb8-00f6-435d-b48b-55972a58da62",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-3",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "454fd69a-7038-54b9-ada7-d859bdfd4c9a",
+          "dispatchCycleId": "59ddb5c0-324b-49b0-b5de-322b570761b8",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-0",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "730a1809-b4d3-55a8-a42e-8ff70377d3c1",
+          "dispatchCycleId": "314b83e1-2db3-40d6-b94d-b3905e52b5ad",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-1",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "91116103-f626-57a0-a16d-766cce068b8b",
+          "dispatchCycleId": "99d6636a-5e7d-47ce-863a-37b0175a3077",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-2",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        }
+      ],
+      "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+      "closureId": "f440877d-ae01-41a6-8cf5-b68bd81a5d45",
+      "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+      "endedRoundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+      "roundEndedAt": "2026-09-24T08:00:46.163Z",
+      "workdayEndedAt": null
+    }
+  },
+  {
+    "id": "p19-day-event",
+    "schema": "workday-closure.schema.json#/$defs/Event",
+    "valid": true,
+    "description": "Captured from the real local Phase 19 HTTP/PostgreSQL demonstration; fixture identity and manual plans.",
+    "data": {
+      "time": {
+        "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+        "recordedAt": "2026-09-24T08:00:46.461Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "tasks": [
+        {
+          "taskId": "336a3f2d-1db4-5fe8-ada7-c299af082eca",
+          "dispatchCycleId": "f2feceb8-00f6-435d-b48b-55972a58da62",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-3",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "454fd69a-7038-54b9-ada7-d859bdfd4c9a",
+          "dispatchCycleId": "59ddb5c0-324b-49b0-b5de-322b570761b8",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-0",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "730a1809-b4d3-55a8-a42e-8ff70377d3c1",
+          "dispatchCycleId": "314b83e1-2db3-40d6-b94d-b3905e52b5ad",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-1",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        },
+        {
+          "taskId": "91116103-f626-57a0-a16d-766cce068b8b",
+          "dispatchCycleId": "99d6636a-5e7d-47ce-863a-37b0175a3077",
+          "sourceReference": {
+            "tenantId": "2d21b2ea-1d24-4d7e-ab91-f417a979a0a6",
+            "externalId": "shipment-2",
+            "integrationId": "d1c0ed4c-119a-44c9-a964-9be87cdd8fc1"
+          },
+          "sourceDispatchCycleId": "cycle"
+        }
+      ],
+      "driverId": "577af791-9729-42ce-986b-41632d45b72e",
+      "closureId": "608b5d55-ab17-4730-a5e6-2bd4ce6da2c8",
+      "workdayId": "0d5e7399-b87d-4d5f-a774-9f5b60585225",
+      "endedRoundId": "4f20a6ee-d40e-4b49-9fd4-a7f4d3cbcebe",
+      "roundEndedAt": "2026-09-24T08:00:46.461Z",
+      "workdayEndedAt": "2026-09-24T08:00:46.461Z"
+    }
+  },
+  {
+    "id": "p19-pending",
+    "schema": "workday-closure.schema.json#/$defs/ActionStatus",
+    "valid": true,
+    "description": "Pending response shape; no accepted closure implied.",
+    "data": {
+      "actionId": "f86e61d3-06c8-4b97-9207-f2e585436a30",
+      "status": "pending"
+    }
   }
 ]

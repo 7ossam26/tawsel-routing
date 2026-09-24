@@ -214,6 +214,8 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 
 ### R-24
 
+- P19 evidence: P19 verifies exact earliest constraints across days and explicit activation of retained work after its actual earliest time. [Ordered results](../phase-19-evidence.md), [contract/demo](../workday-closure.md).
+
 **Whole deferral/earliest time.** Untouched whole work can be deferred to at-or-after date/time, preserved across days. No narrow appointment guarantee or rejected-partial-remnant deferral.
 
 - Source: D-06, D-20, D-37, D-49.
@@ -253,6 +255,8 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 - Follow-through: [P15](15-round-start-departure-lock.md), [P28](28-online-preparation-journeys.md), [P34](34-ordered-replay-conflict-recovery.md).
 
 ### R-29
+
+- P19 evidence: P19 locally implements distinct end-round/end-day, current pause/result gates, immutable lifecycle, pending/replay and original-holder carry-forward; real PostgreSQL races and HTTP demo verified. [Ordered results](../phase-19-evidence.md), [contract/demo](../workday-closure.md).
 
 **Workday/round carryover.** Multiple rounds, explicit End day across midnight, unfinished held work/deferrals retained without ERP resubmission. Closure is not delivery/receipt/settlement.
 
@@ -438,6 +442,8 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 
 ### R-52
 
+- P19 evidence: P19 supplies a basic day-scoped outcome/collection/admission summary with processed versus delivered denominators and separately labelled current held work. Full UI/report/export remains P36–37. [Ordered results](../phase-19-evidence.md), [contract/demo](../workday-closure.md).
+
 **Results/amount report.** Explicit workday/filter snapshot, separate delivered/partial/failed/processed/held/received units, repeated attempts not new shipments; recorded collections not remitted cash.
 
 - Source: D-08, D-24, D-26, D-67, D-89, D-100.
@@ -445,6 +451,8 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 - Follow-through: [P17](17-outcomes-quantities-collection.md), [P19](19-workday-closure-carryover.md), [P23](23-bounded-driver-corrections.md), [P37](37-authorized-excel-export.md).
 
 ### R-53
+
+- P19 evidence: P19 preserves all first forecast/workload identities and original action observations; stores actual UTC closure and uses Cairo offset rules. Detailed timing remains P36. [Ordered results](../phase-19-evidence.md), [contract/demo](../workday-closure.md).
 
 **Forecast versus actual.** Persist initial/revised forecast/workload early; compare matching per-stop/round action actuals, missing/uncertain clocks and changed scope/early end honestly. No GPS or ranking.
 
@@ -541,6 +549,8 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 - Follow-through: [P03](03-design-action-specification.md), [P08](08-erp-provisioning-actor-binding.md), [P25](25-outbox-signed-delivery.md), [P26](26-mock-inbox-projection-recovery.md), [P27](27-native-mock-erp-source.md), [P36](36-workday-timing-reports.md), [P39](39-deployment-migration-release.md), [P40](40-backup-restore-rehearsal.md), [P41](41-device-owner-pilot-review.md), [P10](10-b2b-intake-admission.md), [P21](21-source-return-receipt.md), [P22](22-branch-interruption-redispatch.md).
 
 ### R-65
+
+- P19 evidence: P19 checkpoint evidence records prerequisites, intermediate failures, actual runtime-setting visibility, focused real database checks and remaining boundaries. [Ordered results](../phase-19-evidence.md), [contract/demo](../workday-closure.md).
 
 **Small self-contained sequential phases.** Replace broad 11-phase prompts with bounded increments, embedded relevant rules, ordered checkpoints and Given/expected cases; no dependency on chat memory or one-shot end-only testing. Each prompt specifies its recommended Codex model/reasoning effort and reason under D-110, with actual settings recorded at execution.
 

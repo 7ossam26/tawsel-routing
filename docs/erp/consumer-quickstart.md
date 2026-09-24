@@ -1,5 +1,12 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P19 closure/carry-forward consumer check
+
+Run `npm run workdays:demo`, then `npm run test:erp:workdays -- .local/phase-19-demo.json`. The first command uses actual loopback HTTP, public intake, manual plans and a disposable PostgreSQL database with labelled session/issuer fixtures. The second imports only public contract types and inspects the resulting protocol; `npm run test:erp:workdays` checks captured canonical examples. No real ERP receiver or signed transport is claimed.
+
+Preserve task/cycle/attempt/earliest references when handling `round.ended` / `workday.ended`; do not reset a source shipment, resubmit held work, mark return received or settle money. The event payload includes only your integration's tasks. The driver browser uses `ClosureClient.endRound/endDay/result/summary/carryForward` with human session + CSRF, not ERP service authority. Keep an exact command pending after offline capture, HTTP 202 or lost response; recover the same ID. P34 supplies the complete device journal/start barrier. [Precise endpoints, units, demonstration and handoff](../workday-closure.md).
+
+
 ## P18 human execution consumer — 24 September 2026
 
 Use `packages/api-client/src/eligibility.ts` (`EligibilityClient`) with generated public types. Select the company/personal browser session; use `read(roundId)`, then `defer`, `retry`, `activate` or `urgency` with the exact revisions and owner context described in [eligibility API](../eligibility.md). Keep the original action ID/request; use `result(actionId)` or identical resubmission after uncertainty. These are assigned-driver APIs, not ERP bearer-token commands.
