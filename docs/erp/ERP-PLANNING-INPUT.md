@@ -1,5 +1,11 @@
 # ERP planning input — designed foundation
 
+## Phase 25 available local boundary — 24 September 2026
+
+[Signed sender protocol and operations](../outbox-delivery.md) are implemented with real PostgreSQL/HTTP/process evidence. Your connector can rely on stable recipient-scoped event IDs/aggregate sequences, exact-byte HMAC-SHA256, explicit key IDs/rotation overlap, retained replay and distinct sender pending/sending/failed/received states. Six source-authenticated operations configure approved endpoints, rotate provisioned keys, inspect queue/attempts, retry and replay. No raw signing secret is accepted through command history. [Public consumer demonstration](consumer-quickstart.md) runs without consumer database/operator access.
+
+ERP responsibilities remain: securely provision its per-source key ring/endpoint; validate raw bytes/scope/schema/time; commit durable inbox before reporting received; deduplicate and apply projections atomically; handle gaps/dependencies and separately report application/errors in P26. The P25 receiver harness is explicitly memory-only, and `projectionStatus=unknown` is never financial/inventory/application evidence. Real ERP fields, vendor-supported adapter, production TLS/network, operational owner and upgrade/retention mapping are still unchosen/unverified. Native ERP source forms/outbox remain P27; no real ERP is built here.
+
 ## Phase 24 released local boundary — 24 September 2026
 
 Coherent source-scoped monitoring/history is implemented and locally verified. Use `/api/v1/erp/monitoring/{drivers|trips|tasks|workdays|actions}/...` with bearer service authentication and operator-granted `monitor.read`; task/workday paths end in `/history`, action reads require `sourceId`. [Exact paths, counters, pagination and demo](../monitoring.md), [ordered evidence and fixture limits](../phase-24-evidence.md). Scope/filter keys, observed replacement revisions, ETag/304 and successful-refresh timestamps support later native views. No full-trip totals, hidden current/next target, global plan revision or raw action envelope is exposed. There is no sender/received/applied claim: `integrationDelivery` remains `unavailable`. Connector translation/native ERP UI/storage remain external and later phases.

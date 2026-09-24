@@ -2,16 +2,365 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P24 locally implemented identity, intake, planning, execution, closure, device
+  description: P07–P25 locally implemented identity, intake, planning, execution, closure, device
     takeover, source returns, branch resume/redispatch and bounded driver correction/adoption.
     Evidence distinguishes PostgreSQL and HTTP from provider fixtures. Coherent monitoring and
-    history are implemented. Full offline capture, UI and signed delivery remain later phases.
+    history and signed durable sender are implemented. Full offline capture, UI and durable receiver
+    projection remain later phases.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 x-lifecycle: implemented
 x-owner-phase: 2
 paths:
+  /api/v1/integration/commands/integration.configureWebhook:
+    post:
+      operationId: integration.configureWebhook
+      summary: Authorize callback destination and recipient network restrictions.
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Scoped durable result; receipt is distinct from projection application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutboxConfigureWebhookCommand"
+  /api/v1/integration/commands/integration.rotateSigningKey:
+    post:
+      operationId: integration.rotateSigningKey
+      summary: Rotate integration-scoped webhook secret/key ID with overlap.
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Scoped durable result; receipt is distinct from projection application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutboxRotateSigningKeyCommand"
+  /api/v1/integration/commands/integration.retryDelivery:
+    post:
+      operationId: integration.retryDelivery
+      summary: Controlled retry retaining committed event identity.
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Scoped durable result; receipt is distinct from projection application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutboxRetryDeliveryCommand"
+  /api/v1/integration/deliveries:
+    get:
+      operationId: integration.getDeliveryStatus
+      summary: Read outbound pending/sending/received/failed independently of application.
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Scoped durable result; receipt is distinct from projection application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboxQueue"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: cursor
+          required: false
+          schema:
+            type: string
+            format: uuid
+  /api/v1/integration/replay:
+    get:
+      operationId: integration.replayEvents
+      summary: Scoped aggregate sequence replay with explicit retained-window/expired status.
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      responses:
+        "200":
+          description: Scoped durable result; receipt is distinct from projection application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboxReplay"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "409":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+      parameters:
+        - in: query
+          name: aggregateType
+          required: true
+          schema:
+            enum:
+              - task
+              - assignment
+              - trip
+              - workday
+              - return-request
+              - integration
+        - in: query
+          name: aggregateId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: afterSequence
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 9007199254740991
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /api/v1/integration/deliveries/{eventId}:
+    get:
+      operationId: integration.getDeliveryDetail
+      summary: Inspect one scoped delivery and retained attempts
+      tags:
+        - Signed delivery
+      security:
+        - ProvisioningService: []
+      parameters:
+        - in: path
+          name: eventId
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: beforeAttempt
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        "200":
+          description: Scoped delivery and attempt history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OutboxDetail"
+        "400":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "403":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "503":
+          description: Scoped protocol error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api/session/company:
     post:
       operationId: session.resolveCompany
@@ -5443,6 +5792,38 @@ paths:
                 $ref: "#/components/schemas/Problem"
 components:
   schemas:
+    OutboxConfigureWebhook:
+      $ref: ./outbox.schema.json#/$defs/ConfigureWebhook
+    OutboxRotateSigningKey:
+      $ref: ./outbox.schema.json#/$defs/RotateSigningKey
+    OutboxRetryDelivery:
+      $ref: ./outbox.schema.json#/$defs/RetryDelivery
+    OutboxConfiguration:
+      $ref: ./outbox.schema.json#/$defs/Configuration
+    OutboxKeyRotation:
+      $ref: ./outbox.schema.json#/$defs/KeyRotation
+    OutboxRetryResult:
+      $ref: ./outbox.schema.json#/$defs/RetryResult
+    OutboxAcknowledgement:
+      $ref: ./outbox.schema.json#/$defs/Acknowledgement
+    OutboxAttempt:
+      $ref: ./outbox.schema.json#/$defs/Attempt
+    OutboxDelivery:
+      $ref: ./outbox.schema.json#/$defs/Delivery
+    OutboxQueue:
+      $ref: ./outbox.schema.json#/$defs/Queue
+    OutboxDetail:
+      $ref: ./outbox.schema.json#/$defs/Detail
+    OutboxReplay:
+      $ref: ./outbox.schema.json#/$defs/Replay
+    OutboxConfigureWebhookCommand:
+      $ref: ./outbox.schema.json#/$defs/ConfigureWebhookCommand
+    OutboxRotateSigningKeyCommand:
+      $ref: ./outbox.schema.json#/$defs/RotateSigningKeyCommand
+    OutboxRetryDeliveryCommand:
+      $ref: ./outbox.schema.json#/$defs/RetryDeliveryCommand
+    SenderEvent:
+      $ref: ./events/sender-event.v1.schema.json
     Uuid:
       $ref: ./common.schema.json#/$defs/Uuid
     SchemaVersion:
@@ -6104,3 +6485,5 @@ tags:
     description: Source-branch offers, native actual subset receipt and separate loss/damage; no stock claim.
   - name: Monitoring
     description: Coherent conditional snapshots and scoped history; no presence or commercial settlement claim.
+  - name: Signed delivery
+    description: Scoped durable sender, recovery, exact-byte signatures and receipt visibility.

@@ -1,5 +1,25 @@
 # Field and status mapping — canonical foundation
 
+## Phase 25 sender field/status mapping — locally verified
+
+[Complete protocol/catalog](../outbox-delivery.md), [canonical sender schema](../../contracts/events/sender-event.v1.schema.json), [operational schemas](../../contracts/outbox.schema.json), [exact signature vector](../../contracts/examples/webhook-signature.v1.json). These replace earlier designed sender statements. Actual ERP fields remain unchosen.
+
+| Public field / state | Owner and consumer meaning | Real ERP field |
+| --- | --- | --- |
+| `eventId` + tenant + recipient integration | Immutable Tawsel identity; ERP deduplicates for record lifetime | Unchosen |
+| `aggregate.type/id/recipientSequence` | Source-filtered stream starting at one; gap detection only within this scope | Unchosen |
+| `resources`, feature source/assignment/outcome revisions | Correlation/concurrency facts from committed payload; never transport order | Unchosen |
+| `committedAt` | Retained transaction write time visible after commit; not exact WAL time | Unchosen |
+| `X-Tawsel-Delivery-Timestamp` | Fresh Unix milliseconds for this signed attempt; independent of event time | Unchosen |
+| `schemaVersion/payloadVersion=1.0.0` | Validate envelope and mapped feature payload independently | Unchosen |
+| `pending/sending/failed/received` | Sender queue, leased attempt, retained error/retry, receiver-reported receipt | Unchosen |
+| `projectionStatus=unknown` | No application evidence in P25; received must not imply applied | Unchosen |
+| `blockedBy/nextAttemptAt/leaseUntil/lastError` | Scoped ordering blocker, jittered schedule, recoverable lease, sanitized error | Unchosen |
+| `keyId/activatedAt/verifyUntil` | Scoped out-of-band secret activation and explicit old verifier overlap | Unchosen |
+| `retention=indefinite-no-purge` | Original envelopes and identities retained; no fabricated replay expiry | Unchosen |
+
+A correction replaces its named preceding effective outcome while preserving both events; a subset receipt records actual pieces only. Replay/duplicate network delivery must not add either collection or custody twice. Worked captured examples in `contracts/examples/valid.json` use `p25-*`; rejected examples cover unsupported event/version and an acknowledgement claiming applied. The consumer must still implement durable inbox/projection in P26, native source operations in P27 and its own commercial mapping. The P24 monitoring freshness field remains `unavailable`; the new sender API is authoritative for transport state only.
+
 ## Phase 24 monitoring mapping
 
 | Public field | Consumer meaning |

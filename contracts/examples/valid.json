@@ -9547,5 +9547,1106 @@
         "integrationDelivery": "unavailable"
       }
     }
+  },
+  {
+    "id": "p25-provisioning.changed",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+        "recipientSequence": 9,
+        "type": "integration"
+      },
+      "committedAt": "2026-09-24T13:28:48.199Z",
+      "correlation": {
+        "actionId": "56669355-992c-4b6c-9032-5948231a1cc1"
+      },
+      "eventId": "8475eacb-d53b-404f-849e-63b46e6ea21a",
+      "eventKind": "transition",
+      "eventType": "provisioning.changed",
+      "payload": {
+        "actionId": "56669355-992c-4b6c-9032-5948231a1cc1",
+        "entity": "role",
+        "externalId": "role",
+        "resourceId": "808d25d1-39c7-4497-a76d-de06fb0bdde2",
+        "service": {
+          "actorId": null,
+          "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+          "mode": "service-operation",
+          "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+        },
+        "sourceRevision": 2
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {},
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {
+        "sourceRevision": 2
+      }
+    }
+  },
+  {
+    "id": "p25-task.snapshotAccepted",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+        "recipientSequence": 1,
+        "type": "task"
+      },
+      "committedAt": "2026-09-24T13:28:47.763Z",
+      "correlation": {
+        "actionId": "664c5484-d514-4c2f-aa55-efef75e768ff"
+      },
+      "eventId": "da22db3d-9d3c-44fe-8886-7e3ca3ac2b9e",
+      "eventKind": "transition",
+      "eventType": "task.snapshotAccepted",
+      "payload": {
+        "actionId": "664c5484-d514-4c2f-aa55-efef75e768ff",
+        "task": {
+          "assignmentRevision": 0,
+          "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+          "driverExternalId": null,
+          "driverId": null,
+          "editable": true,
+          "externalId": "shipment-1",
+          "latest": true,
+          "locationReadiness": "confirmed",
+          "planningEligible": false,
+          "planningStatus": "not-requested",
+          "previousDispatchCycleId": null,
+          "receivedAt": null,
+          "snapshot": {
+            "allocation": "exact-outstanding-per-unit",
+            "destination": {
+              "coordinates": {
+                "latitude": 30.05,
+                "longitude": 31.24
+              },
+              "kind": "confirmed-pin"
+            },
+            "expectedSourceRevision": 0,
+            "externalId": "shipment-1",
+            "lines": [
+              {
+                "description": "قطع",
+                "quantity": 3,
+                "sourceLineId": "pieces",
+                "unitDue": {
+                  "amountMinor": 10000,
+                  "currency": "EGP",
+                  "exponent": 2
+                }
+              }
+            ],
+            "priority": "ordinary",
+            "recipientName": "عميل بنفس العنوان",
+            "recipientPhone": "01012345678",
+            "shippingDue": {
+              "amountMinor": 5000,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "sourceBranchExternalId": "branch",
+            "sourceDispatchCycleId": "cycle",
+            "sourceRevision": 1,
+            "splittingAllowed": true,
+            "totalDue": {
+              "amountMinor": 35000,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          },
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "state": "unassigned",
+          "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+        "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p25-assignment.received",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+        "recipientSequence": 2,
+        "type": "task"
+      },
+      "committedAt": "2026-09-24T13:28:47.809Z",
+      "correlation": {
+        "actionId": "abf88b67-e0e6-4083-bf47-65c3a30dbbb5"
+      },
+      "eventId": "c65911e6-b199-4eb1-b06f-ce2ddfc81009",
+      "eventKind": "transition",
+      "eventType": "assignment.received",
+      "payload": {
+        "actionId": "abf88b67-e0e6-4083-bf47-65c3a30dbbb5",
+        "task": {
+          "assignmentRevision": 1,
+          "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+          "driverExternalId": "policy-driver",
+          "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+          "editable": true,
+          "externalId": "shipment-1",
+          "latest": true,
+          "locationReadiness": "confirmed",
+          "planningEligible": true,
+          "planningStatus": "pending",
+          "previousDispatchCycleId": null,
+          "receivedAt": "2026-09-24T13:28:47.784Z",
+          "snapshot": {
+            "allocation": "exact-outstanding-per-unit",
+            "destination": {
+              "coordinates": {
+                "latitude": 30.05,
+                "longitude": 31.24
+              },
+              "kind": "confirmed-pin"
+            },
+            "expectedSourceRevision": 0,
+            "externalId": "shipment-1",
+            "lines": [
+              {
+                "description": "قطع",
+                "quantity": 3,
+                "sourceLineId": "pieces",
+                "unitDue": {
+                  "amountMinor": 10000,
+                  "currency": "EGP",
+                  "exponent": 2
+                }
+              }
+            ],
+            "priority": "ordinary",
+            "recipientName": "عميل بنفس العنوان",
+            "recipientPhone": "01012345678",
+            "shippingDue": {
+              "amountMinor": 5000,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "sourceBranchExternalId": "branch",
+            "sourceDispatchCycleId": "cycle",
+            "sourceRevision": 1,
+            "splittingAllowed": true,
+            "totalDue": {
+              "amountMinor": 35000,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          },
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "state": "held",
+          "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+        "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p25-round.started",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+        "recipientSequence": 1,
+        "type": "trip"
+      },
+      "committedAt": "2026-09-24T13:28:48.166Z",
+      "correlation": {
+        "actionId": "bb7c4f22-b8c8-4a7a-9977-b4bfde053b2d"
+      },
+      "eventId": "9cc47884-9265-4435-8cd9-d1a9c2b6491d",
+      "eventKind": "transition",
+      "eventType": "round.started",
+      "payload": {
+        "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+        "firstForecastId": "cc045528-58a0-47b7-9ded-726e8a7fe407",
+        "firstPlanId": "a3e3d9fd-5bb9-46b4-96b8-749addd6bf32",
+        "firstWorkloadId": "a648786b-07cf-42b1-b5df-badb6de88f5f",
+        "roundId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+        "startedAt": "2026-09-24T13:28:48.135Z",
+        "taskIds": [
+          "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+          "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01"
+        ],
+        "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "tripId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+        "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {}
+    }
+  },
+  {
+    "id": "p25-outcome.recorded",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+        "recipientSequence": 3,
+        "type": "task"
+      },
+      "committedAt": "2026-09-24T13:28:48.423Z",
+      "correlation": {
+        "actionId": "660a2b2f-14db-47f4-9bc8-953c7840f669",
+        "sourceReference": {
+          "externalId": "shipment-1",
+          "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+          "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+        }
+      },
+      "eventId": "7c6e03bc-19bf-48c1-8282-c2d7adcff7bf",
+      "eventKind": "transition",
+      "eventType": "outcome.recorded",
+      "payload": {
+        "outcome": {
+          "arrival": null,
+          "assignmentRevision": 1,
+          "attemptId": "154af79d-8371-4ff2-a752-f0a69e472a63",
+          "branchId": "cc2109a1-b6ad-41c3-9aef-3be0a5085ed3",
+          "collection": {
+            "goods": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "reported": null,
+            "shipping": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "shippingStatus": "not-attempted",
+            "unpaidShipping": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          },
+          "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+          "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+          "heading": null,
+          "kind": "company",
+          "lines": [
+            {
+              "delivered": 0,
+              "heldReturnRequired": 3,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "unitDue": {
+                "amountMinor": 10000,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            }
+          ],
+          "outcome": "no-answer",
+          "outcomeId": "20a5dab8-458d-4ce3-9b6e-96e1a5fd38be",
+          "returnRequired": true,
+          "revision": 1,
+          "roundId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+          "sourceDispatchCycleId": "cycle",
+          "sourceReference": {
+            "externalId": "shipment-1",
+            "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+          },
+          "sourceRevision": 1,
+          "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+          "time": {
+            "actionId": "660a2b2f-14db-47f4-9bc8-953c7840f669",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            },
+            "recordedAt": "2026-09-24T13:28:48.397Z"
+          },
+          "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "attemptId": "154af79d-8371-4ff2-a752-f0a69e472a63",
+        "dispatchCycleId": "ae49d330-638b-4042-af32-a2fca1e61dfb",
+        "taskId": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+        "tripId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+        "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {
+        "outcomeRevision": 1,
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p25-outcome.corrected",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+        "recipientSequence": 4,
+        "type": "task"
+      },
+      "committedAt": "2026-09-24T13:28:48.584Z",
+      "correlation": {
+        "actionId": "123a6619-4925-4fdf-ba0a-f852d9b041de",
+        "sourceReference": {
+          "externalId": "shipment-0",
+          "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+          "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+        }
+      },
+      "eventId": "48da7d14-baea-4af1-b0e1-9f18cefcb9f8",
+      "eventKind": "transition",
+      "eventType": "outcome.corrected",
+      "payload": {
+        "correction": {
+          "correctionId": "d9dab4cb-4c4e-47f9-81ba-65e046f814f7",
+          "evidenceActionId": null,
+          "evidenceReceiptId": null,
+          "outcome": {
+            "arrival": null,
+            "assignmentRevision": 1,
+            "attemptId": "683f31da-d067-4e36-96df-55a74491cae7",
+            "branchId": "cc2109a1-b6ad-41c3-9aef-3be0a5085ed3",
+            "collection": {
+              "goods": {
+                "amountMinor": 20000,
+                "currency": "EGP",
+                "exponent": 2
+              },
+              "reported": {
+                "amountMinor": 25000,
+                "currency": "EGP",
+                "exponent": 2
+              },
+              "shipping": {
+                "amountMinor": 5000,
+                "currency": "EGP",
+                "exponent": 2
+              },
+              "shippingStatus": "collected",
+              "unpaidShipping": {
+                "amountMinor": 0,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            },
+            "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+            "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+            "heading": null,
+            "kind": "company",
+            "lines": [
+              {
+                "delivered": 2,
+                "heldReturnRequired": 1,
+                "sourceLineId": "pieces",
+                "sourceQuantity": 3,
+                "unitDue": {
+                  "amountMinor": 10000,
+                  "currency": "EGP",
+                  "exponent": 2
+                }
+              }
+            ],
+            "outcome": "partial",
+            "outcomeId": "dd23cbd7-da23-4365-882d-be337a971b53",
+            "returnRequired": true,
+            "revision": 2,
+            "roundId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+            "sourceDispatchCycleId": "cycle",
+            "sourceReference": {
+              "externalId": "shipment-0",
+              "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+              "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+            },
+            "sourceRevision": 1,
+            "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+            "time": {
+              "actionId": "123a6619-4925-4fdf-ba0a-f852d9b041de",
+              "observation": {
+                "clock": {
+                  "quality": "unknown"
+                },
+                "observedAt": null
+              },
+              "recordedAt": "2026-09-24T13:28:48.554Z"
+            },
+            "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+          },
+          "previousOutcomeId": "dde20a72-fc57-49f6-9123-3bb64b52616a",
+          "previousRevision": 1
+        },
+        "previousOutcome": {
+          "arrival": null,
+          "assignmentRevision": 1,
+          "attemptId": "683f31da-d067-4e36-96df-55a74491cae7",
+          "branchId": "cc2109a1-b6ad-41c3-9aef-3be0a5085ed3",
+          "collection": {
+            "goods": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "reported": null,
+            "shipping": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            },
+            "shippingStatus": "not-attempted",
+            "unpaidShipping": {
+              "amountMinor": 0,
+              "currency": "EGP",
+              "exponent": 2
+            }
+          },
+          "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+          "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+          "heading": null,
+          "kind": "company",
+          "lines": [
+            {
+              "delivered": 0,
+              "heldReturnRequired": 3,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "unitDue": {
+                "amountMinor": 10000,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            }
+          ],
+          "outcome": "no-answer",
+          "outcomeId": "dde20a72-fc57-49f6-9123-3bb64b52616a",
+          "returnRequired": true,
+          "revision": 1,
+          "roundId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+          "sourceDispatchCycleId": "cycle",
+          "sourceReference": {
+            "externalId": "shipment-0",
+            "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+          },
+          "sourceRevision": 1,
+          "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+          "time": {
+            "actionId": "7805a808-ca4f-4317-b0cb-9b0e57bfb7f9",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            },
+            "recordedAt": "2026-09-24T13:28:48.274Z"
+          },
+          "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "attemptId": "683f31da-d067-4e36-96df-55a74491cae7",
+        "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+        "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+        "tripId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+        "workdayId": "1e965ee2-895c-44bc-8aa6-30ea04d615c9"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {
+        "outcomeRevision": 2,
+        "sourceRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p25-return.requested",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+        "recipientSequence": 1,
+        "type": "return-request"
+      },
+      "committedAt": "2026-09-24T13:28:48.686Z",
+      "correlation": {
+        "actionId": "2ab98454-49d1-45a2-a290-1c5f1cdd9a8f"
+      },
+      "eventId": "ac830ff4-017b-445e-8b39-36185141f250",
+      "eventKind": "transition",
+      "eventType": "return.requested",
+      "payload": {
+        "request": {
+          "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+          "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+          "items": [
+            {
+              "attemptId": "683f31da-d067-4e36-96df-55a74491cae7",
+              "custody": {
+                "damaged": 0,
+                "delivered": 2,
+                "held": 1,
+                "lost": 0,
+                "received": 0,
+                "sourceQuantity": 3
+              },
+              "damaged": 0,
+              "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+              "eligibility": "pending",
+              "externalId": "shipment-0",
+              "itemId": "b88b4fd5-ba16-4693-b1b1-ad787cfc8ea6",
+              "lost": 0,
+              "outcomeId": "dd23cbd7-da23-4365-882d-be337a971b53",
+              "received": 0,
+              "requested": 1,
+              "revision": 0,
+              "sourceDispatchCycleId": "cycle",
+              "sourceLineId": "pieces",
+              "sourceRevision": 1,
+              "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+              "unresolved": 1
+            }
+          ],
+          "requestId": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+          "requestedAt": "2026-09-24T13:28:48.648Z",
+          "roundId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+          "sourceBranchId": "cc2109a1-b6ad-41c3-9aef-3be0a5085ed3"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "tripId": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {}
+    }
+  },
+  {
+    "id": "p25-return.subsetReceived",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+        "recipientSequence": 2,
+        "type": "return-request"
+      },
+      "committedAt": "2026-09-24T13:28:48.770Z",
+      "correlation": {
+        "actionId": "31c09021-5375-4e7e-8131-782be8527a8e",
+        "sourceReference": {
+          "externalId": "shipment-0",
+          "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+          "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+        }
+      },
+      "eventId": "5ffe71a8-dc5a-439c-8b93-9ef345d06389",
+      "eventKind": "transition",
+      "eventType": "return.subsetReceived",
+      "payload": {
+        "transition": {
+          "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+          "identity": {
+            "actorId": null,
+            "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "mode": "service-operation",
+            "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+          },
+          "itemId": "b88b4fd5-ba16-4693-b1b1-ad787cfc8ea6",
+          "kind": "received",
+          "outcomeId": "dd23cbd7-da23-4365-882d-be337a971b53",
+          "quantity": 1,
+          "requestId": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+          "revision": 1,
+          "sourceBranchId": "cc2109a1-b6ad-41c3-9aef-3be0a5085ed3",
+          "sourceDispatchCycleId": "cycle",
+          "sourceLineId": "pieces",
+          "sourceReference": {
+            "externalId": "shipment-0",
+            "integrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f"
+          },
+          "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+          "time": {
+            "actionId": "31c09021-5375-4e7e-8131-782be8527a8e",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            },
+            "recordedAt": "2026-09-24T13:28:48.719Z"
+          },
+          "transitionId": "e0170417-39cc-4f2d-8f9a-c03ff54454a3"
+        }
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "dispatchCycleId": "b867f088-f735-477f-8492-78bb9f65974e",
+        "taskId": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {}
+    }
+  },
+  {
+    "id": "p25-plan.revisionPublished",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": true,
+    "data": {
+      "aggregate": {
+        "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+        "recipientSequence": 7,
+        "type": "integration"
+      },
+      "committedAt": "2026-09-24T13:28:48.019Z",
+      "correlation": {
+        "actionId": "931eec10-d46e-4568-8ccb-4b22ec673cc5"
+      },
+      "eventId": "99ad1c3f-2505-4ba2-ba3d-b4cb1afbd0f5",
+      "eventKind": "transition",
+      "eventType": "plan.revisionPublished",
+      "payload": {
+        "driverId": "a3bf570d-53fb-41c3-8f57-cede24571230",
+        "forecastId": "cc045528-58a0-47b7-9ded-726e8a7fe407",
+        "jobId": null,
+        "planId": "a3e3d9fd-5bb9-46b4-96b8-749addd6bf32",
+        "policyValidated": true,
+        "revision": 1,
+        "state": "manual",
+        "status": "manual",
+        "workloadId": "a648786b-07cf-42b1-b5df-badb6de88f5f"
+      },
+      "payloadVersion": "1.0.0",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "resources": {
+        "planId": "a3e3d9fd-5bb9-46b4-96b8-749addd6bf32"
+      },
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "versions": {}
+    }
+  },
+  {
+    "id": "p25-queue-received",
+    "schema": "outbox.schema.json#/$defs/Queue",
+    "valid": true,
+    "data": {
+      "items": [
+        {
+          "eventId": "06b7c9e6-66bc-4725-b245-2b2e5484752b",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 6
+          },
+          "createdAt": "2026-09-24T13:28:47.570Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.385Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.857Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "3a120baa-e7dd-4d47-b2f8-a9f0d788ad73",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 3
+          },
+          "createdAt": "2026-09-24T13:28:47.493Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.427Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.764Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "48da7d14-baea-4af1-b0e1-9f18cefcb9f8",
+          "eventType": "outcome.corrected",
+          "aggregate": {
+            "type": "task",
+            "id": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+            "recipientSequence": 4
+          },
+          "createdAt": "2026-09-24T13:28:48.584Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.490Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.574Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "5ffe71a8-dc5a-439c-8b93-9ef345d06389",
+          "eventType": "return.subsetReceived",
+          "aggregate": {
+            "type": "return-request",
+            "id": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+            "recipientSequence": 2
+          },
+          "createdAt": "2026-09-24T13:28:48.770Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.551Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.661Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "62cffc03-2643-456d-8746-5cdd55d66053",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 4
+          },
+          "createdAt": "2026-09-24T13:28:47.517Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.745Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.799Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "791c0e56-a7be-4b08-a828-4129a266c1e6",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 5
+          },
+          "createdAt": "2026-09-24T13:28:47.550Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.791Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.820Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "7c6e03bc-19bf-48c1-8282-c2d7adcff7bf",
+          "eventType": "outcome.recorded",
+          "aggregate": {
+            "type": "task",
+            "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+            "recipientSequence": 3
+          },
+          "createdAt": "2026-09-24T13:28:48.423Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.092Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.525Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "8475eacb-d53b-404f-849e-63b46e6ea21a",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 9
+          },
+          "createdAt": "2026-09-24T13:28:48.199Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.743Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.948Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "99ad1c3f-2505-4ba2-ba3d-b4cb1afbd0f5",
+          "eventType": "plan.revisionPublished",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 7
+          },
+          "createdAt": "2026-09-24T13:28:48.019Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.464Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.885Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "9cc47884-9265-4435-8cd9-d1a9c2b6491d",
+          "eventType": "round.started",
+          "aggregate": {
+            "type": "trip",
+            "id": "c54a799c-febe-4650-8f1e-fbcf0a78a2bc",
+            "recipientSequence": 1
+          },
+          "createdAt": "2026-09-24T13:28:48.166Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.289Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.434Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "ac830ff4-017b-445e-8b39-36185141f250",
+          "eventType": "return.requested",
+          "aggregate": {
+            "type": "return-request",
+            "id": "7491b2f7-4e1a-4362-ab06-883c7ad0999c",
+            "recipientSequence": 1
+          },
+          "createdAt": "2026-09-24T13:28:48.686Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.475Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.617Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "b4360dd6-117e-4515-915e-28e009c6c9d5",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 2
+          },
+          "createdAt": "2026-09-24T13:28:47.469Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.660Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.733Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "b76ff331-0882-4df8-94e3-f3626e9181e6",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 1
+          },
+          "createdAt": "2026-09-24T13:28:47.412Z",
+          "status": "received",
+          "attempts": 2,
+          "nextAttemptAt": "2026-09-24T13:28:50.899Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.705Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "c65911e6-b199-4eb1-b06f-ce2ddfc81009",
+          "eventType": "assignment.received",
+          "aggregate": {
+            "type": "task",
+            "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+            "recipientSequence": 2
+          },
+          "createdAt": "2026-09-24T13:28:47.809Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:49.905Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.390Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "c7d79915-eadb-4f47-9b2e-97f6ae785301",
+          "eventType": "provisioning.changed",
+          "aggregate": {
+            "type": "integration",
+            "id": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+            "recipientSequence": 8
+          },
+          "createdAt": "2026-09-24T13:28:48.189Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.504Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.914Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "c80d04ff-cd18-4e1c-9a30-7174419dafb2",
+          "eventType": "assignment.received",
+          "aggregate": {
+            "type": "task",
+            "id": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+            "recipientSequence": 2
+          },
+          "createdAt": "2026-09-24T13:28:47.739Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:49.859Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.302Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "da22db3d-9d3c-44fe-8886-7e3ca3ac2b9e",
+          "eventType": "task.snapshotAccepted",
+          "aggregate": {
+            "type": "task",
+            "id": "6ad5b957-2cdd-56c6-a3ec-7b78ddb42c01",
+            "recipientSequence": 1
+          },
+          "createdAt": "2026-09-24T13:28:47.763Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.251Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.346Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "f1842964-e5fb-49cc-954a-4ba9c2a6dfcf",
+          "eventType": "outcome.recorded",
+          "aggregate": {
+            "type": "task",
+            "id": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+            "recipientSequence": 3
+          },
+          "createdAt": "2026-09-24T13:28:48.356Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:50.071Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.486Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        },
+        {
+          "eventId": "ff011193-e875-4265-a2a7-670863dbfa8c",
+          "eventType": "task.snapshotAccepted",
+          "aggregate": {
+            "type": "task",
+            "id": "2374bf61-cd41-5bd4-a30d-ca62d8ee8c45",
+            "recipientSequence": 1
+          },
+          "createdAt": "2026-09-24T13:28:47.655Z",
+          "status": "received",
+          "attempts": 1,
+          "nextAttemptAt": "2026-09-24T13:28:49.851Z",
+          "leaseUntil": null,
+          "receivedAt": "2026-09-24T13:28:49.240Z",
+          "lastError": null,
+          "projectionStatus": "unknown",
+          "blockedBy": null
+        }
+      ],
+      "nextCursor": null,
+      "counts": {
+        "pending": 0,
+        "sending": 0,
+        "failed": 0,
+        "received": 19
+      },
+      "oldestUnreceivedAt": null,
+      "projectionStatus": "unknown"
+    }
+  },
+  {
+    "id": "p25-receipt-only",
+    "schema": "outbox.schema.json#/$defs/Acknowledgement",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "tenantId": "3e6f6150-b2d5-4041-8c4e-069962bb5e2f",
+      "recipientIntegrationId": "b9a3adb2-b05d-4867-a248-38b4a1e2271e",
+      "eventId": "da22db3d-9d3c-44fe-8886-7e3ca3ac2b9e",
+      "acknowledgement": "received"
+    }
   }
 ]

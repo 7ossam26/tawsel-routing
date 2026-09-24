@@ -1,5 +1,7 @@
 # ERP integration planning — start here
 
+P25 (24 September 2026): [signed sender protocol, exact-byte vector and recovery](../outbox-delivery.md), [public consumer slice](consumer-quickstart.md), [checkpoint evidence](../phase-25-evidence.md) and updated mapping/planning input are available. Sender receipt is locally verified; separate durable receiver/projection remains P26.
+
 P24 now supplies [coherent monitoring/history](../monitoring.md), public client, source grants, scoped counter/revision mapping and a real HTTP capture/conformance demo. [Evidence and remaining limits](../phase-24-evidence.md). P25 transport and P26–27 native receiver application remain future.
 
 P23: [bounded correction/adoption API and demo](../corrections.md) now preserves original history and corrects effective quantities/collection atomically. Events are durable intent only; actual ERP transport remains unverified.

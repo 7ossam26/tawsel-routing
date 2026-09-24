@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P24 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. Live Engine evidence and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P25 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; receiver durable projection remains P26. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -11,6 +11,1455 @@ Envelope payload objects are deliberately extensible at this stage. Feature owne
 P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; P20 action.getResult covers scoped round execution/takeover records; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
+
+### OutboxConfigureWebhook
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/ConfigureWebhook)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "url",
+    "enabled",
+    "expectedRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxRotateSigningKey
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/RotateSigningKey)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "keyId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "overlapSeconds": {
+      "type": "integer",
+      "minimum": 300,
+      "maximum": 86400
+    }
+  },
+  "required": [
+    "keyId",
+    "overlapSeconds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxRetryDelivery
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/RetryDelivery)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    }
+  },
+  "required": [
+    "eventId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxConfiguration
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Configuration)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "revision": {
+      "$ref": "./common.schema.json#/$defs/Revision"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    }
+  },
+  "required": [
+    "revision",
+    "enabled",
+    "url"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxKeyRotation
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/KeyRotation)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "keyId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+    },
+    "activatedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "previousKeyId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verifyUntil": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "keyId",
+    "activatedAt",
+    "previousKeyId",
+    "verifyUntil"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxRetryResult
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/RetryResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "scheduled": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "eventId",
+    "scheduled"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxAcknowledgement
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Acknowledgement)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "recipientIntegrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "eventId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "acknowledgement": {
+      "const": "received"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "recipientIntegrationId",
+    "eventId",
+    "acknowledgement"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxAttempt
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Attempt)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "startedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "finishedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "keyId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{1,64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "deliveryTimestamp": {
+      "type": "string",
+      "pattern": "^\\d{13}$"
+    },
+    "result": {
+      "enum": [
+        "sending",
+        "received",
+        "failed",
+        "lease-expired"
+      ]
+    },
+    "errorCode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "httpStatus": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "attemptId",
+    "number",
+    "startedAt",
+    "finishedAt",
+    "keyId",
+    "deliveryTimestamp",
+    "result",
+    "errorCode",
+    "httpStatus"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxDelivery
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Delivery)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "eventId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "eventType": {
+      "$ref": "./common.schema.json#/$defs/OperationId"
+    },
+    "aggregate": {
+      "$ref": "./events/envelope.v1.schema.json#/properties/aggregate"
+    },
+    "createdAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "sending",
+        "failed",
+        "received"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "nextAttemptAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "leaseUntil": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "receivedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "lastError": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectionStatus": {
+      "const": "unknown"
+    },
+    "blockedBy": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "eventId",
+    "eventType",
+    "aggregate",
+    "createdAt",
+    "status",
+    "attempts",
+    "nextAttemptAt",
+    "leaseUntil",
+    "receivedAt",
+    "lastError",
+    "projectionStatus",
+    "blockedBy"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxQueue
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Queue)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/Delivery"
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "pending": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sending": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "received": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "pending",
+        "sending",
+        "failed",
+        "received"
+      ],
+      "additionalProperties": false
+    },
+    "oldestUnreceivedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectionStatus": {
+      "const": "unknown"
+    }
+  },
+  "required": [
+    "items",
+    "nextCursor",
+    "counts",
+    "oldestUnreceivedAt",
+    "projectionStatus"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxDetail
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Detail)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "delivery": {
+      "$ref": "#/$defs/Delivery"
+    },
+    "attempts": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/Attempt"
+      }
+    },
+    "nextAttemptBefore": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "delivery",
+    "attempts",
+    "nextAttemptBefore"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxReplay
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/Replay)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "events": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "./events/sender-event.v1.schema.json"
+      }
+    },
+    "nextAfterSequence": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retention": {
+      "const": "indefinite-no-purge"
+    },
+    "projectionStatus": {
+      "const": "unknown"
+    }
+  },
+  "required": [
+    "events",
+    "nextAfterSequence",
+    "retention",
+    "projectionStatus"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxConfigureWebhookCommand
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/ConfigureWebhookCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.configureWebhook"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/ConfigureWebhook"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxRotateSigningKeyCommand
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/RotateSigningKeyCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.rotateSigningKey"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/RotateSigningKey"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### OutboxRetryDeliveryCommand
+
+[Canonical definition](../../contracts/outbox.schema.json#/$defs/RetryDeliveryCommand)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "payloadVersion": {
+      "const": "1.0.0"
+    },
+    "actionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "operationId": {
+      "const": "integration.retryDelivery"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "integration"
+        },
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "integrationId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "tenantId",
+        "integrationId"
+      ],
+      "additionalProperties": false
+    },
+    "resources": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "baseVersions": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "dependsOnActionIds": {
+      "type": "array",
+      "maxItems": 0,
+      "items": {
+        "$ref": "./common.schema.json#/$defs/Uuid"
+      }
+    },
+    "observation": {
+      "$ref": "./common.schema.json#/$defs/Observation"
+    },
+    "payload": {
+      "$ref": "#/$defs/RetryDelivery"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "payloadVersion",
+    "actionId",
+    "operationId",
+    "context",
+    "resources",
+    "baseVersions",
+    "dependsOnActionIds",
+    "observation",
+    "payload"
+  ],
+  "additionalProperties": false
+}
+```
+
+### SenderEvent
+
+[Canonical definition](../../contracts/events/sender-event.v1.schema.json)
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tawsel.invalid/v1/events/sender-event.v1.schema.json",
+  "title": "P25 emitted integration events v1",
+  "allOf": [
+    {
+      "$ref": "./envelope.v1.schema.json"
+    }
+  ],
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "provisioning.changed"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../provisioning.schema.json#/$defs/ProvisioningChanged"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.snapshotAccepted"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "assignment.prepared"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "assignment.received"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "assignment.withdrawn"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "assignment.reassigned"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.urgencyChanged"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "dispatch.createdFromReceipt"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "location.pinConfirmed"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../location.schema.json#/$defs/ConfirmedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "plan.revisionPublished"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../planning.schema.json#/$defs/PublishedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "round.started"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../round-start.schema.json#/$defs/StartedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "current.headingSelected"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../current-activity.schema.json#/$defs/HeadingEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "current.arrivalRecorded"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../current-activity.schema.json#/$defs/ArrivalEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "outcome.recorded"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../outcomes.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.deferred"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../eligibility.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.retryAdmitted"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../eligibility.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.deferredActivated"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../eligibility.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "task.driverUrgencyChanged"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../eligibility.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "round.ended"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../workday-closure.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "workday.ended"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../workday-closure.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "return.requested"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../returns.schema.json#/$defs/RequestedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "return.subsetReceived"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../returns.schema.json#/$defs/ReceivedEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "return.dispositionRecorded"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../returns.schema.json#/$defs/DispositionEvent"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "branch.roundInterrupted"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../branch-activity.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "branch.arrivalRecorded"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../branch-activity.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "branch.roundResumed"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../branch-activity.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "outcome.corrected"
+        },
+        "eventKind": {
+          "const": "transition"
+        },
+        "payloadVersion": {
+          "const": "1.0.0"
+        },
+        "payload": {
+          "$ref": "../corrections.schema.json#/$defs/Event"
+        }
+      },
+      "required": [
+        "eventType",
+        "eventKind",
+        "payloadVersion",
+        "payload"
+      ]
+    }
+  ]
+}
+```
 
 ### Uuid
 
@@ -1720,7 +3169,7 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/events/envelope.v1.schema.json",
-  "title": "Recipient event envelope v1 — designed",
+  "title": "Recipient event envelope v1 — sender implemented; feature catalog defines emitted types",
   "type": "object",
   "properties": {
     "schemaVersion": {
@@ -16890,6 +18339,17 @@ Examples include designed fixtures and captured local API results; consult contr
 | monitoring-corrected | monitoring.schema.json#/$defs/Snapshot | valid foundation shape |
 | monitoring-history | monitoring.schema.json#/$defs/History | valid foundation shape |
 | monitoring-workday | monitoring.schema.json#/$defs/History | valid foundation shape |
+| p25-provisioning.changed | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-task.snapshotAccepted | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-assignment.received | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-round.started | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-outcome.recorded | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-outcome.corrected | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-return.requested | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-return.subsetReceived | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-plan.revisionPublished | events/sender-event.v1.schema.json | valid foundation shape |
+| p25-queue-received | outbox.schema.json#/$defs/Queue | valid foundation shape |
+| p25-receipt-only | outbox.schema.json#/$defs/Acknowledgement | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -17032,5 +18492,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | monitoring-false-applied | monitoring.schema.json#/$defs/Snapshot | invalid (const) |
 | monitoring-fractional-count | monitoring.schema.json#/$defs/Snapshot | invalid (type) |
 | monitoring-missing-revision | monitoring.schema.json#/$defs/Snapshot | invalid (required) |
+| p25-ack-is-not-applied | outbox.schema.json#/$defs/Acknowledgement | invalid (additionalProperties) |
+| p25-unsupported-payload | events/sender-event.v1.schema.json | invalid (const) |
+| p25-unknown-event | events/sender-event.v1.schema.json | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

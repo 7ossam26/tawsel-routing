@@ -1,5 +1,7 @@
 # Canonical foundation examples
 
+P25 `p25-*` valid examples are captured from the real isolated PostgreSQL/HTTP sender demo (controlled receiver, projection unknown). They include actual intake/outcome/correction/return events and delivery reads. Invalid examples reject unknown types/versions and receipt/application conflation. [webhook-signature.v1.json](webhook-signature.v1.json) is a published exact-byte vector with a **public test-only zero key**; the fast protocol test verifies it. Never use that key in deployment.
+
 P24 monitoring examples are captured from the isolated PostgreSQL/loopback HTTP demo: scoped/own/corrected snapshots and task/workday history. Negative examples reject hidden count fields, false presence/applied claims, fractional counters and missing revisions. Semantic arithmetic/isolation is also tested through real APIs and the portable monitoring conformance consumer.
 
 P23 correction examples include a designed closed correction command and captured local HTTP demo correction/adoption events plus receipt-denied availability. Negative cases reject extra price fields, fractional pieces, missing expected revision and invalid event linkage fields. Semantic money/ownership/dependency checks are real PostgreSQL tests, not claims made by JSON Schema alone. See [evidence](../../docs/phase-23-evidence.md).

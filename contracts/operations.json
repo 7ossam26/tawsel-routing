@@ -897,46 +897,56 @@
       "id": "integration.configureWebhook",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 25,
       "capability": "integration.manage",
-      "description": "Authorize callback destination and recipient network restrictions."
+      "description": "Authorize callback destination and recipient network restrictions.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.configureWebhook"
     },
     {
       "id": "integration.rotateSigningKey",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 25,
       "capability": "integration.manage",
-      "description": "Rotate integration-scoped webhook secret/key ID with overlap."
+      "description": "Rotate integration-scoped webhook secret/key ID with overlap.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.rotateSigningKey"
     },
     {
       "id": "integration.getDeliveryStatus",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 25,
       "capability": "integration.manage",
-      "description": "Read outbound pending/sending/received/failed independently of application."
+      "description": "Read outbound pending/sending/received/failed independently of application.",
+      "method": "GET",
+      "path": "/api/v1/integration/deliveries"
     },
     {
       "id": "integration.retryDelivery",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 25,
       "capability": "integration.manage",
-      "description": "Controlled retry retaining committed event identity."
+      "description": "Controlled retry retaining committed event identity.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.retryDelivery"
     },
     {
       "id": "integration.replayEvents",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 25,
       "capability": "integration.manage",
-      "description": "Scoped aggregate sequence replay with explicit retained-window/expired status."
+      "description": "Scoped aggregate sequence replay with explicit retained-window/expired status.",
+      "method": "GET",
+      "path": "/api/v1/integration/replay"
     },
     {
       "id": "integration.getReconciliationSnapshot",
@@ -1179,7 +1189,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 8,
       "capability": "recipient-scope",
-      "description": "Versioned branch/user/role/membership/driver-reference acceptance."
+      "description": "Versioned branch/user/role/membership/driver-reference acceptance.",
+      "payloadSchema": "./provisioning.schema.json#/$defs/ProvisioningChanged",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.snapshotAccepted",
@@ -1188,7 +1200,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Stable generic source task snapshot revision accepted. P10 durable own-source event intent; transport remains P25."
+      "description": "Stable generic source task snapshot revision accepted. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.independentCreated",
@@ -1215,7 +1229,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Upcoming preparation, no possession. P10 durable own-source event intent; transport remains P25."
+      "description": "Upcoming preparation, no possession. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "assignment.received",
@@ -1224,7 +1240,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Definitive batch received/admitted; not prepared. P10 durable own-source event intent; transport remains P25."
+      "description": "Definitive batch received/admitted; not prepared. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "assignment.withdrawn",
@@ -1233,7 +1251,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture removal. P10 durable own-source event intent; transport remains P25."
+      "description": "Predeparture removal. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "assignment.reassigned",
@@ -1242,7 +1262,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture generation change. P10 durable own-source event intent; transport remains P25."
+      "description": "Predeparture generation change. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.urgencyChanged",
@@ -1251,7 +1273,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 10,
       "capability": "recipient-scope",
-      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25."
+      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "location.pinConfirmed",
@@ -1261,7 +1285,8 @@
       "ownerPhase": 11,
       "capability": "recipient-scope",
       "description": "Durable source-scoped execution pin/provenance intent; source retained. Signed delivery is P25.",
-      "payloadSchema": "./location.schema.json#/$defs/ConfirmedEvent"
+      "payloadSchema": "./location.schema.json#/$defs/ConfirmedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "plan.revisionPublished",
@@ -1271,7 +1296,8 @@
       "ownerPhase": 13,
       "capability": "recipient-scope",
       "description": "Source-scoped immutable plan/forecast/workload identity notice: historical draft or validated ready/partial/manual. Pending outbox intent; signed delivery remains P25.",
-      "payloadSchema": "./planning.schema.json#/$defs/PublishedEvent"
+      "payloadSchema": "./planning.schema.json#/$defs/PublishedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "round.started",
@@ -1280,7 +1306,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 15,
       "capability": "recipient-scope",
-      "description": "Accepted start/departure/owner and baseline forecast."
+      "description": "Accepted start/departure/owner and baseline forecast.",
+      "payloadSchema": "./round-start.schema.json#/$defs/StartedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "current.headingSelected",
@@ -1289,7 +1317,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "recipient-scope",
-      "description": "Explicit selection/change, not a next suggestion."
+      "description": "Explicit selection/change, not a next suggestion.",
+      "payloadSchema": "./current-activity.schema.json#/$defs/HeadingEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "current.arrivalRecorded",
@@ -1298,7 +1328,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 16,
       "capability": "recipient-scope",
-      "description": "Explicit observed arrival; time provenance retained."
+      "description": "Explicit observed arrival; time provenance retained.",
+      "payloadSchema": "./current-activity.schema.json#/$defs/ArrivalEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "outcome.recorded",
@@ -1307,7 +1339,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 17,
       "capability": "recipient-scope",
-      "description": "Full/partial/refused/no-answer with quantity/collection transition."
+      "description": "Full/partial/refused/no-answer with quantity/collection transition.",
+      "payloadSchema": "./outcomes.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.deferred",
@@ -1316,7 +1350,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "recipient-scope",
-      "description": "Untouched whole work earliest-time change."
+      "description": "Untouched whole work earliest-time change.",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.retryAdmitted",
@@ -1325,7 +1361,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 18,
       "capability": "recipient-scope",
-      "description": "New attempt on eligible whole held work; preserve prior outcome."
+      "description": "New attempt on eligible whole held work; preserve prior outcome.",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "round.ended",
@@ -1334,7 +1372,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "recipient-scope",
-      "description": "Ended round, held work unchanged unless explicitly transitioned."
+      "description": "Ended round, held work unchanged unless explicitly transitioned.",
+      "payloadSchema": "./workday-closure.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "workday.ended",
@@ -1343,7 +1383,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 19,
       "capability": "recipient-scope",
-      "description": "Explicit day closure/carryover; not automatic midnight."
+      "description": "Explicit day closure/carryover; not automatic midnight.",
+      "payloadSchema": "./workday-closure.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "device.executionTransferred",
@@ -1370,7 +1412,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
-      "description": "Offered pieces only, never stock/received."
+      "description": "Offered pieces only, never stock/received.",
+      "payloadSchema": "./returns.schema.json#/$defs/RequestedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "return.subsetReceived",
@@ -1379,7 +1423,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
-      "description": "Actual confirmed source-branch subset transition."
+      "description": "Actual confirmed source-branch subset transition.",
+      "payloadSchema": "./returns.schema.json#/$defs/ReceivedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "return.dispositionRecorded",
@@ -1388,7 +1434,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "recipient-scope",
-      "description": "Loss/damage separate from receipt."
+      "description": "Loss/damage separate from receipt.",
+      "payloadSchema": "./returns.schema.json#/$defs/DispositionEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "branch.roundInterrupted",
@@ -1397,7 +1445,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
-      "description": "Visible branch segment with retained customer sequence."
+      "description": "Visible branch segment with retained customer sequence.",
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "branch.roundResumed",
@@ -1406,7 +1456,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
-      "description": "Confirmed claimed subsets and retained work resume."
+      "description": "Confirmed claimed subsets and retained work resume.",
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "dispatch.createdFromReceipt",
@@ -1415,7 +1467,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
-      "description": "New dispatch cycle linked to prior confirmed receipt."
+      "description": "New dispatch cycle linked to prior confirmed receipt.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "outcome.corrected",
@@ -1424,7 +1478,9 @@
       "lifecycle": "verified-local",
       "ownerPhase": 23,
       "capability": "recipient-scope",
-      "description": "Append-only correction; consumers keep original transition identity."
+      "description": "Append-only correction; consumers keep original transition identity.",
+      "payloadSchema": "./corrections.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "evidence.adoptionResolved",
@@ -1625,7 +1681,9 @@
       "ownerPhase": 18,
       "capability": "recipient-scope",
       "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
-      "lifecycle": "verified-local"
+      "lifecycle": "verified-local",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "task.driverUrgencyChanged",
@@ -1634,7 +1692,9 @@
       "ownerPhase": 18,
       "capability": "recipient-scope",
       "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
-      "lifecycle": "verified-local"
+      "lifecycle": "verified-local",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "workday.getSummary",
@@ -1753,7 +1813,9 @@
       "description": "Confirmed branch arrival; no physical receipt or stock implication.",
       "family": "returns",
       "lifecycle": "verified-local",
-      "ownerPhase": 22
+      "ownerPhase": 22,
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     },
     {
       "id": "dispatch.listCycles",
@@ -1842,6 +1904,17 @@
       "method": "GET",
       "path": "/api/v1/erp/monitoring/actions/{id}",
       "description": "Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim."
+    },
+    {
+      "id": "integration.getDeliveryDetail",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Inspect one scoped delivery and bounded retained attempts.",
+      "method": "GET",
+      "path": "/api/v1/integration/deliveries/{eventId}"
     }
   ],
   "authorizationFoundation": {

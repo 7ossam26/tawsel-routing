@@ -5,13 +5,14 @@ import { parseDatabaseConfig } from './db/config.js';
 import { createDatabasePool } from './db/pool.js';
 import { assertMigrationsCurrent } from './db/migrate.js';
 import { parseAuthConfig } from './auth/config.js';
+import { loadOutboxConfig } from './outbox/config.js';
 
 async function main(): Promise<void> {
   const config = parseApiConfig(process.env);
   const database = createDatabasePool(parseDatabaseConfig(process.env.TAWSEL_DATABASE_URL, 'application'));
   const auth = parseAuthConfig(process.env);
   const app = buildApp(database, auth, { issuer: auth.issuers.company.issuer,
-    ...(process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN ? { operatorToken: process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN } : {}) });
+    ...(process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN ? { operatorToken: process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN } : {}) },loadOutboxConfig());
 
   try {
     await assertMigrationsCurrent(database);

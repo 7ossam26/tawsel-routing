@@ -21,6 +21,8 @@ import { closureRoutes } from './closure/routes.js';
 import { deviceRoutes } from './devices/routes.js';
 import {returnDriverRoutes,returnReceiverRoutes} from './returns/routes.js';
 import {monitoringRoutes,monitoringIntegrationRoutes} from './monitoring/routes.js';
+import {outboxRoutes} from './outbox/routes.js';
+import type {OutboxConfig} from './outbox/config.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -29,7 +31,7 @@ const healthResponse: HealthResponse = {
   engine: 'not-checked'
 };
 
-export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: ProvisioningConfig): FastifyInstance {
+export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: ProvisioningConfig,outbox?:OutboxConfig): FastifyInstance {
   const app = Fastify({
     logger: false,
     ajv: {
@@ -59,6 +61,7 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
   if (database && provisioning) app.register(async scope => { await returnReceiverRoutes(scope, database); });
   if (database && provisioning) app.register(async scope => { await monitoringIntegrationRoutes(scope, database); });
+  if (database && provisioning) app.register(async scope => { await outboxRoutes(scope,database,outbox); });
 
   app.setErrorHandler((error, _request, reply) => {
     const failure = error instanceof Error

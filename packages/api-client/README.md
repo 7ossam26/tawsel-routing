@@ -1,5 +1,7 @@
 # Tawsel public client foundation 0.1.0
 
+P25 adds `src/outbox.ts` (scoped authenticated delivery client) and `src/webhook-signature.ts` (Node exact-byte signer/verifier for the published protocol). [Protocol, key overlap and recovery](../../docs/outbox-delivery.md), [portable consumer checks](../../tests/erp-conformance/outbox.ts), [captured exact-byte vector](../../contracts/examples/webhook-signature.v1.json). Verification authenticates raw bytes; consumers must separately validate the canonical schema, scope and durable inbox before receipt. No automatic business retries or projection implementation.
+
 P24 adds [MonitoringClient](src/monitoring.ts) for coherent driver/trip/task/workday/action reads, source-scoped ERP bearer access and browser session access. Results distinguish 200 bodies from bodyless 304, preserving scope/revision/ETag/refresh metadata. See [counter and cursor semantics](../../docs/monitoring.md) and `npm run monitoring:demo`. No polling or transport-presence inference is implemented.
 
 P23: [CorrectionsClient](src/corrections.ts) supports driver availability, correction, explicit evidence adoption and result recovery. [API/demo and limits](../../docs/corrections.md). ERP tokens cannot execute driver corrections; consume source correction events as effective revision replacements.

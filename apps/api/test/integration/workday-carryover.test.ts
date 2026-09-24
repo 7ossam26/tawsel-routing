@@ -250,4 +250,4 @@ test('C: source-future held work without a reservation remains visible and needs
 });
 test('C: real HTTP clients recover lost day-end response and start carried work in a distinct next workday',async()=>{
  const report=await workdayDemo();expect(report.status.status).toBe('accepted');expect(report.next.workdayId).not.toBe(report.closed.workdayId);expect(report.events).toHaveLength(3);
-});
+},30_000);

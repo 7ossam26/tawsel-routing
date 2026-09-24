@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/events/envelope.v1.schema.json",
-  "title": "Recipient event envelope v1 — designed",
+  "title": "Recipient event envelope v1 — sender implemented; feature catalog defines emitted types",
   "type": "object",
   "properties": {
     "schemaVersion": {

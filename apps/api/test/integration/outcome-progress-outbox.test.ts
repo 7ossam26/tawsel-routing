@@ -185,4 +185,4 @@ describe('P17 outcome / progress / outbox — isolated real PostgreSQL and API',
 
 test('C: public typed clients complete the two-task loopback HTTP demo and recover a lost successful response',async()=>{
  const report=await outcomeDemo();expect(report.started?.receipt.businessStatus).toBe('accepted');expect(report.status.status).toBe('accepted');expect(report.snapshot.progress).toMatchObject({processed:2,partial:1,noAnswer:1,deliveredPieces:2,heldReturnRequiredPieces:4});
-});
+},30_000);

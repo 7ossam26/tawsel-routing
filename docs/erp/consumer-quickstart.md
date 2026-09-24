@@ -1,5 +1,13 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P25 public sender consumer slice
+
+Use Node 24.19/npm 11, `npm run db:local:start`, `npm run test:outbox`, `npm run outbox:demo`, then `npm run test:erp:outbox -- .local/phase-25-demo.json`. The demonstration uses real isolated PostgreSQL and HTTP, commits actual intake/outcome/correction/return events before sender startup, loses the first receipt response and redelivers the same bytes/ID with a fresh signature. Expected: **19 unique events, 1 duplicate transmission, projection unknown**, receiver acknowledgement level **controlled-process-memory**. The fixture key in the capture is disposable, not a production credential.
+
+Portable consumer inputs: `tests/erp-conformance/outbox.ts`, `packages/api-client/src/webhook-signature.ts`, `packages/api-client/src/schema.d.ts`, the capture and Node/tsx. Preserve relative directories when copying outside the repository. Run the checker without Tawsel DB/operator environment variables; it consumes only public captured bytes/status. `packages/api-client/src/outbox.ts` supplies live authenticated queue/detail/commands/replay. [Setup, complete headers/byte vector, versioning, overlap, endpoints and recovery](../outbox-delivery.md), [canonical schemas](../../contracts/outbox.schema.json), [evidence](../phase-25-evidence.md).
+
+A real receiver must implement P26 durable storage before claiming durable receipt. Captured-wire conformance does not prove projection atomicity, production TLS, ERP compatibility or freshness SLOs. Do not promote the memory harness to production.
+
 ## Phase 24 coherent reads
 
 Ask the server operator to include `monitoringCapabilities:["monitor.read"]` in the next versioned source binding. Use the public `MonitoringClient({baseUrl, authorization})`, then `driver(driverId)`, `trip(roundId)`, `taskHistory(taskId)`, `workdayHistory(workdayId)` or `action(actionId, sourceId)`. Pass `{etag:previous.etag}` for conditional refresh; status 304 has no body. Preserve the previous data and store the new refresh time. On reconnect omit `etag`. Never compare revisions across different `scopeKey` values. Fetch each cursor page under the same filters, restarting on 409.

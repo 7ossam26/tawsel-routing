@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P24 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; P22 branch/new-cycle dependencies and P23 correction/adoption are locally verified; signed event delivery remains unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P25 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; P22 branch/new-cycle dependencies and P23 correction/adoption are locally verified; P25 signed delivery/status/retry/replay are locally verified; durable external application remains P26. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -228,11 +228,11 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `sync.submitActions` | http-command | designed | [P34](phases/34-ordered-replay-conflict-recovery.md) | execution.own | Dependency-ordered replay batch with per-action result, original identity/version. |
 | `sync.getEvidenceReceipt` | http-read | verified-local | [P34](phases/34-ordered-replay-conflict-recovery.md) | execution.own | Own driver evidence with durable original receipt, current recovery constraints and adopted outcome linkage. Outcome adoption is implemented under P23 correction bounds. |
 | `sync.listConflicts` | http-read | designed | [P34](phases/34-ordered-replay-conflict-recovery.md) | execution.own | Read preserved conflicts and currently permitted resolution choices. |
-| `integration.configureWebhook` | http-command | designed | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Authorize callback destination and recipient network restrictions. |
-| `integration.rotateSigningKey` | http-command | designed | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Rotate integration-scoped webhook secret/key ID with overlap. |
-| `integration.getDeliveryStatus` | http-read | designed | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Read outbound pending/sending/received/failed independently of application. |
-| `integration.retryDelivery` | http-command | designed | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Controlled retry retaining committed event identity. |
-| `integration.replayEvents` | http-read | designed | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Scoped aggregate sequence replay with explicit retained-window/expired status. |
+| `integration.configureWebhook` | http-command | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Authorize callback destination and recipient network restrictions. |
+| `integration.rotateSigningKey` | http-command | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Rotate integration-scoped webhook secret/key ID with overlap. |
+| `integration.getDeliveryStatus` | http-read | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Read outbound pending/sending/received/failed independently of application. |
+| `integration.retryDelivery` | http-command | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Controlled retry retaining committed event identity. |
+| `integration.replayEvents` | http-read | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Scoped aggregate sequence replay with explicit retained-window/expired status. |
 | `integration.getReconciliationSnapshot` | http-read | designed | [P26](phases/26-mock-inbox-projection-recovery.md) | integration.manage | Scoped authoritative checkpoint/snapshot recovery after gaps/expired replay. |
 | `integration.reportAppliedCheckpoint` | http-command | designed | [P26](phases/26-mock-inbox-projection-recovery.md) | integration.manage | Authenticated receiver reports separately durable applied/failed state. |
 | `integration.getAppliedCheckpoint` | http-read | designed | [P26](phases/26-mock-inbox-projection-recovery.md) | integration.manage | Read receiver processing checkpoint without inferring it from HTTP receipt. |
@@ -244,6 +244,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `evidence.adoptionResolved` | event | verified-local | [P23](phases/23-bounded-driver-corrections.md) | recipient-scope | Own-account notification of an accepted explicit adoption, linked to preserved evidence and effective outcome; blocked proposals emit evidence.received. |
 | `integration.applicationReported` | event | designed | [P26](phases/26-mock-inbox-projection-recovery.md) | recipient-scope | Receiver application checkpoint evidence separate from receipt. |
 | `device.getSnapshot` | http-read | verified-local | [P20](phases/20-device-takeover-evidence.md) | execution.own | Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token. |
+| `integration.getDeliveryDetail` | http-read | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Inspect one scoped delivery and bounded retained attempts. |
 
 ### reporting
 

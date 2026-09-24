@@ -1,5 +1,7 @@
 # Tawsel — current requirements and phase coverage
 
+P25 evidence — 24 September 2026: [ordered PostgreSQL/HTTP/process checks](../phase-25-evidence.md) verify R-46 durable claims/bytes/attempts/recovery/fairness, R-47 scoped exact-byte signatures/rotation/destination controls, R-49 sender sequence/replay/retention boundaries, R-45 observable queue ages/receipt times (no freshness SLO), and R-64/R-65 canonical public consumer/docs/checkpoint handoff. Durable receiver/projection and reconciliation remain P26.
+
 P24 evidence, 24 September 2026: [ordered checks](../phase-24-evidence.md) and [API/demo](../monitoring.md) verify R-01 personal/company scope, R-04 branch filters/revocation, R-43 mixed-source totals/current/next/direct IDs, R-44 coherent snapshots/effective history/nonregressing scoped revisions and the R-45 timing/conditional-read support needed by P32/P38. R-65 checkpoint discipline and canonical ERP/client handoff are recorded. No polling UI, physical device, native ERP or freshness SLO claim.
 
 P23 evidence, 24 September 2026: [ordered PostgreSQL/API checks](../phase-23-evidence.md) and [reproducible correction/adoption demonstration](../corrections.md) verify R-08 atomicity, R-09 frozen sources, R-12 staff boundary, R-17/R-18 exact corrected collection/prior fees, R-36 dependent cycles, R-37 bounded self-correction, R-38/R-40 current-owner evidence adoption, R-52 effective day totals, and R-58/R-65 real races/canonical handoff. P30 correction UI, P34 local replay, P36 full reports and native ERP/device proof remain later.
