@@ -1,5 +1,7 @@
 # Tracking and consistency contract
 
+P27 adds a [private native source and transactional outbox](erp/source-protocol.md) with separate OIDC staff sessions and durable command status. A locally saved desired row is not execution acceptance; source status, signed receipt and applied projection stay distinct. [Two-way quickstart](erp/consumer-quickstart.md), [actual evidence](phase-27-evidence.md).
+
 P26 update: [external receipt/application/recovery](erp/receiver-protocol.md) is locally verified. Raw signed event identity, durable inbox receipt, atomic projection/transition history/processed marker and distinct contiguous received/applied versus snapshot coverage now have public schemas and actual separate-database proof. Current-state reconciliation never fabricates historical transitions; late mandatory events remain processable. Earlier phase descriptions below retain their historical scope.
 
 P25 sender update: [signed delivery](outbox-delivery.md) consumes existing committed integration intent with immutable event IDs/bytes, transactional recipient sequences and fenced attempts. Receipt is distinct from projection application; source intent remains unresolved/retained while application is unknown. No timer purges business/event history. Cross-aggregate dependencies and receiver projection remain P26.

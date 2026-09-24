@@ -1,5 +1,7 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+P27 adds a [private native source and transactional outbox](erp/source-protocol.md) with separate OIDC staff sessions and durable command status. A locally saved desired row is not execution acceptance; source status, signed receipt and applied projection stay distinct. [Two-way quickstart](erp/consumer-quickstart.md), [actual evidence](phase-27-evidence.md).
+
 ## Phase 26 external receiver and reconciliation
 
 Use the [consumer quickstart](erp/consumer-quickstart.md) and [receiver protocol](erp/receiver-protocol.md) for the now-implemented independent durable consumer, worker, scoped status, replay/checkpoint recovery and separately authenticated applied reports. The [actual boundary evidence](verification/integration.md) includes real separate processes/databases and an externally installed compiled distribution. The P25 memory harness below remains sender-only evidence; its limits do not describe the P26 receiver. Native source workflows remain P27.

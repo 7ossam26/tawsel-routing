@@ -1,4 +1,24 @@
-# ERP planning input — designed foundation
+# ERP planning input — verified reference and vendor decisions
+
+## Phase 27 two-way reference and ordered ERP implementation slices
+
+The source implementation is now `apps/mock-erp/src/source.ts`, native OIDC/forms are `native-auth.ts`, `native.ts` and `ui/main.tsx`, and separate migrations 0003/0004 own source durability/sessions. It composes with P26's inbox/projection/reconciliation through the released public client. [Two-task setup/checker](consumer-quickstart.md), [source authority and recovery](source-protocol.md), [ordered actual evidence](../phase-27-evidence.md). The bundle is `dist/erp-reference`; `tests/erp-conformance/source.ts` and `source-driver.ts` compile into its independent conformance folder. This supplies planning input now, before the Phase 42 release audit. Historical designed/future statements below are superseded only within this implemented reference scope.
+
+Tawsel owns accepted dispatch/execution, admission, current activity, rounds/workdays, reported outcomes/collection, custody constraints, planning revisions, signed event delivery and scoped authoritative reads. ERP owns commercial/source snapshots, exact outstanding price allocation, native users/roles/branches, physical received assignment assertions, actual branch subset receipt/disposition and its connector's durable local intent/application. Identity issuer owns credentials. Service delegation and native human audit are distinct; this reference records verified native subjects locally and sends explicitly scoped service operations, not human impersonation.
+
+Implement the real ERP connector in these dependent slices:
+
+| Order | ERP deliverable / owner | Dependency and verification |
+| --- | --- | --- |
+| 1 | Vendor/connector owner assesses supported API, hooks, import/export, stable IDs and transaction boundary; chooses who owns translation/support | Use the worked mapping below. Record unavailable vendor surfaces before promising integration. No ERP source/DB access requirement is imposed by Tawsel. |
+| 2 | Identity/operator team reserves issuer subjects and provisions least-privilege tenant/source credentials, branch scope, callback and rotated keys | Run P08 provisioning conformance and wrong-scope/actor negatives. Real ERP session/credential authority must be explicitly mapped; never send passwords or unchecked actor IDs. |
+| 3 | ERP team implements source records + immutable outgoing command transaction, optimistic source revisions and durable result/attempts | Run `mock-source-outbox.test.ts` behavior against the ERP's actual storage: rollback, commit-before-send restart, lost response, duplicate/conflicting ID and capacity rejection. No distributed transaction is needed. |
+| 4 | Native ERP workflow team maps exact source snapshots, preparation, received batch and predeparture removal/reassignment | Run two-task prepare stage and >50 whole-batch rejection. Preserve source/cycle/line references, whole quantities and integer minor units. A saved source row never means Tawsel accepted. |
+| 5 | Connector team installs authenticated inbox, projection worker and reconciliation/reporting | Run shipped receiver conformance: received differs from applied, duplicate transitions do not add quantities/money, correction replaces effective facts, gaps recover publicly, unavailable history stays explicit. |
+| 6 | Native branch team implements driver/source-branch pending list, actual subset receipt, separate loss/damage and receipt-funded new cycle | Run source execute stage: untouched pieces persist, a departed edit is rejected, new cycle does not reopen old history. Commercial consequences remain ERP-owned. |
+| 7 | Operator team owns service supervision, alerts, credential renewal, rollout/rollback, backup/restore and tested protocol upgrades | Repeat copied-directory conformance with no Tawsel internals. P39/P40/P42 remain deployment/restore/final-release gates, not promises already proven by local reference. |
+
+Unknown real-ERP decisions remain explicit: vendor schema/entity names, canonical shipment/line/cycle IDs, integration hooks and local commit guarantees, credential/SSO migration, native staff authorization/branch policies, exact commercial allocation rules, outbox/inbox database choice, scheduling/throughput, TLS/network/secret provisioning, retention/backup destination, operations ownership and upgrade support. Resolve these in the ERP project without changing accepted Tawsel custody, departure, subset, allocation or idempotency semantics. The single-line EGP native test form, fixed native admin subject list and serial source lane are reference limits, not recommended full ERP schema or universal compatibility.
 
 ## Phase 26 receiving boundary — locally verified, 24 September 2026
 

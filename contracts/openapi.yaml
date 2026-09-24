@@ -6093,8 +6093,32 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ConsumerProblem"
+  /api/v1/source/status:
+    get:
+      operationId: source.getCommandStatus
+      summary: "External mock source: durable command status, distinct from execution projection"
+      tags:
+        - ERP intake
+      servers:
+        - url: https://receiver.example.invalid
+          description: Consumer-owned base URL, not a Tawsel API route
+      security:
+        - ReceiverStatus: []
+      responses:
+        "200":
+          description: Bounded source status; truncation is explicit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SourceStatus"
+        "401":
+          description: Missing consumer status credential
+        "503":
+          description: Consumer unavailable
 components:
   schemas:
+    SourceStatus:
+      $ref: ./source.schema.json#/$defs/Status
     ConsumerProblem:
       $ref: ./consumer.schema.json#/$defs/Problem
     ConsumerAggregate:

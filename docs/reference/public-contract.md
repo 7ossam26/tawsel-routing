@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P26 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P27 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. P27 adds native private OIDC forms, transactional source commands and public command status with a standalone two-way proof. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -11,6 +11,53 @@ Envelope payload objects are deliberately extensible at this stage. Feature owne
 P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; P20 action.getResult covers scoped round execution/takeover records; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
+
+### SourceStatus
+
+[Canonical definition](../../contracts/source.schema.json#/$defs/Status)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "integrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "commands": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/Command"
+      }
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/Record"
+      }
+    },
+    "truncated": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "tenantId",
+    "integrationId",
+    "commands",
+    "records",
+    "truncated"
+  ]
+}
+```
 
 ### ConsumerProblem
 
@@ -18932,6 +18979,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | p26-captured-applied-report-4 | consumer.schema.json#/$defs/ReportRead | valid foundation shape |
 | p26-captured-consumer-status | consumer.schema.json#/$defs/Status | valid foundation shape |
 | p26-report-command-fixture | consumer.schema.json#/$defs/ReportCommand | valid foundation shape |
+| p27-source-pending | source.schema.json#/$defs/Status | valid foundation shape |
+| p27-source-completed-capture | source.schema.json#/$defs/Status | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19080,5 +19129,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | p26-status-without-applied-watermark | consumer.schema.json#/$defs/Status | invalid (required) |
 | p26-snapshot-invents-history | consumer.schema.json#/$defs/Snapshot | invalid (const) |
 | p26-invalid-report-source | consumer.schema.json#/$defs/ReportCommand | invalid (format) |
+| p27-source-phantom-acceptance | source.schema.json#/$defs/Status | invalid (type) |
+| p27-source-rejection-cannot-be-accepted | source.schema.json#/$defs/Status | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

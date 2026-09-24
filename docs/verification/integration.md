@@ -1,5 +1,7 @@
 # External receiver integration evidence — 24 September 2026
 
+Phase 27 extends this proof with a complete source→execution→signed-projection loop. `npm run source:demo` builds and independently installs the public bundle, provisions two tasks via its own transactional source CLI, runs a genuine Keycloak driver session, receives a subset and allocates a fresh cycle. API outage and two restarts of each side recover the same source identity without SQL repair. Result: **24 unique events, 10 negative checks, delivered 1 / reported 15000 minor / received 1**. Native staff forms separately pass actual Keycloak/Chromium at 390×844 and 1366×768. Source transaction/process and session tests use separate real databases. [Exact commands, captures and limitations](../phase-27-evidence.md), [portable source setup](../erp/consumer-quickstart.md), [source protocol](../erp/source-protocol.md). Historical P26 proof follows.
+
 Phase 26 local proof, reference consumer version 0.1.0. Starting Tawsel HEAD `ebe83e0f90fac7f4f1d48e0a1b86e446383b3827`; changes are uncommitted. [Ordered evidence and interim failures](../phase-26-evidence.md), [protocol](../erp/receiver-protocol.md), [reproduction](../erp/consumer-quickstart.md).
 
 | Invariant | Executed evidence |

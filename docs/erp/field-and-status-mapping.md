@@ -1,5 +1,29 @@
 # Field and status mapping — canonical foundation
 
+## Phase 27 worked native source mapping
+
+| Entity/fact | Reference ERP storage or input → public mapping | Authority, revisions and null/duplicate treatment | Real ERP field |
+| --- | --- | --- | --- |
+| Company/source | Configured tenantId/integrationId and separate credential → integration context | Operator reserves source/scope; forms cannot select another tenant or actor. Same external ID in another source is a different identity. | Unchosen |
+| Branch | `source_records(branch,cairo).desired` → branch.provision | ERP owns name/enabled/location; `location:null` explicitly clears. Increasing sourceRevision; local revision is separate. | Unchosen |
+| Role/user | Local role name/capabilities, subject, roleExternalId, branchExternalIds, exceptions → trusted P08 commands | One role, inherit/allow/deny; empty arrays clear owned grants. Subject must be reserved by operator. Accepted provisioning may still await issuer readiness. | Unchosen |
+| Native staff | OIDC issuer/subject → local source_commands.actor_subject | Verified local audit; public service identity has actorId=null. No role selector or assertedActorId grants access. | Unchosen |
+| Driver | Local external driver/user reference → driver.provisionReference; returned resourceId → pending-return driverId | ERP owns minimal enabled/profile/reference; vehicleReference:null clears. Tawsel owns assigned execution/ownership. | Unchosen |
+| Shipment/cycle/line | `(shipment,external-one)`, cycle-1, pieces → externalId/sourceDispatchCycleId/sourceLineId | ERP supplies immutable revisioned content; Tawsel assigns taskId/dispatchCycleId. New dispatch changes cycle identity, not shipment identity. | Unchosen |
+| Money/pieces | 3 whole pieces × 10000 + 5000 shipping = 35000 minor EGP → exact-outstanding-per-unit snapshot | Explicit zero means prepaid/no remaining due; missing allocation is rejected, never assumed zero. New-cycle commercial outstanding prices must be supplied explicitly. | Unchosen |
+| Preparation/assignment | Native desired proposal → intake.prepare / assignment.receiveBatch with source and assignment expected revisions | Prepared is not held. `receiptAsserted:true` is an explicit physical-source assertion. Atomic capacity rejection never creates a partial batch/backlog. | Unchosen |
+| Normal removal | Source command and desired revision → assignment.withdraw before departure | No mandatory reason. Same-ID retry returns retained result. Departed edit is rejected with `departed_edit_forbidden`; no local source change overrides it. | Unchosen |
+| Round/workday/attempt | Public planning/start/return facts retain roundId, workdayId, attemptId | Tawsel execution identities; source does not generate them. A route revision is not an assignment/device/source version. | Unchosen |
+| Return offer | Public return.requestHandover → native per-driver/request/item view | Tawsel/driver offer only. Requested/unresolved is not physical receipt or available stock. | Unchosen |
+| Actual receipt/disposition | Local return change + immutable command → confirmSubsetReceipt / recordDisposition | Only selected integer item quantities/current expectedRevision; received/lost/damaged remain distinct. Empty subset is invalid. | Unchosen |
+| Fresh cycle | Actual compatible receipt + complete snapshot → dispatch.createFromReceipt | New unassigned cycle, new source cycle ID, preserved old attempts/money/custody. Preparation/receipt occur explicitly afterward. | Unchosen |
+| Source delivery status | source_commands status/attempts/result → consumer `/api/v1/source/status` | Local pending is not accepted. Valid matching durable result sets accepted/rejected/review-required; unknown HTTP stays pending. Local revisions and transport attempt counts never replace server revisions. | Unchosen |
+| Time/projection | Local created/completed times; Tawsel committedAt; signed delivery timestamp; receiver received/applied | Separate provenance. No local save or webhook ACK invents physical arrival, historical transition or settled cash. | Unchosen |
+
+Worked two-task reference: `external-one` and `external-two` share a coordinate but remain separate shipments. Each has three pieces. Both are prepared, then receipt is accepted. Driver partially delivers one piece from the first and reports **15000** minor units; the other has no-answer. Native return offer contains **2 + 3** unresolved pieces. Confirming **1** piece from the first leaves **1 + 3** unresolved. Recording that first remaining piece as lost yields **1 received, 1 lost, 3 unresolved**, never two received. A new cycle consumes the **one received** piece, with explicit 10000 unit due and zero new shipping. Old-cycle delivery/collection is retained; neither the loss nor redispatch adds collection. A departed withdrawal is retained as rejected. A separately tested 51-task received batch is rejected as a whole despite local source persistence. [Actual evidence](../phase-27-evidence.md), [portable commands](consumer-quickstart.md).
+
+Reference local save uses the same immutable action ID after disconnect/restart. Repeated source revision/content is subject to canonical P08/P10 semantics; local expectedRevision independently protects concurrent native edits. A current authoritative read supplies versions for a reviewed new action after rejection. Receiver transitions and current projections preserve their P26 rules below; source desired state must not overwrite accepted execution facts. Real ERP mapping remains unfilled until its supported data/identity surfaces are inspected.
+
 ## Phase 26 receiver mapping — locally verified
 
 | Public fact/state | Reference consumer representation and rule | Real ERP mapping |

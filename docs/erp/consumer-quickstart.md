@@ -1,6 +1,58 @@
-# External consumer quickstart — Phase 26
+# External consumer quickstart — Phase 27
 
-The runnable receiver is **@tawsel/mock-erp 0.1.0**. It uses a separate database/role, verifies signed HTTP, commits inbox receipt, then applies in an independent worker. Native source commands/forms are Phase 27. See [protocol and limits](receiver-protocol.md), [actual verification](../verification/integration.md) and [public contract](../../contracts/consumer.schema.json). Earlier phase examples below remain available and are labelled by their scope.
+Phase 27 adds the [native source and transactional command outbox](source-protocol.md), separate OIDC screens, public source status and a complete two-task public-client exercise. Receiver instructions below remain valid. The independent bundle now also contains `mock-erp/ui-dist`, migrations 0003–0004, `conformance/source.mjs`, `conformance/source-driver.js` and `@tawsel/api-client/source`. Canonical ownership remains `contracts/`; build copies are not another schema source. [Ordered evidence and exact limits](../phase-27-evidence.md).
+
+## Two-way reference setup
+
+There are two independent sides: Tawsel API/issuer/sender, and the reference ERP server/source worker/inbox worker with its own database. They are separate processes and credentials; the native staff session and driver session are also separate. Obtain a test tenant/source credential from the Tawsel operator, reserved existing issuer subject(s), and grants for `identity.provision`, `intake.prepare`, `assignment.manage`, `return.receive`, `return.dispose` and `integration.manage`. The operator configures the approved webhook destination and signing key. The consumer never receives the operator token or Tawsel database URL. Source/actor and branch scope are server checked on every command.
+
+Build/copy/install the bundle as below, then configure `receiver.json` with the consumer scope, own status token/signing keys, public API URL and scoped service credential. Start its server, `source-worker`, and `worker` in separate terminals using only `MOCK_ERP_CONFIG` and `MOCK_ERP_DATABASE_URL`. Native forms are optional for conformance; for the actual screens add:
+
+```json
+"native": {
+  "privateTestOnly": true,
+  "origin": "http://localhost:5191",
+  "issuer": "http://localhost:8085/realms/tawsel-company",
+  "clientId": "erp-reference",
+  "clientSecret": "ISSUER_CONFIGURED_ERP_CLIENT_SECRET",
+  "sessionKey": "64_LOWERCASE_HEX_CHARACTERS",
+  "adminSubjects": ["EXISTING_AUTHORIZED_NATIVE_STAFF_SUBJECT"]
+}
+```
+
+Use `host:"127.0.0.1"`, `port:5191`, `testLoopback:true` for this private local configuration. The native mode refuses production environment/nonloopback binding. The issuer must register the exact `/callback` URI and its own ERP client secret; a stale ignored local secret is not repaired by a realm import. Native entry is `http://localhost:5191/`. No browser form accepts a service token or actor ID.
+
+Create a branch, a role, a reserved-subject user and a driver in the administration view. Check issuer readiness separately from source-command acceptance. Create two three-piece shipments, explicitly confirm their delivery coordinates, prepare both for the driver, then assert actual receipt and submit the received batch. Prepared work remains non-executable until accepted receipt. Native status shows pending/accepted/rejected; the integration tab separately shows Tawsel outbound events and consumer received/applied checkpoints. Use the separate Tawsel driver account for planning/start/outcomes, then open that driver in native returns and confirm only physically received pieces. A fresh dispatch uses the confirmed subset and new cycle; it does not revive the original cycle.
+
+## Portable source conformance commands
+
+The shipped source checker requires the receiver running and uses the compiled source CLI with **its own** database. Create `source-conformance.json`:
+
+```json
+{
+  "apiUrl":"http://127.0.0.1:3011",
+  "receiverUrl":"http://127.0.0.1:3012",
+  "tenantId":"11111111-1111-4111-8111-111111111111",
+  "integrationId":"22222222-2222-4222-8222-222222222222",
+  "credential":"SOURCE_SCOPED_SERVICE_TOKEN",
+  "statusToken":"DISTINCT_CONSUMER_STATUS_TOKEN",
+  "driverSubject":"OPERATOR_RESERVED_TEST_DRIVER_SUBJECT",
+  "entry":"ABSOLUTE_PATH_TO/mock-erp/dist/main.js",
+  "consumerConfig":"ABSOLUTE_PATH_TO/receiver.json"
+}
+```
+
+With an empty dedicated test source, `node conformance/source.mjs source-conformance.json prepare` provisions branch/role/user/driver through the durable source CLI, creates `external-one`/`external-two`, verifies preparation has no custody, and submits definitive receipt. It waits for actual issuer reconciliation; missing services fail visibly. Keep the regular source worker stopped for these staged failure checks so each checker command owns the next due attempt.
+
+Stop the Tawsel API process, then run `node conformance/source.mjs source-conformance.json offline-save`. It saves ordinary predeparture removal locally and observes pending after HTTP failure. Restart the consumer server against the same consumer database and restart Tawsel; `node conformance/source.mjs source-conformance.json resume` verifies same-ID acceptance and restores the second received assignment. No SQL repair is used.
+
+Log the provisioned driver into Tawsel through the real separate OIDC browser flow. Supply that test session's cookie header as `driverCookie` and its exact application origin as `driverOrigin` in this private conformance file; do not commit/log/share these credentials. The checker maintains CSRF bootstrap cookies and uses the published browser clients. `node conformance/source.mjs source-conformance.json execute` manually plans/starts two tasks, reports one-piece partial delivery (15000 EGP minor units) plus no-answer, requests returns, proves a departed staff edit is rejected, confirms one returned piece, records one separate lost piece, then creates/prepares/receives a new compatible one-piece cycle. This is explicit manual planning; it does not claim live Engine routes.
+
+Restart both server processes against their existing databases. Start the incoming `worker`; let sender leases/retry timers expire naturally. Run the shipped receiver checker below against the resulting aggregates with expected totals `{deliveredPieces:1,reportedMinor:15000,receivedPieces:1}`. It replays schema-valid signed messages twice, checks mismatch/expiry negatives, and compares applied state with public authoritative snapshots. `source.mjs ... status` shows source acceptance/rejection separately. The conformance configuration has no dependency on Tawsel internal modules or tables.
+
+Repository-only operator orchestration: `npm run source:demo` performs that exact staged exercise with disposable real databases/issuer user, a fresh copied bundle plus independent `npm install --ignore-scripts`, separate API/consumer processes and a real browser login. It saves redacted facts to `.local/phase-27-standalone-evidence.json`. `npm run test:source` runs transaction/process/auth checks; `npm run test:browser:source` exercises actual native forms. Start the existing local PostgreSQL and Keycloak services first. These setup scripts are not shipped to the consumer. Exact actual results and earlier failures are in the [phase evidence](../phase-27-evidence.md); no vendor compatibility, production TLS or owner/device acceptance is implied.
+
+The runnable reference is **@tawsel/mock-erp 0.1.0**. It uses a separate database/role, verifies signed HTTP, commits inbox receipt, then applies in an independent worker. See [receiver protocol](receiver-protocol.md), [source protocol](source-protocol.md), [actual verification](../verification/integration.md) and [public contract](../../contracts/consumer.schema.json). Earlier phase examples below remain available and are labelled by their scope.
 
 ## Versions and build
 

@@ -1,5 +1,7 @@
 # Tawsel — Discovery and Decision Log
 
+P27 implementation evidence — 24 September 2026: [private native ERP source/OIDC/forms and durable command outbox](docs/erp/source-protocol.md), [actual independent two-way proof](docs/phase-27-evidence.md) and [ERP planning/mapping/quickstart](docs/erp/README.md) are available. D-13/D-111/D-112 public boundaries are preserved; no product decision is changed. Phase 28 and real ERP implementation remain separate; older updates retain historical scope.
+
 P26 implementation evidence, 24 September 2026: [external durable consumer](docs/erp/receiver-protocol.md), [ordered results](docs/phase-26-evidence.md) and [standalone public-boundary proof](docs/verification/integration.md). D-13/D-111/D-112 receiving obligations are locally implemented without changing product decisions. Native source workflows remain P27; no universal ERP compatibility claim.
 
 P25 implementation evidence, 24 September 2026: [durable signed sender](docs/outbox-delivery.md), [ordered verification](docs/phase-25-evidence.md). No product decision is changed; D-13 sender obligations are now implemented locally while P26 receiver/application proof remains outstanding.

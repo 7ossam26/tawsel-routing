@@ -11699,5 +11699,142 @@
         "recipientIntegrationId": "5f338a1d-4bdf-4f18-83cb-981b16076ceb"
       }
     }
+  },
+  {
+    "id": "p27-source-pending",
+    "schema": "source.schema.json#/$defs/Status",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "tenantId": "11111111-1111-4111-8111-111111111111",
+      "integrationId": "22222222-2222-4222-8222-222222222222",
+      "truncated": false,
+      "commands": [
+        {
+          "actionId": "33333333-3333-4333-8333-333333333333",
+          "operationId": "assignment.receiveBatch",
+          "status": "pending",
+          "attempts": 1,
+          "lastError": "connection_unavailable_acceptance_unknown",
+          "result": null
+        }
+      ],
+      "records": [
+        {
+          "kind": "shipment",
+          "externalId": "reference-1",
+          "localRevision": 2,
+          "commandId": "33333333-3333-4333-8333-333333333333",
+          "status": "pending"
+        }
+      ]
+    }
+  },
+  {
+    "id": "p27-source-completed-capture",
+    "schema": "source.schema.json#/$defs/Status",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "tenantId": "84fd7e35-6404-49b6-a7d0-6c1819c502ea",
+      "integrationId": "745f1b8c-b01b-490f-b9d5-4a23ab1d7a85",
+      "truncated": false,
+      "records": [
+        {
+          "kind": "branch",
+          "externalId": "cairo",
+          "localRevision": 1,
+          "commandId": "0422e804-3d26-4d87-b6af-2085c6e09194",
+          "status": "accepted"
+        }
+      ],
+      "commands": [
+        {
+          "actionId": "716861ca-4584-4957-bc38-55e7be631bcc",
+          "operationId": "assignment.withdraw",
+          "status": "rejected",
+          "attempts": 1,
+          "lastError": "departed_edit_forbidden",
+          "result": {
+            "receipt": {
+              "problem": {
+                "code": "departed_edit_forbidden",
+                "type": "https://schemas.tawsel.invalid/problems/departed-edit-forbidden",
+                "title": "Source command rejected",
+                "detail": "Shipment is frozen by departure; ordinary ERP edits are unavailable.",
+                "status": 409,
+                "actionId": "716861ca-4584-4957-bc38-55e7be631bcc",
+                "retryable": false,
+                "correlationId": "6b976fa4-f2ab-458d-8809-7473cc12b657"
+              },
+              "actionId": "716861ca-4584-4957-bc38-55e7be631bcc",
+              "receiptId": "9830995d-d701-468a-bf8f-d1028d88ba96",
+              "receivedAt": "2026-09-24T16:28:20.756Z",
+              "schemaVersion": "1.0.0",
+              "businessStatus": "rejected",
+              "evidenceStatus": "received"
+            },
+            "summary": {
+              "code": "departed_edit_forbidden"
+            },
+            "response": {
+              "body": {
+                "code": "departed_edit_forbidden",
+                "type": "https://schemas.tawsel.invalid/problems/departed-edit-forbidden",
+                "title": "Source command rejected",
+                "detail": "Shipment is frozen by departure; ordinary ERP edits are unavailable.",
+                "status": 409,
+                "actionId": "716861ca-4584-4957-bc38-55e7be631bcc",
+                "retryable": false,
+                "correlationId": "6b976fa4-f2ab-458d-8809-7473cc12b657"
+              },
+              "status": 409
+            },
+            "retention": "full",
+            "operationId": "assignment.withdraw"
+          }
+        },
+        {
+          "actionId": "0422e804-3d26-4d87-b6af-2085c6e09194",
+          "operationId": "branch.provision",
+          "status": "accepted",
+          "attempts": 1,
+          "lastError": null,
+          "result": {
+            "receipt": {
+              "actionId": "0422e804-3d26-4d87-b6af-2085c6e09194",
+              "receiptId": "2a66a4dd-66fc-4d9b-ba2a-90a76d608776",
+              "receivedAt": "2026-09-24T16:27:49.791Z",
+              "committedAt": "2026-09-24T16:27:49.827Z",
+              "schemaVersion": "1.0.0",
+              "businessStatus": "accepted",
+              "evidenceStatus": "received",
+              "resourceVersions": {
+                "sourceRevision": 1
+              }
+            },
+            "summary": {
+              "entity": "branch",
+              "externalId": "cairo",
+              "resourceId": "adc3d6b6-8a08-4d8c-a3df-ab9b3df36466",
+              "issuerStatus": "not-required",
+              "sourceRevision": 1
+            },
+            "response": {
+              "body": {
+                "entity": "branch",
+                "externalId": "cairo",
+                "resourceId": "adc3d6b6-8a08-4d8c-a3df-ab9b3df36466",
+                "issuerStatus": "not-required",
+                "sourceRevision": 1
+              },
+              "status": 200
+            },
+            "retention": "full",
+            "operationId": "branch.provision"
+          }
+        }
+      ]
+    }
   }
 ]

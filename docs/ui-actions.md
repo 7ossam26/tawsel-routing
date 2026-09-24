@@ -1,5 +1,7 @@
 # Requirement-driven action coverage
 
+P27 native implementation: A06/A07 preparation and explicit receipt, A08 normal predeparture removal, A29 driver/source-branch physical subsets and separate disposition, A43 minimal trusted branch/role/user/driver/exception forms, E01/E02/E03/E10 receiver projections and B03 durable source status are connected to public APIs. [Browser interactions/captures and limits](phase-27-evidence.md). The deliberately small form exposes one piece line/EGP, one capability per role and one branch per user; broader canonical fields remain available through the typed adapter. It does not claim every planned UI affordance or full driver journey screen. No fault injection control is exposed.
+
 P23 API update: A26/A27 now have bounded driver correction, current-owner outcome adoption and explicit availability/result reads. Originals remain in history; blocked evidence remains review-required. [API/demo](corrections.md), [ordered proof](phase-23-evidence.md). Full 02/09 UI and offline replay remain P30/P34; no render/usability claim is made.
 
 P15 backend update: A10/A11 and online start now have `round.prepareStart`, `round.start`, `round.getCurrent`, `round.getStartResult` and `round.started` intent. The new readiness/current/result reads fit the existing preparation/continue/sync feedback; they introduce no dispatcher approval or pickup step. [Exact API examples/limits](round-start.md). Connected UI remains P28, with P34 journal integration; no new UI render/browser/device/owner-review claim.

@@ -233,4 +233,4 @@ test('C: additive migration preserves an actual P19 started round and enables ta
  }finally{
   await old.close();await cleanupMigrationDirectory(directory);
  }
-});
+},30_000); // Creates a second real database and upgrades the retained P19 schema.

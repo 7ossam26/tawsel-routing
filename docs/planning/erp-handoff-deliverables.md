@@ -1,6 +1,6 @@
 # ERP handoff deliverables and proof plan
 
-Package revision 3 · D-111, amended by D-112. P02 common schema/tooling and planning/mapping foundations are available in the [ERP index](../erp/README.md). P26 now provides the [separate durable receiver, standalone quickstart](../erp/consumer-quickstart.md) and [actual public HTTP/process/database proof](../verification/integration.md). P27 native source workflows and P42 final release packaging remain future phase work; no real vendor ERP compatibility is implied.
+Package revision 3 · D-111, amended by D-112. P02 common schema/tooling and planning/mapping foundations are available in the [ERP index](../erp/README.md). P26 now provides the [separate durable receiver, standalone quickstart](../erp/consumer-quickstart.md) and [actual public HTTP/process/database proof](../verification/integration.md). P27 now provides [native source workflows, transactional outbox and standalone two-way proof](../phase-27-evidence.md), with substantive planning/mapping/quickstart input. P42 final release packaging remains future phase work; no real vendor ERP compatibility is implied.
 
 This document makes the future ERP handoff explicit. It is an implementation obligation, not an as-built integration certificate. The files below are future deliverables until their owner phase creates substantive, tested content. The final bundle must let an implementer plan and build the real shipping ERP without this chat.
 

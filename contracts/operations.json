@@ -1005,7 +1005,7 @@
       "id": "source.deliverCommandIntent",
       "family": "sync-recovery",
       "kind": "internal-work",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 27,
       "capability": "external-consumer",
       "description": "ERP-local native change plus command outbox, durable pending/accepted/rejected status."
@@ -1014,10 +1014,12 @@
       "id": "source.getCommandStatus",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 27,
       "capability": "external-consumer",
-      "description": "Native mock ERP reads its own durable source command status; not a Tawsel endpoint."
+      "description": "Consumer-owned authenticated read of durable source command and local record status; acceptance remains separate from receiver application.",
+      "method": "GET",
+      "path": "/api/v1/source/status"
     },
     {
       "id": "report.getWorkday",
