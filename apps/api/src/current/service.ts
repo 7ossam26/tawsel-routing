@@ -111,12 +111,33 @@ export class CurrentActivity {
    const r=await round(tx,a,roundId);if(r.ended_at)throw new CurrentError('lifecycle_forbidden',409,'الجولة انتهت.');
    const state=await planningState(tx,r.tenant_id,driverId),input=await snapshot(tx,state);inputAccess(a,input);
    const current=await activity(tx,r.tenant_id,roundId),origin=await physicalOrigin(tx,r.tenant_id,driverId);
-   const details=(await tx.query<{task_id:string;recipient_name:string;phone:string;address:string|null}>(`SELECT t.task_id,t.recipient_name,COALESCE(b.recipient_phone_normalized,s.payload->>'recipientPhone') AS phone,t.original->>'addressText' AS address
-    FROM tawsel.location_tasks t LEFT JOIN tawsel.b2c_tasks b USING(tenant_id,task_id) LEFT JOIN tawsel.b2b_source_snapshots s ON s.tenant_id=t.tenant_id AND s.task_id=t.task_id AND s.source_revision=t.source_revision
+   const details=(await tx.query<{task_id:string;recipient_name:string;phone:string;address:string|null;amount_minor:string|null;source_payload:components['schemas']['B2bSourceSnapshot']|null}>(`SELECT t.task_id,t.recipient_name,COALESCE(b.recipient_phone_normalized,s.payload->>'recipientPhone') AS phone,t.original->>'addressText' AS address,
+      ca.amount_minor::text,s.payload AS source_payload
+    FROM tawsel.location_tasks t LEFT JOIN tawsel.b2c_tasks b USING(tenant_id,task_id) LEFT JOIN tawsel.task_collection_amounts ca USING(tenant_id,task_id)
+    LEFT JOIN tawsel.b2b_source_snapshots s ON s.tenant_id=t.tenant_id AND s.task_id=t.task_id AND s.source_revision=t.source_revision
     JOIN tawsel.round_admissions a ON a.tenant_id=t.tenant_id AND a.task_id=t.task_id AND a.round_id=$3 WHERE t.tenant_id=$1 AND t.driver_id=$2`,[r.tenant_id,driverId,roundId])).rows;
-   const now=Date.now(),targets:Target[]=input.members.filter(m=>m.eligible&&m.departureAt&&(!m.earliestAt||Date.parse(m.earliestAt)<=now)&&details.some(d=>d.task_id===m.taskId)).map(m=>{
-    const d=details.find(d=>d.task_id===m.taskId)!;return {taskId:m.taskId,attemptId:m.attemptId,sourceRevision:m.sourceRevision,assignmentRevision:m.assignmentRevision,pinRevision:m.pinRevision,coordinates:m.coordinates!,recipientName:d.recipient_name,recipientPhone:normalizePhone(d.phone),address:d.address};
-   });
+   const now=Date.now(),targets:Target[]=[];
+   for(const m of input.members.filter(m=>m.eligible&&m.departureAt&&(!m.earliestAt||Date.parse(m.earliestAt)<=now)&&details.some(d=>d.task_id===m.taskId))){
+    const d=details.find(d=>d.task_id===m.taskId)!;
+    let delivery:Target['delivery'];
+    if(d.source_payload&&m.dispatchCycleId){
+     const source=d.source_payload;
+     const goods=source.lines.reduce((sum,line)=>sum+BigInt(line.quantity)*BigInt(line.unitDue.amountMinor),0n);
+     const prior=(await tx.query<{shipping:string}>(`SELECT COALESCE(sum(c.shipping_minor),0)::text AS shipping FROM tawsel.outcome_collections c
+       JOIN tawsel.delivery_outcomes o USING(tenant_id,outcome_id)
+       WHERE NOT EXISTS (SELECT 1 FROM tawsel.delivery_outcomes newer WHERE newer.tenant_id=o.tenant_id AND newer.attempt_id=o.attempt_id AND newer.revision>o.revision)
+       AND o.tenant_id=$1 AND o.dispatch_cycle_id=$2`,[r.tenant_id,m.dispatchCycleId])).rows[0]!;
+     const shipping=BigInt(source.shippingDue.amountMinor)-BigInt(prior.shipping);
+     const full=goods+shipping;
+     if(shipping<0n||full>BigInt(Number.MAX_SAFE_INTEGER))throw new CurrentError('validation_failed',500,'تعذر حساب مبلغ التحصيل الحالي.');
+     const money=(amount:bigint)=>({amountMinor:Number(amount),currency:'EGP' as const,exponent:2 as const});
+     delivery={kind:'company',allowedActions:source.splittingAllowed?['full','partial','refusal','no-answer']:['full','refusal','no-answer'],fullCollection:money(full),goodsDue:money(goods),shippingDue:money(shipping)};
+    }else{
+     const amount=d.amount_minor===null?null:{amountMinor:Number(d.amount_minor),currency:'EGP' as const,exponent:2 as const};
+     delivery={kind:'personal',allowedActions:['full','no-answer'],fullCollection:amount,goodsDue:null,shippingDue:null};
+    }
+    targets.push({taskId:m.taskId,attemptId:m.attemptId,sourceRevision:m.sourceRevision,assignmentRevision:m.assignmentRevision,pinRevision:m.pinRevision,coordinates:m.coordinates!,recipientName:d.recipient_name,recipientPhone:normalizePhone(d.phone),address:d.address,delivery});
+   }
    const plan=(await tx.query<{plan_id:string;fingerprint:string;route_policy:{orderedTaskIds:string[]}}>("SELECT * FROM tawsel.plan_revisions WHERE tenant_id=$1 AND driver_id=$2 AND state IN ('ready','manual') ORDER BY revision DESC LIMIT 1",[r.tenant_id,driverId])).rows[0];
    const next=plan?.route_policy.orderedTaskIds.map(id=>targets.find(t=>t.taskId===id)).find(t=>t&&t.attemptId!==current?.attemptId)??null;
    const branch=await branchActivity(tx,r.tenant_id,driverId);

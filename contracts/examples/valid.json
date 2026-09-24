@@ -3704,7 +3704,14 @@
           },
           "recipientName": "منى عبد الرحمن",
           "recipientPhone": "+201012345678",
-          "address": null
+          "address": null,
+          "delivery": {
+            "kind": "personal",
+            "allowedActions": ["full", "no-answer"],
+            "fullCollection": null,
+            "goodsDue": null,
+            "shippingDue": null
+          }
         }
       ]
     }
@@ -6300,7 +6307,14 @@
             },
             "recipientName": "عميل التجربة",
             "recipientPhone": "+201012345678",
-            "address": null
+            "address": null,
+            "delivery": {
+              "kind": "personal",
+              "allowedActions": ["full", "no-answer"],
+              "fullCollection": null,
+              "goodsDue": null,
+              "shippingDue": null
+            }
           }
         ]
       },
@@ -7606,7 +7620,14 @@
         },
         "recipientName": "عميل بنفس العنوان",
         "recipientPhone": "+201012345678",
-        "address": null
+        "address": null,
+        "delivery": {
+          "kind": "company",
+          "allowedActions": ["full", "partial", "refusal", "no-answer"],
+          "fullCollection": { "amountMinor": 35000, "currency": "EGP", "exponent": 2 },
+          "goodsDue": { "amountMinor": 30000, "currency": "EGP", "exponent": 2 },
+          "shippingDue": { "amountMinor": 5000, "currency": "EGP", "exponent": 2 }
+        }
       },
       "planning": {
         "planId": "ed5b0215-f934-4774-a541-a56263ab8d1e",
@@ -7625,7 +7646,14 @@
           },
           "recipientName": "عميل بنفس العنوان",
           "recipientPhone": "+201012345678",
-          "address": null
+          "address": null,
+          "delivery": {
+            "kind": "company",
+            "allowedActions": ["full", "partial", "refusal", "no-answer"],
+            "fullCollection": { "amountMinor": 35000, "currency": "EGP", "exponent": 2 },
+            "goodsDue": { "amountMinor": 30000, "currency": "EGP", "exponent": 2 },
+            "shippingDue": { "amountMinor": 5000, "currency": "EGP", "exponent": 2 }
+          }
         }
       ]
     }

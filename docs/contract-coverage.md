@@ -268,9 +268,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `ui.callRecipient` | local-ui | designed | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open dialer; no call count, contact outcome or movement event. |
-| `ui.messageRecipient` | local-ui | designed | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open WhatsApp; no execution transition. |
-| `ui.openNavigation` | local-ui | designed | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open external navigation; does not set heading/arrival. |
+| `ui.callRecipient` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open dialer; no call count, contact outcome or movement event. |
+| `ui.messageRecipient` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open WhatsApp; no execution transition. |
+| `ui.openNavigation` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open external navigation; does not set heading/arrival. |
 | `ui.filterAndInspect` | local-ui | designed | [P03](phases/03-design-action-specification.md) | local | Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs. |
 | `ui.prepareDraft` | local-ui | designed | [P28](phases/28-online-preparation-journeys.md) | local | Enter unsaved forms/pin/route input; saving uses intake/location/planning operations. |
 | `ui.captureOfflineAction` | local-ui | designed | [P33](phases/33-offline-local-capture.md) | local | Atomic local journal and pending projection for allowed downloaded started work. |

@@ -1,5 +1,7 @@
 # ERP planning input — verified reference and vendor decisions
 
+Phase 29 consumes the frozen public source allocation in the connected ordinary driver screen. `CurrentTarget.delivery` presents server-calculated goods, remaining shipping and exact full collection plus allowed outcomes; it is a Tawsel read affordance, not a new ERP write or negotiated price. Accepted full/no-answer commands retain the existing source IDs/revisions and event boundary. The actual browser proof uses the labelled mock-B2B public source, not a commercial ERP. [Phase 29 evidence](../phase-29-evidence.md).
+
 Phase 28 consumes the existing public/session contracts in the connected driver `/day` and `/prepare` screens. Company `prepared` remains upcoming work and is explicitly not driver custody; only accepted received/held work participates as held work. The driver may review route choices, observe planning failure and set a complete manual order, but Tawsel does not add an ERP assignment, commercial order or warehouse administration form. The actual browser proof uses the labelled P27 mock-B2B public source boundary and a controlled Engine HTTP failure, not a commercial ERP or live routing profile. See [Phase 28 evidence](../phase-28-evidence.md).
 
 ## Phase 27 two-way reference and ordered ERP implementation slices

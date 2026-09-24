@@ -1,5 +1,7 @@
 # Field and status mapping — canonical foundation
 
+Phase 29 presentation rule: exact full collection on the driver screen is calculated from the immutable source lines plus remaining shipping ledger and returned in `CurrentTarget.delivery`; the browser does not apportion or edit ERP money. Full/no-answer acceptance is Tawsel execution state and does not itself claim ERP application or settlement. [Connected evidence](../phase-29-evidence.md).
+
 Phase 28 presentation rule: `prepared` is shown as company work that is coming and **not on the driver's custody**; `received`/held is the custody-bearing state. Unresolved location data remains visibly excluded from planning without hiding other valid work. Planning draft/job/manual/start and device-takeover status are Tawsel execution state consumed through existing public/session APIs; they are not new ERP fields and do not authorize a source to mark a route started. [Connected evidence](../phase-28-evidence.md).
 
 ## Phase 27 worked native source mapping

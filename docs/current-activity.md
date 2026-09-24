@@ -1,5 +1,7 @@
 # Explicit heading, arrival and physical origin
 
+Phase 29 connects this read to the ordinary production journey. Each eligible `CurrentTarget` now includes a closed `delivery` affordance: personal/company kind, actual permitted outcome identifiers and server-calculated full/goods/remaining-shipping money. The browser uses it for exact display/submission and never derives ERP allocation. The active map/list is destination context only; choosing a pin/list row or opening an external handler remains non-mutating. [Connected UI/browser evidence](phase-29-evidence.md).
+
 P20 shared generation/snapshot fencing now covers all current actions plus outcomes, eligibility, closure and active planning/pins. Stale submissions become durable review evidence; [device protocol](device-ownership.md). No takeover UI was added to this P16 component.
 
 Phase 16, locally verified 24 September 2026. [Ordered evidence](phase-16-evidence.md). The focused production component is `/rounds/current?kind=personal|company`; it requires a P15 started round. Full preparation/outcome/execution UI remains P28–31.
@@ -75,4 +77,4 @@ At the Phase 16 stopping point, P17 was required to add resolved-attempt/outcome
 
 ## Phase 17 integration — 24 September 2026
 
-[Outcomes](outcomes.md) now implement that handoff in additive migration 0014. Accepted full/partial/refused/no-answer resolves the compatible attempt, appends current-history with null current, advances activity/execution revisions and enqueues planning atomically. First heading/arrival and physical origin are preserved; a phone-only result has no invented movement. Resolved personal tasks and rejected B2B remainders leave eligible targets and next suggestions. The existing focused current component still does not supply the full result UI; P29–30 owns that integration.
+[Outcomes](outcomes.md) now implement that handoff in additive migration 0014. Accepted full/partial/refused/no-answer resolves the compatible attempt, appends current-history with null current, advances activity/execution revisions and enqueues planning atomically. First heading/arrival and physical origin are preserved; a phone-only result has no invented movement. Resolved personal tasks and rejected B2B remainders leave eligible targets and next suggestions. The production current component now supplies the P29 ordinary full/no-answer path with stable action recovery and mandatory takeover snapshot-token propagation. P30 owns partial/refusal/correction choices; P31 owns branch/closure.

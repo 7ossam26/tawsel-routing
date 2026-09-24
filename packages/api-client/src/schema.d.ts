@@ -3155,6 +3155,22 @@ export interface components {
             /** @enum {unknown} */
             status: "pending" | "sending" | "failed" | "received";
         };
+        DeliveryAffordance: {
+            allowedActions: ("full" | "partial" | "refusal" | "no-answer")[];
+            /** @description Exact server-calculated amount to report for a full result. Null means the personal task has no collection. */
+            fullCollection: components["schemas"]["DeliveryMoney"] | null;
+            goodsDue: components["schemas"]["DeliveryMoney"] | null;
+            /** @enum {unknown} */
+            kind: "personal" | "company";
+            shippingDue: components["schemas"]["DeliveryMoney"] | null;
+        };
+        DeliveryMoney: {
+            amountMinor: number;
+            /** @constant */
+            currency: "EGP";
+            /** @constant */
+            exponent: 2;
+        };
         DeliveryRequirements: {
             instructions?: string;
             /** @enum {string} */
@@ -5357,6 +5373,7 @@ export interface components {
             assignmentRevision: number;
             attemptId: components["schemas"]["Uuid"];
             coordinates: components["schemas"]["Coordinates"];
+            delivery: components["schemas"]["DeliveryAffordance"];
             pinRevision: number;
             recipientName: string;
             recipientPhone: string;

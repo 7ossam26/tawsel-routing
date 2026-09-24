@@ -1,6 +1,6 @@
 # Delivery outcomes — Phase 17
 
-Implemented locally on 24 September 2026. [Ordered evidence](phase-17-evidence.md), [canonical schema](../contracts/outcomes.schema.json), [HTTP contract](../contracts/openapi.yaml), [typed client](../packages/api-client/src/outcomes.ts), [portable consumer checks](../tests/erp-conformance/outcomes.ts). Full execution UI is P29–30; signed delivery/receiver application remains P25–27.
+Implemented locally on 24 September 2026. [Ordered evidence](phase-17-evidence.md), [canonical schema](../contracts/outcomes.schema.json), [HTTP contract](../contracts/openapi.yaml), [typed client](../packages/api-client/src/outcomes.ts), [portable consumer checks](../tests/erp-conformance/outcomes.ts). Phase 29 now connects the ordinary full and simple no-answer UI using the authoritative current-target amount/affordance; P30 owns partial/refusal/correction UI. Signed delivery/receiver application is implemented separately in P25–27.
 
 ## Reproduce
 

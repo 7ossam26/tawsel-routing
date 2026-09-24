@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+P29 update — 25 September 2026: [the ordinary connected driver path](../phase-29-evidence.md) now covers active map/list, explicit heading/arrival, exact full delivery, simple no-answer, same-action recovery and confirmed online takeover state. Phase 30 is next and may extend this verified common path with focused exceptions/correction; earlier updates are historical.
+
 P27 update — 24 September 2026: private native source forms/OIDC sessions and transactional source delivery are implemented and locally verified. [Two-way standalone quickstart](../erp/consumer-quickstart.md), [ordered evidence](../phase-27-evidence.md). Phase 28 is next; it may use the verified mock-supplied work and public source/receiver boundaries. Earlier updates are historical.
 
 P26 update — 24 September 2026: [external durable receiver, projection and reconciliation](../erp/receiver-protocol.md) are implemented with separate real database/process/public-HTTP proof and standalone artifacts. [Quickstart](../erp/consumer-quickstart.md), [evidence](../phase-26-evidence.md). Phase 27 is next and may build native source workflows on this durable receiver. Earlier numbered updates below are historical.

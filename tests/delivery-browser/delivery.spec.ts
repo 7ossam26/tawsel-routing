@@ -1,0 +1,37 @@
+import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+
+const fixture = 'http://127.0.0.1:3029';
+type Info = { personalUser: string; companyUser: string; password: string; companyCode: string };
+async function keycloakLogin(page: Page, username: string, password: string) { await page.locator('#username').fill(username); await page.locator('#password').fill(password); await page.locator('#kc-login').click(); }
+async function start(page: Page, kind: 'personal' | 'company') { await page.goto(`/prepare?kind=${kind}`); await expect(page.getByText('خطة جاهزة')).toBeVisible(); await page.getByRole('button', { name: 'ابدأ الجولة' }).click(); await expect(page.getByRole('heading', { name: 'المحطة الحالية' })).toBeVisible(); }
+async function loginPersonal(context: BrowserContext, info: Info) { const page = await context.newPage(); await page.goto('/login/independent'); await page.getByLabel('رقم الهاتف').fill(info.personalUser); await page.getByRole('button', { name: 'متابعة تسجيل الدخول' }).click(); await keycloakLogin(page, info.personalUser, info.password); return page; }
+async function loginCompany(context: BrowserContext, info: Info) { const page = await context.newPage(); await page.goto('/login/company'); await page.getByLabel('كود الشركة (مطلوب)').fill(info.companyCode); await page.getByRole('button', { name: 'متابعة', exact: true }).click(); await page.getByRole('button', { name: 'متابعة تسجيل الدخول' }).click(); await keycloakLogin(page, info.companyUser, info.password); return page; }
+test.afterAll(async ({ request }) => { await writeFile('.local/phase-29-browser.stop', 'stop'); await request.get(`${fixture}/health`).catch(() => undefined); });
+
+test('two-stop B2C and ordinary B2B delivery preserve identity, timeout and ownership truth', async ({ browser, request }) => {
+  const info = await (await request.get(`${fixture}/__fixture/info`)).json() as Info;
+  const personalContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
+  const personal = await loginPersonal(personalContext, info); await start(personal, 'personal');
+  const externalPosts: string[] = []; personal.on('request', value => { if (value.method() === 'POST' && value.url().includes('/api/')) externalPosts.push(value.url()); });
+  await personal.evaluate(() => document.addEventListener('click', event => { const anchor = (event.target as Element).closest('a'); if (anchor && (anchor.href.startsWith('tel:') || anchor.target === '_blank')) event.preventDefault(); }, true));
+  await personal.getByRole('link', { name: /اتصال بـ/ }).click(); await expect(personal.getByText(/لم نسجّل اتجاهًا أو وصولًا أو نجاح تواصل/)).toBeVisible(); expect(externalPosts).toEqual([]);
+  await personal.getByRole('button', { name: 'اتجه للعميل' }).click(); await personal.getByRole('button', { name: 'وصلت' }).click(); await expect(personal.getByRole('button', { name: /تأكيد التسليم/ })).toBeVisible(); await personal.getByRole('button', { name: /تأكيد التسليم/ }).click();
+  await expect(personal.getByText(/المحطة التالية اقتراح فقط/)).toBeVisible(); await expect(personal.getByRole('button', { name: 'اتجه للعميل' })).toBeVisible();
+  await personal.getByRole('button', { name: 'اتجه للعميل' }).click(); await personal.getByRole('button', { name: 'لم يرد العميل' }).click(); await expect(personal.getByText(/دون وصول أو رسوم أو عدّاد مكالمات/)).toBeVisible();
+  expect(await personal.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true); await personal.screenshot({ path: 'output/playwright/phase-29-b2c-two-stop-mobile.png', fullPage: true }); await personalContext.close();
+
+  const companyContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
+  const company = await loginCompany(companyContext, info); await start(company, 'company'); await company.getByRole('button', { name: 'اتجه للعميل' }).click(); await company.getByRole('button', { name: 'وصلت' }).click();
+  await expect(company.getByText(/المطلوب عند التسليم الكامل/)).toBeVisible(); await company.setViewportSize({ width: 1366, height: 900 }); await expect(company.getByText(/١٫٠٠/).first()).toBeVisible(); await company.screenshot({ path: 'output/playwright/phase-29-b2b-full-desktop.png', fullPage: true });
+  const secondContext = await browser.newContext({ baseURL: 'http://localhost:5173', storageState: await companyContext.storageState(), viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
+  await secondContext.addInitScript(() => localStorage.setItem('tawsel:device-id', crypto.randomUUID())); const second = await secondContext.newPage(); await second.goto('/rounds/current?kind=company'); await expect(second.getByText('الجولة تعمل على هاتف آخر')).toBeVisible(); await second.getByRole('button', { name: 'انقل التنفيذ لهذا الهاتف' }).click(); await expect(second.getByText(/اكتمل نقل التنفيذ وتحميل الحالة المؤكدة/)).toBeVisible();
+  await company.reload(); await expect(company.getByText('الجولة تعمل على هاتف آخر')).toBeVisible(); await expect(company.getByRole('button', { name: /تأكيد التسليم وتحصيل/ })).toBeDisabled();
+  const commands: unknown[] = []; second.on('request', value => { if (value.method() === 'POST' && value.url().includes('/api/v1/outcomes/full')) commands.push(value.postDataJSON()); });
+  await second.evaluate(() => { const state = window as typeof window & { __phase29Fetch?: typeof fetch }; const original = window.fetch.bind(window); state.__phase29Fetch = original; window.fetch = async (...args) => { const response = await original(...args); const input = args[0], url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url; if (url.includes('/api/v1/outcomes/full')) throw new TypeError('Failed to fetch'); return response; }; });
+  await second.getByRole('button', { name: /تأكيد التسليم وتحصيل/ }).click(); await expect(second.getByText('إجراء ينتظر التأكيد')).toBeVisible(); await second.evaluate(() => { const state = window as typeof window & { __phase29Fetch?: typeof fetch }; window.fetch = state.__phase29Fetch!; delete state.__phase29Fetch; }); await second.getByRole('button', { name: 'تحقّق وأعد إرسال الطلب نفسه' }).click();
+  await expect(second.getByText(/تم تأكيد التسليم والتحصيل من الخادم/)).toBeVisible(); expect(commands).toHaveLength(2); expect(commands[1]).toEqual(commands[0]);
+  await second.reload(); await expect(second.getByText('تمت معالجة 1 من 1 وقفات')).toBeVisible(); await expect(second.getByText('لا توجد محطة متاحة الآن')).toBeVisible(); await expect(second.getByRole('button', { name: /تأكيد التسليم وتحصيل/ })).toHaveCount(0); await secondContext.close(); await companyContext.close();
+  const state = await (await request.get(`${fixture}/__fixture/state`)).json(); await mkdir('.local', { recursive: true }); await writeFile('.local/phase-29-browser-evidence.json', JSON.stringify({ evidenceClass: 'Actual local Keycloak/Chromium/HTTP/PostgreSQL; controlled routing HTTP and mock-B2B public source boundary; no physical device or commercial ERP claim', state }, null, 2));
+  expect(state.outcomes).toHaveLength(3); expect(state.actions.filter((value: { operation_id: string }) => value.operation_id === 'outcome.recordFull')).toHaveLength(2);
+});

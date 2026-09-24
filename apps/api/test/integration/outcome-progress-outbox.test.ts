@@ -41,6 +41,7 @@ describe('P17 outcome / progress / outbox — isolated real PostgreSQL and API',
   const heading=f.make(0,'current.selectHeading');await current.command(f.principal,heading);
   await current.command(f.principal,f.make(0,'current.recordArrival',{},1,String(heading.payload.attemptId)));
   const before=await current.read(f.principal,f.round.roundId),c=f.make(0,'outcome.recordPartial',{pieces:[{sourceLineId:'pieces',delivered:2}],reportedCollection:money(25000)},2,String(heading.payload.attemptId));
+  expect(before.targets.find(t=>t.taskId===f.tasks[0])?.delivery).toEqual({kind:'company',allowedActions:['full','partial','refusal','no-answer'],fullCollection:money(35000),goodsDue:money(30000),shippingDue:money(5000)});
   const result=await post(app,c);expect(result.statusCode,result.body).toBe(200);const accepted=body(result);
   expect(accepted.outcome).toMatchObject({outcome:'partial',heading:before.currentActivity!.heading,arrival:before.currentActivity!.arrival,returnRequired:true,lines:[{delivered:2,heldReturnRequired:1}],collection:{reported:money(25000)}});
   expect(accepted.current).toMatchObject({currentActivity:null,revision:3,physicalOrigin:before.physicalOrigin});
@@ -133,6 +134,7 @@ describe('P17 outcome / progress / outbox — isolated real PostgreSQL and API',
   const latest=(await db.pool.query('SELECT input FROM tawsel.planning_jobs WHERE tenant_id=$1 ORDER BY created_at DESC LIMIT 1',[ids.personalTenant])).rows[0].input as components['schemas']['PlanningInput'];expect(latest.members.filter(m=>m.eligible).map(m=>m.taskId)).toEqual([added.taskId]);
   const cod=await new IndependentIntakeService(db.pool).create(principals.personal,command('task.createIndependent',{recipientName:'تحصيل مستقل',recipientPhone:'01012345678',destination:{kind:'confirmed-pin',coordinates:{latitude:30.1,longitude:31.2}},collectionAmount:money(12500)}));
   const taskId=(cod.response!.body.task as {taskId:string}).taskId,s=await new CurrentActivity(db.pool).read(principals.personal,f.round.roundId),target=s.targets.find(t=>t.taskId===taskId)!;
+  expect(target.delivery).toEqual({kind:'personal',allowedActions:['full','no-answer'],fullCollection:money(12500),goodsDue:null,shippingDue:null});
   const pay=command('outcome.recordFull',{roundId:f.round.roundId,taskId,attemptId:target.attemptId,expectedActivityRevision:s.revision,expectedCurrentAttemptId:null,expectedSourceRevision:target.sourceRevision,expectedAssignmentRevision:target.assignmentRevision,expectedPinRevision:target.pinRevision,reportedCollection:money(12499)});pay.context=f.start.context;
   expect((await post(app,pay)).statusCode).toBe(400);pay.actionId=randomUUID();pay.payload.reportedCollection=money(12500);const paid=await post(app,pay);expect(paid.statusCode,paid.body).toBe(200);expect(body(paid).outcome.collection.reported).toEqual(money(12500));
  });

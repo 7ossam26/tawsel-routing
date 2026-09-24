@@ -228,6 +228,9 @@
               "type": "null"
             }
           ]
+        },
+        "delivery": {
+          "$ref": "#/$defs/DeliveryAffordance"
         }
       },
       "required": [
@@ -239,7 +242,93 @@
         "coordinates",
         "recipientName",
         "recipientPhone",
-        "address"
+        "address",
+        "delivery"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryAffordance": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "personal",
+            "company"
+          ]
+        },
+        "allowedActions": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "full",
+              "partial",
+              "refusal",
+              "no-answer"
+            ]
+          }
+        },
+        "fullCollection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeliveryMoney"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact server-calculated amount to report for a full result. Null means the personal task has no collection."
+        },
+        "goodsDue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeliveryMoney"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shippingDue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeliveryMoney"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "allowedActions",
+        "fullCollection",
+        "goodsDue",
+        "shippingDue"
+      ],
+      "additionalProperties": false
+    },
+    "DeliveryMoney": {
+      "type": "object",
+      "properties": {
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "currency": {
+          "const": "EGP"
+        },
+        "exponent": {
+          "const": 2
+        }
+      },
+      "required": [
+        "amountMinor",
+        "currency",
+        "exponent"
       ],
       "additionalProperties": false
     },

@@ -1088,7 +1088,7 @@
       "id": "ui.callRecipient",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 29,
       "capability": "local",
       "description": "Open dialer; no call count, contact outcome or movement event."
@@ -1097,7 +1097,7 @@
       "id": "ui.messageRecipient",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 29,
       "capability": "local",
       "description": "Open WhatsApp; no execution transition."
@@ -1106,7 +1106,7 @@
       "id": "ui.openNavigation",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 29,
       "capability": "local",
       "description": "Open external navigation; does not set heading/arrival."

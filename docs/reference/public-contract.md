@@ -10902,6 +10902,9 @@ recordedAt is server acceptance recording time, not measured travel time. observ
           "type": "null"
         }
       ]
+    },
+    "delivery": {
+      "$ref": "#/$defs/DeliveryAffordance"
     }
   },
   "required": [
@@ -10913,7 +10916,8 @@ recordedAt is server acceptance recording time, not measured travel time. observ
     "coordinates",
     "recipientName",
     "recipientPhone",
-    "address"
+    "address",
+    "delivery"
   ],
   "additionalProperties": false
 }

@@ -1,5 +1,13 @@
 # Tawsel implementation status
 
+## Phase 29 — 25 September 2026
+
+Implemented the connected ordinary online driver journey at `/rounds/current`: real active destination map/list, explicit selected/current/next state, descriptive call/WhatsApp/navigation handoff with zero business transitions, one dominant heading → arrival → full-result action, B2C optional/no collection, exact server-calculated B2B goods/shipping/full collection, simple no-answer without invented arrival/fees/counters, progress, stable same-ID recovery and online ownership transfer with mandatory confirmed snapshot token. Partial/refusal/correction and closure remain Phases 30–31.
+
+The prerequisite current snapshot gained a closed `delivery` affordance so the browser never calculates ERP money or guesses allowed actions. Focused component coverage is **15 passed** and the current/outcome PostgreSQL regression plus final repository gates are recorded in [ordered evidence](phase-29-evidence.md). Actual local Keycloak 26.7.4/Chromium/Fastify/PostgreSQL proof passes a two-stop personal full/no-answer journey and ordinary mock-company exact full delivery with response loss, accepted-state reload and another-phone takeover. The first browser attempt accurately failed while Keycloak was stopped; a later run exposed and drove the snapshot-token propagation fix before the final accepted **1 passed / 37.8s** run. Final equivalent gates passed **43 files / 878 tests** in 778.00s with the documented scoped 30-second allowance, plus contract/UI-spec checks, lint, types and all production builds.
+
+Captures are `output/playwright/phase-29-b2c-two-stop-mobile.png` and `output/playwright/phase-29-b2b-full-desktop.png`; `.local/phase-29-browser-evidence.json` retains durable outcomes/action identities. Routing is controlled HTTP and company input uses the labelled mock public source. No live Engine profile, commercial ERP, native external-app completion, physical-device acceptance, offline durability, commit, push or deployment is claimed. Runtime identifies the GPT-5 family; the requested GPT-5.6 Sol/high picker setting is not verifiable and is not asserted.
+
 ## Phase 28 — 24 September 2026
 
 Implemented the connected Arabic RTL driver journey at `/day` and `/prepare`: coherent daily work grouped as ready/unresolved/prepared/held/deferred, explicit preparation choices, durable planning states, partial-plan blocking, honest Engine failure and complete manual fallback, current-plan readiness, stable same-ID start recovery, current-round continuation and explicit other-phone takeover. Personal creation and native ERP remain their existing source-owned entry points; no duplicate commercial administration surface was added.
