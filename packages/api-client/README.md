@@ -1,5 +1,9 @@
 # Tawsel public client foundation 0.1.0
 
+## P22 branch and dispatch clients
+
+`src/branches.ts` exposes session/CSRF driver interruption, branch arrival and resume commands. `src/intake.ts` adds the typed `B2bRedispatchCommand` and `cycles(externalId, cursor?)` source read. Persist the complete immutable command before sending; recover an unknown result with the same action ID. Receipt-confirmed redispatch creates an unassigned new cycle, not possession. Driver recovery uses the existing action result API; current/takeover snapshots include visible branch state. [Runbook](../../docs/branch-interruption.md), [copied external consumer](../../tests/erp-conformance/dispatch.ts). No backend/database dependency is imported by these clients.
+
 ## Phase 21 returns client
 
 `src/returns.ts` exports browser-session `ReturnsClient` and bearer-service `returnReceiverClient`, using only generated public types and HTTP. They expose offers, source groups, request/action reads, claimed-subset confirmation, native pending reads, actual receipt and separate disposition. Persist exact envelopes; a timeout must never mint a new action or mark receipt. See [protocol/demo](../../docs/returns.md) and [public-only consumer](../../tests/erp-conformance/returns.ts). New outcome snapshots include explicit current custody separately from historical outcome lines.

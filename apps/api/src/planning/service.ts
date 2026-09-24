@@ -49,6 +49,7 @@ export class PlanningService {
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:p.driverId}]);
      const state=await planningState(tx,a.context.tenantId,p.driverId),input=await snapshot(tx,state);
      authorizeInput(a,input);
+     if(input.branchActivity)throw new PlanningError('lifecycle_forbidden',409,'أكمل زيارة الفرع قبل تغيير خطة العملاء.');
      if(input.members.some(m=>m.departureAt)&&a.context.driverId!==p.driverId)throw new LifecycleDenied();
      const fenced=await activeExecutionFence(tx,command,p.driverId);if(fenced)return fenced;
      if(Number(state.settings_revision)!==p.expectedSettingsRevision)throw new PlanningError('stale_revision',409,'تغيّرت إعدادات التخطيط؛ أعد تحميل النسخة الحالية.');
@@ -111,7 +112,7 @@ export class PlanningService {
    if(latest)authorizeInput(a,latest.input);
    const effective=(await tx.query<{fingerprint:string;state:Plan['state']}>('SELECT fingerprint,state FROM tawsel.plan_revisions WHERE tenant_id=$1 AND plan_id=$2',[a.context.tenantId,state.current_plan_id])).rows[0];
    const alreadyUsable=effective&&['ready','manual'].includes(effective.state)&&effective.fingerprint===fingerprint(current);
-   const retained=!alreadyUsable&&latest&&(latest.status==='failed'||latest.status==='pending'||latest.status==='running'||latest.status==='partial')?await continuation(tx,current):null;
+   const retained=!current.branchActivity&&!alreadyUsable&&latest&&(latest.status==='failed'||latest.status==='pending'||latest.status==='running'||latest.status==='partial')?await continuation(tx,current):null;
    return {items,nextCursor:rows.length>limit?Number(rows[limit-1]!.revision):null,settingsRevision:Number(state.settings_revision),inputRevision:current.inputRevision,manualRevision:current.manualRevision,continuation:retained,latestJob:latest?jobView(latest,state.latest_job_id):null};
   });
  }

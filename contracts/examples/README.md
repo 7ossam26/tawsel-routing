@@ -1,5 +1,9 @@
 # Canonical foundation examples
 
+## P22 captured examples
+
+The `p22-*` valid examples were captured from `npm run branches:demo` against real HTTP/PostgreSQL: interruption, arrival, waiting/resume flow, new-cycle command, preserved cycle list, current state and durable event payloads. Driver identity/bootstrap are fixtures. Invalid p22 mutations cover empty/fractional claims, arbitrary branch injection and fractional redispatch quantities; they are schema rejection fixtures, not live commands. See [evidence](../../docs/phase-22-evidence.md) for database/consumer guarantees and exact limits. No signed-delivery/native-ERP/UI claim is implied.
+
 ## P21 captures
 
 `p21-*` valid examples are captured from the real isolated PostgreSQL/listening-HTTP `npm run returns:demo`: driver offer, native receipt/loss commands, offered/two-received/disposed reads, claimed-subset waiting/confirmation, durable action recovery and separate local event intents. Driver identity/bootstrap are fixtures; the native consumer uses real scoped service credentials through public HTTP. Invalid examples mutate the canonical captures (fractional/empty pieces, asserted actor, stock field and receipt/disposition confusion). Runtime scope/over-receipt/retry-race rejection belongs to `partial-return-correction.test.ts`, not a claim that JSON Schema enforces arithmetic. No native ERP UI or signed-delivery proof.

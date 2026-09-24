@@ -1,5 +1,9 @@
 # ERP integration planning — start here
 
+## P22 available slice
+
+Branch interruption/arrival/resume and actual-receipt new cycles are locally implemented. Start with the [public runbook and full-capacity/subset cases](../branch-interruption.md), [field mapping](field-and-status-mapping.md), [consumer quickstart](consumer-quickstart.md) and [evidence](../phase-22-evidence.md). Stable shipment IDs and new execution IDs are explicitly mapped. The copied HTTP-only consumer proves this slice; a real ERP/native source outbox and signed event delivery remain later work.
+
 P21 now supplies [source-branch offers, actual subset receipt and separate disposition](../returns.md), [ordered PostgreSQL/HTTP evidence](../phase-21-evidence.md), native pending/request/result reads and a copied public-only consumer demo. Use the current [field mapping](field-and-status-mapping.md) and [quickstart](consumer-quickstart.md). This supersedes older future-receipt statements below. P22 resume/redispatch, P23 correction, P25–26 transport and P27 native ERP screens/source outbox remain separate.
 
 P18 adds [explicit deferral, whole retry and driver urgency](../eligibility.md), [ordered evidence](../phase-18-evidence.md), typed client and public conformance/demo. Source events retain external identity and prior collection; actual signed transport, receipt dependencies and full driver UI remain their later phases.

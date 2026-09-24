@@ -105,7 +105,7 @@ export class Outcomes {
  async read(principal:AuthenticatedPrincipal,roundId:string):Promise<components['schemas']['OutcomeSnapshot']>{
   uuid(roundId);return withAccess(this.pool,principal,async(a,tx)=>{
    await authorize(tx,a);await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);await round(tx,a,roundId);
-   const rows=(await tx.query<{record:OutcomeRecord}>('SELECT o.record FROM tawsel.effective_task_outcomes e JOIN tawsel.delivery_outcomes o USING(tenant_id,task_id,outcome_id) WHERE o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->\'time\'->>\'recordedAt\',o.outcome_id',[a.context.tenantId,ownDriver(a),roundId])).rows;
+   const rows=(await tx.query<{record:OutcomeRecord}>('SELECT o.record FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts e USING(tenant_id,attempt_id) WHERE e.latest AND o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->\'time\'->>\'recordedAt\',o.outcome_id',[a.context.tenantId,ownDriver(a),roundId])).rows;
    const all=(await tx.query<{record:OutcomeRecord;latest:boolean}>(`SELECT o.record,a.latest FROM tawsel.delivery_outcomes o JOIN tawsel.planning_attempts a USING(tenant_id,attempt_id) WHERE o.tenant_id=$1 AND o.driver_id=$2 AND o.round_id=$3 ORDER BY o.record->'time'->>'recordedAt',o.outcome_id`,[a.context.tenantId,ownDriver(a),roundId])).rows;
    const history=all.map(r=>r.record),latest=new Set(all.filter(r=>r.latest).map(r=>r.record.outcomeId));
    const items=rows.map(r=>r.record).filter(r=>latest.has(r.outcomeId));for(const o of history)a.requireResource(own,{tenant_id:a.context.tenantId,driver_id:o.driverId,branch_id:o.branchId,integration_id:o.sourceReference?.integrationId??null});

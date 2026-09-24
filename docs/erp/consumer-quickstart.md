@@ -1,5 +1,21 @@
 # Public ERP consumer quickstart — provisioning and intake
 
+## P22 public redispatch and driver branch demonstration
+
+```powershell
+npm run db:local:start
+npm run db:migrate
+npm run test:branches -- --maxWorkers=1
+npm run branches:demo
+npm run test:erp:dispatch -- .local/phase-22-demo.json
+```
+
+The real HTTP/PostgreSQL demo pauses a heading customer, records branch arrival, rejects premature resume, stops/restarts the API, runs an independent copied ERP consumer that receives two of three pieces and creates a new cycle, then resumes the same round while one old piece stays held. Driver principal/bootstrap are fixtures. The focused tests separately exercise all 50 retained stops, independent commit races, rollback and new-cycle allocation conservation. [Detailed runbook/API](../branch-interruption.md), [evidence](../phase-22-evidence.md).
+
+For an independently hosted dedicated test scenario, copy `packages/api-client/src/{schema.d.ts,intake.ts,returns.ts}` and `tests/erp-conformance/dispatch.ts` preserving their relative paths, create an ESM package, and run the script with Node/tsx. Set `TAWSEL_ERP_API_URL`, `TAWSEL_ERP_SERVICE_TOKEN`, `TAWSEL_RETURN_REQUEST_ID` and `TAWSEL_DISPATCH_REPORT`, then invoke `node --import tsx tests/erp-conformance/dispatch.ts --live`. Use an untouched three-piece, one-line return request with exact unit allocation and a token granted `assignment.manage` plus `return.receive`; the scenario deliberately allocates two received pieces with source-authorized zero new shipping due. It mutates only that dedicated shipment. Never supply database/operator/issuer credentials to the consumer. The harness copies these files and runs that exact restricted boundary; its output/report prove the calls, not a real ERP's transactional source outbox.
+
+Timeout/503 remains unknown: recover/replay the same command. Receipt balance revisions prevent duplicate physical transfers; source revision and fresh cycle reference prevent duplicate dispatch. Creation returns an unassigned new cycle; subsequent `assignment.receiveBatch` remains explicit and atomic. Driver branch clients use session/CSRF/device authority, not the ERP service token. New branch events are durable intent only until P25–26 transport/receiver work.
+
 ## P21 public receiver slice
 
 Run the existing workspace with its marked PostgreSQL, then `npm run returns:demo` and `npm run test:erp:returns -- .local/phase-21-demo.json`. The demo runs a copied public-only consumer as a separate process with only URL, scoped token and request/report IDs. It tests pending reads → two of three actual receipt → duplicate/result recovery → one separately lost, plus rejected branch/quantity/revision cases. Parent HTTP tests stop/restart the API; driver auth/bootstrap is a labelled fixture. No native ERP UI, ERP transactional outbox, signed transport, physical-device or production claim.

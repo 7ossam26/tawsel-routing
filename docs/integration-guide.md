@@ -1,5 +1,9 @@
 # Integration guide — identity/provisioning implementation and designed delivery boundary
 
+## P22 branch resume and actual-receipt redispatch
+
+[Public protocol/demo](branch-interruption.md), [mapping](erp/field-and-status-mapping.md), [consumer quickstart](erp/consumer-quickstart.md), [evidence](phase-22-evidence.md). Driver branch commands use session/CSRF and device fencing, with frozen claimed subsets checked against committed receipt under the same locks. The source uses assignment.manage for dispatch.createFromReceipt with stable external shipment identity, a new source cycle reference, expected source revision and exact snapshot. It receives an unassigned fresh cycle and then uses ordinary atomic receipt; this is not direct transfer or old-cycle reactivation. Cycle history preserves old holders/source snapshots and return reads preserve unresolved goods. Preserve immutable action IDs on uncertainty. Durable branch/new-cycle intents are locally verified; signed transport/receiver/native ERP source persistence remain P25–27.
+
 ## P21 source-return update
 
 Driver offers and native source-branch subset receipt/disposition are now locally implemented and verified. Use [returns.md](returns.md), [field mapping](erp/field-and-status-mapping.md), [consumer setup](erp/consumer-quickstart.md) and [ordered evidence](phase-21-evidence.md). Explicit service operations require operator return grants and audit actorId=null; caller-asserted humans remain denied. Per-item expectedRevision and stable action ID prevent duplicate quantities. Unreceived goods remain explicit; loss/damage does not confirm handback. Pending/503 is never receipt or resume permission. Native ERP source-outbox durability and signed delivery remain P27/P25–26. This supersedes older designed-only return statements below.

@@ -1,3 +1,4 @@
+import {Branches} from '../branch/service.js';
 import cookie from '@fastify/cookie';
 import {randomUUID} from 'node:crypto';
 import type {FastifyInstance} from 'fastify';
@@ -22,6 +23,8 @@ function errors(app:FastifyInstance){
 export async function returnDriverRoutes(app:FastifyInstance,pool:Pool,config:AuthConfig,authenticate?:PlanningAuthenticator,service=new Returns(pool)){
  await app.register(cookie);errors(app);const sessions=new Sessions(pool,config),use:PlanningAuthenticator=authenticate??((r,k,work)=>sessions.use(k,r.cookies[sessionCookie(k)],work));
  const query={type:'object',properties:{kind:{enum:['personal','company']}},required:['kind'],additionalProperties:false};
+ const branches=new Branches(pool);
+ for(const operation of ['branch.interruptRound','branch.recordArrival','branch.resumeRound'])app.post(`/api/v1/branches/commands/${operation}`,{schema:{querystring:query}},async(r,reply)=>{requireBrowserCsrf(r,config);if((r.body as {operationId?:string})?.operationId!==operation)throw new ReturnError('validation_failed',400,'Operation mismatch.');const result=await use(r,(r.query as {kind:'company'}).kind,p=>branches.command(p,r.body));return reply.status(result.response?.status??(result.receipt.businessStatus==='accepted'?200:409)).send(result);});
  app.post('/api/v1/returns/request',{schema:{querystring:query}},async(r,reply)=>{requireBrowserCsrf(r,config);const result=await use(r,(r.query as {kind:'company'}).kind,p=>service.request(p,r.body));return reply.status(result.response?.status??(result.receipt.businessStatus==='accepted'?200:result.receipt.problem?.status??409)).send(result);});
  app.get('/api/v1/returns/groups',{schema:{querystring:query}},async r=>use(r,(r.query as {kind:'company'}).kind,p=>service.groups(p)));
  app.get('/api/v1/returns/requests/:requestId',{schema:{querystring:query}},async r=>use(r,(r.query as {kind:'company'}).kind,p=>service.read(p,(r.params as {requestId:string}).requestId)));

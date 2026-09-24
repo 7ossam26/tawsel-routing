@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P21 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P22 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. Adoption remains designed for P23. Live Engine evidence, later execution and signed event delivery remain unavailable/unimplemented. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -5010,6 +5010,19 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
     },
     "snapshot": {
       "$ref": "#/$defs/SourceSnapshot"
+    },
+    "previousDispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latest": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -6185,7 +6198,8 @@ Validated provider candidate only, not a published or policy-verified route, arr
     "method": {
       "enum": [
         "grouped-heuristic",
-        "manual"
+        "manual",
+        "branch-service"
       ]
     },
     "orderedTaskIds": {
@@ -6219,6 +6233,32 @@ Validated provider candidate only, not a published or policy-verified route, arr
         ],
         "additionalProperties": false
       }
+    },
+    "branchStop": {
+      "type": "object",
+      "properties": {
+        "segmentId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "branchId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "coordinates": {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        },
+        "serviceEstimateSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        }
+      },
+      "required": [
+        "segmentId",
+        "branchId",
+        "coordinates",
+        "serviceEstimateSeconds"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -6227,7 +6267,72 @@ Validated provider candidate only, not a published or policy-verified route, arr
     "orderedTaskIds",
     "exceptions"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "method": {
+            "const": "branch-service"
+          }
+        },
+        "required": [
+          "method"
+        ]
+      },
+      "then": {
+        "properties": {
+          "orderedTaskIds": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "exceptions": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "branchStop": {
+            "type": "object",
+            "properties": {
+              "segmentId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              },
+              "branchId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              },
+              "coordinates": {
+                "$ref": "common.schema.json#/$defs/Coordinates"
+              },
+              "serviceEstimateSeconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 86400
+              }
+            },
+            "required": [
+              "segmentId",
+              "branchId",
+              "coordinates",
+              "serviceEstimateSeconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "branchStop"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "branchStop"
+          ],
+          "properties": {
+            "branchStop": {}
+          }
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -6629,6 +6734,9 @@ Explicit manual origin, never GPS or physical arrival. plannedStartAt is the eli
         }
       ],
       "description": "Absent or null means no recorded physical correction/arrival. Omitted until evidence exists to preserve unchanged pre-P16 input fingerprints."
+    },
+    "branchActivity": {
+      "$ref": "current-activity.schema.json#/$defs/BranchActivity"
     }
   },
   "required": [
@@ -6683,7 +6791,8 @@ Durable calculation state. resultKind distinguishes full, partial, invalid provi
           "enum": [
             "settings-required",
             "no-eligible-work",
-            "capacity-exceeded"
+            "capacity-exceeded",
+            "branch-service"
           ]
         },
         {
@@ -7008,7 +7117,8 @@ Durable calculation state. resultKind distinguishes full, partial, invalid provi
         "assigned",
         "unassigned",
         "excluded",
-        "manual"
+        "manual",
+        "paused"
       ]
     },
     "exclusionReason": {
@@ -7104,7 +7214,10 @@ Durable calculation state. resultKind distinguishes full, partial, invalid provi
           "type": "object",
           "properties": {
             "membership": {
-              "const": "manual"
+              "enum": [
+                "manual",
+                "paused"
+              ]
             }
           },
           "required": [
@@ -7237,7 +7350,8 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
         "draft",
         "ready",
         "partial",
-        "manual"
+        "manual",
+        "branch"
       ]
     },
     "current": {
@@ -7296,7 +7410,10 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
         "type": "object",
         "properties": {
           "state": {
-            "const": "manual"
+            "enum": [
+              "manual",
+              "branch"
+            ]
           }
         },
         "required": [
@@ -7324,7 +7441,10 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
             "type": "object",
             "properties": {
               "method": {
-                "const": "manual"
+                "enum": [
+                  "manual",
+                  "branch-service"
+                ]
               }
             }
           }
@@ -7397,7 +7517,8 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
             "enum": [
               "ready",
               "partial",
-              "manual"
+              "manual",
+              "branch"
             ]
           }
         },
@@ -7480,6 +7601,45 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
                 "const": "partial"
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "branch"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "routePolicy": {
+            "properties": {
+              "method": {
+                "const": "branch-service"
+              }
+            },
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "routePolicy": {
+            "properties": {
+              "method": {
+                "enum": [
+                  "manual",
+                  "grouped-heuristic"
+                ]
+              }
+            },
+            "type": "object"
           }
         }
       }
@@ -7600,14 +7760,16 @@ Immutable historical draft, validated ready or explicit partial plan. Only a cur
         "draft",
         "ready",
         "partial",
-        "manual"
+        "manual",
+        "branch"
       ]
     },
     "status": {
       "enum": [
         "complete",
         "partial",
-        "manual"
+        "manual",
+        "branch"
       ]
     },
     "policyValidated": {
@@ -8530,7 +8692,8 @@ recordedAt is server acceptance recording time, not measured travel time. observ
     "kind": {
       "enum": [
         "last-confirmed-stop",
-        "manual-pin"
+        "manual-pin",
+        "branch-pin"
       ]
     },
     "coordinates": {
@@ -8933,6 +9096,16 @@ Coherent authorized round read; current is explicit, nextSuggestion is only the 
       "items": {
         "$ref": "#/$defs/Target"
       }
+    },
+    "branchActivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/BranchActivity"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "required": [
@@ -14281,6 +14454,600 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### BranchInterrupt
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/Interrupt)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "itemId",
+          "quantity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "serviceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400
+    }
+  },
+  "required": [
+    "roundId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "requestId",
+    "claims",
+    "serviceEstimateSeconds"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BranchTransition
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/Transition)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedActivityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedCurrentAttemptId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "segmentId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "expectedBranchRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "roundId",
+    "expectedActivityRevision",
+    "expectedCurrentAttemptId",
+    "segmentId",
+    "expectedBranchRevision"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BranchResult
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/Result)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "branchActivity": {
+      "$ref": "current-activity.schema.json#/$defs/BranchActivity"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "planId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "branchActivity",
+    "activityRevision",
+    "planId"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BranchEvent
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/Event)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "segmentId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "sourceBranchId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "arrived",
+        "resumed"
+      ]
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "time": {
+      "$ref": "current-activity.schema.json#/$defs/ActionTime"
+    }
+  },
+  "required": [
+    "segmentId",
+    "roundId",
+    "driverId",
+    "sourceBranchId",
+    "stage",
+    "activityRevision",
+    "time"
+  ],
+  "additionalProperties": false
+}
+```
+
+### BranchInterruptCommand
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/InterruptCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "branch.interruptRound"
+        },
+        "context": {
+          "$ref": "common.schema.json#/$defs/DeviceContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Interrupt"
+        }
+      },
+      "required": [
+        "operationId",
+        "context",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### BranchArrivalCommand
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/ArrivalCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "branch.recordArrival"
+        },
+        "context": {
+          "$ref": "common.schema.json#/$defs/DeviceContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Transition"
+        }
+      },
+      "required": [
+        "operationId",
+        "context",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### BranchResumeCommand
+
+[Canonical definition](../../contracts/branch-activity.schema.json#/$defs/ResumeCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "branch.resumeRound"
+        },
+        "context": {
+          "$ref": "common.schema.json#/$defs/DeviceContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Transition"
+        }
+      },
+      "required": [
+        "operationId",
+        "context",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### CurrentBranchActivity
+
+[Canonical definition](../../contracts/current-activity.schema.json#/$defs/BranchActivity)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "segmentId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "requestId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "sourceBranchId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "stage": {
+      "enum": [
+        "heading",
+        "arrived",
+        "resumed"
+      ]
+    },
+    "coordinates": {
+      "$ref": "common.schema.json#/$defs/Coordinates"
+    },
+    "serviceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "itemId",
+          "quantity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "retainedPlanId": {
+      "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "retainedSequence": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "properties": {
+          "taskId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          },
+          "attemptId": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          }
+        },
+        "required": [
+          "taskId",
+          "attemptId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "pausedActivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Activity"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "heading": {
+      "$ref": "#/$defs/ActionTime"
+    },
+    "arrival": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ActionTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resumed": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ActionTime"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "segmentId",
+    "roundId",
+    "requestId",
+    "sourceBranchId",
+    "revision",
+    "stage",
+    "coordinates",
+    "serviceEstimateSeconds",
+    "claims",
+    "retainedPlanId",
+    "retainedSequence",
+    "pausedActivity",
+    "heading",
+    "arrival",
+    "resumed"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "enum": [
+              "arrived",
+              "resumed"
+            ]
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "arrival": {
+            "$ref": "#/$defs/ActionTime"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "arrival": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "stage": {
+            "const": "resumed"
+          }
+        },
+        "required": [
+          "stage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "resumed": {
+            "$ref": "#/$defs/ActionTime"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "resumed": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### B2bRedispatch
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Redispatch)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "previousDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "snapshot": {
+      "$ref": "#/$defs/SourceSnapshot"
+    }
+  },
+  "required": [
+    "externalId",
+    "previousDispatchCycleId",
+    "snapshot"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bRedispatchCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/RedispatchCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "dispatch.createFromReceipt"
+        },
+        "context": {
+          "$ref": "./common.schema.json#/$defs/IntegrationContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Redispatch"
+        }
+      },
+      "required": [
+        "operationId",
+        "context",
+        "payload"
+      ]
+    }
+  ]
+}
+```
+
+### B2bCycleList
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/CycleList)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/Task"
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -14486,6 +15253,19 @@ Examples include designed fixtures and captured local API results; consult contr
 | p21-dispositionRecorded | returns.schema.json#/$defs/DispositionEvent | valid foundation shape |
 | p21-accepted | returns.schema.json#/$defs/ActionResult | valid foundation shape |
 | p21-recovered | returns.schema.json#/$defs/ActionStatus | valid foundation shape |
+| p22-interrupt | branch-activity.schema.json#/$defs/InterruptCommand | valid foundation shape |
+| p22-arrive | branch-activity.schema.json#/$defs/ArrivalCommand | valid foundation shape |
+| p22-resume | branch-activity.schema.json#/$defs/ResumeCommand | valid foundation shape |
+| p22-redispatch | b2b-intake.schema.json#/$defs/RedispatchCommand | valid foundation shape |
+| p22-cycles | b2b-intake.schema.json#/$defs/CycleList | valid foundation shape |
+| p22-resumed-current | current-activity.schema.json#/$defs/Snapshot | valid foundation shape |
+| p22-interrupted | branch-activity.schema.json#/$defs/Result | valid foundation shape |
+| p22-arrived | branch-activity.schema.json#/$defs/Result | valid foundation shape |
+| p22-resumed | branch-activity.schema.json#/$defs/Result | valid foundation shape |
+| p22-event-0 | branch-activity.schema.json#/$defs/Event | valid foundation shape |
+| p22-event-1 | branch-activity.schema.json#/$defs/Event | valid foundation shape |
+| p22-event-2 | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
+| p22-event-3 | branch-activity.schema.json#/$defs/Event | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -14613,5 +15393,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | p21-stock-claim | returns.schema.json#/$defs/ReceiveCommand | invalid (additionalProperties) |
 | p21-receipt-as-loss | returns.schema.json#/$defs/ReceivedEvent | invalid (const) |
 | p21-loss-as-receipt | returns.schema.json#/$defs/DispositionEvent | invalid (enum) |
+| p22-empty-claims | branch-activity.schema.json#/$defs/InterruptCommand | invalid (minItems) |
+| p22-fractional-claim | branch-activity.schema.json#/$defs/InterruptCommand | invalid (type) |
+| p22-arbitrary-branch | branch-activity.schema.json#/$defs/InterruptCommand | invalid (additionalProperties) |
+| p22-fractional-redispatch | b2b-intake.schema.json#/$defs/RedispatchCommand | invalid (type) |
 
 [Canonical example data](../../contracts/examples/README.md)

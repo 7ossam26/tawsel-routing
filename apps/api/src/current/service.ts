@@ -1,3 +1,4 @@
+import {branchActivity} from '../branch/state.js';
 import {executionFence} from '../devices/fence.js';
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
@@ -48,6 +49,7 @@ export class CurrentActivity {
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
      r=await round(tx,a,p.roundId);
      const fenced=await executionFence(tx,c,r);if(fenced)return fenced;
+     if(await branchActivity(tx,r.tenant_id,driverId))throw new CurrentError('lifecycle_forbidden',409,'أكمل زيارة الفرع ثم استأنف العملاء.');
      if(r.ended_at)throw new CurrentError('lifecycle_forbidden',409,'الجولة انتهت.');
      const state=await planningState(tx,r.tenant_id,driverId),input=await snapshot(tx,state);inputAccess(a,input);
      const before=await activity(tx,r.tenant_id,r.round_id),rev=await revision(tx,r.tenant_id,r.round_id);
@@ -117,7 +119,8 @@ export class CurrentActivity {
    });
    const plan=(await tx.query<{plan_id:string;fingerprint:string;route_policy:{orderedTaskIds:string[]}}>("SELECT * FROM tawsel.plan_revisions WHERE tenant_id=$1 AND driver_id=$2 AND state IN ('ready','manual') ORDER BY revision DESC LIMIT 1",[r.tenant_id,driverId])).rows[0];
    const next=plan?.route_policy.orderedTaskIds.map(id=>targets.find(t=>t.taskId===id)).find(t=>t&&t.attemptId!==current?.attemptId)??null;
-   const result={roundId,driverId,owner:{accountId:r.owner_account_id,deviceId:r.owner_device_id,generation:Number(r.device_generation)},revision:await revision(tx,r.tenant_id,roundId),currentActivity:current,physicalOrigin:origin,planningOrigin:input.settings!.origin,nextSuggestion:next,planning:{planId:plan?.plan_id??null,updating:plan?.fingerprint!==fingerprint(input)},targets};
+   const branch=await branchActivity(tx,r.tenant_id,driverId);
+   const result={roundId,driverId,branchActivity:branch,owner:{accountId:r.owner_account_id,deviceId:r.owner_device_id,generation:Number(r.device_generation)},revision:await revision(tx,r.tenant_id,roundId),currentActivity:current,physicalOrigin:origin,planningOrigin:input.settings!.origin,nextSuggestion:branch?null:next,planning:{planId:input.branchActivity?state.current_plan_id:plan?.plan_id??null,updating:plan?.fingerprint!==fingerprint(input)},targets};
    requireCurrent('Snapshot',result);return result;
  }
 

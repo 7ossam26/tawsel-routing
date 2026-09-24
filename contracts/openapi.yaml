@@ -2,10 +2,12 @@ openapi: 3.1.1
 info:
   title: Tawsel public contract — identity, intake, planning and execution
   version: 0.1.0
-  description: P07–P21 locally implemented identity, intake, locations, planning, round start, current activity, outcomes,
-    eligibility, workday closure, device takeover and source-branch return receipt/disposition. Provider, browser and
-    PostgreSQL evidence are distinguished in phase ledgers. Branch resume/redispatch, corrections, full offline capture
-    and signed delivery remain designed.
+  description: P07–P21 locally implemented identity, intake, locations, planning,
+    round start, current activity, outcomes, eligibility, workday closure,
+    device takeover and source-branch return receipt/disposition. Provider,
+    browser and PostgreSQL evidence are distinguished in phase ledgers. Branch
+    resume/redispatch, corrections, full offline capture and signed delivery
+    remain designed.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
@@ -15,7 +17,8 @@ paths:
   /api/session/company:
     post:
       operationId: session.resolveCompany
-      summary: Resolve company code to safe login context; company selection grants no authority.
+      summary: Resolve company code to safe login context; company selection grants no
+        authority.
       tags:
         - Sessions
       security: []
@@ -269,7 +272,8 @@ paths:
       security: []
       responses:
         "302":
-          description: Fixed same-origin account destination or safe login error; never a request-selected redirect.
+          description: Fixed same-origin account destination or safe login error; never a
+            request-selected redirect.
           headers:
             Location:
               schema:
@@ -347,7 +351,8 @@ paths:
   /api/session/context:
     get:
       operationId: session.getContext
-      summary: Read current issuer-validated session and P06 access context. Display fields are never request authority.
+      summary: Read current issuer-validated session and P06 access context. Display
+        fields are never request authority.
       tags:
         - Sessions
       security:
@@ -640,7 +645,8 @@ paths:
             maxLength: 512
       responses:
         "200":
-          description: Own tasks only; unresolved addresses remain visible and non-executable.
+          description: Own tasks only; unresolved addresses remain visible and
+            non-executable.
           content:
             application/json:
               schema:
@@ -698,7 +704,8 @@ paths:
           $ref: "#/components/schemas/Uuid"
     get:
       operationId: task.getIndependent
-      summary: Inspect one own independent task without disclosing guessed cross-account IDs.
+      summary: Inspect one own independent task without disclosing guessed
+        cross-account IDs.
       tags:
         - Independent intake
       security:
@@ -743,7 +750,8 @@ paths:
   /api/v1/provisioning/commands/integration.bindSource:
     post:
       operationId: integration.bindSource
-      summary: Bootstrap authorized tenant/integration binding and supported protocol versions.
+      summary: Bootstrap authorized tenant/integration binding and supported protocol
+        versions.
       tags:
         - ERP provisioning
       security:
@@ -756,7 +764,8 @@ paths:
               $ref: "#/components/schemas/BindSourceCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -832,7 +841,8 @@ paths:
               $ref: "#/components/schemas/RotateCredentialCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -859,7 +869,8 @@ paths:
               $ref: "#/components/schemas/DisableSourceCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -886,7 +897,8 @@ paths:
               $ref: "#/components/schemas/BranchCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -913,7 +925,8 @@ paths:
               $ref: "#/components/schemas/DisableBranchCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -940,7 +953,8 @@ paths:
               $ref: "#/components/schemas/RoleCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -967,7 +981,8 @@ paths:
               $ref: "#/components/schemas/UserCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -994,7 +1009,8 @@ paths:
               $ref: "#/components/schemas/UserRoleCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -1021,7 +1037,8 @@ paths:
               $ref: "#/components/schemas/UserExceptionsCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -1048,7 +1065,8 @@ paths:
               $ref: "#/components/schemas/UserBranchesCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -1075,7 +1093,8 @@ paths:
               $ref: "#/components/schemas/DisableUserCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -1102,7 +1121,8 @@ paths:
               $ref: "#/components/schemas/DriverCommand"
       responses:
         "200":
-          description: Durable command result; user acceptance is separate from issuer readiness
+          description: Durable command result; user acceptance is separate from issuer
+            readiness
           content:
             application/json:
               schema:
@@ -1116,7 +1136,8 @@ paths:
   /api/v1/provisioning/configuration:
     get:
       operationId: integration.getConfiguration
-      summary: Discover this source, supported protocol and explicitly permitted service operations
+      summary: Discover this source, supported protocol and explicitly permitted
+        service operations
       tags:
         - ERP provisioning
       security:
@@ -1137,7 +1158,8 @@ paths:
   /api/v1/provisioning/status:
     get:
       operationId: provisioning.getStatus
-      summary: Read source-scoped current projection and separate issuer reconciliation status
+      summary: Read source-scoped current projection and separate issuer
+        reconciliation status
       tags:
         - ERP provisioning
       security:
@@ -1174,7 +1196,8 @@ paths:
   /api/v1/intake/commands/intake.submitSnapshot:
     post:
       operationId: intake.submitSnapshot
-      summary: Accept generic source task/order/contact/location/content/policy revision.
+      summary: Accept generic source task/order/contact/location/content/policy
+        revision.
       tags:
         - ERP intake
       security:
@@ -1278,8 +1301,8 @@ paths:
   /api/v1/intake/commands/assignment.withdraw:
     post:
       operationId: assignment.withdraw
-      summary: Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists; full
-        start-race proof belongs to P15.
+      summary: Ordinary predeparture withdrawal with history; no mandatory reason.
+        Departure field guard exists; full start-race proof belongs to P15.
       tags:
         - ERP intake
       security:
@@ -1393,7 +1416,8 @@ paths:
   /api/v1/intake/tasks:
     get:
       operationId: intake.listTasks
-      summary: List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination.
+      summary: List source-scoped held/prepared and unassigned/withdrawn work,
+        filtered before pagination.
       tags:
         - ERP intake
       security:
@@ -1446,8 +1470,8 @@ paths:
   /api/v1/intake/results/{actionId}:
     get:
       operationId: intake.getBatchResult
-      summary: Recover durable accepted/rejected source results; 202 pending means no committed result is visible, not proof
-        of receipt.
+      summary: Recover durable accepted/rejected source results; 202 pending means no
+        committed result is visible, not proof of receipt.
       tags:
         - ERP intake
       security:
@@ -1467,7 +1491,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/B2bBatchResult"
         "202":
-          description: No committed result visible; keep source command pending and retry the exact envelope.
+          description: No committed result visible; keep source command pending and retry
+            the exact envelope.
           content:
             application/json:
               schema:
@@ -1559,7 +1584,8 @@ paths:
       operationId: location.confirmPin
       tags:
         - Locations
-      summary: Authorized predeparture confirmation or assigned-driver execution correction.
+      summary: Authorized predeparture confirmation or assigned-driver execution
+        correction.
       security:
         - personalSession: []
         - companySession: []
@@ -1604,7 +1630,8 @@ paths:
       operationId: location.searchCandidates
       tags:
         - Locations
-      summary: Scoped Nominatim candidates with provenance; never GPS/accuracy percentage.
+      summary: Scoped Nominatim candidates with provenance; never GPS/accuracy
+        percentage.
       security:
         - personalSession: []
         - companySession: []
@@ -1649,7 +1676,8 @@ paths:
       operationId: map.getAssetConfiguration
       tags:
         - Locations
-      summary: Read configured self-hosted style/archive/attribution; no invented map coverage.
+      summary: Read configured self-hosted style/archive/attribution; no invented map
+        coverage.
       security:
         - personalSession: []
         - companySession: []
@@ -1685,8 +1713,9 @@ paths:
       tags:
         - Routing
       summary: Read supported application modes; availability is not checked.
-      description: Requires planning.manage or own-driver execution.own in the selected authenticated account. No provider
-        URLs or runtime-health claim.
+      description: Requires planning.manage or own-driver execution.own in the
+        selected authenticated account. No provider URLs or runtime-health
+        claim.
       security:
         - personalSession: []
         - companySession: []
@@ -1994,7 +2023,8 @@ paths:
               $ref: "#/components/schemas/PlanningManualOrderCommand"
       responses:
         "200":
-          description: Idempotent confirmed manual revision; no round start or computed road estimate.
+          description: Idempotent confirmed manual revision; no round start or computed
+            road estimate.
           content:
             application/json:
               schema:
@@ -2073,7 +2103,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
   /api/v1/rounds/start:
     post:
       operationId: round.start
@@ -2110,7 +2141,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
           content:
             application/json:
               schema:
@@ -2140,7 +2172,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
   /api/v1/rounds/actions/{actionId}:
     get:
       operationId: round.getStartResult
@@ -2178,7 +2211,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
   /api/v1/current/heading:
     post:
       operationId: current.selectHeading
@@ -2222,8 +2256,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
-            action ID.
+          description: Retained activity, ownership, eligibility or relevant revision
+            rejection. Query or retry the same stable action ID.
           content:
             application/json:
               schema:
@@ -2271,8 +2305,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
-            action ID.
+          description: Retained activity, ownership, eligibility or relevant revision
+            rejection. Query or retry the same stable action ID.
           content:
             application/json:
               schema:
@@ -2320,8 +2354,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained activity, ownership, eligibility or relevant revision rejection. Query or retry the same stable
-            action ID.
+          description: Retained activity, ownership, eligibility or relevant revision
+            rejection. Query or retry the same stable action ID.
           content:
             application/json:
               schema:
@@ -2364,7 +2398,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
   /api/v1/current/actions/{actionId}:
     get:
       operationId: current.getResult
@@ -2409,7 +2444,8 @@ paths:
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Sync, revision or lifecycle conflict; start business rejection is a retained ActionResult.
+          description: Sync, revision or lifecycle conflict; start business rejection is a
+            retained ActionResult.
   /api/v1/outcomes/full:
     post:
       operationId: outcome.recordFull
@@ -2447,14 +2483,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/OutcomeActionResult"
         "400":
-          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2496,14 +2533,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/OutcomeActionResult"
         "400":
-          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2545,14 +2583,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/OutcomeActionResult"
         "400":
-          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2594,14 +2633,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/OutcomeActionResult"
         "400":
-          description: Closed schema invalid, or retained quantity/collection rejection (ActionResult).
+          description: Closed schema invalid, or retained quantity/collection rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2723,14 +2763,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EligibilityActionResult"
         "400":
-          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+          description: Closed schema invalid, or retained eligibility rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2772,14 +2813,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EligibilityActionResult"
         "400":
-          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+          description: Closed schema invalid, or retained eligibility rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2821,14 +2863,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EligibilityActionResult"
         "400":
-          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+          description: Closed schema invalid, or retained eligibility rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2870,14 +2913,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/EligibilityActionResult"
         "400":
-          description: Closed schema invalid, or retained eligibility rejection (ActionResult).
+          description: Closed schema invalid, or retained eligibility rejection
+            (ActionResult).
         "401":
           description: Session required
         "403":
           description: Current scope or CSRF denied
         "409":
-          description: Retained ownership, current activity, eligibility, outcome or relevant source revision rejection; stable
-            action ID.
+          description: Retained ownership, current activity, eligibility, outcome or
+            relevant source revision rejection; stable action ID.
           content:
             application/json:
               schema:
@@ -2981,13 +3025,15 @@ paths:
               - company
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionResult"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
           content:
             application/json:
               schema:
@@ -2997,7 +3043,8 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
       requestBody:
         required: true
         content:
@@ -3007,7 +3054,8 @@ paths:
   /api/v1/closure/day:
     post:
       operationId: workday.end
-      summary: Close open workday/active round after resolving or pausing current; carry held work.
+      summary: Close open workday/active round after resolving or pausing current;
+        carry held work.
       tags:
         - Workday closure
       security:
@@ -3023,13 +3071,15 @@ paths:
               - company
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionResult"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
           content:
             application/json:
               schema:
@@ -3039,7 +3089,8 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
       requestBody:
         required: true
         content:
@@ -3049,7 +3100,8 @@ paths:
   /api/v1/workdays/{workdayId}/summary:
     get:
       operationId: workday.getSummary
-      summary: Basic explicit-workday outcome/collection summary with admission denominators.
+      summary: Basic explicit-workday outcome/collection summary with admission
+        denominators.
       tags:
         - Workday closure
       security:
@@ -3071,7 +3123,8 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
           content:
             application/json:
               schema:
@@ -3081,11 +3134,13 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
   /api/v1/workdays/{workdayId}/carry-forward:
     get:
       operationId: workday.getCarryForward
-      summary: Current held work for the workday holder; no per-day cloning or implicit retry.
+      summary: Current held work for the workday holder; no per-day cloning or
+        implicit retry.
       tags:
         - Workday closure
       security:
@@ -3107,7 +3162,8 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
           content:
             application/json:
               schema:
@@ -3117,7 +3173,8 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
   /api/v1/closure/actions/{actionId}:
     get:
       operationId: closure.getResult
@@ -3143,13 +3200,15 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Authoritative accepted result or scoped read; closure implies no delivery, receipt or settlement.
+          description: Authoritative accepted result or scoped read; closure implies no
+            delivery, receipt or settlement.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ClosureActionStatus"
         "202":
-          description: No accepted closure yet. Keep original action pending; dependency replay or result recovery required.
+          description: No accepted closure yet. Keep original action pending; dependency
+            replay or result recovery required.
           content:
             application/json:
               schema:
@@ -3159,13 +3218,15 @@ paths:
         "403":
           description: Current authorization denied.
         "409":
-          description: Lifecycle, revision, ownership or idempotency conflict; business rejection is retained.
+          description: Lifecycle, revision, ownership or idempotency conflict; business
+            rejection is retained.
   /api/v1/devices/takeover:
     post:
       operationId: device.takeOver
       summary: device.takeOver
-      description: Explicit online transfer to a different installation of the same authenticated driver; expected generation
-        CAS; stable retry. Fetch snapshot before commands.
+      description: Explicit online transfer to a different installation of the same
+        authenticated driver; expected generation CAS; stable retry. Fetch
+        snapshot before commands.
       tags:
         - Device ownership
       security:
@@ -3188,7 +3249,8 @@ paths:
               $ref: "#/components/schemas/DeviceTakeoverCommand"
       responses:
         "200": &a16
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3235,7 +3297,8 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3254,8 +3317,8 @@ paths:
     get:
       operationId: device.getSnapshot
       summary: device.getSnapshot
-      description: Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives
-        the generation snapshot token.
+      description: Download current confirmed activity/targets under the owner lock.
+        Only the matching logical owner receives the generation snapshot token.
       tags:
         - Device ownership
       security:
@@ -3284,7 +3347,8 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3303,8 +3367,9 @@ paths:
     get:
       operationId: action.getResult
       summary: action.getResult
-      description: P20 scoped execution/takeover action result. Other operation families keep their feature adapters; unknown
-        action IDs return pending without leaking another account.
+      description: P20 scoped execution/takeover action result. Other operation
+        families keep their feature adapters; unknown action IDs return pending
+        without leaking another account.
       tags:
         - Device ownership
       security:
@@ -3327,7 +3392,8 @@ paths:
             format: uuid
       responses:
         "200": &a17
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3347,8 +3413,9 @@ paths:
     post:
       operationId: evidence.receiveFormerDevice
       summary: evidence.receiveFormerDevice
-      description: Durably receive an original former-device envelope, without applying business state. Exact repeat is
-        duplicate and returns its established result.
+      description: Durably receive an original former-device envelope, without
+        applying business state. Exact repeat is duplicate and returns its
+        established result.
       tags:
         - Device ownership
       security:
@@ -3371,7 +3438,8 @@ paths:
               $ref: "#/components/schemas/DeviceFormerSubmission"
       responses:
         "200": &a18
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3389,8 +3457,9 @@ paths:
     get:
       operationId: sync.getEvidenceReceipt
       summary: sync.getEvidenceReceipt
-      description: Authenticated source/driver evidence and dynamically checked recovery constraints. A durable receipt is not
-        business acceptance or an adoption permission. No P20 adoption endpoint.
+      description: Authenticated source/driver evidence and dynamically checked
+        recovery constraints. A durable receipt is not business acceptance or an
+        adoption permission. No P20 adoption endpoint.
       tags:
         - Device ownership
       security:
@@ -3419,7 +3488,8 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Durable receipt and business result are separate. Pending is not evidence receipt.
+          description: Durable receipt and business result are separate. Pending is not
+            evidence receipt.
           content:
             application/json:
               schema:
@@ -3912,6 +3982,276 @@ paths:
             quantity. Held goods are unchanged.
         "503":
           description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/branches/commands/branch.interruptRound:
+    post:
+      operationId: branch.interruptRound
+      tags:
+        - Returns
+      summary: Pause heading sequence and enter source-branch service within same
+        round/capacity.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchInterruptCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/branches/commands/branch.recordArrival:
+    post:
+      operationId: branch.recordArrival
+      tags:
+        - Returns
+      summary: Explicit arrival at the source-bound branch; records physical origin
+        without inferring receipt.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchArrivalCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/branches/commands/branch.resumeRound:
+    post:
+      operationId: branch.resumeRound
+      tags:
+        - Returns
+      summary: Resume retained sequence after authoritative claimed-subset receipt; no
+        whole-batch gate.
+      security:
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - company
+              - personal
+          description: Company only; personal is rejected by domain rules.
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchResumeCommand"
+      responses:
+        "200":
+          description: Committed result or authoritative scoped read.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400":
+          description: Invalid canonical input.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "401":
+          description: Authentication required.
+        "403":
+          description: Scope/capability/CSRF denied.
+        "404":
+          description: Resource unavailable.
+        "409":
+          description: Stale item, wrong source branch, incompatible lifecycle or excess
+            quantity. Held goods are unchanged.
+        "503":
+          description: No assumed receipt. Recover the action and retry the same envelope.
+  /api/v1/intake/commands/dispatch.createFromReceipt:
+    post:
+      operationId: dispatch.createFromReceipt
+      summary: Create fresh execution from compatible actual receipt; preserve
+        shipment and old custody.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/B2bRedispatchCommand"
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+        "400": &a19
+          description: Source validation, authorization or dependency error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+        "401": *a19
+        "403": *a19
+        "404": *a19
+        "409":
+          description: Retained business rejection or idempotency conflict
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422": *a19
+        "503": *a19
+  /api/v1/intake/cycles:
+    get:
+      operationId: dispatch.listCycles
+      summary: List preserved source shipment cycles and their frozen snapshots.
+      tags:
+        - ERP intake
+      security:
+        - ProvisioningService: []
+      parameters:
+        - in: query
+          name: externalId
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 256
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Canonical response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/B2bCycleList"
+        "400": &a20
+          description: Source validation, authorization or dependency error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+        "401": *a20
+        "403": *a20
+        "404": *a20
+        "409":
+          description: Retained business rejection or idempotency conflict
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ActionResult"
+                  - $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "422": *a20
+        "503": *a20
 components:
   schemas:
     Uuid:
@@ -4446,6 +4786,28 @@ components:
       $ref: ./returns.schema.json#/$defs/ReceivedEvent
     ReturnDispositionEvent:
       $ref: ./returns.schema.json#/$defs/DispositionEvent
+    BranchInterrupt:
+      $ref: ./branch-activity.schema.json#/$defs/Interrupt
+    BranchTransition:
+      $ref: ./branch-activity.schema.json#/$defs/Transition
+    BranchResult:
+      $ref: ./branch-activity.schema.json#/$defs/Result
+    BranchEvent:
+      $ref: ./branch-activity.schema.json#/$defs/Event
+    BranchInterruptCommand:
+      $ref: ./branch-activity.schema.json#/$defs/InterruptCommand
+    BranchArrivalCommand:
+      $ref: ./branch-activity.schema.json#/$defs/ArrivalCommand
+    BranchResumeCommand:
+      $ref: ./branch-activity.schema.json#/$defs/ResumeCommand
+    CurrentBranchActivity:
+      $ref: ./current-activity.schema.json#/$defs/BranchActivity
+    B2bRedispatch:
+      $ref: ./b2b-intake.schema.json#/$defs/Redispatch
+    B2bRedispatchCommand:
+      $ref: ./b2b-intake.schema.json#/$defs/RedispatchCommand
+    B2bCycleList:
+      $ref: ./b2b-intake.schema.json#/$defs/CycleList
   securitySchemes:
     companySession:
       type: apiKey
@@ -4458,13 +4820,14 @@ components:
     ProvisioningService:
       type: http
       scheme: bearer
-      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed server-side; tenant/integration bound,
-        expiring, rotatable. TLS required outside loopback.
+      description: twp_<credential UUID>.<32 random bytes lowercase hex>. Hashed
+        server-side; tenant/integration bound, expiring, rotatable. TLS required
+        outside loopback.
     ProvisioningOperator:
       type: http
       scheme: bearer
-      description: Out-of-band server operator token; bootstrap and recovery rotation only. Never distribute to ERP
-        application users.
+      description: Out-of-band server operator token; bootstrap and recovery rotation
+        only. Never distribute to ERP application users.
 tags:
   - name: Sessions
     description: P07 same-origin browser session and issuer journeys.
@@ -4473,24 +4836,34 @@ tags:
   - name: ERP provisioning
     description: Versioned ERP-owned identity projections and explicit service authority
   - name: ERP intake
-    description: Source-authoritative snapshots, prepared/held distinction and atomic remaining-stop admission.
+    description: Source-authoritative snapshots, prepared/held distinction and
+      atomic remaining-stop admission.
   - name: Locations
     description: Explicit execution pins and private geocoding.
   - name: Routing
-    description: Authenticated application profile metadata; provider routing remains internal.
+    description: Authenticated application profile metadata; provider routing
+      remains internal.
   - name: Planning
-    description: Durable asynchronous candidates and preserved forecasts; no round activation.
+    description: Durable asynchronous candidates and preserved forecasts; no round
+      activation.
   - name: Round start
-    description: Online readiness, authoritative start, current workday/round and start action recovery.
+    description: Online readiness, authoritative start, current workday/round and
+      start action recovery.
   - name: Current activity
-    description: Explicit heading, arrival and manual origin, with stable attempts and retained action recovery.
+    description: Explicit heading, arrival and manual origin, with stable attempts
+      and retained action recovery.
   - name: Outcomes
-    description: Whole-piece results, exact reported collection, effective progress and durable action recovery.
+    description: Whole-piece results, exact reported collection, effective progress
+      and durable action recovery.
   - name: Eligibility
-    description: Explicit earliest deferral, whole retry, activation, assigned-driver urgency and durable recovery.
+    description: Explicit earliest deferral, whole retry, activation,
+      assigned-driver urgency and durable recovery.
   - name: Workday closure
-    description: Explicit round/day closure, current-holder carry-forward and basic workday summary.
+    description: Explicit round/day closure, current-holder carry-forward and basic
+      workday summary.
   - name: Device ownership
-    description: Same-driver online takeover, confirmed snapshots and evidence-only recovery.
+    description: Same-driver online takeover, confirmed snapshots and evidence-only
+      recovery.
   - name: Returns
-    description: Source-branch offers, native actual subset receipt and separate loss/damage; no stock claim.
+    description: Source-branch offers, native actual subset receipt and separate
+      loss/damage; no stock claim.

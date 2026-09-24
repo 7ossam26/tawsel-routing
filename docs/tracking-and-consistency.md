@@ -1,5 +1,11 @@
 # Tracking and consistency contract
 
+## P22 branch and cycle update — 24 September 2026
+
+The labelled full-capacity proposal is now locally implemented and verified: [API/state/demo](branch-interruption.md), [ordered evidence](phase-22-evidence.md). Under common driver guards, branch heading pauses customers; unresolved arrival blocks interruption. Active branch plan has one branch stop and explicitly paused customer forecast membership. Customer reservations continue to constrain atomic intake; new accepted work appends to retained state and a new paused forecast. Branch arrival records branch-pin origin; resume checks immutable claims against committed receipts, retains unreceived discrepancies and creates fresh continuation forecasts in the same round/day. Old worker publications are fenced. Database activity-mode and active-round constraints supplement command checks.
+
+Stable task/source shipment identity spans new dispatch/attempt IDs. New-cycle source snapshots consume only unallocated actual return balances; append-only allocations and receipt locks conserve quantities. Old holder/outcome/collection/source snapshots remain, including still-held old portions in current custody. Old cycles cannot reopen; retry/correction dependencies include receipt and redispatch. The shipment has one customer execution at a time. Signed delivery, native ERP persistence and correction producers remain later work. This update supersedes older P22-future wording below.
+
 ## P21 actual receipt update — 24 September 2026
 
 [Source returns](returns.md) now implement offers, actual subset receipt and separate loss/damage. Migration 0019 adds scoped immutable history and monotone quantity counters. Driver → workday → assignment → task guards serialize actual transfer with retry/outcome/closure/takeover; receipt/disposition commits retry_dependencies in the same transaction. A winning whole retry supersedes its old offer without deleting its unresolved history. Per-item expectedRevision permits independent subset confirmation, with no whole-offered-batch gate.

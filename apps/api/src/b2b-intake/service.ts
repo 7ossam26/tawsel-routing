@@ -13,35 +13,35 @@ import { SourceError, validateCommand, type Operation, type Snapshot, type Task,
 
 const policy = (capability: 'intake.prepare' | 'assignment.manage'): ResourcePolicy => [{ capability, ownership: 'assigned-branches' }];
 const readPolicy: ResourcePolicy = [...policy('intake.prepare'), ...policy('assignment.manage')];
-const capability = (operation: string) => operation.startsWith('assignment.') ? 'assignment.manage' as const : 'intake.prepare' as const;
+const capability = (operation: string) => (operation.startsWith('assignment.')||operation==='dispatch.createFromReceipt') ? 'assignment.manage' as const : 'intake.prepare' as const;
 export interface TaskRow extends ResourceScope {
   task_id: string; external_id: string; source_revision: string; payload: Snapshot; payload_hash: string;
   dispatch_cycle_id: string; source_dispatch_cycle_id: string; assignment_revision: string; assignment_hash: string | null;
   state: Task['state']; driver_external_id: string | null; received_at: Date | null; departure_at: Date | null;
-  reserved: boolean; planning_pending: boolean; planning_job_status: Task['planningStatus'] | null; execution_confirmed: boolean;
+  latest:boolean; previous_dispatch_cycle_id:string|null; reserved: boolean; planning_pending: boolean; planning_job_status: Task['planningStatus'] | null; execution_confirmed: boolean;
 }
-const select = `SELECT t.*,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
- c.state,c.driver_id,c.driver_external_id,c.received_at,c.departure_at,
+const select = `SELECT t.*,COALESCE((to_jsonb(c)->>'source_revision')::bigint,t.source_revision) AS source_revision,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
+ c.state,c.driver_id,c.driver_external_id,c.received_at,c.departure_at,COALESCE((to_jsonb(c)->>'latest')::boolean,true) AS latest,(to_jsonb(c)->>'previous_dispatch_cycle_id')::uuid AS previous_dispatch_cycle_id,
  CASE WHEN l.task_id IS NOT NULL THEN l.source_revision=t.source_revision ELSE s.payload->'destination'->>'kind'='confirmed-pin' END AS execution_confirmed,
  EXISTS(SELECT 1 FROM tawsel.driver_planned_stops p WHERE p.tenant_id=t.tenant_id AND p.dispatch_cycle_id=c.dispatch_cycle_id AND p.driver_id=c.driver_id AND p.state='remaining') AS reserved,
  EXISTS(SELECT 1 FROM tawsel.intake_replan_intents p WHERE p.tenant_id=t.tenant_id AND p.driver_id=c.driver_id AND p.source_id=t.integration_id) AS planning_pending,
  (SELECT j.status FROM tawsel.planning_states ps JOIN tawsel.planning_jobs j ON j.tenant_id=ps.tenant_id AND j.job_id=ps.latest_job_id WHERE ps.tenant_id=t.tenant_id AND ps.driver_id=c.driver_id) AS planning_job_status
- FROM tawsel.b2b_tasks t JOIN tawsel.b2b_source_snapshots s USING (tenant_id,task_id,source_revision)
- JOIN tawsel.b2b_dispatch_cycles c USING (tenant_id,task_id)
- LEFT JOIN tawsel.task_locations l USING (tenant_id,task_id)`;
+ FROM tawsel.b2b_tasks t JOIN tawsel.b2b_dispatch_cycles c USING (tenant_id,task_id)
+ JOIN tawsel.b2b_source_snapshots s ON s.tenant_id=c.tenant_id AND s.task_id=c.task_id AND s.source_revision=COALESCE((to_jsonb(c)->>'source_revision')::bigint,t.source_revision)
+ LEFT JOIN tawsel.task_locations l ON l.tenant_id=t.tenant_id AND l.task_id=t.task_id`;
 const key = (b: ServiceBinding) => [b.tenantId, b.integrationId];
 function stableId(b: ServiceBinding, externalId: string) {
   const hex = createHash('sha256').update(canonicalJson(['b2b-task-v1', ...key(b), externalId])).digest('hex');
   return `${hex.slice(0,8)}-${hex.slice(8,12)}-5${hex.slice(13,16)}-a${hex.slice(17,20)}-${hex.slice(20,32)}`;
 }
 async function load(tx: Transaction, b: ServiceBinding, externalId: string, lock = false) {
-  return (await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3${lock ? ' FOR UPDATE OF t,c' : ''}`, [...key(b), externalId])).rows[0];
+  return (await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3 AND COALESCE((to_jsonb(c)->>'latest')::boolean,true)${lock ? ' FOR UPDATE OF t,c' : ''}`, [...key(b), externalId])).rows[0];
 }
 export function view(row: TaskRow): Task {
-  return { taskId: row.task_id, dispatchCycleId: row.dispatch_cycle_id, externalId: row.external_id,
+  return { latest:row.latest,previousDispatchCycleId:row.previous_dispatch_cycle_id,taskId: row.task_id, dispatchCycleId: row.dispatch_cycle_id, externalId: row.external_id,
     sourceDispatchCycleId: row.source_dispatch_cycle_id, sourceRevision: Number(row.source_revision), assignmentRevision: Number(row.assignment_revision),
     state: row.state, driverId: row.driver_id, driverExternalId: row.driver_external_id, receivedAt: row.received_at?.toISOString() ?? null,
-    editable: row.departure_at === null, planningEligible: row.state === 'held' && row.reserved,
+    editable: row.latest && row.departure_at === null, planningEligible: row.latest && row.state === 'held' && row.reserved,
     planningStatus: row.state === 'held' ? row.planning_job_status ?? (row.planning_pending ? 'pending' : 'not-requested') : 'not-requested',
     locationReadiness: row.execution_confirmed ? 'confirmed' : 'needs-resolution', snapshot: row.payload };
 }
@@ -74,7 +74,7 @@ async function lockTasks(tx: Transaction, b: ServiceBinding, externalIds: string
   }
   return rows;
 }
-function assertEditable(row: TaskRow) { if (row.departure_at) fail('departed_edit_forbidden', 'Shipment is frozen by departure; ordinary ERP edits are unavailable.'); }
+function assertEditable(row: TaskRow) { if (!row.latest || row.departure_at) fail('departed_edit_forbidden', 'Shipment is frozen by departure; ordinary ERP edits are unavailable.'); }
 async function saveSnapshot(tx: Transaction,b: ServiceBinding,command: ActionEnvelope,taskId: string,snapshot: Snapshot,digest: string) {
   await tx.query(`INSERT INTO tawsel.b2b_source_snapshots (tenant_id,task_id,source_revision,payload,payload_hash,source_id,action_id)
     VALUES ($1,$2,$3,$4::jsonb,$5,$6,$7)`, [b.tenantId,taskId,snapshot.sourceRevision,canonicalJson(snapshot),digest,b.integrationId,command.actionId]);
@@ -99,6 +99,10 @@ async function snapshotCommand(tx: Transaction,b: ServiceBinding,access: AccessS
     if(p.sourceRevision<=Number(old.source_revision)) fail(p.sourceRevision===Number(old.source_revision)?'idempotency_conflict':'stale_revision','Source revision already exists; do not overwrite its content.');
     if(p.expectedSourceRevision!==Number(old.source_revision)) fail('stale_revision','expectedSourceRevision must match the accepted snapshot.');
     if(old.branch_id!==branchId || old.source_dispatch_cycle_id!==p.sourceDispatchCycleId) fail('lifecycle_forbidden','Origin branch and dispatch-cycle identity cannot be changed; redispatch belongs to the actual-return workflow.');
+    if(old.previous_dispatch_cycle_id){
+      const quantities=(s:Snapshot)=>s.lines.map(l=>[l.sourceLineId,l.quantity]).sort((x,y)=>String(x[0]).localeCompare(String(y[0])));
+      if(canonicalJson(quantities(p))!==canonicalJson(quantities(old.payload)))fail('quantity_exceeded','Redispatched line quantities are fixed by the confirmed receipt allocation.');
+    }
     await tx.query('UPDATE tawsel.b2b_tasks SET source_revision=$3 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,old.task_id,p.sourceRevision]);
   } else {
     if(p.expectedSourceRevision!==0) fail('stale_revision','Initial snapshot requires expectedSourceRevision=0.');
@@ -231,6 +235,38 @@ async function urgency(tx:Transaction,b:ServiceBinding,access:AccessSession,comm
   return accepted(b,command,[view((await load(tx,b,p.externalId))!)],'task.urgencyChanged');
 }
 
+/** New execution from confirmed stock only. Shipment ID is stable; old holder,
+ * outcome, collection, source snapshot and request identities are never edited. */
+async function redispatch(tx:Transaction,b:ServiceBinding,access:AccessSession,command:ActionEnvelope):Promise<Decision>{
+ const p=command.payload as {externalId:string;previousDispatchCycleId:string;snapshot:Snapshot},s=p.snapshot;
+ const donorBefore=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3 AND c.dispatch_cycle_id=$4`,[...key(b),p.externalId,p.previousDispatchCycleId])).rows[0];
+ access.requireResource(policy('assignment.manage'),donorBefore);
+ const [current]=await lockTasks(tx,b,[p.externalId],donorBefore?.driver_id?[donorBefore.driver_id]:[]);
+ const row=access.requireResource(policy('assignment.manage'),current);
+ const donor=access.requireResource(policy('assignment.manage'),(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3 AND c.dispatch_cycle_id=$4`,[...key(b),row.task_id,p.previousDispatchCycleId])).rows[0]);
+ if(donor.driver_id!==donorBefore!.driver_id)fail('stale_revision','Original holder changed; reload the receipt.');
+ if(s.externalId!==p.externalId||s.sourceBranchExternalId!==donor.payload.sourceBranchExternalId)fail('wrong_source_branch','Preserve the original source shipment and branch.');
+ if(s.expectedSourceRevision!==Number(row.source_revision)||s.sourceRevision<=Number(row.source_revision))fail('stale_revision','A fresh source revision must follow the current shipment revision.');
+ if((await tx.query('SELECT 1 FROM tawsel.b2b_dispatch_cycles WHERE tenant_id=$1 AND task_id=$2 AND source_dispatch_cycle_id=$3',[b.tenantId,row.task_id,s.sourceDispatchCycleId])).rowCount)fail('idempotency_conflict','Use a new source dispatch ID; prior cycles are never reopened.');
+ // A shipment has one customer execution at a time. Resolved old-cycle held
+ // discrepancies remain separate custody, not another executable delivery.
+ const active=(await tx.query(`SELECT 1 FROM tawsel.planning_attempts a LEFT JOIN tawsel.delivery_outcomes o USING(tenant_id,attempt_id) WHERE a.tenant_id=$1 AND a.dispatch_cycle_id=$2 AND a.latest AND o.outcome_id IS NULL`,[b.tenantId,row.dispatch_cycle_id])).rowCount;
+ if(active||row.state==='unassigned'||row.state==='prepared')fail('lifecycle_forbidden','Resolve the current dispatch before creating another execution cycle.');
+ const balances=(await tx.query(`SELECT r.source_line_id,r.received,COALESCE((SELECT sum(x.quantity) FROM tawsel.redispatch_allocations x WHERE x.tenant_id=r.tenant_id AND x.previous_dispatch_cycle_id=r.dispatch_cycle_id AND x.source_line_id=r.source_line_id),0)::int AS allocated FROM tawsel.return_balances r WHERE r.tenant_id=$1 AND r.dispatch_cycle_id=$2 FOR UPDATE`,[b.tenantId,donor.dispatch_cycle_id])).rows;
+ for(const line of s.lines){const balance=balances.find(r=>r.source_line_id===line.sourceLineId);if(!balance||line.quantity>balance.received-balance.allocated)fail('quantity_exceeded','Redispatch quantities must come from unallocated actual source-branch receipts; offers, loss and damage are not stock.');}
+ const id=randomUUID(),digest=payloadHash({operationId:command.operationId,payload:s});
+ await saveSnapshot(tx,b,command,row.task_id,s,digest);
+ await tx.query('UPDATE tawsel.b2b_dispatch_cycles SET latest=false WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[b.tenantId,row.dispatch_cycle_id]);
+ await tx.query(`INSERT INTO tawsel.b2b_dispatch_cycles (tenant_id,integration_id,task_id,dispatch_cycle_id,source_dispatch_cycle_id,source_revision,previous_dispatch_cycle_id) VALUES ($1,$2,$3,$4,$5,$6,$7)`,[...key(b),row.task_id,id,s.sourceDispatchCycleId,s.sourceRevision,donor.dispatch_cycle_id]);
+ await tx.query('UPDATE tawsel.b2b_tasks SET source_revision=$3 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,row.task_id,s.sourceRevision]);
+ for(const line of s.lines)await tx.query('INSERT INTO tawsel.redispatch_allocations (tenant_id,dispatch_cycle_id,previous_dispatch_cycle_id,source_line_id,quantity,source_id,action_id) VALUES ($1,$2,$3,$4,$5,$6,$7)',[b.tenantId,id,donor.dispatch_cycle_id,line.sourceLineId,line.quantity,b.integrationId,command.actionId]);
+ await tx.query("INSERT INTO tawsel.retry_dependencies (tenant_id,dispatch_cycle_id,dependency_id,reason) VALUES ($1,$2,$3,'redispatched')",[b.tenantId,donor.dispatch_cycle_id,id]);
+ // Per-task driver choices belong to the old execution, not this ERP snapshot.
+ await tx.query('UPDATE tawsel.task_execution_options SET earliest_at=NULL,urgency=NULL,deferred=false,revision=revision+1 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,row.task_id]);
+ for(const driver of [...new Set([row.driver_id,donor.driver_id].filter((x):x is string=>!!x))])await queueReplan(tx,b,command,[driver]);
+ return accepted(b,command,[view((await load(tx,b,p.externalId))!)],'dispatch.createdFromReceipt');
+}
+
 export class B2bIntakeService {
   constructor(readonly pool: Pool, readonly observe?: Pick<CommandHooks,'afterWrite'>) {}
   async command(authorization: string | undefined, operation: Operation, value: unknown) {
@@ -251,6 +287,7 @@ export class B2bIntakeService {
           },
           async writeDomain() {
             try {
+              if(operation==='dispatch.createFromReceipt')return await redispatch(tx,b,access,command);
               if(operation==='intake.submitSnapshot') return await snapshotCommand(tx,b,access,command);
               if(operation==='intake.prepare' || operation==='assignment.receiveBatch') return await assignmentCommand(tx,b,access,command);
               if(operation==='assignment.withdraw' || operation==='assignment.reassignBeforeDeparture') return await changeAssignment(tx,b,access,command);
@@ -268,6 +305,14 @@ export class B2bIntakeService {
     if(!externalId || externalId.length>256) throw new SourceError('validation_failed',400,'externalId required (1–256 characters).');
     return this.read(authorization,async(tx,b,access)=>view(access.requireResource(readPolicy,await load(tx,b,externalId))));
   }
+  async cycles(authorization:string|undefined,externalId:string,cursor?:string){
+    if(!externalId||externalId.length>256||(cursor&&!/^[0-9a-f-]{36}$/i.test(cursor)))throw new SourceError('validation_failed',400,'Invalid shipment/cursor.');
+    return this.read(authorization,async(tx,b,a)=>{
+      a.requireResource(readPolicy,await load(tx,b,externalId));
+      const rows=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3 AND ($4::uuid IS NULL OR c.dispatch_cycle_id>$4) ORDER BY c.dispatch_cycle_id LIMIT 101`,[...key(b),externalId,cursor??null])).rows;
+      return {items:rows.slice(0,100).map(view),nextCursor:rows.length>100?rows[99]!.dispatch_cycle_id:null};
+    });
+  }
   async list(authorization:string|undefined,query:{state?:string;driverExternalId?:string;limit?:string;cursor?:string}) {
     const limit=query.limit===undefined?20:Number(query.limit);
     if(!Number.isInteger(limit)||limit<1||limit>100 || (query.state!==undefined&&!['unassigned','prepared','held','withdrawn'].includes(query.state))
@@ -276,7 +321,7 @@ export class B2bIntakeService {
     return this.read(authorization,async(tx,_b,access)=>{
       const scoped=access.sqlPredicate(readPolicy,'t');
       const values:unknown[]=[...scoped.values];
-      let where=scoped.text;
+      let where=scoped.text+" AND COALESCE((to_jsonb(c)->>'latest')::boolean,true)";
       const add=(sql:string,value:unknown)=>{values.push(value);where+=` AND ${sql}=$${values.length}`;};
       if(query.state)add('c.state',query.state);
       if(query.driverExternalId)add('c.driver_external_id',query.driverExternalId);
@@ -296,7 +341,7 @@ export class B2bIntakeService {
       access.requireCapability(policy(capability(result.operationId)));
       const tasks=result.summary.tasks as {taskId:string}[]|undefined;
       for(const task of tasks??[]) {
-        const row=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3`,[...key(b),task.taskId])).rows[0];
+        const row=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3 AND c.latest`,[...key(b),task.taskId])).rows[0];
         access.requireResource(readPolicy,row);
       }
       return {actionId,status:result.receipt.businessStatus,result};
@@ -312,4 +357,4 @@ export class B2bIntakeService {
     });
   }
 }
-const operationsForResult={'intake.submitSnapshot':true,'intake.prepare':true,'assignment.receiveBatch':true,'assignment.withdraw':true,'assignment.reassignBeforeDeparture':true,'intake.setUrgencyBeforeDeparture':true};
+const operationsForResult={'dispatch.createFromReceipt':true,'intake.submitSnapshot':true,'intake.prepare':true,'assignment.receiveBatch':true,'assignment.withdraw':true,'assignment.reassignBeforeDeparture':true,'intake.setUrgencyBeforeDeparture':true};

@@ -7240,5 +7240,748 @@
         }
       }
     }
+  },
+  {
+    "id": "p22-interrupt",
+    "schema": "branch-activity.schema.json#/$defs/InterruptCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+      "operationId": "branch.interruptRound",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 2
+          }
+        ],
+        "serviceEstimateSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "p22-arrive",
+    "schema": "branch-activity.schema.json#/$defs/ArrivalCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "d40ae37c-c1de-463c-8e2a-6b2c5aa98812",
+      "operationId": "branch.recordArrival",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 3,
+        "expectedCurrentAttemptId": null,
+        "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+        "expectedBranchRevision": 1
+      }
+    }
+  },
+  {
+    "id": "p22-resume",
+    "schema": "branch-activity.schema.json#/$defs/ResumeCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "5e569ea1-c5ee-4724-a3bf-3bd85656eefa",
+      "operationId": "branch.resumeRound",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 4,
+        "expectedCurrentAttemptId": null,
+        "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+        "expectedBranchRevision": 2
+      }
+    }
+  },
+  {
+    "id": "p22-redispatch",
+    "schema": "b2b-intake.schema.json#/$defs/RedispatchCommand",
+    "valid": true,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "context": {
+        "kind": "integration",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "integrationId": "39b30496-c78f-4d4d-a657-efbfe4e7bf70"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "actionId": "b6c51493-7433-4959-be8d-7cb6b4b0f6b0",
+      "operationId": "dispatch.createFromReceipt",
+      "payload": {
+        "externalId": "shipment-0",
+        "previousDispatchCycleId": "d9b1e377-0c92-46a9-b3b5-c8feba1b48b8",
+        "snapshot": {
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "quantity": 2,
+              "description": "قطع",
+              "sourceLineId": "pieces"
+            }
+          ],
+          "priority": "ordinary",
+          "totalDue": {
+            "amountMinor": 20000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "allocation": "exact-outstanding-per-unit",
+          "externalId": "shipment-0",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            }
+          },
+          "shippingDue": {
+            "amountMinor": 0,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "sourceRevision": 2,
+          "splittingAllowed": true,
+          "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch"
+        }
+      }
+    }
+  },
+  {
+    "id": "p22-cycles",
+    "schema": "b2b-intake.schema.json#/$defs/CycleList",
+    "valid": true,
+    "data": {
+      "items": [
+        {
+          "latest": true,
+          "previousDispatchCycleId": "d9b1e377-0c92-46a9-b3b5-c8feba1b48b8",
+          "taskId": "613e29a9-f8e3-5534-afd6-6af4ec35f1cd",
+          "dispatchCycleId": "8fee508c-e6a6-4030-a24d-ebcec82262f5",
+          "externalId": "shipment-0",
+          "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+          "sourceRevision": 2,
+          "assignmentRevision": 0,
+          "state": "unassigned",
+          "driverId": null,
+          "driverExternalId": null,
+          "receivedAt": null,
+          "editable": true,
+          "planningEligible": false,
+          "planningStatus": "not-requested",
+          "locationReadiness": "confirmed",
+          "snapshot": {
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "quantity": 2,
+                "description": "قطع",
+                "sourceLineId": "pieces"
+              }
+            ],
+            "priority": "ordinary",
+            "totalDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 20000
+            },
+            "allocation": "exact-outstanding-per-unit",
+            "externalId": "shipment-0",
+            "destination": {
+              "kind": "confirmed-pin",
+              "coordinates": {
+                "latitude": 30.05,
+                "longitude": 31.24
+              }
+            },
+            "shippingDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            },
+            "recipientName": "عميل بنفس العنوان",
+            "recipientPhone": "01012345678",
+            "sourceRevision": 2,
+            "splittingAllowed": true,
+            "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+            "expectedSourceRevision": 1,
+            "sourceBranchExternalId": "branch"
+          }
+        },
+        {
+          "latest": false,
+          "previousDispatchCycleId": null,
+          "taskId": "613e29a9-f8e3-5534-afd6-6af4ec35f1cd",
+          "dispatchCycleId": "d9b1e377-0c92-46a9-b3b5-c8feba1b48b8",
+          "externalId": "shipment-0",
+          "sourceDispatchCycleId": "cycle",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "state": "held",
+          "driverId": "f6c70d6d-a3f9-4cbd-9338-b2e2fd06a2b9",
+          "driverExternalId": "policy-driver",
+          "receivedAt": "2026-09-24T10:38:59.962Z",
+          "editable": false,
+          "planningEligible": false,
+          "planningStatus": "pending",
+          "locationReadiness": "confirmed",
+          "snapshot": {
+            "lines": [
+              {
+                "unitDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 10000
+                },
+                "quantity": 3,
+                "description": "قطع",
+                "sourceLineId": "pieces"
+              }
+            ],
+            "priority": "ordinary",
+            "totalDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 35000
+            },
+            "allocation": "exact-outstanding-per-unit",
+            "externalId": "shipment-0",
+            "destination": {
+              "kind": "confirmed-pin",
+              "coordinates": {
+                "latitude": 30.05,
+                "longitude": 31.24
+              }
+            },
+            "shippingDue": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            },
+            "recipientName": "عميل بنفس العنوان",
+            "recipientPhone": "01012345678",
+            "sourceRevision": 1,
+            "splittingAllowed": true,
+            "sourceDispatchCycleId": "cycle",
+            "expectedSourceRevision": 0,
+            "sourceBranchExternalId": "branch"
+          }
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "id": "p22-resumed-current",
+    "schema": "current-activity.schema.json#/$defs/Snapshot",
+    "valid": true,
+    "data": {
+      "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+      "driverId": "f6c70d6d-a3f9-4cbd-9338-b2e2fd06a2b9",
+      "branchActivity": null,
+      "owner": {
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "generation": 1
+      },
+      "revision": 5,
+      "currentActivity": null,
+      "physicalOrigin": {
+        "kind": "branch-pin",
+        "time": {
+          "actionId": "d40ae37c-c1de-463c-8e2a-6b2c5aa98812",
+          "recordedAt": "2026-09-24T10:39:00.649Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "taskId": null,
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "revision": 1,
+        "attemptId": null,
+        "coordinates": {
+          "latitude": 30.1,
+          "longitude": 31.3
+        }
+      },
+      "planningOrigin": {
+        "kind": "branch-pin",
+        "coordinates": {
+          "latitude": 30.1,
+          "longitude": 31.3
+        }
+      },
+      "nextSuggestion": {
+        "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+        "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+        "sourceRevision": 1,
+        "assignmentRevision": 1,
+        "pinRevision": 0,
+        "coordinates": {
+          "latitude": 30.05,
+          "longitude": 31.24
+        },
+        "recipientName": "عميل بنفس العنوان",
+        "recipientPhone": "+201012345678",
+        "address": null
+      },
+      "planning": {
+        "planId": "ed5b0215-f934-4774-a541-a56263ab8d1e",
+        "updating": true
+      },
+      "targets": [
+        {
+          "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+          "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+          "sourceRevision": 1,
+          "assignmentRevision": 1,
+          "pinRevision": 0,
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "+201012345678",
+          "address": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "p22-interrupted",
+    "schema": "branch-activity.schema.json#/$defs/Result",
+    "valid": true,
+    "data": {
+      "planId": "e4307da7-f326-4057-a49a-73fb6a2e8672",
+      "branchActivity": {
+        "stage": "heading",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 2
+          }
+        ],
+        "arrival": null,
+        "heading": {
+          "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+          "recordedAt": "2026-09-24T10:39:00.565Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "resumed": null,
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "revision": 1,
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+        "coordinates": {
+          "latitude": 30.1,
+          "longitude": 31.3
+        },
+        "pausedActivity": {
+          "stage": "heading",
+          "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+          "arrival": null,
+          "heading": {
+            "actionId": "6484a0c8-1abd-48cc-ac59-9dabbd0cb67a",
+            "recordedAt": "2026-09-24T10:39:00.449Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "revision": 2,
+          "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+        },
+        "retainedPlanId": "94b3849b-cfc7-4992-bda0-37bbf7fd9e36",
+        "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+        "retainedSequence": [
+          {
+            "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+            "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+          }
+        ],
+        "serviceEstimateSeconds": 300
+      },
+      "activityRevision": 3
+    }
+  },
+  {
+    "id": "p22-arrived",
+    "schema": "branch-activity.schema.json#/$defs/Result",
+    "valid": true,
+    "data": {
+      "planId": "73140700-1669-41c9-802d-5259a7152275",
+      "branchActivity": {
+        "stage": "arrived",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 2
+          }
+        ],
+        "arrival": {
+          "actionId": "d40ae37c-c1de-463c-8e2a-6b2c5aa98812",
+          "recordedAt": "2026-09-24T10:39:00.649Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "heading": {
+          "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+          "recordedAt": "2026-09-24T10:39:00.565Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "resumed": null,
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "revision": 2,
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+        "coordinates": {
+          "latitude": 30.1,
+          "longitude": 31.3
+        },
+        "pausedActivity": {
+          "stage": "heading",
+          "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+          "arrival": null,
+          "heading": {
+            "actionId": "6484a0c8-1abd-48cc-ac59-9dabbd0cb67a",
+            "recordedAt": "2026-09-24T10:39:00.449Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "revision": 2,
+          "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+        },
+        "retainedPlanId": "94b3849b-cfc7-4992-bda0-37bbf7fd9e36",
+        "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+        "retainedSequence": [
+          {
+            "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+            "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+          }
+        ],
+        "serviceEstimateSeconds": 300
+      },
+      "activityRevision": 4
+    }
+  },
+  {
+    "id": "p22-resumed",
+    "schema": "branch-activity.schema.json#/$defs/Result",
+    "valid": true,
+    "data": {
+      "planId": "ed5b0215-f934-4774-a541-a56263ab8d1e",
+      "branchActivity": {
+        "stage": "resumed",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 2
+          }
+        ],
+        "arrival": {
+          "actionId": "d40ae37c-c1de-463c-8e2a-6b2c5aa98812",
+          "recordedAt": "2026-09-24T10:39:00.649Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "heading": {
+          "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+          "recordedAt": "2026-09-24T10:39:00.565Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "resumed": {
+          "actionId": "5e569ea1-c5ee-4724-a3bf-3bd85656eefa",
+          "recordedAt": "2026-09-24T10:39:01.263Z",
+          "observation": {
+            "clock": {
+              "quality": "unknown"
+            },
+            "observedAt": null
+          }
+        },
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "revision": 3,
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+        "coordinates": {
+          "latitude": 30.1,
+          "longitude": 31.3
+        },
+        "pausedActivity": {
+          "stage": "heading",
+          "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+          "arrival": null,
+          "heading": {
+            "actionId": "6484a0c8-1abd-48cc-ac59-9dabbd0cb67a",
+            "recordedAt": "2026-09-24T10:39:00.449Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "revision": 2,
+          "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+        },
+        "retainedPlanId": "94b3849b-cfc7-4992-bda0-37bbf7fd9e36",
+        "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+        "retainedSequence": [
+          {
+            "taskId": "1c0d2caf-c56a-5d7c-ac5f-574b177f4ca0",
+            "attemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688"
+          }
+        ],
+        "serviceEstimateSeconds": 300
+      },
+      "activityRevision": 5
+    }
+  },
+  {
+    "id": "p22-event-0",
+    "schema": "branch-activity.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "time": {
+        "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+        "recordedAt": "2026-09-24T10:39:00.565Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "stage": "heading",
+      "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+      "driverId": "f6c70d6d-a3f9-4cbd-9338-b2e2fd06a2b9",
+      "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+      "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+      "activityRevision": 3
+    }
+  },
+  {
+    "id": "p22-event-1",
+    "schema": "branch-activity.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "time": {
+        "actionId": "d40ae37c-c1de-463c-8e2a-6b2c5aa98812",
+        "recordedAt": "2026-09-24T10:39:00.649Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "stage": "arrived",
+      "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+      "driverId": "f6c70d6d-a3f9-4cbd-9338-b2e2fd06a2b9",
+      "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+      "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+      "activityRevision": 4
+    }
+  },
+  {
+    "id": "p22-event-2",
+    "schema": "b2b-intake.schema.json#/$defs/ChangedEvent",
+    "valid": true,
+    "data": {
+      "task": {
+        "state": "unassigned",
+        "latest": true,
+        "taskId": "613e29a9-f8e3-5534-afd6-6af4ec35f1cd",
+        "driverId": null,
+        "editable": true,
+        "snapshot": {
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "quantity": 2,
+              "description": "قطع",
+              "sourceLineId": "pieces"
+            }
+          ],
+          "priority": "ordinary",
+          "totalDue": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 20000
+          },
+          "allocation": "exact-outstanding-per-unit",
+          "externalId": "shipment-0",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            }
+          },
+          "shippingDue": {
+            "currency": "EGP",
+            "exponent": 2,
+            "amountMinor": 0
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "sourceRevision": 2,
+          "splittingAllowed": true,
+          "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch"
+        },
+        "externalId": "shipment-0",
+        "receivedAt": null,
+        "planningStatus": "not-requested",
+        "sourceRevision": 2,
+        "dispatchCycleId": "8fee508c-e6a6-4030-a24d-ebcec82262f5",
+        "driverExternalId": null,
+        "planningEligible": false,
+        "locationReadiness": "confirmed",
+        "assignmentRevision": 0,
+        "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+        "previousDispatchCycleId": "d9b1e377-0c92-46a9-b3b5-c8feba1b48b8"
+      },
+      "actionId": "b6c51493-7433-4959-be8d-7cb6b4b0f6b0"
+    }
+  },
+  {
+    "id": "p22-event-3",
+    "schema": "branch-activity.schema.json#/$defs/Event",
+    "valid": true,
+    "data": {
+      "time": {
+        "actionId": "5e569ea1-c5ee-4724-a3bf-3bd85656eefa",
+        "recordedAt": "2026-09-24T10:39:01.263Z",
+        "observation": {
+          "clock": {
+            "quality": "unknown"
+          },
+          "observedAt": null
+        }
+      },
+      "stage": "resumed",
+      "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+      "driverId": "f6c70d6d-a3f9-4cbd-9338-b2e2fd06a2b9",
+      "segmentId": "0262759b-0c24-424c-8e4a-27c9e3df094f",
+      "sourceBranchId": "0c335ebd-6af9-4998-8095-c99ab9e777cf",
+      "activityRevision": 5
+    }
   }
 ]

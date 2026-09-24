@@ -1,3 +1,4 @@
+import {branchActivity} from '../branch/state.js';
 import {executionFence} from '../devices/fence.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
@@ -55,6 +56,7 @@ export class Closures {
      if(p.expectedActiveRoundId!==(active?.round_id??null)||active&&(active.workday_id!==d.workday_id||active.round_id!==r.round_id))throw new ClosureError('stale_revision',409,'تغيّرت الجولة النشطة؛ حدّث اليوم قبل الإنهاء.');
      if(op==='round.end'&&!active)throw new ClosureError('lifecycle_forbidden',409,'لا توجد جولة نشطة لإنهائها.');
      if(!active){const latest=(await tx.query('SELECT round_id FROM tawsel.rounds WHERE tenant_id=$1 AND workday_id=$2 ORDER BY device_generation DESC LIMIT 1',[r.tenant_id,d.workday_id])).rows[0];if(latest?.round_id!==r.round_id)throw new ClosureError('stale_revision',409,'اختر آخر جولة في يوم العمل.');}
+     if(await branchActivity(tx,r.tenant_id,driver))throw new ClosureError('lifecycle_forbidden',409,'أكمل زيارة الفرع وتأكيد القطع قبل إنهاء الجولة.');
      const before=await activity(tx,r.tenant_id,r.round_id),revision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
      if(p.expectedActivityRevision!==revision||p.expectedCurrentAttemptId!==(before?.attemptId??null))throw new ClosureError('stale_revision',409,'تغيّر العميل الحالي؛ حدّث الجولة.');
      const blocker=closureBlocker(before?.stage??null,p.currentAction);

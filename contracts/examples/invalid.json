@@ -4642,5 +4642,198 @@
         "sourceDispatchCycleId": "cycle"
       }
     }
+  },
+  {
+    "id": "p22-empty-claims",
+    "schema": "branch-activity.schema.json#/$defs/InterruptCommand",
+    "valid": false,
+    "keyword": "minItems",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+      "operationId": "branch.interruptRound",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "claims": [],
+        "serviceEstimateSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "p22-fractional-claim",
+    "schema": "branch-activity.schema.json#/$defs/InterruptCommand",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+      "operationId": "branch.interruptRound",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 0.5
+          }
+        ],
+        "serviceEstimateSeconds": 300
+      }
+    }
+  },
+  {
+    "id": "p22-arbitrary-branch",
+    "schema": "branch-activity.schema.json#/$defs/InterruptCommand",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "5e688fc2-fc4f-477d-ab4f-b2bb7c001d1f",
+      "operationId": "branch.interruptRound",
+      "context": {
+        "kind": "device",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "accountId": "047406a8-8ea7-4eb1-87b3-e9e2456a3ce8",
+        "deviceId": "5ec13102-7aa9-4c2f-a445-64bd9f100be4",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "6cd9c8a2-86ea-40b3-9416-8e3810f5c4fd",
+        "expectedActivityRevision": 2,
+        "expectedCurrentAttemptId": "f88f21db-f1c5-416f-8d29-1d2446b7d688",
+        "requestId": "0bcfc092-983d-48fe-8674-a4783da6435b",
+        "claims": [
+          {
+            "itemId": "96f3c91c-aa52-414e-a7fa-23a5ba7f49ab",
+            "quantity": 2
+          }
+        ],
+        "serviceEstimateSeconds": 300,
+        "sourceBranchId": "00000000-0000-4000-8000-000000000001"
+      }
+    }
+  },
+  {
+    "id": "p22-fractional-redispatch",
+    "schema": "b2b-intake.schema.json#/$defs/RedispatchCommand",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "context": {
+        "kind": "integration",
+        "tenantId": "ac60e92f-ea64-432d-b41a-15259b0f8f97",
+        "integrationId": "39b30496-c78f-4d4d-a657-efbfe4e7bf70"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "actionId": "b6c51493-7433-4959-be8d-7cb6b4b0f6b0",
+      "operationId": "dispatch.createFromReceipt",
+      "payload": {
+        "externalId": "shipment-0",
+        "previousDispatchCycleId": "d9b1e377-0c92-46a9-b3b5-c8feba1b48b8",
+        "snapshot": {
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "quantity": 1.5,
+              "description": "قطع",
+              "sourceLineId": "pieces"
+            }
+          ],
+          "priority": "ordinary",
+          "totalDue": {
+            "amountMinor": 20000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "allocation": "exact-outstanding-per-unit",
+          "externalId": "shipment-0",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            }
+          },
+          "shippingDue": {
+            "amountMinor": 0,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "sourceRevision": 2,
+          "splittingAllowed": true,
+          "sourceDispatchCycleId": "public-cycle-e57adcf2-868a-4033-a364-eb4b3fc02b1f",
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch"
+        }
+      }
+    }
   }
 ]

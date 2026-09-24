@@ -9,7 +9,7 @@ export type Snapshot = components['schemas']['B2bSourceSnapshot'];
 export type AssignmentReference = components['schemas']['B2bAssignmentReference'];
 export type Task = components['schemas']['B2bTask'];
 export const operations = {
-  'intake.submitSnapshot': 'SourceSnapshot', 'intake.prepare': 'Prepare', 'assignment.receiveBatch': 'ReceiveBatch',
+  'dispatch.createFromReceipt':'Redispatch', 'intake.submitSnapshot': 'SourceSnapshot', 'intake.prepare': 'Prepare', 'assignment.receiveBatch': 'ReceiveBatch',
   'assignment.withdraw': 'Withdraw', 'assignment.reassignBeforeDeparture': 'Reassign', 'intake.setUrgencyBeforeDeparture': 'Urgency'
 } as const;
 export type Operation = keyof typeof operations;
@@ -37,6 +37,7 @@ export function validateCommand(operation: Operation, value: unknown): asserts v
     throw new SourceError('validation_failed', 400, `Invalid source command: ${detail ?? 'see schema'}`.slice(0, 900));
   }
   if (operation === 'intake.submitSnapshot') validateAllocation(payload as Snapshot);
+  if(operation==='dispatch.createFromReceipt')validateAllocation(payload.snapshot as Snapshot);
   if (Array.isArray(payload.items) && new Set((payload.items as AssignmentReference[]).map(i => i.externalId)).size !== payload.items.length) {
     throw new SourceError('validation_failed', 400, 'Each shipment must occur only once in a batch.');
   }

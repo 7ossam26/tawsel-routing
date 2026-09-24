@@ -1,3 +1,5 @@
+import {branchActivity} from '../branch/state.js';
+import {publishBranch} from '../branch/publication.js';
 import { randomUUID } from 'node:crypto';
 import { payloadHash } from '../commands/json.js';
 import type { Transaction } from '../db/transaction.js';
@@ -53,13 +55,15 @@ export async function snapshot(tx:Transaction,state:StateRow):Promise<Input> {
    priority:r.priority??'ordinary',earliestAt:r.earliest_at?.toISOString()??null,departureAt:r.departure_at?.toISOString()??null,reservationState:r.reservation_state,
    eligible:exclusionReason===null,exclusionReason,serviceEstimateSeconds:600};
  });
- return {version:1,tenantId:state.tenant_id,driverId:state.driver_id,accountKind:meta.kind,inputRevision:Number(state.input_revision),settingsRevision:Number(state.settings_revision),
+ const branch=await branchActivity(tx,state.tenant_id,state.driver_id);
+ return {...(branch?{branchActivity:branch}:{}),version:1,tenantId:state.tenant_id,driverId:state.driver_id,accountKind:meta.kind,inputRevision:Number(state.input_revision),settingsRevision:Number(state.settings_revision),
   executionRevision:Number(state.execution_revision),manualRevision:Number(state.manual_revision),currentTarget:state.current_target,
   locationInputRevision:Number(meta.revision??0),settings:state.settings&&state.physical_origin?{...state.settings,origin:{kind:state.physical_origin.kind,coordinates:state.physical_origin.coordinates}}:state.settings,
   ...(state.physical_origin?{physicalOrigin:state.physical_origin}:{}),members};
 }
 export const fingerprint=(input:Input)=>payloadHash(input);
 export function blocker(input:Input):Job['blockedReason'] {
+ if(input.branchActivity)return 'branch-service';
  if(!input.settings)return 'settings-required';
  const n=input.members.filter(m=>m.eligible).length;
  if(!n)return 'no-eligible-work';
@@ -85,6 +89,18 @@ export async function enqueuePlanning(tx:Transaction,tenantId:string,driverId:st
   const updated=(await tx.query<StateRow>('UPDATE tawsel.planning_states SET execution_revision=execution_revision+1,settings=$3,settings_revision=settings_revision+1 WHERE tenant_id=$1 AND driver_id=$2 RETURNING *',[tenantId,driverId,state.settings])).rows[0]!;
   state.execution_revision=updated.execution_revision;state.settings_revision=updated.settings_revision;
   input=await snapshot(tx,state);
+ }
+ // Newly accepted work remains visible during a pause, without freeing the
+ // existing customer reservations or publishing customers alongside the branch.
+ if(input.branchActivity){
+  const b=input.branchActivity,added=input.members.filter(m=>m.eligible&&!b.retainedSequence.some(s=>s.attemptId===m.attemptId));
+  if(added.length){
+   const updated={...b,revision:b.revision+1,retainedSequence:[...b.retainedSequence,...added.map(m=>({taskId:m.taskId,attemptId:m.attemptId}))]};
+   await tx.query('UPDATE tawsel.branch_activities SET record=$3 WHERE tenant_id=$1 AND segment_id=$2',[tenantId,b.segmentId,updated]);
+   await tx.query('INSERT INTO tawsel.branch_activity_history (tenant_id,segment_id,revision,source_id,action_id,record) VALUES ($1,$2,$3,$4,$5,$6)',[tenantId,b.segmentId,updated.revision,sourceId,actionId,updated]);
+   input={...input,branchActivity:updated};
+   await publishBranch(tx,tenantId,driverId,updated,sourceId,actionId);
+  }
  }
  const hash=fingerprint(input);
  const existing=(await tx.query<JobRow>('SELECT * FROM tawsel.planning_jobs WHERE tenant_id=$1 AND driver_id=$2 AND fingerprint=$3',[tenantId,driverId,hash])).rows[0];

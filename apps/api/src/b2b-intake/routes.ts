@@ -28,6 +28,7 @@ export async function b2bIntakeRoutes(app: FastifyInstance,pool: Pool) {
     if(Object.keys(q).join(',')!=='externalId' || typeof q.externalId!=='string') throw new SourceError('validation_failed',400,'Provide externalId only.');
     return service.get(request.headers.authorization,q.externalId);
   });
+  app.get('/api/v1/intake/cycles',async request=>{const q=request.query as Record<string,string>;if(Object.keys(q).some(k=>!['externalId','cursor'].includes(k)))throw new SourceError('validation_failed',400,'Invalid cycle query.');return service.cycles(request.headers.authorization,q.externalId!,q.cursor);});
   app.get('/api/v1/intake/tasks',async request=>{
     const q=request.query as Record<string,string>;
     if(Object.keys(q).some(k=>!['state','driverExternalId','limit','cursor'].includes(k)) || Object.values(q).some(v=>typeof v!=='string')) throw new SourceError('validation_failed',400,'Invalid list query.');

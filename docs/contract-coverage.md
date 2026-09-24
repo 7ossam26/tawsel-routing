@@ -2,7 +2,7 @@
 
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
-**P07–P21 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; adoption and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
+**P07–P22 session/context, provisioning, intake, locations, routing metadata, durable planning, online start, current/arrival, exact outcomes, explicit eligibility transitions and workday closure/carry-forward are implemented locally; each row records its actual lifecycle.** P20 online takeover, snapshot fencing and retained evidence are locally verified; P21 source-branch return receipt/disposition and public consumer proof are locally verified; adoption and signed event delivery remain unavailable. [Identity setup/evidence](identity.md) identifies application HTTP paths versus issuer-hosted actions. No generic CRUD endpoint replaces explicit actions.
 
 `designed` means specification only; `implemented` requires an actual handler/producer; `verified-local` additionally requires recorded local evidence. Neither means deployed or interoperable with a real ERP. Events are produced by the feature owner listed; P25 transports committed intent and P26 verifies the external receiver.
 
@@ -183,20 +183,23 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `return.getRequest` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Scoped request, offered/received/unresolved subsets and revisions. |
 | `return.confirmSubsetReceipt` | http-command | verified-local | [P21](phases/21-source-return-receipt.md) | return.receive | Native ERP trusted actor confirms actually received requested subset. |
 | `return.recordDisposition` | http-command | verified-local | [P21](phases/21-source-return-receipt.md) | return.dispose | ERP loss/damage disposition distinct from physical receipt and inventory. |
-| `branch.interruptRound` | http-command | designed | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Pause heading sequence and enter source-branch service within same round/capacity. |
-| `branch.resumeRound` | http-command | designed | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate. |
-| `dispatch.createFromReceipt` | http-command | designed | [P22](phases/22-branch-interruption-redispatch.md) | assignment.manage | Redispatch only confirmed branch-received goods in new cycle/assignment. |
+| `branch.interruptRound` | http-command | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Pause heading sequence and enter source-branch service within same round/capacity. |
+| `branch.resumeRound` | http-command | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate. |
+| `dispatch.createFromReceipt` | http-command | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | assignment.manage | Redispatch only confirmed branch-received goods in new cycle/assignment. |
 | `return.requested` | event | verified-local | [P21](phases/21-source-return-receipt.md) | recipient-scope | Offered pieces only, never stock/received. |
 | `return.subsetReceived` | event | verified-local | [P21](phases/21-source-return-receipt.md) | recipient-scope | Actual confirmed source-branch subset transition. |
 | `return.dispositionRecorded` | event | verified-local | [P21](phases/21-source-return-receipt.md) | recipient-scope | Loss/damage separate from receipt. |
-| `branch.roundInterrupted` | event | designed | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Visible branch segment with retained customer sequence. |
-| `branch.roundResumed` | event | designed | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Confirmed claimed subsets and retained work resume. |
-| `dispatch.createdFromReceipt` | event | designed | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | New dispatch cycle linked to prior confirmed receipt. |
+| `branch.roundInterrupted` | event | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Visible branch segment with retained customer sequence. |
+| `branch.roundResumed` | event | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Confirmed claimed subsets and retained work resume. |
+| `dispatch.createdFromReceipt` | event | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | New dispatch cycle linked to prior confirmed receipt. |
 | `return.getResult` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Recover own driver offer command; pending is not physical receipt. |
 | `return.checkConfirmation` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Read server confirmation for an explicit cumulative claimed subset. Waiting never grants resume; P22 rechecks under lock. |
 | `return.listPending` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | return.receive | Native source-scoped pending requests for one driver and originating branch, paginated in pages of 100 without a returns quota. |
 | `return.getNativeRequest` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | return.receive | Native source-scoped accurate requested/received/unresolved/lost/damaged state per item. |
 | `return.getNativeResult` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | return.receive | Recover durable native source receipt/disposition command results; 202 means unknown pending. |
+| `branch.recordArrival` | http-command | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Explicit arrival at the source-bound branch; records physical origin without inferring receipt. |
+| `branch.arrivalRecorded` | event | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Confirmed branch arrival; no physical receipt or stock implication. |
+| `dispatch.listCycles` | http-read | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | assignment.manage | Source-scoped preserved dispatch snapshots, holders and predecessor identities. |
 
 ### monitoring-history
 

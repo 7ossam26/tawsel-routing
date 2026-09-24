@@ -102,7 +102,8 @@
         "kind": {
           "enum": [
             "last-confirmed-stop",
-            "manual-pin"
+            "manual-pin",
+            "branch-pin"
           ]
         },
         "coordinates": {
@@ -466,6 +467,16 @@
           "items": {
             "$ref": "#/$defs/Target"
           }
+        },
+        "branchActivity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BranchActivity"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -820,6 +831,197 @@
         "time"
       ],
       "additionalProperties": false
+    },
+    "BranchActivity": {
+      "type": "object",
+      "properties": {
+        "segmentId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "roundId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "requestId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "sourceBranchId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "stage": {
+          "enum": [
+            "heading",
+            "arrived",
+            "resumed"
+          ]
+        },
+        "coordinates": {
+          "$ref": "common.schema.json#/$defs/Coordinates"
+        },
+        "serviceEstimateSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "claims": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000
+              }
+            },
+            "required": [
+              "itemId",
+              "quantity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "retainedPlanId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "retainedSequence": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "properties": {
+              "taskId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              },
+              "attemptId": {
+                "$ref": "common.schema.json#/$defs/Uuid"
+              }
+            },
+            "required": [
+              "taskId",
+              "attemptId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "pausedActivity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Activity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heading": {
+          "$ref": "#/$defs/ActionTime"
+        },
+        "arrival": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActionTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resumed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActionTime"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "segmentId",
+        "roundId",
+        "requestId",
+        "sourceBranchId",
+        "revision",
+        "stage",
+        "coordinates",
+        "serviceEstimateSeconds",
+        "claims",
+        "retainedPlanId",
+        "retainedSequence",
+        "pausedActivity",
+        "heading",
+        "arrival",
+        "resumed"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "enum": [
+                  "arrived",
+                  "resumed"
+                ]
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "arrival": {
+                "$ref": "#/$defs/ActionTime"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "arrival": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "stage": {
+                "const": "resumed"
+              }
+            },
+            "required": [
+              "stage"
+            ]
+          },
+          "then": {
+            "properties": {
+              "resumed": {
+                "$ref": "#/$defs/ActionTime"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "resumed": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

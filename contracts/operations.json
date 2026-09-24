@@ -754,28 +754,34 @@
       "id": "branch.interruptRound",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "execution.own",
-      "description": "Pause heading sequence and enter source-branch service within same round/capacity."
+      "description": "Pause heading sequence and enter source-branch service within same round/capacity.",
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.interruptRound"
     },
     {
       "id": "branch.resumeRound",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "execution.own",
-      "description": "Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate."
+      "description": "Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate.",
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.resumeRound"
     },
     {
       "id": "dispatch.createFromReceipt",
       "family": "returns",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "assignment.manage",
-      "description": "Redispatch only confirmed branch-received goods in new cycle/assignment."
+      "description": "Redispatch only confirmed branch-received goods in new cycle/assignment.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/dispatch.createFromReceipt"
     },
     {
       "id": "monitoring.getDriverSnapshot",
@@ -1374,7 +1380,7 @@
       "id": "branch.roundInterrupted",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
       "description": "Visible branch segment with retained customer sequence."
@@ -1383,7 +1389,7 @@
       "id": "branch.roundResumed",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
       "description": "Confirmed claimed subsets and retained work resume."
@@ -1392,7 +1398,7 @@
       "id": "dispatch.createdFromReceipt",
       "family": "returns",
       "kind": "event",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 22,
       "capability": "recipient-scope",
       "description": "New dispatch cycle linked to prior confirmed receipt."
@@ -1714,6 +1720,37 @@
       "description": "Recover durable native source receipt/disposition command results; 202 means unknown pending.",
       "method": "GET",
       "path": "/api/v1/erp/returns/actions/{actionId}"
+    },
+    {
+      "id": "branch.recordArrival",
+      "kind": "http-command",
+      "capability": "execution.own",
+      "description": "Explicit arrival at the source-bound branch; records physical origin without inferring receipt.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.recordArrival"
+    },
+    {
+      "id": "branch.arrivalRecorded",
+      "kind": "event",
+      "capability": "recipient-scope",
+      "description": "Confirmed branch arrival; no physical receipt or stock implication.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22
+    },
+    {
+      "id": "dispatch.listCycles",
+      "kind": "http-read",
+      "capability": "assignment.manage",
+      "description": "Source-scoped preserved dispatch snapshots, holders and predecessor identities.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "method": "GET",
+      "path": "/api/v1/intake/cycles"
     }
   ],
   "authorizationFoundation": {

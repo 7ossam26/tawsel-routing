@@ -1,5 +1,30 @@
 # Field and status mapping — canonical foundation
 
+## P22 branch resume and dispatch cycles — locally verified
+
+[Public API and worked examples](../branch-interruption.md), [ordered PostgreSQL/HTTP evidence](../phase-22-evidence.md), [branch schema](../../contracts/branch-activity.schema.json), [cycle schema](../../contracts/b2b-intake.schema.json). This section supersedes older designed-only resume/redispatch statements. Actual ERP columns remain unchosen.
+
+| ERP fact → public field | Authority, revisions and meaning | Public boundary | Real ERP field |
+| --- | --- | --- | --- |
+| Shipment → `externalId`, `taskId` | Source ID is tenant/integration scoped; server task UUID stays stable across dispatches. Neither is new stock. | Intake task/cycle reads, dispatch event | Unchosen |
+| Execution → `sourceDispatchCycleId`, `dispatchCycleId`, `attemptId` | Fresh source cycle reference/server UUID and new attempt on assignment. Preserve original execution IDs. | `dispatch.createFromReceipt` → `dispatch.createdFromReceipt` | Unchosen |
+| Stock donor → `previousDispatchCycleId` | Required command UUID; null in original-cycle reads. Same source shipment/origin; only unallocated actual receipt quantities qualify. | Create-from-receipt and `dispatch.listCycles` | Unchosen |
+| Frozen source → `sourceRevision`, `snapshot` | Monotonic shipment revision, matching expected revision, exact whole pieces and explicit outstanding unit/shipping money. Old cycles keep their own snapshots. Allocated quantities cannot be inflated through edits. | New-cycle command, existing source/assignment APIs | Unchosen |
+| Latest execution → `latest` | One latest executable cycle per shipment. New cycle is unassigned, driver null, assignment revision zero; no possession or round start implied. | Latest task; cycle history pages of 100 | Unchosen |
+| Earlier holder → old `driverId`, `receivedAt`, `state` | Preserved assignment history. Old unreceived portions stay in return/carry-forward custody. `latest=false` prevents customer revival; historical `held` does not mean every original piece is still held. | Cycle, return and carry-forward reads | Unchosen |
+| Branch activity → `segmentId`, `roundId`, `stage`, `revision` | Own driver/device acts inside the same active round/day. Request binds source branch; provisioned pin fixes destination. Arrived customer must resolve first. | Interrupt/arrival/resume; current/takeover snapshot | Unchosen |
+| Paused work → `retainedSequence`, `retainedPlanId`, `pausedActivity` | Visible task/attempt membership; admission reservations remain. New accepted work appends under locks and increments branch revision. | Current branch state and plan history | Unchosen |
+| Active segment → `state=branch`, `method=branch-service`, `branchStop` | One branch stop, zero active customer order, paused customer forecast memberships. Unknown timing stays null; original baseline remains immutable. | Planning history; metadata-only plan event | Unchosen |
+| Physical origin → `kind=branch-pin` | Explicit arrival changes origin, never custody. Resume estimates start there. | `branch.recordArrival`, current physical origin | Unchosen |
+| Handed subset → frozen `claims` | Positive cumulative quantities. Resume checks committed physical receipts for exactly these items under common locks; unrelated unresolved offered items do not gate departure. | Resume; P21 confirmation/receipt APIs | Unchosen |
+| Recovery → action ID, expected activity/branch/source revision | Exact replay returns original result. Timeout stays unknown. A rejected waiting action remains rejected; after confirmation refresh and create a new command. | Driver `action.getResult`; intake result API | Unchosen |
+
+Verified worked cases: 50 accepted customers pause into one branch segment with all 50 forecasts retained; an incoming two-task overflow is rejected atomically. Three offered / two claimed / two received resumes with one still held. Those two enter a fresh cycle while the old holder's unresolved one remains visible. Original refusal fee 5000 plus new source-authorized collection 20000 preserves reported total 25000. A different driver receives only the new cycle through the definitive receipt API; direct transfer after departure remains forbidden.
+
+Physical receipt creates a dependency that closes old customer eligibility. New dispatch consumes confirmed stock into new source/assignment/attempt identities without deleting that dependency. Old-cycle outcomes/retries and future corrections cannot reverse it. Historical `received` is a transfer count; available branch stock is receipt minus committed allocations. Do not sum original quantities across cycles as new stock. Per-cycle conservation plus predecessor allocations preserve pieces across dispatches. Unreceived/lost/damaged items are never available stock.
+
+The [copied public consumer](../../tests/erp-conformance/dispatch.ts) verifies early/excess/stale denial, new identities, preserved snapshots/holders and duplicate recovery through released HTTP only. Native ERP stock/valuation/settlement, transactional source outbox and signed event transport remain P25–27. Driver branch UI remains P31; P23 must use the same receipt/redispatch dependencies for correction.
+
 ## P21 actual source-branch receipt/disposition — locally verified
 
 [Wire API and retry/confirmation rules](../returns.md), [canonical schemas](../../contracts/returns.schema.json), [validated p21 examples](../../contracts/examples/README.md), [public client](../../packages/api-client/src/returns.ts), [real PostgreSQL/HTTP proof](../phase-21-evidence.md). This section supersedes older designed-only return statements below. Native mock screens remain P27 and new dispatch remains P22. Real ERP field names are unchosen.

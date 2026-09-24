@@ -59,6 +59,7 @@ export class Eligibility {
      const current=await activity(tx,r.tenant_id,r.round_id),revision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);
      if(p.expectedActivityRevision!==revision||p.expectedCurrentAttemptId!==(current?.attemptId??null))throw new EligibilityError('stale_revision',409,'تغيّر العميل الحالي؛ حدّث الجولة.');
      const planning=await planningState(tx,r.tenant_id,driver),input=await snapshot(tx,planning),m=input.members.find(m=>m.taskId===p.taskId&&m.attemptId===p.attemptId);
+     if(input.branchActivity)throw new EligibilityError('lifecycle_forbidden',409,'أكمل زيارة الفرع ثم حدّث العمل.');
      if(!m)throw new EligibilityError('stale_revision',409,'المحاولة لم تعد متاحة لك.');
      a.requireResource(own,{tenant_id:r.tenant_id,driver_id:driver,branch_id:m.branchId,integration_id:m.integrationId});
      const {state,facts}=await stateFor(tx,r.tenant_id,driver,m,current?.attemptId??null,await remaining(tx,input));

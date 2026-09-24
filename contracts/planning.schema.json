@@ -359,6 +359,9 @@
             }
           ],
           "description": "Absent or null means no recorded physical correction/arrival. Omitted until evidence exists to preserve unchanged pre-P16 input fingerprints."
+        },
+        "branchActivity": {
+          "$ref": "current-activity.schema.json#/$defs/BranchActivity"
         }
       },
       "required": [
@@ -404,7 +407,8 @@
               "enum": [
                 "settings-required",
                 "no-eligible-work",
-                "capacity-exceeded"
+                "capacity-exceeded",
+                "branch-service"
               ]
             },
             {
@@ -715,7 +719,8 @@
             "assigned",
             "unassigned",
             "excluded",
-            "manual"
+            "manual",
+            "paused"
           ]
         },
         "exclusionReason": {
@@ -811,7 +816,10 @@
               "type": "object",
               "properties": {
                 "membership": {
-                  "const": "manual"
+                  "enum": [
+                    "manual",
+                    "paused"
+                  ]
                 }
               },
               "required": [
@@ -928,7 +936,8 @@
             "draft",
             "ready",
             "partial",
-            "manual"
+            "manual",
+            "branch"
           ]
         },
         "current": {
@@ -987,7 +996,10 @@
             "type": "object",
             "properties": {
               "state": {
-                "const": "manual"
+                "enum": [
+                  "manual",
+                  "branch"
+                ]
               }
             },
             "required": [
@@ -1015,7 +1027,10 @@
                 "type": "object",
                 "properties": {
                   "method": {
-                    "const": "manual"
+                    "enum": [
+                      "manual",
+                      "branch-service"
+                    ]
                   }
                 }
               }
@@ -1088,7 +1103,8 @@
                 "enum": [
                   "ready",
                   "partial",
-                  "manual"
+                  "manual",
+                  "branch"
                 ]
               }
             },
@@ -1171,6 +1187,45 @@
                     "const": "partial"
                   }
                 }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "branch"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "routePolicy": {
+                "properties": {
+                  "method": {
+                    "const": "branch-service"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "routePolicy": {
+                "properties": {
+                  "method": {
+                    "enum": [
+                      "manual",
+                      "grouped-heuristic"
+                    ]
+                  }
+                },
+                "type": "object"
               }
             }
           }
@@ -1277,14 +1332,16 @@
             "draft",
             "ready",
             "partial",
-            "manual"
+            "manual",
+            "branch"
           ]
         },
         "status": {
           "enum": [
             "complete",
             "partial",
-            "manual"
+            "manual",
+            "branch"
           ]
         },
         "policyValidated": {
@@ -1367,7 +1424,8 @@
         "method": {
           "enum": [
             "grouped-heuristic",
-            "manual"
+            "manual",
+            "branch-service"
           ]
         },
         "orderedTaskIds": {
@@ -1401,6 +1459,32 @@
             ],
             "additionalProperties": false
           }
+        },
+        "branchStop": {
+          "type": "object",
+          "properties": {
+            "segmentId": {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            "branchId": {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            "coordinates": {
+              "$ref": "common.schema.json#/$defs/Coordinates"
+            },
+            "serviceEstimateSeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 86400
+            }
+          },
+          "required": [
+            "segmentId",
+            "branchId",
+            "coordinates",
+            "serviceEstimateSeconds"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -1409,7 +1493,72 @@
         "orderedTaskIds",
         "exceptions"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "branch-service"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "properties": {
+              "orderedTaskIds": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "exceptions": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "branchStop": {
+                "type": "object",
+                "properties": {
+                  "segmentId": {
+                    "$ref": "common.schema.json#/$defs/Uuid"
+                  },
+                  "branchId": {
+                    "$ref": "common.schema.json#/$defs/Uuid"
+                  },
+                  "coordinates": {
+                    "$ref": "common.schema.json#/$defs/Coordinates"
+                  },
+                  "serviceEstimateSeconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 86400
+                  }
+                },
+                "required": [
+                  "segmentId",
+                  "branchId",
+                  "coordinates",
+                  "serviceEstimateSeconds"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "branchStop"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "branchStop"
+              ],
+              "properties": {
+                "branchStop": {}
+              }
+            }
+          }
+        }
+      ]
     },
     "ManualOrder": {
       "type": "object",

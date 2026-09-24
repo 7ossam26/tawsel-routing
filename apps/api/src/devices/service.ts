@@ -21,7 +21,7 @@ async function context(tx:Transaction,r:RoundRow,deviceId:string):Promise<compon
 async function lockedRound(tx:Transaction,a:AccessSession,roundId:string){
  await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);return ownRound(tx,a,roundId);
 }
-const supportedResult=(op:string)=>op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
+const supportedResult=(op:string)=>op.startsWith('branch.')||op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
 
 export class Devices {
  constructor(readonly pool:Pool,readonly observe?:Pick<CommandHooks,'afterWrite'>){}

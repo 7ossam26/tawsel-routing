@@ -18,6 +18,7 @@ export async function physicalOrigin(tx:Transaction,tenantId:string,driverId:str
 }
 /** Caller holds the driver lock. Authority is checked again under the lock. */
 export async function eligibleTarget(tx:Transaction,a:AccessSession,r:RoundRow,input:Input,p:Selection){
+ if(input.branchActivity)throw new CurrentError('lifecycle_forbidden',409,'أكمل زيارة الفرع ثم استأنف العملاء.');
  a.assertScope({tenantId:r.tenant_id,driverId:r.driver_id});
  const m=input.members.find(m=>m.taskId===p.taskId&&m.attemptId===p.attemptId);
  if(!m)throw new CurrentError('lifecycle_forbidden',409,'المحطة ليست ضمن العمل المتاح لك.');

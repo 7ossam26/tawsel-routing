@@ -14,9 +14,9 @@ async function carried(tx:Transaction,a:AccessSession,d:DayRow,asOf:string):Prom
  const histories=(await tx.query<{record:Outcome}>('SELECT record FROM tawsel.delivery_outcomes WHERE tenant_id=$1 AND task_id=ANY($2::uuid[]) ORDER BY revision',[d.tenant_id,ids])).rows.map(r=>r.record);
  const options=new Map((await tx.query<{task_id:string;deferred:boolean}>('SELECT task_id,deferred FROM tawsel.task_execution_options WHERE tenant_id=$1 AND task_id=ANY($2::uuid[])',[d.tenant_id,ids])).rows.map(r=>[r.task_id,r.deferred]));
  const cycles=new Map((await tx.query<{task_id:string;state:string;integration_id:string;external_id:string;source_dispatch_cycle_id:string;quantity:string;dependency:boolean}>(`SELECT c.task_id,c.state,t.integration_id,t.external_id,c.source_dispatch_cycle_id,
- (SELECT sum(l.quantity)::text FROM tawsel.b2b_source_lines l WHERE l.tenant_id=t.tenant_id AND l.task_id=t.task_id AND l.source_revision=t.source_revision) quantity,
+ (SELECT sum(l.quantity)::text FROM tawsel.b2b_source_lines l WHERE l.tenant_id=t.tenant_id AND l.task_id=t.task_id AND l.source_revision=c.source_revision) quantity,
  EXISTS(SELECT 1 FROM tawsel.retry_dependencies x WHERE x.tenant_id=c.tenant_id AND x.dispatch_cycle_id=c.dispatch_cycle_id) dependency
- FROM tawsel.b2b_dispatch_cycles c JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) WHERE c.tenant_id=$1 AND c.driver_id=$2`,[d.tenant_id,d.driver_id])).rows.map(r=>[r.task_id,r]));
+ FROM tawsel.b2b_dispatch_cycles c JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) WHERE c.tenant_id=$1 AND c.driver_id=$2 AND c.latest`,[d.tenant_id,d.driver_id])).rows.map(r=>[r.task_id,r]));
  const admitted=new Set((await tx.query<{task_id:string}>(`SELECT DISTINCT d.task_id FROM tawsel.round_admissions d JOIN tawsel.rounds r USING(tenant_id,round_id) WHERE r.tenant_id=$1 AND r.workday_id=$2`,[d.tenant_id,d.workday_id])).rows.map(r=>r.task_id));
  const items:CarryForward['items']=[];
  const custody=new Map((await tx.query<{dispatch_cycle_id:string;held:number}>('SELECT dispatch_cycle_id,sum(held)::int held FROM tawsel.cycle_custody WHERE tenant_id=$1 AND driver_id=$2 GROUP BY dispatch_cycle_id',[d.tenant_id,d.driver_id])).rows.map(r=>[r.dispatch_cycle_id,r.held]));
@@ -34,6 +34,14 @@ async function carried(tx:Transaction,a:AccessSession,d:DayRow,asOf:string):Prom
    disposition:outcome?(m.dispatchCycleId?'return-required':'unsuccessful'):'unfinished',eligibleNow:blocker===null,blocker,heldReturnRequiredPieces:returned,
    heldPieces:cycle?(outcome?returned:Number(cycle.quantity)):null,unpaidShippingMinor:(unpaid>paid?unpaid-paid:0n).toString()});
  }
+ // Historical cycles can still contain unreceived discrepancies after a
+ // confirmed subset entered a newer dispatch. Keep that old holder visible.
+ const older=(await tx.query(`SELECT o.record,c.assignment_revision,s.payload,
+ sum(q.held)::int held FROM tawsel.cycle_custody q JOIN tawsel.b2b_dispatch_cycles c USING(tenant_id,dispatch_cycle_id)
+ JOIN tawsel.delivery_outcomes o ON o.tenant_id=q.tenant_id AND o.outcome_id=q.outcome_id
+ JOIN tawsel.b2b_source_snapshots s ON s.tenant_id=c.tenant_id AND s.task_id=c.task_id AND s.source_revision=c.source_revision
+ WHERE q.tenant_id=$1 AND q.driver_id=$2 AND NOT c.latest AND q.held>0 GROUP BY o.tenant_id,o.outcome_id,c.tenant_id,c.dispatch_cycle_id,s.tenant_id,s.task_id,s.source_revision`,[d.tenant_id,d.driver_id])).rows;
+ for(const q of older){const o=q.record as Outcome;items.push({taskId:o.taskId,attemptId:o.attemptId,dispatchCycleId:o.dispatchCycleId,sourceReference:o.sourceReference,sourceDispatchCycleId:o.sourceDispatchCycleId,sourceRevision:o.sourceRevision,assignmentRevision:Number(q.assignment_revision),pinRevision:0,earliestAt:q.payload.earliestAt??null,deferred:false,admittedInWorkday:admitted.has(o.taskId),outcome:o.outcome,disposition:'return-required',eligibleNow:false,blocker:'receipt-or-disposition',heldReturnRequiredPieces:q.held,heldPieces:q.held,unpaidShippingMinor:o.collection.unpaidShipping.amountMinor.toString()});}
  const result={workdayId:d.workday_id,driverId:ownDriver(a),asOf,items};requireClosure('CarryForward',result);return result;
 }
 export class WorkdayReads {

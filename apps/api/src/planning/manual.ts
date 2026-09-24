@@ -13,6 +13,7 @@ async function lastOrder(tx:Transaction,input:Input) {
 /** A retained order is a suggestion requiring an explicit new manual revision.
  * Old estimates remain historical; no road/arrival estimate is transplanted. */
 export async function continuation(tx:Transaction,input:Input):Promise<components['schemas']['PlanningContinuation']|null> {
+ if(input.branchActivity)return null;
  const prior=await lastOrder(tx,input);if(!prior)return null;
  const ids=prior.route_policy.orderedTaskIds.filter(id=>input.members.some(m=>m.taskId===id&&m.eligible));
  try{validateOrder(input,ids);}catch(error){if(error instanceof EngineError)return null;throw error;}

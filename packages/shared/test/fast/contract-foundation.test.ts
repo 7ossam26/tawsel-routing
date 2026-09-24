@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|eligibility\/|closure\/|workdays\/|devices\/|actions\/|evidence\/|returns\/|erp\/returns\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|eligibility\/|closure\/|workdays\/|devices\/|actions\/|evidence\/|returns\/|branches\/|erp\/returns\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -98,7 +98,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
     expect(available.map((entry: { id: string }) => entry.id)).toContain('session.getContext');
     expect(available.every((entry: { family: string; id: string; ownerPhase: number }) => entry.family === 'session-context' || entry.id === 'workspace.getHealth'
       || (entry.ownerPhase === 8 && entry.family === 'integration-provisioning') || ([9, 10].includes(entry.ownerPhase) && entry.family === 'intake')
-      || (entry.ownerPhase === 21 && entry.family === 'returns') || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
+      || ([21,22].includes(entry.ownerPhase) && entry.family === 'returns') || (entry.ownerPhase === 10 && entry.id === 'task.urgencyChanged') || (entry.ownerPhase === 11 && entry.family === 'locations')
       || (entry.ownerPhase === 12 && ['routing.getVehicleProfiles','routing.computeRoadRoute','routing.optimize'].includes(entry.id))
       || ([15,16,17,18,19].includes(entry.ownerPhase) && entry.family === 'execution') || (entry.ownerPhase === 14 && entry.id === 'planning.setManualOrder')
       || ['device.takeOver','device.getSnapshot','action.getResult','evidence.receiveFormerDevice','sync.getEvidenceReceipt','device.executionTransferred','evidence.received'].includes(entry.id)

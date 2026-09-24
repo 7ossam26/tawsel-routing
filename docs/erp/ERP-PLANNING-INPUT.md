@@ -1,5 +1,15 @@
 # ERP planning input — designed foundation
 
+## P22 branch resume and redispatch available locally
+
+[API, capacity/subset examples and reproducible demo](../branch-interruption.md), [field/status mapping](field-and-status-mapping.md), [evidence](../phase-22-evidence.md). Tawsel now owns explicit source-branch interruption/arrival/resume in one round, retained customer sequence and forecast revisions, confirmed-claim gating, and new execution cycles allocated only from actual received stock. Full-capacity interruption retains all 50 accepted customers; it never admits part of an overflowing batch.
+
+ERP/connector implementation order: persist the original source/line/cycle IDs; submit actual subset receipt through P21; retain unknown command outcomes for exact recovery; read confirmed receipt/current source revision; issue `dispatch.createFromReceipt` with a fresh source cycle ID and a complete exact-outstanding snapshot; recover its result; then prepare/receive the new unassigned cycle through existing atomic P10 APIs. Keep old attempts, collections, holder and unresolved pieces in their historical cycle. Use `dispatch.listCycles` for reconciliation. A new cycle does not itself prove driver possession, start a round, settle money or reopen the old cycle.
+
+The source chooses commercially correct outstanding amounts explicitly. It must not assume a new fee, refund, cash settlement or available stock from an offer/loss/disposition. Unreceived discrepancies do not block driver resume when the claimed subset is confirmed. They remain distinct from stock consumed by redispatch. Source-specific translation and the real ERP's fields, identifiers, inventory/status model, transactional outbox/inbox, staff identity, TLS and operational ownership remain that separate project's choices.
+
+`npm run branches:demo` launches a copied public-only consumer with URL/scoped token/request ID and no Tawsel database/operator credentials. `tests/erp-conformance/dispatch.ts` can be packaged with public client/types and run independently; [quickstart](consumer-quickstart.md). Evidence is real local HTTP/PostgreSQL with fixture driver authentication; native ERP screens/source database and signed event application are not yet implemented.
+
 ## P21 receipt boundary available locally
 
 [Source returns](../returns.md) and [actual mapping](field-and-status-mapping.md) now implement driver offers, native source-scoped pending/request reads, actual subset receipt and separate lost/damaged disposition. [Evidence](../phase-21-evidence.md) includes real PostgreSQL locking/rollback and a copied independent HTTP-only consumer. These supersede historical designed-only P21 statements below. P22 redispatch/resume, P23 correction, P25–26 signed delivery/receiver and P27 native screens/outbox remain separate.
