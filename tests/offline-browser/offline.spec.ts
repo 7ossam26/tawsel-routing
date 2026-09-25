@@ -45,7 +45,7 @@ test('built PWA survives offline browser process restart, retains atomic evidenc
     await expect.poll(async () => (await journal(page)).actions.length).toBe(3);
     await expect(page.getByText('مسار الطريق المنزّل — دون خريطة أساس')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ path: 'output/playwright/phase-33-offline-mobile.png', fullPage: true });
+    await page.screenshot({ path: '.local/phase-34-capture-offline-mobile.png', fullPage: true });
     const saved = await journal(page); const serialized = JSON.stringify(saved.actions);
     const afterLocal = await (await request.get(fixture + '/__fixture/state')).json(); expect(afterLocal.actions).toEqual(serverBefore.actions); expect(afterLocal.outcomes).toEqual(serverBefore.outcomes);
     await context.close();
@@ -53,14 +53,20 @@ test('built PWA survives offline browser process restart, retains atomic evidenc
     await page.goto('/rounds/current?kind=personal'); await expect(page.getByText('محفوظ على الهاتف', { exact: true })).toBeVisible();
     expect(JSON.stringify((await journal(page)).actions)).toBe(serialized);
     await page.getByRole('link', { name: 'مراجعة الإجراءات المحفوظة' }).click(); await expect(page.getByRole('heading', { name: 'محفوظ على الهاتف — لم يتأكد وصوله للخادم' })).toHaveCount(3);
-    await page.getByText('تفاصيل التشخيص').first().click(); await page.screenshot({ path: 'output/playwright/phase-33-reopened-evidence.png', fullPage: true });
-    // Same account reconnect reads only; no automatic replay is implemented here.
+    await page.getByText('تفاصيل التشخيص').first().click(); await page.screenshot({ path: '.local/phase-34-capture-reopened-evidence.png', fullPage: true });
+    // Controlled network fault keeps the P33 capture/guard assertions meaningful
+    // now that P34 automatically replays on reconnect. No fake receipt is returned.
+    await context.route('**/api/v1/sync/actions*', route => route.abort('failed'));
     await context.setOffline(false); const monitor = await page.evaluate(async driver => { const response = await fetch('/api/v1/monitoring/drivers/' + driver + '?kind=personal'); if (!response.ok) throw new Error('monitor read: ' + response.status); return response.json(); }, info.personalDriverId);
     for (const action of saved.actions as Array<{ actionId: string }>) expect(JSON.stringify(monitor)).not.toContain(action.actionId);
     await page.goto('/account?kind=personal'); await page.getByRole('button', { name: 'تسجيل الخروج' }).click(); await expect(page.getByText(/يوجد عمل محفوظ على الهاتف ينتظر المزامنة/)).toBeVisible();
-    await page.screenshot({ path: 'output/playwright/phase-33-account-guard.png', fullPage: true });
+    await page.screenshot({ path: '.local/phase-34-capture-account-guard.png', fullPage: true });
     const cacheUrls = await page.evaluate(async () => (await Promise.all((await caches.keys()).map(async key => (await (await caches.open(key)).keys()).map(item => item.url)))).flat());
     expect(cacheUrls.some(url => /\/api\/|\/maps\//.test(url))).toBe(false); expect(cacheUrls.some(url => url.includes('.woff2'))).toBe(true);
-    await writeFile('.local/phase-33-browser-evidence.json', JSON.stringify({ evidenceClass: 'Actual Chromium production Workbox/IndexedDB, browser process restart, local Keycloak/Fastify/PostgreSQL; labelled OSRM/VROOM HTTP fixtures. No physical device or 24-hour claim.', profile, browser: context.browser()?.version(), actions: saved.actions, pending: saved.pending, confirmedRevision: (saved.downloads[0] as { current: { revision: number } }).current.revision, serverBefore, afterLocal, monitor, cacheUrls }, null, 2));
+    await writeFile('.local/phase-34-capture-regression.json', JSON.stringify({ evidenceClass: 'Actual Chromium production Workbox/IndexedDB, browser process restart, local Keycloak/Fastify/PostgreSQL; labelled OSRM/VROOM HTTP fixtures and blocked replay transport during capture/exit-guard assertions. No physical device or 24-hour claim.', profile, browser: context.browser()?.version(), actions: saved.actions, pending: saved.pending, confirmedRevision: (saved.downloads[0] as { current: { revision: number } }).current.revision, serverBefore, afterLocal, monitor, cacheUrls }, null, 2));
+    await context.unroute('**/api/v1/sync/actions*');
+    await page.goto('/local-work?kind=personal');
+    await expect.poll(async () => (await journal(page)).acks.length).toBe(3);
+    await expect.poll(async () => (await journal(page)).pending.length).toBe(0);
   } finally { await context.close(); }
 });

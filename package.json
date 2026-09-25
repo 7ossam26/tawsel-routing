@@ -126,7 +126,11 @@
     "test:browser:branch-closure": "npm run build:foundation && playwright test -c playwright.branch-closure.config.ts",
     "test:browser:monitoring": "npm run build:foundation && playwright test -c playwright.monitoring.config.ts",
     "test:local-capture": "vitest run --project fast apps/web/test/fast/local-action-capture.test.ts apps/web/test/fast/local-capture-ui.test.tsx",
-    "test:browser:offline": "node scripts/offline-demo.mjs"
+    "test:browser:offline": "node scripts/offline-demo.mjs",
+    "test:replay": "npm run test:integration -- apps/api/test/integration/offline-device-takeover.test.ts",
+    "test:browser:replay": "node scripts/offline-demo.mjs --replay",
+    "replay:demo": "npm run test:browser:replay",
+    "test:erp:sync": "node --import tsx tests/erp-conformance/sync.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

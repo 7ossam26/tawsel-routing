@@ -9,7 +9,15 @@ import { CurrentActivityPage } from './current-activity';
 import { PreparationFlow } from './preparation-flow';
 import { MonitoringPage } from './monitoring-page';
 import { LocalWorkPage } from './local-status';
+import { useReplayLifecycle } from './replay-lifecycle';
+import { ConflictsPage } from './conflicts-page';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
+  const message = useReplayLifecycle(!fixtureRouteRequested && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/monitoring'));
+  const kind = new URLSearchParams(location.search).get('kind') === 'company' ? 'company' : 'personal';
+  return <>{message ? <aside className="sync-notice" dir="rtl" role="status">{message} <a href={'/local-work?kind=' + kind}>مراجعة المزامنة</a></aside> : null}<ProductionRoutes fixtureRouteRequested={fixtureRouteRequested} /></>;
+}
+function ProductionRoutes({ fixtureRouteRequested }: { fixtureRouteRequested: boolean }) {
+  if (!fixtureRouteRequested && window.location.pathname === '/sync') return <ConflictsPage />;
   if (!fixtureRouteRequested && window.location.pathname === '/local-work') return <LocalWorkPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/monitoring')) return <MonitoringPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/execution/closure')) return <ClosurePage />;

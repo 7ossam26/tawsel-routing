@@ -12518,5 +12518,125 @@
         }
       }
     }
+  },
+  {
+    "id": "p34-batch",
+    "schema": "sync.schema.json#/$defs/Batch",
+    "valid": true,
+    "data": {
+      "actions": [
+        {
+          "schemaVersion": "1.0.0",
+          "payloadVersion": "1.0.0",
+          "operationId": "current.selectHeading",
+          "actionId": "16000000-0000-4000-8000-000000000001",
+          "context": {
+            "kind": "device",
+            "tenantId": "15000000-0000-4000-8000-000000000011",
+            "accountId": "15000000-0000-4000-8000-000000000007",
+            "deviceId": "15000000-0000-4000-8000-000000000003",
+            "deviceGeneration": 1,
+            "deviceSequence": 1
+          },
+          "resources": {
+            "tripId": "15000000-0000-4000-8000-000000000006",
+            "taskId": "16000000-0000-4000-8000-000000000002",
+            "attemptId": "16000000-0000-4000-8000-000000000003"
+          },
+          "baseVersions": {},
+          "dependsOnActionIds": [],
+          "observation": {
+            "observedAt": null,
+            "clock": {
+              "quality": "unknown"
+            }
+          },
+          "payload": {
+            "roundId": "15000000-0000-4000-8000-000000000006",
+            "taskId": "16000000-0000-4000-8000-000000000002",
+            "attemptId": "16000000-0000-4000-8000-000000000003",
+            "expectedActivityRevision": 0,
+            "expectedCurrentAttemptId": null,
+            "expectedSourceRevision": 1,
+            "expectedAssignmentRevision": 0,
+            "expectedPinRevision": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "p34-waiting",
+    "schema": "sync.schema.json#/$defs/Entry",
+    "valid": true,
+    "data": {
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "status": "waiting",
+      "dependencies": [
+        "10000000-0000-4000-8000-000000000040"
+      ]
+    }
+  },
+  {
+    "id": "p34-mixed-results",
+    "schema": "sync.schema.json#/$defs/BatchResult",
+    "valid": true,
+    "data": {
+      "results": [
+        {
+          "actionId": "10000000-0000-4000-8000-000000000040",
+          "status": "received",
+          "result": {
+            "receipt": {
+              "schemaVersion": "1.0.0",
+              "receiptId": "10000000-0000-4000-8000-000000000070",
+              "actionId": "10000000-0000-4000-8000-000000000040",
+              "evidenceStatus": "received",
+              "businessStatus": "accepted",
+              "receivedAt": "2026-09-22T10:00:00Z",
+              "committedAt": "2026-09-22T10:00:01Z",
+              "resourceVersions": {
+                "sourceRevision": 1,
+                "resourceRevision": 1,
+                "outcomeRevision": 1,
+                "assignmentGeneration": 1,
+                "routeRevision": 2,
+                "deviceGeneration": 1,
+                "snapshotRevision": 5
+              }
+            },
+            "operationId": "outcome.recordPartial",
+            "retention": "full",
+            "summary": {
+              "outcomeId": "10000000-0000-4000-8000-000000000080",
+              "outcomeRevision": 1
+            },
+            "response": {
+              "status": 200,
+              "body": {
+                "outcomeId": "10000000-0000-4000-8000-000000000080",
+                "deliveredPieces": 2
+              }
+            }
+          }
+        },
+        {
+          "actionId": "16000000-0000-4000-8000-000000000001",
+          "status": "not-received",
+          "code": "validation_failed",
+          "message": "Unsupported operation; keep the original locally.",
+          "retryable": false
+        }
+      ]
+    }
+  },
+  {
+    "id": "p34-conflicts-empty",
+    "schema": "sync.schema.json#/$defs/Conflicts",
+    "valid": true,
+    "data": {
+      "items": [],
+      "nextActionId": null
+    }
   }
 ]

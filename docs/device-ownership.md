@@ -1,5 +1,7 @@
 # Online device takeover and former-phone evidence
 
+P34 update — 25 September 2026: [ordered batch replay and paged conflict review](ordered-replay.md) now receive former-phone chains and expose explicit current-driver adoption in `/sync`. Eligible supporting heading/arrival evidence is checked without replaying physical movement; original receipts stay review-required after separate adoption. Optional `taskLabel` and `unresolved-dependency` recovery constraints are canonical. [Connected database and actual two-tab/two-context proof](phase-34-evidence.md). Physical-phone and complete auth/update recovery remain unverified.
+
 Phase 20, locally verified 24 September 2026. [Ordered evidence](phase-20-evidence.md), [canonical schema](../contracts/device-ownership.schema.json), [OpenAPI](../contracts/openapi.yaml), [typed client](../packages/api-client/src/devices.ts).
 
 Run `npm run devices:demo`, then `npm run test:erp:devices -- .local/phase-20-demo.json`. The demo uses two separate real application sessions, a signed OIDC issuer fixture, real loopback HTTP and a disposable PostgreSQL database. It creates a task/manual plan/round, opens the same running round on another phone identity, deliberately loses the committed takeover response, restarts the API, retries the original action, downloads the current heading, records new-owner arrival/outcome and receives old evidence. It asserts one round, one takeover and one authoritative outcome. It does not use a live Engine, browser, physical phones, production identity provider or ERP receiver.

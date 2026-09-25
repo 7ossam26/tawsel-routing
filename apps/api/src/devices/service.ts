@@ -1,4 +1,5 @@
 import {correctionState} from '../corrections/state.js';
+import {compatibleEvidenceDependencies} from '../corrections/evidence-dependencies.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
@@ -22,7 +23,7 @@ async function context(tx:Transaction,r:RoundRow,deviceId:string):Promise<compon
 async function lockedRound(tx:Transaction,a:AccessSession,roundId:string){
  await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);return ownRound(tx,a,roundId);
 }
-const supportedResult=(op:string)=>op.startsWith('branch.')||op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||op==='outcome.correct'||op==='evidence.adoptCompatible'||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
+const supportedResult=(op:string)=>op==='return.requestHandover'||op.startsWith('branch.')||op==='device.takeOver'||op==='round.start'||op==='round.end'||op==='workday.end'||op.startsWith('current.')||op.startsWith('outcome.record')||op==='outcome.correct'||op==='evidence.adoptCompatible'||['task.deferWhole','task.retryWhole','task.activateDeferred','task.setDriverUrgency','planning.saveDraft','planning.requestReplan','planning.requestPreview','planning.setManualOrder','location.confirmPin'].includes(op);
 
 export class Devices {
  constructor(readonly pool:Pool,readonly observe?:Pick<CommandHooks,'afterWrite'>){}
@@ -91,8 +92,11 @@ export class Devices {
     const pin=Number((await tx.query('SELECT revision FROM tawsel.task_locations WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,envelope.payload.taskId])).rows[0]?.revision??0);
     if(pin!==envelope.payload.expectedPinRevision)constraints.push('changed-pin');
    }
+   if(envelope&&!await compatibleEvidenceDependencies(tx,envelope))constraints.push('unresolved-dependency');
    const recovery:components['schemas']['DeviceRecovery']={adoptionImplemented:true,state:constraints.length?'blocked':'requires-validation',constraints:[...new Set(constraints)],currentGeneration:Number(latest.device_generation),effectiveOutcomeRevision,activityRevision,adoptedOutcomeId:adopted};
-   const response={actionId,result,envelope,durableReceipt:true as const,recovery};requireDevice('Evidence',response);return response;
+   const taskLabel=envelope?.payload.taskId?(await tx.query(`SELECT t.recipient_name FROM tawsel.round_admissions a JOIN tawsel.location_tasks t USING(tenant_id,task_id)
+    WHERE a.tenant_id=$1 AND a.round_id=$2 AND a.task_id=$3 AND a.attempt_id=$4`,[r.tenant_id,r.round_id,envelope.payload.taskId,envelope.payload.attemptId])).rows[0]?.recipient_name as string|undefined:undefined;
+   const response={actionId,result,envelope,durableReceipt:true as const,recovery,...(taskLabel?{taskLabel}:{})};requireDevice('Evidence',response);return response;
   });
  }
  async receive(principal:AuthenticatedPrincipal,value:unknown):Promise<components['schemas']['DeviceEvidenceSubmissionResult']>{

@@ -1,5 +1,19 @@
 # Field and status mapping — canonical foundation
 
+Phase 34 mapping is locally verified; canonical ownership remains in [sync.schema.json](../../contracts/sync.schema.json). A batch is a transport container, never one business transition.
+
+| Public/local field | Consumer meaning |
+| --- | --- |
+| `SyncEntry.status=received` | Inspect this entry's `ActionResult.receipt.businessStatus`; save the receipt durably before retiring local pending evidence. |
+| `waiting.dependencies` | Missing committed predecessors; retain original ID/payload/observation. No receipt or ERP effect is implied. |
+| `not-received.retryable` | Transport/input/authentication guidance only; no durable receipt supplied. Other entries may already have committed. |
+| `DeviceEvidence.result` | Immutable original received outcome, including review/rejection; never changed to accepted by adoption. |
+| `recovery.adoptedOutcomeId` | Separate accepted recovery result linked to original evidence; project existing correction/adoption event semantics once. |
+| `recovery.constraints=unresolved-dependency` | Missing/incompatible supporting evidence prevents adoption; receipt/day/owner constraints still apply. |
+| `taskLabel`, `nextActionId` | Optional authorized display text and pagination cursor; neither grants mutation authority. |
+
+Generation, sequence, resource versions and observation time remain from capture; resolved dependency versions are internal immutable metadata, not a replacement source snapshot. Tawsel acceptance, signed ERP receipt and ERP application remain separate. [Protocol/demo](../ordered-replay.md).
+
 Phase 33 mapping: local `actions` + `pending` mean “saved on this phone”; they have no ERP-applied mapping and must not enter a server-only monitoring total. `acknowledgements.result.receipt` retains the existing separate evidence/business status and receipt/commit times. Device `observation` remains uncertain clock evidence, never replaced by delayed receipt time. `PlanningRoutePolicy.roadRoute` is optional `RoutingRouteResult | null`; absent/null means no saved road geometry and leaves plan order/details useful. It does not change forecasts, custody, prices or source authority. [Local schema](../../contracts/local-work.schema.json), [storage/version boundary](../offline-local-capture.md).
 
 Phase 29 presentation rule: exact full collection on the driver screen is calculated from the immutable source lines plus remaining shipping ledger and returned in `CurrentTarget.delivery`; the browser does not apportion or edit ERP money. Full/no-answer acceptance is Tawsel execution state and does not itself claim ERP application or settlement. [Connected evidence](../phase-29-evidence.md).

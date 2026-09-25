@@ -17,7 +17,8 @@ import {authorize,day,round,sourceItems} from './state.js';
 
 /** Missing predecessor has no final command identity. The exact envelope can be
  * replayed after its dependencies commit; this is not an accepted local day end. */
-export class ClosurePending extends Error {constructor(readonly actionId:string){super('زامن الإجراءات السابقة أولاً؛ إنهاء اليوم ما زال معلقاً.');}}
+import {DependencyPending as ClosurePending} from '../commands/dependencies.js';
+export {DependencyPending as ClosurePending} from '../commands/dependencies.js';
 const operations={'round.end':'EndRoundCommand','workday.end':'EndDayCommand'} as const;
 function rejection(c:ActionEnvelope,driverId:string,e:ClosureError):Decision{
  const problem={type:`https://schemas.tawsel.invalid/problems/${e.code.replaceAll('_','-')}`,title:'Closure rejected',code:e.code,status:e.statusCode,detail:e.message,actionId:c.actionId,correlationId:randomUUID(),retryable:false};

@@ -1,3 +1,4 @@
+import {DependencyPending} from '../commands/dependencies.js';
 import {Branches} from '../branch/service.js';
 import cookie from '@fastify/cookie';
 import {randomUUID} from 'node:crypto';
@@ -15,7 +16,8 @@ import {Returns} from './service.js';
 import {ReturnReceiver} from './receiver.js';
 function errors(app:FastifyInstance){
  app.addHook('onRequest',async(_r,reply)=>{reply.header('Cache-Control','no-store').header('X-Content-Type-Options','nosniff');});
- app.setErrorHandler((error,_r,reply)=>{const known=error instanceof ReturnError||error instanceof AccessDenied||error instanceof AuthError||error instanceof ProvisioningError||error instanceof IdempotencyConflict;
+ app.setErrorHandler((error,_r,reply)=>{
+  if(error instanceof DependencyPending)return reply.status(409).send({error:{code:error.code,message:error.message}});const known=error instanceof ReturnError||error instanceof AccessDenied||error instanceof AuthError||error instanceof ProvisioningError||error instanceof IdempotencyConflict;
   const invalid=!!(error as {validation?:unknown}).validation||(error as {statusCode?:number}).statusCode===400;
   const status=known?error.statusCode:invalid?400:503,code=known?error.code:invalid?'validation_failed':'dependency_unavailable';
   return reply.status(status).type('application/problem+json').send({type:`https://schemas.tawsel.invalid/problems/${code.replaceAll('_','-')}`,title:'Return request failed',status,code,detail:known?error.message:invalid?'Invalid request.':'لم يتأكد الحفظ؛ انتظر أو أعد نفس الطلب.',correlationId:randomUUID(),retryable:!known&&!invalid});});

@@ -11,6 +11,7 @@ import { IndependentIntakeService } from '../apps/api/src/b2c-intake/service.js'
 import { runPlanningOnce } from '../apps/api/src/planning/worker.js';
 import { buildApp } from '../apps/api/src/app.js';
 import { createDatabasePool } from '../apps/api/src/db/pool.js';
+import { send } from '../apps/api/test/support/provisioning-fixture.js';
 
 const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; company: string; personal: string; password: string };
 const companyIssuer = 'http://localhost:8085/realms/tawsel-company', personalIssuer = 'http://localhost:8085/realms/tawsel-personal';
@@ -38,6 +39,10 @@ await draft(db.pool, 0, { plannedStartAt: new Date(Date.now() + 60_000).toISOStr
 const engine = await providerFixture(); await runPlanningOnce(db.pool, engine.engine);
 
 const company = await companyPlanningFixture(db, { issuer: companyIssuer, driverSubject: companyUser.subject });
+if (process.env.TAWSEL_REPLAY_FIXTURE === '1') {
+  const grant = await send(company.app, company.source.token, company.source.command('role.defineCapabilities', { externalId: 'role', sourceRevision: 2, name: 'Driver', capabilities: ['execution.own', 'correction.own'] }));
+  if (grant.statusCode !== 200) throw new Error('Replay fixture correction capability failed');
+}
 await company.task('ordinary-delivery', 'ordinary', 'held'); await company.save(); await runPlanningOnce(db.pool, engine.engine);
 const auth = { origin: 'http://localhost:5173', encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer: companyIssuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: personalIssuer, clientId: 'tawsel-web', clientSecret: secrets.personal } } };
 const app = buildApp(createDatabasePool(db.config), auth);

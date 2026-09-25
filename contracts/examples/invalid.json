@@ -6914,5 +6914,94 @@
         }
       }
     }
+  },
+  {
+    "id": "p34-empty-batch",
+    "schema": "sync.schema.json#/$defs/Batch",
+    "valid": false,
+    "data": {
+      "actions": []
+    },
+    "keyword": "minItems"
+  },
+  {
+    "id": "p34-batch-limit",
+    "schema": "sync.schema.json#/$defs/Batch",
+    "valid": false,
+    "data": {
+      "actions": [
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {}
+      ]
+    },
+    "keyword": "maxItems"
+  },
+  {
+    "id": "p34-blanket-success",
+    "schema": "sync.schema.json#/$defs/BatchResult",
+    "valid": false,
+    "data": {
+      "success": true
+    },
+    "keyword": "required"
+  },
+  {
+    "id": "p34-received-without-receipt",
+    "schema": "sync.schema.json#/$defs/Entry",
+    "valid": false,
+    "data": {
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "status": "received"
+    },
+    "keyword": "required"
   }
 ]

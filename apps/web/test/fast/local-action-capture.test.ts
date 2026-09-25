@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LocalWork, scopeKey } from '../../src/local-work';
 import type { components } from '@tawsel/api-client';
 import { downloadedFixture, headingFixture, localIds } from './local-work-fixture';
+import { reconcileExecutionPointers } from '../../src/execution-pointers';
 
 describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => {
   let db: LocalWork;
@@ -93,5 +94,19 @@ describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => 
     await db.actions.update([download.scope, legacy.actionId], { envelope: newer });
     await expect(db.preview(download)).rejects.toThrow('غير مدعومة');
     expect(await db.actions.count()).toBe(1); expect(await db.pending.count()).toBe(1);
+  });
+  it.each(['accepted', 'review-required'] as const)('legacy page pointers clear only after a durable %s receipt and preserve foreign accounts', async businessStatus => {
+    const download = downloadedFixture(); await db.saveDownload(download);
+    const action = await db.capture(download.scope, headingFixture(), '/rounds/current');
+    const key = `tawsel:closure:${download.session.access.tenantId}:${download.session.access.sourceId}:${localIds.device}`;
+    const values = new Map([[key, JSON.stringify({ pending: action.envelope })], ['tawsel:closure:foreign:account:device', 'retained']]);
+    const storage: Storage = { get length() { return values.size; }, key: i => [...values.keys()][i] ?? null, getItem: key => values.get(key) ?? null, setItem: (key, value) => { values.set(key, value); }, removeItem: key => { values.delete(key); }, clear: () => values.clear() };
+    await reconcileExecutionPointers(db, download.scope, storage); expect(storage.getItem(key)).not.toBeNull();
+    const result: components['schemas']['ActionResult'] = { operationId: action.envelope.operationId, retention: 'compacted', summary: {}, receipt: { schemaVersion: '1.0.0', actionId: action.actionId, receiptId: crypto.randomUUID(), evidenceStatus: 'received', businessStatus, receivedAt: '2026-09-25T08:03:00Z', ...(businessStatus === 'accepted' ? { committedAt: '2026-09-25T08:03:01Z' } : {}) } };
+    await db.acknowledge(download.scope, result); await reconcileExecutionPointers(db, download.scope, storage);
+    if (businessStatus === 'accepted') expect(storage.getItem(key)).toBeNull();
+    else expect(JSON.parse(storage.getItem(key)!)).toEqual({ review: { command: action.envelope, result } });
+    expect(storage.getItem('tawsel:closure:foreign:account:device')).toBe('retained');
+    expect((await db.actions.get([download.scope, action.actionId]))?.bytes).toBe(action.bytes);
   });
 });

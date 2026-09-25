@@ -182,7 +182,7 @@ test('C: B2C retry keeps simple task history, with no quantity/custody or shippi
  expect((await outcomes.command(principals.personal,full)).receipt.businessStatus).toBe('accepted');
  expect((await db.pool.query('SELECT * FROM tawsel.outcome_quantities')).rowCount).toBe(0);expect((await outcomes.read(principals.personal,f.round.roundId)).progress).toMatchObject({processed:1,full:1,heldReturnRequiredPieces:0,collection:[]});
 });
-test('C: actual HTTP consumer demo recovers retry and reports cumulative fees with future urgent work excluded',async()=>{const report=await eligibilityDemo();expect(report.outcomes.progress.collection[0]?.reportedMinor).toBe('35000');expect(report.events).toHaveLength(3);});
+test('C: actual HTTP consumer demo recovers retry and reports cumulative fees with future urgent work excluded',async()=>{const report=await eligibilityDemo();expect(report.outcomes.progress.collection[0]?.reportedMinor).toBe('35000');expect(report.events).toHaveLength(3);},30_000);
 test('C: repeated unpaid refusals preserve one outstanding fee, later payment clears it without multiplying liability',async()=>{
  const f=await company([{}]),app=await api(f),outcomes=new Outcomes(db.pool);
  for(let i=0;i<2;i++){

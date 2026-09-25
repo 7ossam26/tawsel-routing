@@ -339,7 +339,8 @@
               "changed-pin",
               "already-adopted",
               "ended-round",
-              "claimed-handover"
+              "claimed-handover",
+              "unresolved-dependency"
             ]
           }
         },
@@ -402,6 +403,10 @@
         },
         "recovery": {
           "$ref": "#/$defs/Recovery"
+        },
+        "taskLabel": {
+          "type": "string",
+          "description": "Authorized admitted task recipient label for human review; absent for non-task evidence."
         }
       },
       "required": [

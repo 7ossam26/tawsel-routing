@@ -1,6 +1,6 @@
 # Downloaded started work and local action capture
 
-Implemented in Phase 33; [ordered verification](phase-33-evidence.md). P34 owns ordered replay/conflict recovery; P35 owns complete reauthentication, safe exit and update UX.
+Implemented in Phase 33; [ordered verification](phase-33-evidence.md). Phase 34 now connects this unchanged journal format to [ordered replay/conflict recovery and sync-before-start](ordered-replay.md), with [separate real-browser evidence](phase-34-evidence.md). The Phase 33 scope/handoff below is historical wherever it calls replay future work. P35 still owns complete reauthentication, safe exit and update UX. The capture browser regression explicitly blocks replay transport while checking unsent/account-guard states, then releases it and verifies recovery.
 
 ## Driver behavior
 

@@ -868,10 +868,12 @@
       "id": "sync.submitActions",
       "family": "sync-recovery",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 34,
       "capability": "execution.own",
-      "description": "Dependency-ordered replay batch with per-action result, original identity/version."
+      "description": "Dependency-ordered replay batch with per-action result, original identity/version.",
+      "method": "POST",
+      "path": "/api/v1/sync/actions"
     },
     {
       "id": "sync.getEvidenceReceipt",
@@ -888,10 +890,12 @@
       "id": "sync.listConflicts",
       "family": "sync-recovery",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 34,
       "capability": "execution.own",
-      "description": "Read preserved conflicts and currently permitted resolution choices."
+      "description": "Read preserved conflicts and currently permitted resolution choices.",
+      "method": "GET",
+      "path": "/api/v1/sync/conflicts"
     },
     {
       "id": "integration.configureWebhook",
@@ -1151,7 +1155,7 @@
       "id": "ui.retrySynchronization",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 34,
       "capability": "local",
       "description": "Trigger authenticated replay using original action identities."

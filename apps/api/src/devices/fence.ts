@@ -3,6 +3,7 @@ import type {Transaction} from '../db/transaction.js';
 import type {RoundRow} from '../rounds/models.js';
 import {DeviceError} from './models.js';
 import {deviceRejection} from './state.js';
+import {executionDependencies} from '../commands/dependencies.js';
 
 /** Caller holds the driver invariant lock and has reloaded/authorized the round.
  * No client timestamp, route order or session refresh can restore an old owner. */
@@ -12,7 +13,8 @@ export async function executionFence(tx:Transaction,c:ActionEnvelope,r:RoundRow)
   return deviceRejection(c,r,new DeviceError('stale_device',409,'التنفيذ على هاتف آخر. حُفظ الإجراء للمراجعة ولم يُطبّق.'));
  const transfer=(await tx.query<{snapshot_token:string}>('SELECT snapshot_token FROM tawsel.device_takeovers WHERE tenant_id=$1 AND round_id=$2 AND generation=$3',[r.tenant_id,r.round_id,r.device_generation])).rows[0];
  if(transfer&&d.snapshotToken!==transfer.snapshot_token)return deviceRejection(c,r,new DeviceError('sync_required',409,'حمّل آخر حالة مؤكدة على هذا الهاتف قبل التنفيذ.'));
- return null;
+ // Corrections retain their stricter, durable review policy for missing inputs.
+ return ['outcome.correct','evidence.adoptCompatible'].includes(c.operationId)?null:executionDependencies(tx,c,r);
 }
 /** Planning/pin commands without a round payload must also obey the active
  * owner's fence. Before start their existing preparation authority still applies. */

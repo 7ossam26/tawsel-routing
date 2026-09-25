@@ -10,4 +10,4 @@ run(['scripts/build-public-client.mjs']);
 const web = resolve('apps/web');
 run([resolve('node_modules/vite/bin/vite.js'), 'build'], web);
 run(['scripts/build-pwa.mjs'], web); run(['scripts/check-production.mjs'], web);
-run(['node_modules/@playwright/test/cli.js', 'test', '-c', 'playwright.offline.config.ts']);
+run(['node_modules/@playwright/test/cli.js', 'test', '-c', process.argv.includes('--replay') ? 'playwright.replay.config.ts' : 'playwright.offline.config.ts']);

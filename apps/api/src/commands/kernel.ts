@@ -156,6 +156,18 @@ export async function executeCommandInTransaction(tx: Transaction, scope: Comman
       instant, decision.response.status, canonicalJson(decision.response.body), canonicalJson({ receipt, summary: decision.summary }),
       decision.status === 'review-required' || decision.retentionHold === true
     ]);
+    // Upgrade harnesses execute retained historical commands before migrating.
+    // Production startup requires the full migration set; existing tombstones
+    // still recover unchanged when no causal metadata was recorded by that era.
+    if (context.kind === 'device' && (await tx.query("SELECT to_regclass('tawsel.command_replay_metadata') IS NOT NULL AS present")).rows[0].present) {
+      await tx.query(`INSERT INTO tawsel.command_replay_metadata
+        (tenant_id,source_id,action_id,device_id,generation,device_sequence,round_id,activity_revision,dependencies,resolved_versions)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,COALESCE((SELECT jsonb_object_agg(action_id::text,result_summary->'receipt'->'resourceVersions')
+          FROM tawsel.command_identities WHERE tenant_id=$1 AND source_id=$2 AND action_id=ANY($9::uuid[]) AND business_status='accepted'),'{}'::jsonb))`,
+      [...key(binding, command.actionId), context.deviceId, context.deviceGeneration, context.deviceSequence,
+        typeof decision.summary.roundId === 'string' ? decision.summary.roundId : null,
+        Number.isSafeInteger(command.payload.expectedActivityRevision) ? command.payload.expectedActivityRevision : null, command.dependsOnActionIds]);
+    }
     await hooks.afterWrite?.('result', tx);
     const result = resultFrom(updated.rows[0]!);
     validateProtocol('action-result', result);

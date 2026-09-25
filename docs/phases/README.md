@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+P34 update — 25 September 2026: [ordered replay and durable conflict recovery](../ordered-replay.md) connect original journal envelopes to per-action server receipts, bounded explicit adoption and sync-before-start. Real PostgreSQL races plus separate Chromium process-reopen/two-tab/two-context scenarios are recorded in [checkpoint evidence](../phase-34-evidence.md). Phase 35 is next; use the [exact verified handoff](../ordered-replay.md#exact-phase-35-handoff). Earlier dated updates retain their historical scope.
+
 P33 update — 25 September 2026: [durable account-scoped downloads and atomic capture](../offline-local-capture.md) now have simulated IndexedDB, real transaction-abort, production service-worker/offline browser process-reopen and server-monitor exclusion evidence. [Ordered results and exact limits](../phase-33-evidence.md). Phase 34 is next; it must replay the original persisted envelopes without changing IDs or observations. P35 recovery/updates and P41 physical-device/elapsed observation remain separate.
 
 P31 update — 25 September 2026: [connected driver branch/receipt/resume and round/day closure](../phase-31-evidence.md) now have real native mock ERP subset, takeover, reload and carry-forward browser proof. Phase 32 is next; use the verified artifacts and exact limitations in that handoff. Earlier numbered updates below retain their historical scope.

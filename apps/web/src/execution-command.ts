@@ -1,8 +1,10 @@
+import { withJournalLock } from './journal-lock';
 import { useEffect, useRef, useState } from 'react';
 import type { components } from '@tawsel/api-client';
 import { api, deviceId } from './independent-tasks';
 import { localWork, type LocalEnvelope } from './local-work';
 import { DevicesClient } from '@tawsel/api-client/src/devices';
+import { reconcileExecutionPointers } from './execution-pointers';
 
 export async function confirmedExecutionOwner(kind: 'personal' | 'company', roundId: string) {
   const client = new DevicesClient(kind), owner = await client.context(roundId, deviceId());
@@ -48,16 +50,21 @@ export function useExecutionCommand<C extends LocalEnvelope, R extends ReceiptRe
   useEffect(() => {
     if (!key) return; let active = true;
     try { const saved = JSON.parse(sessionStorage.getItem(key) ?? 'null'); setPending(saved?.pending ?? null); setReview(saved?.review ?? null); } catch { setMessage('تعذر قراءة الطلب المحفوظ؛ راجع المزامنة.'); }
-    void (async () => {
+    const restore = async () => {
       const selected = await localWork.selection.get('active'); if (!selected) return;
       const partition = await localWork.partitions.get(selected.scope);
       if (!partition || !key.includes(':' + partition.identity.tenantId + ':' + partition.identity.accountId + ':')) return;
+      await reconcileExecutionPointers(localWork, partition.scope);
+      const saved = JSON.parse(sessionStorage.getItem(key) ?? 'null');
+      if (active) { setPending(saved?.pending ?? null); setReview(saved?.review ?? null); }
       const effects = await localWork.pendingFor(partition.scope);
       const first = effects.find(effect => effect.href.split('?')[0] === location.pathname);
       const action = first && await localWork.actions.get([partition.scope, first.actionId]);
       if (active && action) setPending(action.envelope as C);
-    })().catch(() => { if (active) setMessage('تعذر قراءة الطلب المحفوظ؛ راجع تخزين الهاتف.'); });
-    return () => { active = false; };
+    };
+    const reload = () => { void restore().catch(() => { if (active) setMessage('تعذر قراءة الطلب المحفوظ؛ راجع تخزين الهاتف.'); }); };
+    reload(); window.addEventListener('tawsel:replay-complete', reload);
+    return () => { active = false; window.removeEventListener('tawsel:replay-complete', reload); };
   }, [key]);
   async function settle(scope: string, command: C, value: R) {
     await localWork.acknowledge(scope, value);
@@ -77,8 +84,13 @@ export function useExecutionCommand<C extends LocalEnvelope, R extends ReceiptRe
       const durable = captured.envelope as C; saved = true; setPending(durable);
       // SessionStorage remains only a compatibility pointer for older page guards.
       try { sessionStorage.setItem(key, JSON.stringify({ pending: durable, review })); } catch { /* IndexedDB is the durable record */ }
-      if (pending) { const known = await result(durable.actionId, durable); if (known.status !== 'pending' && known.result) return await settle(scope, durable, known.result); }
-      return await settle(scope, durable, await send(durable));
+      const transmit = async () => {
+        const ack = await localWork.acknowledgements.get([scope, durable.actionId]);
+        if (ack) return await settle(scope, durable, ack.result as R);
+        if (pending) { const known = await result(durable.actionId, durable); if (known.status !== 'pending' && known.result) return await settle(scope, durable, known.result); }
+        return await settle(scope, durable, await send(durable));
+      };
+      return navigator.locks ? await withJournalLock(scope, transmit) : await transmit();
     } catch (error) { setMessage(saved ? 'محفوظ على الهاتف؛ تعذر تأكيد نتيجة الخادم. تحقّق من الطلب نفسه.' : 'لم يُحفظ على الهاتف. ' + (error instanceof Error ? error.message : 'المدخلات لم تُحذف.')); return false; }
     finally { inFlight.current = false; setBusy(false); }
   }

@@ -58,10 +58,12 @@ function installFetch(options: { current?: unknown; plans?: unknown; planningFai
 }
 
 beforeEach(() => {
+  // Component-only lock fixture. Native two-tab Web Locks are exercised in P34 Playwright.
+  Object.defineProperty(navigator, 'locks', { configurable: true, value: { request: async (_name: string, _options: unknown, work: () => Promise<unknown>) => work() } });
   window.history.replaceState({}, '', '/day?kind=personal'); sessionStorage.clear(); localStorage.clear(); localStorage.setItem('tawsel:device-id', ids.device);
   Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, value: vi.fn(() => '90000000-0000-4000-8000-000000000099') });
 });
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); Reflect.deleteProperty(navigator, 'locks'); vi.restoreAllMocks(); });
 
 describe('connected preparation flow', () => {
   it('keeps valid work usable while unresolved, prepared and deferred work remain distinct', async () => {

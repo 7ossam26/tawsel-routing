@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {compatibleEvidenceDependencies} from './evidence-dependencies.js';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
 import {AccessDenied,withAccess,type AuthenticatedPrincipal} from '../access/service.js';
@@ -69,10 +70,11 @@ export class Corrections {
     if(!state.view.allowed)throw new OutcomeError('lifecycle_forbidden',409,state.view.message);
     if(state.view.effectiveOutcomeRevision!==p.expectedOutcomeRevision)throw new OutcomeError('stale_revision',409,'تغيّرت النتيجة؛ راجع الأصل والتصحيح الحالي قبل الحفظ.');
     const r=state.round,previous=state.view.effectiveOutcome;
-    for(const id of [...c.dependsOnActionIds,...(evidence?.dependsOnActionIds??[])]){
+    for(const id of c.dependsOnActionIds){
      const dep=await getCommandResult(tx,a.commandScope,id);
      if(!dep||dep.receipt.businessStatus!=='accepted')throw new OutcomeError('sync_incomplete',409,'يوجد إجراء سابق غير مقبول؛ راجع المزامنة أولًا.');
     }
+    if(evidence&&!await compatibleEvidenceDependencies(tx,evidence))throw new OutcomeError('sync_incomplete',409,'دليل سابق غير مكتمل أو غير متوافق؛ راجع المزامنة أولًا.');
     const input=await snapshot(tx,await planningState(tx,r.tenant_id,driver)),member=input.members.find(m=>m.attemptId===target&&m.taskId===state.view.taskId);
     if(!member)throw new OutcomeError('stale_revision',409,'تغيّرت المحاولة أو الحيازة.');
     activityRevision=Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,r.round_id])).rows[0]?.revision??0);

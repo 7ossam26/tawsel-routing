@@ -1,3 +1,5 @@
+import { replaySelected } from './replay-runtime';
+import { withJournalLock } from './journal-lock';
 import { localWork, storageReadiness, type Download, type PendingEffect, type LocalEnvelope } from './local-work';
 import { downloadWork } from './download-work';
 import { ExceptionEditor } from './exception-editor';
@@ -63,6 +65,7 @@ export function CurrentActivityPage() {
     }
     const session = await api('/api/session/context?kind=' + kind) as Context;
     const scope = await localWork.select(session, deviceId()); setContext(session);
+    if (navigator.locks && (await localWork.pendingFor(scope)).length) await replaySelected(kind);
     const existing = await localWork.downloaded(kind, deviceId()), local = await localWork.pendingFor(scope);
     if (existing && local.length) {
       const ownerState = await devicesClient.context(existing.roundId, deviceId());
@@ -109,7 +112,7 @@ export function CurrentActivityPage() {
       setDownload(null); setState(null); setContext(null); setError(failure instanceof Error ? failure.message : 'تعذر تحميل الجولة.'); setLoaded(true);
     }
   }, [kind, refresh, showDownload]);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { void load(); const synced = () => { void load(); }; window.addEventListener('tawsel:replay-complete', synced); return () => window.removeEventListener('tawsel:replay-complete', synced); }, [load]);
   useEffect(() => { const changed = () => setOffline(!navigator.onLine); window.addEventListener('online', changed); window.addEventListener('offline', changed); return () => { window.removeEventListener('online', changed); window.removeEventListener('offline', changed); }; }, []);
 
   const execute = useCallback(async (item: Pending, retry = false) => {
@@ -126,11 +129,17 @@ export function CurrentActivityPage() {
       const ready = await Promise.all(dependencies.map(id => localWork.acknowledgements.get([partition.scope, id])));
       if (offline || !navigator.onLine || ready.some(value => value?.result.receipt.businessStatus !== 'accepted')) return;
       setPending(exact);
-      let result: components['schemas']['ActionResult'];
-      if (exact.kind === 'current') result = exact.command.operationId === 'current.selectHeading' ? await currentClient.heading(exact.command) : await currentClient.arrival(exact.command);
-      else if (exact.kind === 'outcome') result = exact.command.operationId === 'outcome.recordFull' ? await outcomeClient.full(exact.command) : exact.command.operationId === 'outcome.recordPartial' ? await outcomeClient.partial(exact.command) : exact.command.operationId === 'outcome.recordRefusal' ? await outcomeClient.refusal(exact.command) : await outcomeClient.noAnswer(exact.command);
-      else result = await devicesClient.takeover(exact.command);
-      await localWork.acknowledge(partition.scope, result); setPending(null);
+      const transmit = async () => {
+        const known = await localWork.acknowledgements.get([partition.scope, exact.command.actionId]);
+        if (known) return known.result;
+        const result = exact.kind === 'current' ? exact.command.operationId === 'current.selectHeading' ? await currentClient.heading(exact.command) : await currentClient.arrival(exact.command)
+          : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordFull' ? await outcomeClient.full(exact.command) : exact.command.operationId === 'outcome.recordPartial' ? await outcomeClient.partial(exact.command) : exact.command.operationId === 'outcome.recordRefusal' ? await outcomeClient.refusal(exact.command) : await outcomeClient.noAnswer(exact.command)
+          : await devicesClient.takeover(exact.command);
+        await localWork.acknowledge(partition.scope, result);
+        return result;
+      };
+      const result = navigator.locks ? await withJournalLock(partition.scope, transmit) : await transmit();
+      setPending(null);
       if (result.receipt.businessStatus !== 'accepted') { setError(result.receipt.problem?.detail ?? 'لم يُقبل الإجراء؛ الدليل محفوظ.'); await refresh(); return; }
       setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.' : 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
       await refresh(); headingRef.current?.focus();
@@ -139,6 +148,7 @@ export function CurrentActivityPage() {
     } finally { inFlight.current = false; setBusy(false); }
   }, [context, currentClient, devicesClient, download, kind, offline, outcomeClient, refresh, showDownload]);
   const retryFirst = async () => {
+    if (navigator.locks) { setBusy(true); setError(''); try { await replaySelected(kind); await load(); } catch (e) { setError(e instanceof Error ? e.message : 'تعذر تأكيد المزامنة.'); } finally { setBusy(false); } return; }
     if (!download || !effects[0]) return;
     const unreceived = await Promise.all(effects.map(async effect => await localWork.acknowledgements.get([download.scope, effect.actionId]) ? null : effect));
     const first = unreceived.find(effect => effect !== null);
@@ -177,7 +187,7 @@ export function CurrentActivityPage() {
     {error ? <StatusNotice tone="error" title="تحتاج الجولة مراجعة" live>{error}</StatusNotice> : null}{success ? <StatusNotice tone="success" title="تأكيد من الخادم" live>{success}</StatusNotice> : null}
     {externalFeedback ? <StatusNotice title="تم فتح تطبيق خارجي" live>{externalFeedback} لم نسجّل اتجاهًا أو وصولًا أو نجاح تواصل.</StatusNotice> : null}
     {pending ? <StatusNotice tone="waiting" title="إجراء ينتظر التأكيد" live>الطلب محفوظ على الهاتف؛ لم يتأكد قبوله. <ActionButton variant="secondary" busy={busy} onClick={() => void execute(pending, true)}>تحقّق وأعد إرسال الطلب نفسه</ActionButton></StatusNotice> : null}
-    {effects.length ? <StatusNotice tone="waiting" title="محفوظ على الهاتف" live>{effects.length} إجراء ينتظر المزامنة؛ أثره محلي فقط، وتقدم الخادم أدناه لم يتغير.<a className="edit-link" href={'/local-work?kind=' + kind}>مراجعة الإجراءات المحفوظة</a>{!pending && !offline ? <ActionButton variant="secondary" disabled={busy} onClick={() => void retryFirst()}>تحقّق من أول إجراء محفوظ</ActionButton> : null}</StatusNotice> : null}
+    {effects.length ? <StatusNotice tone="waiting" title="محفوظ على الهاتف" live>{effects.length} إجراء ينتظر المزامنة؛ أثره محلي فقط، وتقدم الخادم أدناه لم يتغير.<a className="edit-link" href={'/local-work?kind=' + kind}>مراجعة الإجراءات المحفوظة</a>{!pending && !offline ? <ActionButton variant="secondary" disabled={busy} onClick={() => void retryFirst()}>إعادة المزامنة</ActionButton> : null}</StatusNotice> : null}
     {download ? <p className="field-hint">{offline ? 'العمل المنزّل متاح دون اتصال؛ البدء الجديد يحتاج الخادم.' : readiness} <a href={'/account?kind=' + kind}>حسابي</a></p> : null}
     {!loaded ? <StatusNotice title="جارٍ تحميل الجولة" /> : !state ? (!error ? <StatusNotice title="لا توجد جولة نشطة">ابدأ جولة متزامنة أولًا من تجهيز العمل.</StatusNotice> : null) : <>
       {outcomes ? <section aria-label="آخر تقدم مؤكّد من الخادم"><ProgressSummary processed={outcomes.progress.processed} total={total} delivered={outcomes.progress.full} held={outcomes.progress.heldReturnRequiredPieces} /></section> : null}
@@ -199,6 +209,7 @@ export function CurrentActivityPage() {
       <a className="edit-link" href={`/execution/closure?kind=${kind}`}>ملخص العمل وإنهاء الجولة أو اليوم</a>
     </>}
     {editor}
+    <a className="edit-link" href={'/sync?kind=' + kind}>المزامنة وأدلة الهاتف السابق</a>
     <ActionButton variant="quiet" disabled={busy} onClick={() => { setError(''); void load(); }}><RefreshCw aria-hidden="true" />تحديث الجولة</ActionButton>
   </main>;
 }

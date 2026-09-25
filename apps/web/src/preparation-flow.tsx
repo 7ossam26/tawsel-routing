@@ -8,8 +8,10 @@ import { RoundsClient } from '@tawsel/api-client/src/rounds';
 import { ActionButton, Field, StatusNotice } from './components/ui';
 import { api, deviceId, nextSequence } from './independent-tasks';
 import { pendingExecutionLinks } from './execution-command';
-import { assertNoLocalPending, useLocalPending } from './local-status';
-import { localWork, storageReadiness } from './local-work';
+import { useLocalPending } from './local-status';
+import { synchronizedStart } from './start-barrier';
+import { localWork } from './local-work';
+import { reconcileExecutionPointers } from './execution-pointers';
 
 type Session = components['schemas']['SessionContext'];
 type Daily = components['schemas']['MonitoringSnapshot'];
@@ -114,6 +116,8 @@ export function PreparationFlow() {
     try {
       const context = await api(`/api/session/context?kind=${kind}`) as Session;
       if (!context.access.driverId) throw new Error('هذا الحساب غير مرتبط بمندوب نشط.');
+      const partition = await localWork.active(kind, deviceId());
+      if (partition?.identity.tenantId === context.access.tenantId && partition.identity.accountId === context.access.sourceId) await reconcileExecutionPointers(localWork, partition.scope);
       const driverId = context.access.driverId;
       const [roundState, monitoring, planningState] = await Promise.all([
         rounds.current(),
@@ -162,6 +166,7 @@ export function PreparationFlow() {
   }, [kind, planning, rounds]);
 
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => { const reload = () => { void load(); }; window.addEventListener('tawsel:replay-complete', reload); return () => window.removeEventListener('tawsel:replay-complete', reload); }, [load]);
   useEffect(() => {
     if (!job || !['pending', 'running'].includes(job.status)) return;
     const handle = window.setTimeout(() => {
@@ -259,15 +264,18 @@ export function PreparationFlow() {
     finally { setBusy(false); }
   }
   async function startRound() {
-    try { await assertNoLocalPending(); if (!navigator.onLine) throw new Error('بدء جولة جديدة يحتاج اتصالًا وقبول الخادم.'); await storageReadiness(); if (session) await localWork.select(session, deviceId()); }
-    catch (failure) { setError(failure instanceof Error ? failure.message : 'تعذر التحقق من تخزين الهاتف.'); return; }
     if (!session || !session.access.driverId || !startable || dirty || pendingExecutionLinks(session, '').length) return;
     setBusy(true); setError('');
     try {
-      const actionIds = acceptedActionsKey ? JSON.parse(sessionStorage.getItem(acceptedActionsKey) ?? '[]') as string[] : [];
-      const readiness = await rounds.readiness({ driverId: session.access.driverId, deviceId: deviceId(), planId: startable.planId, expectedPlanRevision: startable.revision, relevantActionIds: actionIds });
-      const command = commandEnvelope(session, 'round.start', { driverId: session.access.driverId, readinessId: readiness.readinessId, planId: startable.planId, expectedPlanRevision: startable.revision }, { planId: startable.planId }) as unknown as StartCommand;
-      setBusy(false); await sendStart(command);
+      await synchronizedStart(kind, async journalIds => {
+        const fresh = await planning.plans(session.access.driverId!);
+        const selected = fresh.items.find(p => p.planId === startable.planId && p.revision === startable.revision);
+        if (!selected?.current || !selected.inputCurrent) throw new Error('تغيّرت الخطة بعد المزامنة؛ حدّث التجهيز قبل البدء.');
+        const actionIds = acceptedActionsKey ? JSON.parse(sessionStorage.getItem(acceptedActionsKey) ?? '[]') as string[] : [];
+        const readiness = await rounds.readiness({ driverId: session.access.driverId!, deviceId: deviceId(), planId: selected.planId, expectedPlanRevision: selected.revision, relevantActionIds: [...new Set([...journalIds, ...actionIds])] });
+        const command = commandEnvelope(session, 'round.start', { driverId: session.access.driverId, readinessId: readiness.readinessId, planId: startable.planId, expectedPlanRevision: startable.revision }, { planId: startable.planId }) as unknown as StartCommand;
+        setBusy(false); await sendStart(command);
+      });
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'تعذر التحقق من جاهزية البدء.'); setBusy(false); }
   }
   async function checkStart() {

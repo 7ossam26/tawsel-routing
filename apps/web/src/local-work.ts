@@ -1,5 +1,6 @@
-import Dexie, { type Table } from 'dexie';
+import { Dexie, type Table } from 'dexie';
 import type { components } from '@tawsel/api-client';
+import { withJournalLock } from './journal-lock.js';
 
 type S = components['schemas'];
 export type LocalScope = { kind: 'company' | 'personal'; tenantId: string; accountId: string; deviceId: string };
@@ -111,11 +112,24 @@ export class LocalWork extends Dexie {
     await this.assertSelected(download.scope);
     const effects = await this.pendingFor(download.scope);
     const commands = await Promise.all(effects.filter(effect => effect.roundId === download.roundId).map(effect => this.actions.get([download.scope, effect.actionId])));
-    return projectCurrent(download.current, commands.flatMap(value => value ? [value.envelope] : []));
+    const projected: LocalEnvelope[] = [], blocked = new Set<string>();
+    for (const value of commands) {
+      if (!value) continue;
+      const deps = await Promise.all(value.envelope.dependsOnActionIds.map(id => this.acknowledgements.get([download.scope, id])));
+      if (value.envelope.dependsOnActionIds.some(id => blocked.has(id)) || deps.some(ack => ack && ack.result.receipt.businessStatus !== 'accepted')) { blocked.add(value.actionId); continue; }
+      projected.push(value.envelope);
+    }
+    return projectCurrent(download.current, projected);
   }
   /** The counter, immutable bytes and pending effect either ALL commit or NONE
    * do. An ID never acquires new bytes, even after an uncertain HTTP result. */
   async capture(scope: string, input: LocalEnvelope, href: string, continuation = true, preserveBytes = false): Promise<LocalAction> {
+    // Offline capture remains available in a legacy browser; coordinated replay
+    // and new start explicitly require Web Locks. Supported browsers serialize
+    // capture with replay and the complete sync/readiness/start barrier.
+    return globalThis.navigator?.locks ? withJournalLock(scope, () => this.captureLocked(scope, input, href, continuation, preserveBytes)) : this.captureLocked(scope, input, href, continuation, preserveBytes);
+  }
+  private async captureLocked(scope: string, input: LocalEnvelope, href: string, continuation: boolean, preserveBytes: boolean): Promise<LocalAction> {
     const original = structuredClone(input);
     return this.transaction('rw', [this.selection, this.partitions, this.downloads, this.actions, this.pending, this.counters, this.acknowledgements], async () => {
       const partition = await this.assertSelected(scope), context = original.context;
@@ -155,11 +169,24 @@ export class LocalWork extends Dexie {
     await this.transaction('rw', [this.selection, this.partitions, this.actions, this.pending, this.acknowledgements], async () => {
       await this.assertSelected(scope);
       const action = await this.actions.get([scope, result.receipt.actionId]);
-      if (!action || action.envelope.operationId !== result.operationId || !result.receipt.receiptId || result.receipt.evidenceStatus !== 'received') throw new Error('لم تصل إفادة خادم مطابقة؛ يبقى الإجراء محفوظًا.');
+      if (!action || action.envelope.operationId !== result.operationId || !result.receipt.receiptId || result.receipt.evidenceStatus !== 'received' || !['accepted', 'rejected', 'review-required'].includes(result.receipt.businessStatus)) throw new Error('لم تصل إفادة خادم مطابقة؛ يبقى الإجراء محفوظًا.');
+      const previous = await this.acknowledgements.get([scope, action.actionId]);
+      if (previous && JSON.stringify(previous.result.receipt) !== JSON.stringify(result.receipt)) throw new Error('تعارض في إفادة الخادم؛ لم تُستبدل الإفادة المحفوظة.');
       await this.acknowledgements.put({ scope, actionId: action.actionId, result, savedAt: new Date().toISOString() });
       // Accepted ordinary actions keep their overlay until an authoritative
       // download covers its revision. Other/rejected receipts remain inspectable.
       if (result.receipt.businessStatus !== 'accepted' || !offlineOperations.has(action.envelope.operationId)) await this.pending.delete([scope, action.actionId]);
+    });
+  }
+  /** Only after a fresh authoritative ended/view-only snapshot. All unreceived
+   * records remain; accepted overlays cannot keep a closed round alive. */
+  async retireConfirmedRound(scope: string, roundId: string) {
+    await this.transaction('rw', [this.selection, this.partitions, this.pending, this.acknowledgements, this.downloads], async () => {
+      await this.assertSelected(scope);
+      for (const effect of await this.pending.where('[scope+roundId]').equals([scope, roundId]).toArray()) {
+        if (await this.acknowledgements.get([scope, effect.actionId])) await this.pending.delete([scope, effect.actionId]);
+      }
+      await this.downloads.delete([scope, roundId]);
     });
   }
 }

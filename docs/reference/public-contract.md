@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P27 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. P27 adds native private OIDC forms, transactional source commands and public command status with a standalone two-way proof. Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P27 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. P27 adds native private OIDC forms, transactional source commands and public command status with a standalone two-way proof. P34 adds ordered original-ID replay, independent durable receipts, paged evidence and bounded explicit adoption; see [protocol](../ordered-replay.md) and [evidence](../phase-34-evidence.md). Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -11,6 +11,170 @@ Envelope payload objects are deliberately extensible at this stage. Feature owne
 P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membership, capability overrides and resource guards; P07 binds real OIDC sessions to those guards. AccessContext is a display snapshot, never request authority. P08 provides source-scoped provisioning/result retries and separate issuer status. P09 uses the same kernel for personal-tenant create/revise retries and scoped reads; P20 action.getResult covers scoped round execution/takeover records; P15 exposes round.getStartResult for start actions and P16 current.getResult for its own activity actions. See [P05 evidence](../phase-05-evidence.md), [permission contract](../authorization.md) and [session contract](../identity.md).
 
 ## Common schemas and envelopes
+
+### SyncBatch
+
+[Canonical definition](../../contracts/sync.schema.json#/$defs/Batch)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "action-envelope.v1.schema.json"
+      }
+    }
+  },
+  "required": [
+    "actions"
+  ],
+  "additionalProperties": false
+}
+```
+
+### SyncEntry
+
+[Canonical definition](../../contracts/sync.schema.json#/$defs/Entry)
+
+```json
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "received"
+        },
+        "result": {
+          "$ref": "action-result.v1.schema.json"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "result"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "waiting"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/Uuid"
+          }
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "dependencies"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "status": {
+          "const": "not-received"
+        },
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "actionId",
+        "status",
+        "code",
+        "message",
+        "retryable"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}
+```
+
+### SyncBatchResult
+
+[Canonical definition](../../contracts/sync.schema.json#/$defs/BatchResult)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/Entry"
+      }
+    }
+  },
+  "required": [
+    "results"
+  ],
+  "additionalProperties": false
+}
+```
+
+### SyncConflicts
+
+[Canonical definition](../../contracts/sync.schema.json#/$defs/Conflicts)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "$ref": "device-ownership.schema.json#/$defs/Evidence"
+      }
+    },
+    "nextActionId": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "items",
+    "nextActionId"
+  ],
+  "additionalProperties": false
+}
+```
 
 ### SourceStatus
 
@@ -15300,7 +15464,8 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
           "changed-pin",
           "already-adopted",
           "ended-round",
-          "claimed-handover"
+          "claimed-handover",
+          "unresolved-dependency"
         ]
       }
     },
@@ -15370,6 +15535,10 @@ Submit the ORIGINAL immutable execution envelope and action ID. This evidence-on
     },
     "recovery": {
       "$ref": "#/$defs/Recovery"
+    },
+    "taskLabel": {
+      "type": "string",
+      "description": "Authorized admitted task recipient label for human review; absent for non-task evidence."
     }
   },
   "required": [
@@ -19051,6 +19220,10 @@ Examples include designed fixtures and captured local API results; consult contr
 | local-started-download-v1 | local-work.schema.json#/$defs/Download | valid foundation shape |
 | local-immutable-capture-v1 | local-work.schema.json#/$defs/Action | valid foundation shape |
 | p33-plan-with-downloaded-road-context | planning.schema.json#/$defs/Plan | valid foundation shape |
+| p34-batch | sync.schema.json#/$defs/Batch | valid foundation shape |
+| p34-waiting | sync.schema.json#/$defs/Entry | valid foundation shape |
+| p34-mixed-results | sync.schema.json#/$defs/BatchResult | valid foundation shape |
+| p34-conflicts-empty | sync.schema.json#/$defs/Conflicts | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19206,5 +19379,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | p31-negative-round-activity-revision | workday-closure.schema.json#/$defs/RoundSummary | invalid (minimum) |
 | local-unsupported-download-format | local-work.schema.json#/$defs/Download | invalid (const) |
 | p33-plan-fabricated-road-provenance | planning.schema.json#/$defs/Plan | invalid (const) |
+| p34-empty-batch | sync.schema.json#/$defs/Batch | invalid (minItems) |
+| p34-batch-limit | sync.schema.json#/$defs/Batch | invalid (maxItems) |
+| p34-blanket-success | sync.schema.json#/$defs/BatchResult | invalid (required) |
+| p34-received-without-receipt | sync.schema.json#/$defs/Entry | invalid (required) |
 
 [Canonical example data](../../contracts/examples/README.md)

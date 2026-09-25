@@ -1,3 +1,4 @@
+import {DependencyPending} from '../commands/dependencies.js';
 import cookie from '@fastify/cookie';
 import type { FastifyInstance } from 'fastify';
 import type { Pool } from 'pg';
@@ -15,6 +16,7 @@ export async function outcomeRoutes(app:FastifyInstance,pool:Pool,config:AuthCon
  const query={type:'object',properties:{kind:{type:'string',enum:['personal','company']}},required:['kind'],additionalProperties:false};
  app.addHook('onRequest',async(_request,reply)=>{reply.header('Cache-Control','no-store').header('X-Content-Type-Options','nosniff');});
  app.setErrorHandler((error,_request,reply)=>{
+  if(error instanceof DependencyPending)return reply.status(409).send({error:{code:error.code,message:error.message}});
   if(error instanceof OutcomeError||error instanceof AccessDenied||error instanceof AuthError||error instanceof IdempotencyConflict)return reply.status(error.statusCode).send({error:{code:error.code,message:error.message}});
   if((error as {validation?:unknown}).validation)return reply.status(400).send({error:{code:'validation_failed',message:'راجع بيانات الطلب.'}});
   return reply.status(500).send({error:{code:'request_failed',message:'تعذر حفظ النتيجة؛ تحقّق من حالتها.'}});

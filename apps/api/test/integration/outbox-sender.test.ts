@@ -185,14 +185,14 @@ test('C: public HTTP reads, retry and paged replay are source scoped and expose 
 
 test('A upgrade: real P24 committed intent becomes discoverable without a new business write and retains its identity/payload',async()=>{
  const old=await createTestDatabase(),directory=await mkdtemp(join(tmpdir(),'tawsel-p25-upgrade-'));
- const files=(await readdir(new URL('../../../../db/migrations/',import.meta.url))).filter(n=>n.endsWith('.sql')&&!n.startsWith('0024_')&&!n.startsWith('0025_'));
+ const files=(await readdir(new URL('../../../../db/migrations/',import.meta.url))).filter(n=>n.endsWith('.sql')&&n<'0024_');
  const app=Fastify();
  try{
   for(const name of files)await copyFile(new URL(`../../../../db/migrations/${name}`,import.meta.url),join(directory,name));
   await migrate(old.pool,pathToFileURL(directory+'/'));
   await app.register(s=>provisioningRoutes(s,old.pool,{issuer:'https://issuer.fixture.invalid',operatorToken},writeProjection));await app.ready();
   const source=await bindSource(app,[]),before=(await old.pool.query('SELECT event_id,payload,created_at FROM tawsel.outbox_intents')).rows;
-  expect(before).toHaveLength(1);expect(await migrate(old.pool)).toEqual(['0024_outbox_delivery.sql','0025_consumer_checkpoints.sql']);
+  expect(before).toHaveLength(1);expect(await migrate(old.pool)).toEqual(['0024_outbox_delivery.sql','0025_consumer_checkpoints.sql','0026_replay_dependencies.sql']);
   const after=(await old.pool.query('SELECT event_id,payload,created_at FROM tawsel.outbox_intents')).rows;expect(after).toEqual(before);
   const queue=await new OutboxReads(old.pool).queue(`Bearer ${source.token}`,100);expect(queue.items).toHaveLength(1);expect(queue.items[0]).toMatchObject({eventId:before[0].event_id,status:'pending',aggregate:{recipientSequence:1}});
   await old.pool.query('INSERT INTO tawsel.outbox_endpoints(tenant_id,integration_id,url) VALUES($1,$2,$3)',[source.tenantId,source.integrationId,'https://receiver.fixture.invalid/events']);

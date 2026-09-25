@@ -6115,8 +6115,93 @@ paths:
           description: Missing consumer status credential
         "503":
           description: Consumer unavailable
+  /api/v1/sync/actions:
+    post:
+      operationId: sync.submitActions
+      summary: Replay immutable device actions independently
+      tags:
+        - Device ownership
+      security: &a1
+        - companySession: []
+        - personalSession: []
+      parameters:
+        - &a2
+          name: kind
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - personal
+              - company
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncBatch"
+      responses:
+        "200":
+          description: Per-action durable receipt is separate from business acceptance.
+            Missing or invalid entries are not acknowledged.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncBatchResult"
+        "400":
+          description: Malformed batch
+        "401":
+          description: Fresh same-account authentication required
+        "403":
+          description: Session or CSRF denied
+  /api/v1/sync/conflicts:
+    get:
+      operationId: sync.listConflicts
+      summary: Inspect own driver received conflicts on the current phone
+      tags:
+        - Device ownership
+      security: *a1
+      parameters:
+        - *a2
+        - name: deviceId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: afterActionId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Per-action durable receipt is separate from business acceptance.
+            Missing or invalid entries are not acknowledged.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncConflicts"
+        "401":
+          description: Authentication required
+        "403":
+          description: Own driver access required
 components:
   schemas:
+    SyncBatch:
+      $ref: ./sync.schema.json#/$defs/Batch
+    SyncEntry:
+      $ref: ./sync.schema.json#/$defs/Entry
+    SyncBatchResult:
+      $ref: ./sync.schema.json#/$defs/BatchResult
+    SyncConflicts:
+      $ref: ./sync.schema.json#/$defs/Conflicts
     SourceStatus:
       $ref: ./source.schema.json#/$defs/Status
     ConsumerProblem:
