@@ -10,4 +10,8 @@ run(['scripts/build-public-client.mjs']);
 const web = resolve('apps/web');
 run([resolve('node_modules/vite/bin/vite.js'), 'build'], web);
 run(['scripts/build-pwa.mjs'], web); run(['scripts/check-production.mjs'], web);
-run(['node_modules/@playwright/test/cli.js', 'test', '-c', process.argv.includes('--replay') ? 'playwright.replay.config.ts' : 'playwright.offline.config.ts']);
+if (process.argv.includes('--recovery')) {
+  const { build } = await import('vite');
+  await build({ configFile: false, build: { lib: { entry: resolve('scripts/offline-migration-browser.ts'), formats: ['es'], fileName: 'migration' }, outDir: resolve('.local/phase-35-browser-module'), emptyOutDir: false, minify: false } });
+}
+run(['node_modules/@playwright/test/cli.js', 'test', '-c', process.argv.includes('--recovery') ? 'playwright.recovery.config.ts' : process.argv.includes('--replay') ? 'playwright.replay.config.ts' : 'playwright.offline.config.ts']);

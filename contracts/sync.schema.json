@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/sync.schema.json",
   "title": "Ordered device replay and preserved conflicts",
+  "description": "Released schemaVersion/payloadVersion 1.0.0/1.0.0 readers remain available for retained queues. Unsupported pairs reject the outer request with unsupported_schema_version and no evidence receipt; keep original bytes/identity locally. No default translation or expiry-based purge. A durable received rejection/review is safe for account exit, independently of business acceptance.",
   "$defs": {
     "Batch": {
       "type": "object",

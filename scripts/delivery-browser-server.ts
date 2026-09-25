@@ -43,7 +43,7 @@ if (process.env.TAWSEL_REPLAY_FIXTURE === '1') {
   const grant = await send(company.app, company.source.token, company.source.command('role.defineCapabilities', { externalId: 'role', sourceRevision: 2, name: 'Driver', capabilities: ['execution.own', 'correction.own'] }));
   if (grant.statusCode !== 200) throw new Error('Replay fixture correction capability failed');
 }
-await company.task('ordinary-delivery', 'ordinary', 'held'); await company.save(); await runPlanningOnce(db.pool, engine.engine);
+await company.task('ordinary-delivery', 'ordinary', 'held', undefined, process.env.TAWSEL_RECOVERY_FIXTURE === '1' ? 3 : 1); await company.save(); await runPlanningOnce(db.pool, engine.engine);
 const auth = { origin: 'http://localhost:5173', encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer: companyIssuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: personalIssuer, clientId: 'tawsel-web', clientSecret: secrets.personal } } };
 const app = buildApp(createDatabasePool(db.config), auth);
 app.get('/__fixture/info', async () => ({ personalUser: personalUser.username, companyUser: companyUser.username, password: secrets.password, companyCode: company.source.code, personalDriverId: ids.personalDriver, companyDriverId: company.driverId }));
@@ -53,6 +53,10 @@ app.get('/__fixture/state', async () => ({
   actions: (await db.pool.query("SELECT operation_id,action_id,business_status FROM tawsel.command_identities WHERE operation_id LIKE 'current.%' OR operation_id LIKE 'outcome.%' OR operation_id='device.takeOver' ORDER BY received_at")).rows,
   history: (await db.pool.query('SELECT round_id,revision,operation_id,current_activity FROM tawsel.current_activity_history ORDER BY round_id,revision')).rows
 }));
+if (process.env.TAWSEL_RECOVERY_FIXTURE === '1') {
+  app.post('/__fixture/expire', async () => { await db.pool.query("UPDATE tawsel.web_sessions SET expires_at=now()-interval '1 second' WHERE kind='personal'"); return { expired: true }; });
+  app.get('/__fixture/migration-module', async (_request, reply) => reply.header('access-control-allow-origin', auth.origin).type('text/javascript').send(await readFile('.local/phase-35-browser-module/migration.js', 'utf8')));
+}
 await app.listen({ host: '127.0.0.1', port: 3029 });
 const stopFile = '.local/phase-29-browser.stop'; if (existsSync(stopFile)) await unlink(stopFile);
 let stopped = false; process.once('SIGTERM', () => { stopped = true; }); process.once('SIGINT', () => { stopped = true; });

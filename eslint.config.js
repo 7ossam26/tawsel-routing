@@ -23,6 +23,10 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser }
   },
   {
+    files: ['apps/web/public/update-gate.js'],
+    languageOptions: { globals: globals.serviceworker }
+  },
+  {
     files: ['scripts/**/*.mjs'],
     languageOptions: { globals: globals.node }
   },

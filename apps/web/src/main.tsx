@@ -40,7 +40,4 @@ async function renderApplication() {
 
 void renderApplication();
 
-// Updates wait for the normal worker lifecycle; never force activation/reload.
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  void navigator.serviceWorker.register('/sw.js').catch(() => undefined);
-}
+// Registration and explicit, pending-aware activation live in UpdateNotice.

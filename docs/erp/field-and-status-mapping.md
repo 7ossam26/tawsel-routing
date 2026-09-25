@@ -1,5 +1,15 @@
 # Field and status mapping — canonical foundation
 
+Phase 35 additions are locally verified through [connected and native-browser checks](../phase-35-evidence.md). Canonical ownership remains in the linked schemas, not this table.
+
+| Field/state | Consumer meaning |
+| --- | --- |
+| `LoginRequest.expectedAccount.tenantId/accountId` with `reauthenticate=true` | Restrict the real OIDC callback to this existing account. No authentication, execution or ERP service grant. [Session schema](../../contracts/session.schema.json). |
+| `receipt.evidenceStatus=received`, business rejected/review-required | Safe browser account exit is permitted; unresolved server evidence and original receipt survive. It is not an accepted outcome, reported collection or ERP application. |
+| `unsupported_schema_version` | No default translation/success; retain original bytes and IDs. Supported envelope/payload readers are explicitly `1.0.0/1.0.0`. [Sync schema](../../contracts/sync.schema.json). |
+| Local `Selection.exiting` / scoped `Draft` | Durable account fence and unsent form input, respectively; no ERP transport field or accepted progress. [Local schema](../../contracts/local-work.schema.json). |
+
+
 Phase 34 mapping is locally verified; canonical ownership remains in [sync.schema.json](../../contracts/sync.schema.json). A batch is a transport container, never one business transition.
 
 | Public/local field | Consumer meaning |

@@ -52,7 +52,7 @@ test('built PWA survives offline browser process restart, retains atomic evidenc
     context = await playwright.chromium.launchPersistentContext(profile, options); await context.setOffline(true); page = await context.newPage();
     await page.goto('/rounds/current?kind=personal'); await expect(page.getByText('محفوظ على الهاتف', { exact: true })).toBeVisible();
     expect(JSON.stringify((await journal(page)).actions)).toBe(serialized);
-    await page.getByRole('link', { name: 'مراجعة الإجراءات المحفوظة' }).click(); await expect(page.getByRole('heading', { name: 'محفوظ على الهاتف — لم يتأكد وصوله للخادم' })).toHaveCount(3);
+    await page.getByRole('link', { name: 'مراجعة الإجراءات المحفوظة' }).click(); await expect(page.getByRole('heading', { name: 'محفوظ على الهاتف', exact: true })).toHaveCount(3);
     await page.getByText('تفاصيل التشخيص').first().click(); await page.screenshot({ path: '.local/phase-34-capture-reopened-evidence.png', fullPage: true });
     // Controlled network fault keeps the P33 capture/guard assertions meaningful
     // now that P34 automatically replays on reconnect. No fake receipt is returned.

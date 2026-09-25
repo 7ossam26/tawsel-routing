@@ -130,7 +130,11 @@
     "test:replay": "npm run test:integration -- apps/api/test/integration/offline-device-takeover.test.ts",
     "test:browser:replay": "node scripts/offline-demo.mjs --replay",
     "replay:demo": "npm run test:browser:replay",
-    "test:erp:sync": "node --import tsx tests/erp-conformance/sync.ts"
+    "test:erp:sync": "node --import tsx tests/erp-conformance/sync.ts",
+    "test:offline-session-update": "npm run test:integration -- apps/api/test/integration/offline-session-update.test.ts --maxWorkers=1 --testTimeout=30000",
+    "test:browser:recovery": "node scripts/offline-demo.mjs --recovery",
+    "recovery:demo": "npm run test:browser:recovery",
+    "test:erp:recovery": "node --import tsx tests/erp-conformance/offline-recovery.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -104,7 +104,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 25 && ['integration.configureWebhook','integration.rotateSigningKey','integration.getDeliveryStatus','integration.getDeliveryDetail','integration.retryDelivery','integration.replayEvents'].includes(entry.id))
       || (entry.ownerPhase === 26 && ['integration.getReconciliationSnapshot','integration.reportAppliedCheckpoint','integration.getAppliedCheckpoint','consumer.receiveSignedEvent','consumer.applyInboxEvent','consumer.getStatus'].includes(entry.id))
       || (entry.ownerPhase === 27 && ['source.deliverCommandIntent','source.getCommandStatus'].includes(entry.id))
-      || ([29,33,34].includes(entry.ownerPhase) && entry.family === 'local-ui')
+      || ([29,33,34,35].includes(entry.ownerPhase) && entry.family === 'local-ui')
       || ['device.takeOver','device.getSnapshot','action.getResult','evidence.receiveFormerDevice','sync.getEvidenceReceipt','sync.submitActions','sync.listConflicts','device.executionTransferred','evidence.received','evidence.adoptionResolved'].includes(entry.id)
       || (entry.ownerPhase === 24 && entry.family === 'monitoring-history') || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);

@@ -31,7 +31,8 @@
     "src/monitoring.ts",
     "src/outbox.ts",
     "src/webhook-signature.ts",
-    "src/sync.ts"
+    "src/sync.ts",
+    "src/session.ts"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node ../../scripts/build-public-client.mjs",

@@ -435,6 +435,7 @@ paths:
     post:
       operationId: session.beginLogin
       summary: Begin OIDC authorization code / PKCE login.
+      description: Optional expectedAccount with reauthenticate=true restricts the verified callback to the server-resolved account, including after cookie loss. It grants no authentication or execution authority. Retain queued work on any failure; deliberately switching accounts requires the browser's durable exit gate.
       tags:
         - Sessions
       security: []

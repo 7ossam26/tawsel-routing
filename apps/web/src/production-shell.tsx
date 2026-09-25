@@ -11,7 +11,13 @@ import { MonitoringPage } from './monitoring-page';
 import { LocalWorkPage } from './local-status';
 import { useReplayLifecycle } from './replay-lifecycle';
 import { ConflictsPage } from './conflicts-page';
+import { AccountBoundary } from './account-boundary';
+import { UpdateNotice } from './update-notice';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
+  const privatePage = /^\/(sync|local-work|monitoring|execution|rounds|day|prepare|locations|tasks)(\/|$)/.test(location.pathname);
+  return <><UpdateNotice />{privatePage && !fixtureRouteRequested ? <AccountBoundary><ConnectedShell /></AccountBoundary> : <ConnectedShell fixtureRouteRequested={fixtureRouteRequested} />}</>;
+}
+function ConnectedShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
   const message = useReplayLifecycle(!fixtureRouteRequested && !window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/monitoring'));
   const kind = new URLSearchParams(location.search).get('kind') === 'company' ? 'company' : 'personal';
   return <>{message ? <aside className="sync-notice" dir="rtl" role="status">{message} <a href={'/local-work?kind=' + kind}>مراجعة المزامنة</a></aside> : null}<ProductionRoutes fixtureRouteRequested={fixtureRouteRequested} /></>;

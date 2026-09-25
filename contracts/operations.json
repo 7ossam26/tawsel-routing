@@ -1164,7 +1164,7 @@
       "id": "ui.reauthenticateSameAccount",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 35,
       "capability": "local",
       "description": "Preserve queue and invoke session login for its owning account."
@@ -1173,7 +1173,7 @@
       "id": "ui.switchAccount",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 35,
       "capability": "local",
       "description": "Block unsynchronized exit; otherwise use safe logout/login, no identity merge."
@@ -1182,7 +1182,7 @@
       "id": "ui.applySafeUpdate",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 35,
       "capability": "local",
       "description": "Apply versioned shell/storage update only at safe pending-work boundary."

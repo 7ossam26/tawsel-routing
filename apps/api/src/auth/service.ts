@@ -18,7 +18,7 @@ const messages = {
 export class AuthError extends Error {
   constructor(readonly code: keyof typeof messages, readonly statusCode = 400) { super(messages[code]); }
 }
-export interface LoginInput { kind: AccountKind; companyCode?: string; phone?: string; intent?: 'login' | 'register' | 'recover'; reauthenticate?: boolean }
+export interface LoginInput { kind: AccountKind; companyCode?: string; phone?: string; intent?: 'login' | 'register' | 'recover'; reauthenticate?: boolean; expectedAccount?: { tenantId: string; accountId: string } }
 interface Attempt { kind: AccountKind; tenant_id: string | null; company_code: string | null; verifier_cipher: string; nonce: string; expected_subject: string | null }
 interface TokenData { access: string; refresh: string; emailVerified: boolean; loginIdentifier: string }
 interface SessionRow { session_hash: string; kind: AccountKind; issuer: string; subject: string; company_code: string | null; token_cipher: string; token_expires_at: Date; expires_at: Date; reauth_until: Date; revoked: boolean }
@@ -44,7 +44,17 @@ export class Sessions {
     const { kind } = input;
     let code = input.companyCode;
     let expected: string | null = null;
-    if (input.reauthenticate) {
+    if (input.expectedAccount) {
+      if (!input.reauthenticate || input.intent === 'register') throw new AuthError('invalid_request');
+      // Caller-supplied IDs only narrow the allowed callback. They do not grant
+      // a session, reveal a username or bypass current membership checks.
+      const expectedRow = (await this.pool.query<{ subject: string; code: string | null }>(`SELECT i.subject,c.code FROM tawsel.identity_subjects i
+        JOIN tawsel.tenants t USING(tenant_id) LEFT JOIN tawsel.company_login_codes c USING(tenant_id)
+        WHERE i.tenant_id=$1 AND i.account_id=$2 AND i.issuer=$3 AND t.kind=$4 AND t.enabled`,
+      [input.expectedAccount.tenantId, input.expectedAccount.accountId, this.config.issuers[kind].issuer, kind])).rows[0];
+      if (!expectedRow) throw new AuthError('same_account_required', 403);
+      expected = expectedRow.subject; code = expectedRow.code ?? undefined;
+    } else if (input.reauthenticate) {
       const old = await this.pool.query<SessionRow>('SELECT * FROM tawsel.web_sessions WHERE session_hash=$1 AND kind=$2 AND reauth_until>now()', [hash(previous ?? ''), kind]);
       if (!old.rows[0]) throw new AuthError('session_expired', 401);
       expected = old.rows[0].subject;

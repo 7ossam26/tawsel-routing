@@ -2,7 +2,7 @@
 
 Generated from canonical OpenAPI 3.1.1 / JSON Schema 2020-12 by `npm run contracts:generate`.
 
-**P07–P27 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. P27 adds native private OIDC forms, transactional source commands and public command status with a standalone two-way proof. P34 adds ordered original-ID replay, independent durable receipts, paged evidence and bounded explicit adoption; see [protocol](../ordered-replay.md) and [evidence](../phase-34-evidence.md). Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
+**P07–P27 sessions, ERP provisioning, intake, confirmed locations, routing metadata, durable planning online round start and explicit current activity are implemented locally.** See [identity setup](../identity.md), [ERP consumer guidance](../erp/consumer-quickstart.md) and [planning/forecast semantics](../planning-jobs.md). Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references. P16 records explicit heading/arrival and physical origin; next remains a suggestion. P17 records exact whole-piece outcomes, reported collection and atomic progress with durable source intent. P18 adds explicit deferral/whole retry/driver urgency and preserves prior attempt fees. P19 adds explicit round/day closure, current-holder carry-forward, basic workday summaries and pending closure replay. P20 adds same-driver online takeover, generation snapshot tokens, consistent execution fencing, durable former-device evidence and dynamically constrained recovery metadata. P21 adds source-branch offers, actual subset receipt, separate disposition, current custody and claimed-subset confirmation. P22 adds visible branch segments, claimed-subset resume from confirmed branch origin and new dispatch cycles allocated only from actual receipts. P23 adds bounded driver correction and explicit compatible outcome adoption with preserved history and effective totals. P24 adds repeatable-read conditional scoped snapshots/history, distinct shipment/attempt/piece counters and server refresh/write timing. P25 adds durable signed delivery, scoped status/retry/replay and public signature verification; P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps. P27 adds native private OIDC forms, transactional source commands and public command status with a standalone two-way proof. P34 adds ordered original-ID replay, independent durable receipts, paged evidence and bounded explicit adoption; see [protocol](../ordered-replay.md) and [evidence](../phase-34-evidence.md). P35 adds same-account OIDC restrictions, durable account exit and pending-aware application/local upgrades; see [compatibility](../offline-account-updates.md) and [evidence](../phase-35-evidence.md). Live Engine evidence remains unavailable. Workspace `/health` is excluded. No production release or real ERP interoperability is claimed.
 
 [State model](../tracking-and-consistency.md) · [Operation ownership](../contract-coverage.md) · [UI action mapping (designed)](../ui-actions.md) · [Integration guide](../integration-guide.md) · [Canonical OpenAPI](../../contracts/openapi.yaml)
 
@@ -4198,8 +4198,47 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
     },
     "reauthenticate": {
       "type": "boolean"
+    },
+    "expectedAccount": {
+      "description": "P35 restriction for same-account OIDC recovery when the old cookie is unavailable. These public identity references confer no authentication or authorization. Callback must match the server-resolved subject and tenant; current access is still required.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "accountId"
+      ],
+      "properties": {
+        "tenantId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        "accountId": {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        }
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "expectedAccount"
+        ],
+        "properties": {
+          "expectedAccount": {}
+        }
+      },
+      "then": {
+        "required": [
+          "reauthenticate"
+        ],
+        "properties": {
+          "reauthenticate": {
+            "const": true
+          }
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -19224,6 +19263,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | p34-waiting | sync.schema.json#/$defs/Entry | valid foundation shape |
 | p34-mixed-results | sync.schema.json#/$defs/BatchResult | valid foundation shape |
 | p34-conflicts-empty | sync.schema.json#/$defs/Conflicts | valid foundation shape |
+| p35-same-account-recovery-fixture | session.schema.json#/$defs/LoginRequest | valid foundation shape |
+| p35-sealed-selection-fixture | local-work.schema.json#/$defs/Selection | valid foundation shape |
+| p35-scoped-form-draft-fixture | local-work.schema.json#/$defs/Draft | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19383,5 +19425,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | p34-batch-limit | sync.schema.json#/$defs/Batch | invalid (maxItems) |
 | p34-blanket-success | sync.schema.json#/$defs/BatchResult | invalid (required) |
 | p34-received-without-receipt | sync.schema.json#/$defs/Entry | invalid (required) |
+| p35-account-restriction-without-reauth | session.schema.json#/$defs/LoginRequest | invalid (required) |
+| p35-account-restriction-not-an-auth-grant | session.schema.json#/$defs/LoginRequest | invalid (additionalProperties) |
+| p35-unknown-payload-not-v1 | sync.schema.json#/$defs/Batch | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

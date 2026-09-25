@@ -4,25 +4,27 @@ import { localWork, type LocalAction, type PendingEffect } from './local-work';
 import { deviceId } from './independent-tasks';
 import { ActionButton, StatusNotice } from './components/ui';
 import { replaySelected, replayErrorMessage } from './replay-runtime';
+import { readLocalAction } from './action-reader';
+import { RecoveryLimits } from './recovery-limits';
 
 export async function assertNoLocalPending() {
   const selection = await localWork.selection.get('active');
-  if (selection && await localWork.pending.where('scope').equals(selection.scope).count()) throw new Error('يوجد عمل محفوظ على الهاتف ينتظر المزامنة. راجعه قبل بدء جولة أو تغيير الحساب.');
+  if (selection && (await localWork.unreceived(selection.scope)).length) throw new Error('يوجد عمل محفوظ على الهاتف ينتظر المزامنة. راجعه قبل بدء جولة أو تغيير الحساب.');
 }
 export function useLocalPending() {
-  const [state, setState] = useState<{ items: PendingEffect[]; kind: 'company' | 'personal' | null; error: string }>({ items: [], kind: null, error: '' });
+  const [state, setState] = useState<{ items: PendingEffect[]; unreceived: number; attention: number; kind: 'company' | 'personal' | null; error: string }>({ items: [], unreceived: 0, attention: 0, kind: null, error: '' });
   useEffect(() => {
     const subscription = liveQuery(async () => {
       const selection = await localWork.selection.get('active'), partition = selection && await localWork.partitions.get(selection.scope);
-      return { items: selection ? await localWork.pending.where('scope').equals(selection.scope).toArray() : [], kind: partition?.identity.kind ?? null };
-    }).subscribe({ next: value => setState({ ...value, error: '' }), error: () => setState({ items: [], kind: null, error: 'تعذر قراءة تخزين الهاتف؛ تحقق منه قبل المتابعة.' }) });
+      return { items: selection ? await localWork.pending.where('scope').equals(selection.scope).toArray() : [], unreceived: selection ? (await localWork.unreceived(selection.scope)).length : 0, attention: selection ? (await localWork.acknowledgements.where('scope').equals(selection.scope).toArray()).filter(a => a.result.receipt.businessStatus !== 'accepted').length : 0, kind: partition?.identity.kind ?? null };
+    }).subscribe({ next: value => setState({ ...value, error: '' }), error: () => setState({ items: [], unreceived: 0, attention: 0, kind: null, error: 'تعذر قراءة تخزين الهاتف؛ تحقق منه قبل المتابعة.' }) });
     return () => subscription.unsubscribe();
   }, []);
   return state;
 }
 export function LocalWorkPage() {
   const kind = new URLSearchParams(location.search).get('kind') === 'company' ? 'company' : 'personal';
-  const [actions, setActions] = useState<Array<{ action: LocalAction; state: string }>>([]), [error, setError] = useState(''), [busy, setBusy] = useState(false), [notice, setNotice] = useState('');
+  const [actions, setActions] = useState<Array<{ action: LocalAction; state: string; detail: string; label: string }>>([]), [error, setError] = useState(''), [busy, setBusy] = useState(false), [notice, setNotice] = useState('');
   useEffect(() => {
     const subscription = liveQuery(async () => {
       const partition = await localWork.active(kind, deviceId());
@@ -30,10 +32,16 @@ export function LocalWorkPage() {
       const rows = await localWork.actions.where('scope').equals(partition.scope).toArray();
       return Promise.all(rows.sort((a, b) => a.sequence - b.sequence).map(async action => {
         const ack = await localWork.acknowledgements.get([partition.scope, action.actionId]);
-        return { action, state: !ack ? 'محفوظ على الهاتف — لم يتأكد وصوله للخادم' : ack.result.receipt.businessStatus === 'accepted' ? 'مقبول من الخادم' : ack.result.receipt.businessStatus === 'rejected' ? 'وصل للخادم ولم يُقبل' : 'وصل للخادم ويحتاج مراجعة' };
+        const download = await localWork.downloads.get([partition.scope, action.roundId]);
+        const label = download?.current.targets.find(t => t.taskId === action.envelope.resources.taskId)?.recipientName ?? '';
+        let issue = ''; try { readLocalAction(action); } catch (e) { issue = e instanceof Error ? e.message : 'يحتاج الإجراء مراجعة.'; }
+        return { action, label, state: !ack ? issue ? 'يحتاج انتباهك' : 'محفوظ على الهاتف' : ack.result.receipt.businessStatus === 'accepted' ? 'مؤكّد من الخادم' : 'وصل ويحتاج مراجعة', detail: !ack ? issue || 'ينتظر الوصول للخادم.' : ack.result.receipt.businessStatus === 'accepted' ? 'النتيجة مقبولة.' : 'الخادم يحتفظ بالدليل. يمكنك الخروج بعد وصول بقية الإجراءات.' };
       }));
-    }).subscribe({ next: setActions, error: value => setError(value instanceof Error ? value.message : 'تعذر قراءة السجل.') });
+    }).subscribe({ next: setActions, error: value => { setActions([]); setError(value instanceof Error ? value.message : 'تعذر قراءة السجل.'); } });
     return () => subscription.unsubscribe();
   }, [kind]);
-  return <main className="tasks-shell" dir="rtl"><h1>الإجراءات المحفوظة على الهاتف</h1><ActionButton busy={busy} onClick={() => { setBusy(true); setError(''); void replaySelected(kind).then(report => setNotice(report?.remaining ? report.message || 'يوجد إجراء ينتظر المزامنة.' : 'اكتملت مزامنة الأدلة المتاحة.')).catch(e => setError(replayErrorMessage(e))).finally(() => setBusy(false)); }}>إعادة المزامنة</ActionButton>{notice ? <p role="status">{notice}</p> : null}<a className="edit-link" href={'/sync?kind=' + kind}>مراجعة الأدلة المستلمة من كل الهواتف</a><p>المحفوظ محليًا لا يظهر لمتابعة الشركة حتى يستقبله الخادم.</p><a href={'/rounds/current?kind=' + kind}>العودة للجولة</a>{error ? <StatusNotice tone="error" title="تعذر فتح السجل">{error}</StatusNotice> : null}{actions.map(({ action, state }) => <article className="current-stage-card" key={action.actionId}><h2>{state}</h2><p>وقت التسجيل: <bdi>{action.envelope.observation.observedAt ?? 'غير متاح'}</bdi> · دقة ساعة الهاتف غير مؤكدة</p><details><summary>تفاصيل التشخيص</summary><pre dir="ltr">{JSON.stringify({ actionId: action.actionId, operationId: action.envelope.operationId, sequence: action.sequence, dependencies: action.envelope.dependsOnActionIds, schemaVersion: action.envelope.schemaVersion, baseVersions: action.envelope.baseVersions, generation: action.envelope.context.kind === 'device' ? action.envelope.context.deviceGeneration : null }, null, 2)}</pre></details></article>)}{!actions.length && !error ? <p>لا توجد إجراءات محلية لهذا الحساب.</p> : null}</main>;
+  return <main className="tasks-shell" dir="rtl"><h1>الإجراءات المحفوظة على الهاتف</h1><ActionButton busy={busy} onClick={() => { setBusy(true); setError(''); void replaySelected(kind).then(report => setNotice(report?.remaining ? report.message || 'يوجد إجراء ينتظر المزامنة.' : 'اكتملت مزامنة الأدلة المتاحة.')).catch(e => setError(replayErrorMessage(e))).finally(() => setBusy(false)); }}>إعادة المزامنة</ActionButton>{notice ? <p role="status">{notice}</p> : null}<a className="edit-link" href={'/sync?kind=' + kind}>مراجعة الأدلة المستلمة من كل الهواتف</a><p>المحفوظ محليًا لا يظهر لمتابعة الشركة حتى يستقبله الخادم.</p><a href={'/rounds/current?kind=' + kind}>العودة للجولة</a>{error ? <StatusNotice tone="error" title="تعذر فتح السجل">{error}</StatusNotice> : null}{actions.map(({ action, state, detail, label }) => <article className="current-stage-card" key={action.actionId}><h2>{state}</h2><p><strong>{label}</strong> {operationName(action.envelope.operationId)}</p><p>{detail}</p><details><summary>تفاصيل التشخيص</summary><p>وقت التسجيل: <bdi>{action.envelope.observation.observedAt ?? 'غير متاح'}</bdi> · دقة ساعة الهاتف غير مؤكدة</p><pre dir="ltr">{JSON.stringify({ actionId: action.actionId, operationId: action.envelope.operationId, sequence: action.sequence, dependencies: action.envelope.dependsOnActionIds, schemaVersion: action.envelope.schemaVersion, payloadVersion: action.envelope.payloadVersion, baseVersions: action.envelope.baseVersions, generation: action.envelope.context.kind === 'device' ? action.envelope.context.deviceGeneration : null }, null, 2)}</pre></details></article>)}{!actions.length && !error ? <p>لا توجد إجراءات محلية لهذا الحساب.</p> : null}<RecoveryLimits kind={kind} /></main>;
+}
+function operationName(operation: string) {
+  return ({ 'current.selectHeading': 'الاتجاه للعميل', 'current.recordArrival': 'الوصول للعميل', 'outcome.recordFull': 'تسليم كامل', 'outcome.recordPartial': 'تسليم بعض القطع', 'outcome.recordRefusal': 'رفض الاستلام', 'outcome.recordNoAnswer': 'لم يرد العميل' } as Record<string, string>)[operation] ?? 'إجراء محفوظ';
 }

@@ -13,7 +13,7 @@ import { Branches } from '../branch/service.js';
 import { Returns } from '../returns/service.js';
 import { DependencyPending } from '../commands/dependencies.js';
 import { DeviceError, uuid } from '../devices/models.js';
-import { validateProtocol } from '../commands/validation.js';
+import { readQueuedAction } from '../commands/readers.js';
 import type { ActionEnvelope } from '../commands/kernel.js';
 
 type S = components['schemas'];
@@ -25,7 +25,7 @@ export class Synchronization {
     const { actions } = input as S['SyncBatch'];
     if (!actions.length || actions.length > 50) throw new DeviceError('validation_failed', 400, 'الحد الأقصى ٥٠ إجراء في الدفعة.');
     // Reject an invalid outer protocol without pretending to acknowledge evidence.
-    for (const c of actions) { try { validateProtocol('action-envelope', c); } catch { throw new DeviceError('validation_failed', 400, 'صيغة الإجراء غير صالحة؛ لم تُؤكد الدفعة.'); } if (c.context.kind !== 'device') throw new DeviceError('validation_failed', 400, 'المزامنة لإجراءات الهاتف فقط.'); }
+    for (const c of actions) { try { readQueuedAction(c); } catch (error) { if (error instanceof DeviceError) throw error; throw new DeviceError('validation_failed', 400, 'صيغة الإجراء غير صالحة؛ لم تُؤكد الدفعة.'); } if (c.context.kind !== 'device') throw new DeviceError('validation_failed', 400, 'المزامنة لإجراءات الهاتف فقط.'); }
     const results: S['SyncEntry'][] = [];
     for (const c of actions) {
       try { results.push({ actionId: c.actionId, status: 'received', result: await this.dispatch(principal, c) }); }

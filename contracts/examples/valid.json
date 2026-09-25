@@ -12638,5 +12638,44 @@
       "items": [],
       "nextActionId": null
     }
+  },
+  {
+    "id": "p35-same-account-recovery-fixture",
+    "schema": "session.schema.json#/$defs/LoginRequest",
+    "valid": true,
+    "data": {
+      "kind": "personal",
+      "reauthenticate": true,
+      "expectedAccount": {
+        "tenantId": "35000000-0000-4000-8000-000000000001",
+        "accountId": "35000000-0000-4000-8000-000000000002"
+      }
+    }
+  },
+  {
+    "id": "p35-sealed-selection-fixture",
+    "schema": "local-work.schema.json#/$defs/Selection",
+    "valid": true,
+    "data": {
+      "id": "active",
+      "scope": "[\"personal\",\"tenant\",\"account\",\"device\"]",
+      "exiting": true
+    }
+  },
+  {
+    "id": "p35-scoped-form-draft-fixture",
+    "schema": "local-work.schema.json#/$defs/Draft",
+    "valid": true,
+    "data": {
+      "scope": "[\"personal\",\"tenant\",\"account\",\"device\"]",
+      "key": "tawsel:exception:tenant:account:attempt:1:partial",
+      "value": {
+        "quantities": {
+          "shirt": "1"
+        },
+        "outcome": "partial"
+      },
+      "savedAt": "2026-09-25T08:00:00Z"
+    }
   }
 ]

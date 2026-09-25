@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.tawsel.invalid/v1/local-work.schema.json",
-  "title": "P33 browser-local storage records v1",
-  "description": "Local storage format only, never an HTTP acceptance or authorization grant. IndexedDB schema 1; immutable action schema/payload v1. Preserve unknown/newer data, stop writes and ask for a compatible application; never delete/recreate or expire pending records.",
+  "title": "Browser-local records: retained v1 and additive P35 schema 2",
+  "description": "Local format only, never HTTP acceptance or authorization. Dexie schema 2 adds scoped form drafts and an atomic health marker while preserving all v1 actions, downloads, counters, projections and receipts. Native IndexedDB versions are 10 and 20. selection.exiting fences access/capture before logout; endedSession prevents an old context from reopening an exited partition. Unknown/newer data is retained; there is no deletion or 24-hour purge.",
   "$defs": {
     "Download": {
       "type": "object",
@@ -201,6 +201,51 @@
         "savedAt"
       ],
       "additionalProperties": false
+    },
+    "Selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "scope"
+      ],
+      "properties": {
+        "id": {
+          "const": "active"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exiting": {
+          "type": "boolean",
+          "description": "Durable exit in progress; no local capture, cached display or automatic reselection until remote logout completes."
+        }
+      }
+    },
+    "Draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "key",
+        "value",
+        "savedAt"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "savedAt": {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        }
+      }
     }
   }
 }

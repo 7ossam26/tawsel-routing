@@ -517,3 +517,8 @@ h2 { line-height: 1.55; }
  .current-stage-card pre { max-width: 100%; overflow: auto; font-size: .8rem; text-align: left; }
 
 .sync-notice { max-width: 52rem; margin: 1rem auto 0; padding: .8rem 1rem; border-radius: 1rem; background: var(--surface, #fff); border: 1px solid #ddd; line-height: 1.8; }
+.sync-notice > a, .sync-notice > .action-button { display: block; margin-block-start: .5rem; }
+.recovery-limits { margin-block: 1.5rem 0; line-height: 1.8; }
+.recovery-limits summary { cursor: pointer; font-weight: 700; padding-block: .5rem; }
+.recovery-limits .edit-link { display: block; margin-block-start: .4rem; }
+.current-stage-card pre { overflow-wrap: anywhere; white-space: pre-wrap; }

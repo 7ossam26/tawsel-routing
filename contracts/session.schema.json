@@ -11,8 +11,9 @@
       "companyCode": { "type": "string", "pattern": "^[A-Za-z0-9-]{2,32}$" },
       "phone": { "type": "string", "minLength": 8, "maxLength": 40 },
       "intent": { "type": "string", "enum": ["login", "register", "recover"] },
-      "reauthenticate": { "type": "boolean" }
-    } },
+      "reauthenticate": { "type": "boolean" },
+      "expectedAccount": { "description": "P35 restriction for same-account OIDC recovery when the old cookie is unavailable. These public identity references confer no authentication or authorization. Callback must match the server-resolved subject and tenant; current access is still required.", "type": "object", "additionalProperties": false, "required": ["tenantId", "accountId"], "properties": { "tenantId": { "$ref": "./common.schema.json#/$defs/Uuid" }, "accountId": { "$ref": "./common.schema.json#/$defs/Uuid" } } }
+    }, "allOf": [{ "if": { "required": ["expectedAccount"], "properties": { "expectedAccount": {} } }, "then": { "required": ["reauthenticate"], "properties": { "reauthenticate": { "const": true } } } }] },
     "RedirectResponse": { "type": "object", "additionalProperties": false, "required": ["authorizationUrl"], "properties": { "authorizationUrl": { "type": "string", "format": "uri" } } },
     "BootstrapResponse": { "type": "object", "additionalProperties": false, "required": ["csrfToken"], "properties": { "csrfToken": { "type": "string", "minLength": 43, "maxLength": 43 } } },
     "CallbackQuery": { "type": "object", "additionalProperties": false, "required": ["state"], "properties": { "state": { "type": "string", "minLength": 43, "maxLength": 43 }, "code": { "type": "string", "minLength": 1, "maxLength": 2048 }, "iss": { "type": "string", "maxLength": 2048 }, "session_state": { "type": "string", "maxLength": 512 }, "error": { "type": "string", "maxLength": 128 }, "error_description": { "type": "string", "maxLength": 1024 } } },

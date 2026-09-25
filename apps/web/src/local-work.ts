@@ -1,6 +1,8 @@
-import { Dexie, type Table } from 'dexie';
+import { Dexie, type Table, type Transaction } from 'dexie';
 import type { components } from '@tawsel/api-client';
 import { withJournalLock } from './journal-lock.js';
+import { installLocalSchema, localSchemaVersion } from './local-schema.js';
+import { readLocalAction } from './action-reader.js';
 
 type S = components['schemas'];
 export type LocalScope = { kind: 'company' | 'personal'; tenantId: string; accountId: string; deviceId: string };
@@ -11,7 +13,8 @@ export type Download = {
   current: S['CurrentSnapshot']; outcomes: S['OutcomeSnapshot']; plan: S['PlanningPlan'] | null;
   road: S['RoutingRouteResult'] | null;
 };
-type Partition = { scope: string; identity: LocalScope; session: S['SessionContext']; blocked: boolean };
+type Partition = { scope: string; identity: LocalScope; session: S['SessionContext']; blocked: boolean; endedSession?: string };
+type Selection = { id: 'active'; scope: string; exiting?: boolean };
 export type LocalAction = { scope: string; actionId: string; sequence: number; roundId: string; envelope: LocalEnvelope; bytes: string; capturedAt: string; href: string };
 export type PendingEffect = { scope: string; actionId: string; sequence: number; roundId: string; operationId: string; taskId: string | null; href: string };
 export type Acknowledgement = { scope: string; actionId: string; result: S['ActionResult']; savedAt: string };
@@ -21,29 +24,33 @@ export const scopeKey = (scope: LocalScope) => JSON.stringify([scope.kind, scope
 export const sessionScope = (session: S['SessionContext'], deviceId: string): LocalScope => ({ kind: session.kind, tenantId: session.access.tenantId, accountId: session.access.sourceId, deviceId });
 export class LocalWork extends Dexie {
   partitions!: Table<Partition, string>;
-  selection!: Table<{ id: 'active'; scope: string }, string>;
+  selection!: Table<Selection, string>;
   downloads!: Table<Download, [string, string]>;
   actions!: Table<LocalAction, [string, string]>;
   pending!: Table<PendingEffect, [string, string]>;
   acknowledgements!: Table<Acknowledgement, [string, string]>;
   counters!: Table<{ scope: string; sequence: number }, string>;
   health!: Table<{ id: string; value: string }, string>;
-  constructor(name = 'tawsel-local-work') {
+  drafts!: Table<{ scope: string; key: string; value: unknown; savedAt: string }, [string, string]>;
+  constructor(name = 'tawsel-local-work', afterUpgrade?: (tx: Transaction) => void | Promise<void>) {
     super(name, { chromeTransactionDurability: 'strict' });
-    this.version(1).stores({
-      partitions: '&scope', selection: '&id', downloads: '&[scope+roundId],scope',
-      actions: '&[scope+actionId],&[scope+sequence],scope,[scope+roundId]',
-      pending: '&[scope+actionId],scope,[scope+roundId]',
-      acknowledgements: '&[scope+actionId],scope', counters: '&scope', health: '&id'
+    installLocalSchema(this, afterUpgrade);
+    this.on('ready', () => {
+      if (this.backendDB().version > localSchemaVersion * 10) throw new Error('تخزين الهاتف أحدث من هذا التطبيق. افتح النسخة الأحدث؛ لم تُحذف البيانات.');
     });
     // A future reader must not delete/recreate an incompatible database.
   }
   async select(session: S['SessionContext'], deviceId: string) {
     const identity = sessionScope(session, deviceId), scope = scopeKey(identity);
-    await this.transaction('rw', [this.selection, this.partitions, this.pending], async () => {
+    await this.transaction('rw', [this.selection, this.partitions, this.actions, this.acknowledgements, this.pending], async () => {
       const previous = await this.selection.get('active');
-      if (previous && previous.scope !== scope && await this.pending.where('scope').equals(previous.scope).count()) throw new Error('يوجد عمل محفوظ لحساب آخر ينتظر المزامنة. عُد للحساب نفسه.');
-      await this.partitions.put({ scope, identity, session, blocked: false });
+      const partition = await this.partitions.get(scope);
+      // An in-flight context response from a logged-out session must not reopen
+      // its cache. Equal expiry values fail closed; they never grant access.
+      if (previous?.exiting || partition?.endedSession === session.expiresAt) throw new Error('أكمل تسجيل الخروج ثم سجّل الدخول من جديد.');
+      if (previous && previous.scope !== scope && (await this.unreceived(previous.scope)).length) throw new Error('يوجد عمل محفوظ لحساب آخر ينتظر المزامنة. عُد للحساب نفسه.');
+      if (previous && previous.scope !== scope) throw new Error('سجّل الخروج من الحساب المحفوظ قبل فتح حساب آخر.');
+      await this.partitions.put({ ...partition, scope, identity, session, blocked: false });
       await this.selection.put({ id: 'active', scope });
     });
     return scope;
@@ -51,11 +58,11 @@ export class LocalWork extends Dexie {
   async active(kind: LocalScope['kind'], deviceId: string) {
     const selected = await this.selection.get('active');
     const partition = selected && await this.partitions.get(selected.scope);
-    return partition && !partition.blocked && partition.identity.kind === kind && partition.identity.deviceId === deviceId ? partition : null;
+    return partition && !selected?.exiting && !partition.blocked && partition.identity.kind === kind && partition.identity.deviceId === deviceId ? partition : null;
   }
   async assertSelected(scope: string) {
     const selected = await this.selection.get('active'), partition = await this.partitions.get(scope);
-    if (selected?.scope !== scope || !partition || partition.blocked) throw new Error('الحساب المحلي غير متاح. افتح الحساب نفسه عبر الاتصال.');
+    if (selected?.scope !== scope || selected.exiting || !partition || partition.blocked) throw new Error('الحساب المحلي غير متاح. افتح الحساب نفسه عبر الاتصال.');
     return partition;
   }
   async blockSelected() {
@@ -64,13 +71,38 @@ export class LocalWork extends Dexie {
       if (selected) await this.partitions.update(selected.scope, { blocked: true });
     });
   }
-  async exit() {
-    await this.transaction('rw', [this.selection, this.pending], async () => {
+  /** Includes orphaned overlays as a conservative guard. Business rejection is
+   * received evidence, whereas a missing/unsaved receipt is still unsynchronized. */
+  async unreceived(scope?: string) {
+    const actions = scope ? await this.actions.where('scope').equals(scope).toArray() : await this.actions.toArray();
+    const effects = scope ? await this.pending.where('scope').equals(scope).toArray() : await this.pending.toArray();
+    const candidates = new Map([...actions, ...effects].map(a => [JSON.stringify([a.scope, a.actionId]), a]));
+    const missing = [];
+    for (const action of candidates.values()) {
+      const ack = await this.acknowledgements.get([action.scope, action.actionId]);
+      if (!ack || ack.result.receipt.evidenceStatus !== 'received') missing.push(action);
+    }
+    return missing;
+  }
+  async prepareExit() {
+    return this.transaction('rw', [this.selection, this.partitions, this.actions, this.pending, this.acknowledgements], async () => {
       const selected = await this.selection.get('active');
-      if (selected && await this.pending.where('scope').equals(selected.scope).count()) throw new Error('يوجد عمل محفوظ على الهاتف ينتظر المزامنة. راجعه قبل الخروج أو تغيير الحساب.');
+      if (!selected) return;
+      if ((await this.unreceived(selected.scope)).length) throw new Error('يوجد عمل محفوظ على الهاتف ينتظر المزامنة. راجعه قبل الخروج أو تغيير الحساب.');
+      const partition = await this.partitions.get(selected.scope);
+      if (partition) await this.partitions.update(selected.scope, { blocked: true, endedSession: partition.session.expiresAt });
+      await this.selection.put({ ...selected, exiting: true });
+      return selected.scope;
+    });
+  }
+  async finishExit(scope: string | undefined) {
+    await this.transaction('rw', this.selection, async () => {
+      const selected = await this.selection.get('active');
+      if (selected && (selected.scope !== scope || !selected.exiting)) throw new Error('تغيّر الحساب أثناء الخروج. أعد المحاولة.');
       await this.selection.delete('active');
     });
   }
+  async exit() { await this.finishExit(await this.prepareExit()); }
   async saveDownload(value: Download) {
     await this.transaction('rw', [this.selection, this.partitions, this.downloads, this.pending, this.acknowledgements], async () => {
       const partition = await this.assertSelected(value.scope), { current, ownership, session } = value;
@@ -115,6 +147,7 @@ export class LocalWork extends Dexie {
     const projected: LocalEnvelope[] = [], blocked = new Set<string>();
     for (const value of commands) {
       if (!value) continue;
+      readLocalAction(value);
       const deps = await Promise.all(value.envelope.dependsOnActionIds.map(id => this.acknowledgements.get([download.scope, id])));
       if (value.envelope.dependsOnActionIds.some(id => blocked.has(id)) || deps.some(ack => ack && ack.result.receipt.businessStatus !== 'accepted')) { blocked.add(value.actionId); continue; }
       projected.push(value.envelope);

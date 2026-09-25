@@ -1,0 +1,14 @@
+{
+  "label": "Frozen released P33/P34 Dexie v1 schema (native IndexedDB version 10). Fixture data is captured through real feature services; this descriptor is independent of the current migration code.",
+  "version": 1,
+  "stores": {
+    "partitions": "&scope",
+    "selection": "&id",
+    "downloads": "&[scope+roundId],scope",
+    "actions": "&[scope+actionId],&[scope+sequence],scope,[scope+roundId]",
+    "pending": "&[scope+actionId],scope,[scope+roundId]",
+    "acknowledgements": "&[scope+actionId],scope",
+    "counters": "&scope",
+    "health": "&id"
+  }
+}

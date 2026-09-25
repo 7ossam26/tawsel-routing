@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MonitoringClient, MonitoringPage as MonitoringRequest, MonitoringRead } from '@tawsel/api-client/src/monitoring';
 import { MonitoringRefreshController, type RefreshState, type Snapshot } from '../../src/monitoring-refresh';
-import { MonitoringPage } from '../../src/monitoring-page';
+import { ProductionShell } from '../../src/production-shell';
 
 const ids = { driver: '10000000-0000-4000-8000-000000000001', task: '10000000-0000-4000-8000-000000000002', attempt: '10000000-0000-4000-8000-000000000003', round: '10000000-0000-4000-8000-000000000004', day: '10000000-0000-4000-8000-000000000005', branch: '10000000-0000-4000-8000-000000000006', source: '10000000-0000-4000-8000-000000000007', action: '10000000-0000-4000-8000-000000000008', task2: '10000000-0000-4000-8000-000000000009', source2: '10000000-0000-4000-8000-000000000010', attempt2: '10000000-0000-4000-8000-000000000011' };
 const progress = { shipments: 1, attempts: 1, processedAttempts: 0, processedShipments: 0, fullDeliveredShipments: 0, partialShipments: 0, failedShipments: 0, remainingShipments: 1 };
@@ -71,10 +71,11 @@ describe('monitoring refresh controller', () => {
 });
 
 it('renders only the scoped task, read-only departed detail, and server-received action filters', async () => {
-  vi.useRealTimers(); window.history.replaceState({}, '', `/monitoring?kind=company&driverId=${ids.driver}`);
+  vi.useRealTimers(); window.history.replaceState({}, '', `/monitoring?driverId=${ids.driver}`);
   const hidden = 'SECRET RECIPIENT';
   vi.spyOn(globalThis, 'fetch').mockImplementation(async input => {
     const url = String(input);
+    if (url.includes('/session/context?kind=personal')) return Response.json({ error: { code: 'session_expired', message: 'No personal session in this staff fixture' } }, { status: 401 });
     if (url.includes('/session/context')) return Response.json({ kind: 'company', access: { tenantId: ids.driver, sourceId: ids.source, principalKind: 'account', tenantKind: 'company', driverId: null, branchIds: [ids.branch], effectiveCapabilities: ['monitor.read'] }, expiresAt: '2026-09-26T00:00:00Z', recoveryEmailVerified: true, loginIdentifier: 'staff', phoneOwnershipVerified: false });
     if (url.includes(`/tasks/${ids.task2}/history`)) return new Response(JSON.stringify({ scopeKey: 'history-2', snapshotRevision: 1, lastCommittedChange: null, freshness: { refreshedAt: '2026-09-25T00:00:02Z', receivedEvidenceOnly: true, deviceContactAt: null, lastReceivedActionAt: null, integrationDelivery: 'unavailable' }, nextCursor: null, resourceId: ids.task2, progress, items: [] }), { headers: { 'Content-Type': 'application/json', ETag: '"history-2.1"', 'X-Snapshot-Scope': 'history-2', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-25T00:00:02Z' } });
     if (url.includes(`/tasks/${ids.task}/history`)) return new Response(JSON.stringify({ scopeKey: 'history', snapshotRevision: 1, lastCommittedChange: null, freshness: { refreshedAt: '2026-09-25T00:00:02Z', receivedEvidenceOnly: true, deviceContactAt: null, lastReceivedActionAt: '2026-09-25T00:00:01Z', integrationDelivery: 'unavailable' }, nextCursor: null, resourceId: ids.task, progress, items: [{ kind: 'action', action: { sourceId: ids.source, actionId: ids.action, operationId: 'outcome.recordFull', receivedAt: '2026-09-25T00:00:01Z', acceptedAt: '2026-09-25T00:00:01Z', businessStatus: 'accepted' } }] }), { headers: { 'Content-Type': 'application/json', ETag: '"history.1"', 'X-Snapshot-Scope': 'history', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-25T00:00:02Z' } });
@@ -85,7 +86,7 @@ it('renders only the scoped task, read-only departed detail, and server-received
     }
     throw new Error(url);
   });
-  render(<MonitoringPage />); await screen.findByText('عميل ظاهر'); await screen.findByText('outcome.recordFull');
+  render(<ProductionShell />); await screen.findByText('عميل ظاهر'); await screen.findByText('outcome.recordFull');
   expect(screen.getByText('الجولة غادرت — التنفيذ للقراءة فقط')).toBeTruthy(); expect(document.body.textContent).not.toContain(hidden); expect(screen.queryByRole('button', { name: /تسليم|وصلت|رفض/ })).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'مرفوض' })); await waitFor(() => expect(screen.getByText('لا توجد إجراءات مستلمة بهذه الحالة.')).toBeTruthy());
   await userEvent.selectOptions(screen.getByLabelText('المصدر'), ids.source2); expect((await screen.findAllByText('عميل مصدر ثان')).length).toBeGreaterThan(0); expect(screen.queryByText('عميل ظاهر')).toBeNull();

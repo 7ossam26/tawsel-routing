@@ -5,6 +5,7 @@ import { LocalWork, scopeKey } from '../../src/local-work';
 import type { components } from '@tawsel/api-client';
 import { downloadedFixture, headingFixture, localIds } from './local-work-fixture';
 import { reconcileExecutionPointers } from '../../src/execution-pointers';
+import { loadLocalDraft, saveLocalDraft } from '../../src/local-drafts';
 
 describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => {
   let db: LocalWork;
@@ -14,7 +15,7 @@ describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => 
     const downloaded = downloadedFixture(); await db.saveDownload(downloaded); db.close(); await db.open();
     expect((await db.downloaded('personal', localIds.device))?.current.targets[0]?.recipientName).toBe('عميل محفوظ');
     expect(await db.downloaded('company', localIds.device)).toBeNull(); expect(await db.downloaded('personal', crypto.randomUUID())).toBeNull();
-    const other = structuredClone(downloaded.session); other.access.sourceId = crypto.randomUUID(); await db.select(other, localIds.device);
+    const other = structuredClone(downloaded.session); other.access.sourceId = crypto.randomUUID(); await db.exit(); await db.select(other, localIds.device);
     expect(await db.downloaded('personal', localIds.device)).toBeNull();
   });
   it('refuses drafts, ended rounds, missing takeover download and stale snapshot versions', async () => {
@@ -28,6 +29,14 @@ describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => 
     expect(scopeKey({ kind: 'company', tenantId: 'a:b', accountId: 'c', deviceId: 'd' })).not.toBe(scopeKey({ kind: 'company', tenantId: 'a', accountId: 'b:c', deviceId: 'd' }));
     await db.saveDownload(downloadedFixture()); await db.blockSelected(); expect(await db.downloaded('personal', localIds.device)).toBeNull();
     expect(await db.downloads.count()).toBe(1);
+  });
+  it('retains a scoped form draft across reopen and hides it after account exit/switch', async () => {
+    const key = `tawsel:exception:${localIds.tenant}:${localIds.account}:${localIds.attempt}:1:partial`;
+    await saveLocalDraft(key, { quantities: { shirt: '2' }, outcome: 'partial' }, db); db.close(); await db.open();
+    expect(await loadLocalDraft(key, db)).toEqual({ quantities: { shirt: '2' }, outcome: 'partial' });
+    await db.exit(); expect(await loadLocalDraft(key, db)).toBeNull();
+    const other = structuredClone(downloadedFixture().session); other.access.sourceId = crypto.randomUUID(); await db.select(other, localIds.device);
+    await expect(loadLocalDraft(key, db)).rejects.toThrow('آخر'); expect(await db.drafts.count()).toBe(1);
   });
   it('commits immutable bytes and pending projection together; saved changes never replace confirmed state', async () => {
     const download = downloadedFixture(); await db.saveDownload(download);

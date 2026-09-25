@@ -23,7 +23,9 @@ describe('independent intake client fixture', () => {
     expect(screen.getByText('اسم المستلم مطلوب.')).toBeTruthy();
     expect(screen.getByText('رقم الهاتف مطلوب.')).toBeTruthy();
     expect(screen.getByText('العنوان مطلوب حتى يمكن حفظ المهمة.')).toBeTruthy();
-    expect(fetch).toHaveBeenCalledTimes(2);
+    // The account boundary also revalidates context. Missing required fields
+    // must prevent every write, regardless of the number of safe read requests.
+    expect(fetch.mock.calls.filter(([, init]) => init?.method === 'POST')).toHaveLength(0);
   });
 
   it('retains input across a lost response, retry and list/back navigation while reusing the action ID', async () => {

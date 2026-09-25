@@ -1,6 +1,8 @@
 import type { components } from '@tawsel/api-client';
 import { LocalWork, scopeKey, sessionScope, type LocalEnvelope } from './local-work.js';
 import { withJournalLock } from './journal-lock.js';
+import { bindSession } from './account-lifecycle.js';
+import { readLocalAction } from './action-reader.js';
 
 type S = components['schemas'];
 export interface ReplayTransport {
@@ -34,7 +36,7 @@ export class ReplayCoordinator {
     if (!partition || (await this.store.selection.get('active'))?.scope !== scope) throw new Error('افتح الحساب الذي حفظ هذه الإجراءات.');
     const session = await this.transport.session();
     if (scopeKey(sessionScope(session, partition.identity.deviceId)) !== scope) throw new Error('سجّل الدخول للحساب نفسه؛ لم تُرسل إجراءات الحساب المحفوظ.');
-    await this.store.select(session, partition.identity.deviceId);
+    await bindSession(this.store, session, partition.identity.deviceId);
     const report: ReplayReport = { received: 0, remaining: 0, review: 0, message: '' };
     const attempted = new Set<string>();
     while (true) {
@@ -43,7 +45,7 @@ export class ReplayCoordinator {
       const ready: LocalEnvelope[] = [];
       for (const action of unsent) {
         if (await this.store.acknowledgements.get([scope, action.actionId])) continue;
-        if (action.bytes !== JSON.stringify(action.envelope) || action.envelope.schemaVersion !== '1.0.0' || action.envelope.payloadVersion !== '1.0.0') throw new Error('صيغة الإجراء المحفوظ غير مدعومة؛ بقي السجل دون تغيير.');
+        readLocalAction(action);
         let missing = false;
         for (const id of action.envelope.dependsOnActionIds) {
           if (await this.store.acknowledgements.get([scope, id])) continue;
