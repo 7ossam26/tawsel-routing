@@ -7078,5 +7078,56 @@
         }
       ]
     }
+  },
+  {
+    "id": "report-no-invented-actual",
+    "schema": "reporting.schema.json#/$defs/Time",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "status": "available",
+      "observedAt": null,
+      "recordedAt": null,
+      "actionId": null,
+      "clock": null
+    }
+  },
+  {
+    "id": "report-null-needs-reason",
+    "schema": "reporting.schema.json#/$defs/Measurement",
+    "valid": false,
+    "keyword": "oneOf",
+    "data": {
+      "seconds": null,
+      "reason": null
+    }
+  },
+  {
+    "id": "report-money-is-exact",
+    "schema": "reporting.schema.json#/$defs/Collection",
+    "valid": false,
+    "keyword": "type",
+    "data": {
+      "currency": "EGP",
+      "exponent": 2,
+      "reportedMinor": 25000,
+      "goodsMinor": "20000",
+      "shippingMinor": "5000",
+      "unpaidShippingMinor": "0",
+      "unreportedAttempts": 0
+    }
+  },
+  {
+    "id": "report-no-cross-tenant-filter",
+    "schema": "reporting.schema.json#/$defs/Filters",
+    "valid": false,
+    "keyword": "additionalProperties",
+    "data": {
+      "roundId": null,
+      "driverId": null,
+      "branchId": null,
+      "outcome": "partial",
+      "tenantId": "60000000-0000-4000-8000-000000000001"
+    }
   }
 ]

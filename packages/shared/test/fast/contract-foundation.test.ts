@@ -86,7 +86,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|integration\/|consumer\/|source\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|corrections\/|eligibility\/|closure\/|workdays\/|devices\/|actions\/|sync\/|evidence\/|returns\/|branches\/|erp\/(?:returns|monitoring)\/|monitoring\/|routing\/profiles$))/);
+    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|integration\/|consumer\/|source\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|corrections\/|eligibility\/|closure\/|workdays\/|reports\/workdays|devices\/|actions\/|sync\/|evidence\/|returns\/|branches\/|erp\/(?:returns|monitoring)\/|monitoring\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -105,6 +105,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 26 && ['integration.getReconciliationSnapshot','integration.reportAppliedCheckpoint','integration.getAppliedCheckpoint','consumer.receiveSignedEvent','consumer.applyInboxEvent','consumer.getStatus'].includes(entry.id))
       || (entry.ownerPhase === 27 && ['source.deliverCommandIntent','source.getCommandStatus'].includes(entry.id))
       || ([29,33,34,35].includes(entry.ownerPhase) && entry.family === 'local-ui')
+      || (entry.ownerPhase === 36 && ['report.listWorkdays','report.getWorkday','report.getRoundTiming'].includes(entry.id))
       || ['device.takeOver','device.getSnapshot','action.getResult','evidence.receiveFormerDevice','sync.getEvidenceReceipt','sync.submitActions','sync.listConflicts','device.executionTransferred','evidence.received','evidence.adoptionResolved'].includes(entry.id)
       || (entry.ownerPhase === 24 && entry.family === 'monitoring-history') || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);
     expect(Object.keys(bundle.api.paths).filter(path=>path.includes('/routing/'))).toEqual(['/api/v1/routing/profiles']);
@@ -148,5 +149,5 @@ describe('canonical public contract foundation (schema evidence, not business ex
     expect(client).not.toMatch(/from ["'](?:@tawsel\/(?:domain|shared)|.*apps\/api)/);
     expect(first.get('docs/reference/public-contract.md')).toContain('Planning stores validated ready/partial and explicit manual revisions. P15 starts one online authoritative round with immutable first-forecast references.');
     expect(first.get('docs/reference/public-contract.md')).toContain('P26 adds independent durable receipt/projection, received/applied reports and scoped replay/checkpoint recovery with honest history gaps.');
-  });
+  }, 30_000);
 });

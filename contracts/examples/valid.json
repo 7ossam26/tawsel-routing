@@ -12677,5 +12677,85 @@
       },
       "savedAt": "2026-09-25T08:00:00Z"
     }
+  },
+  {
+    "id": "report-Counts",
+    "schema": "reporting.schema.json#/$defs/Counts",
+    "valid": true,
+    "data": {
+      "shipments": 18,
+      "attempts": 18,
+      "processedAttempts": 18,
+      "failedAttempts": 2,
+      "deferredAttempts": 0,
+      "processedShipments": 18,
+      "fullShipments": 16,
+      "partialShipments": 0,
+      "refusedShipments": 0,
+      "noAnswerShipments": 2,
+      "unfinishedShipments": 0,
+      "deferredShipments": 0,
+      "fullDeliveryPercent": 88.9
+    }
+  },
+  {
+    "id": "report-Collection",
+    "schema": "reporting.schema.json#/$defs/Collection",
+    "valid": true,
+    "data": {
+      "currency": "EGP",
+      "exponent": 2,
+      "reportedMinor": "25000",
+      "goodsMinor": "20000",
+      "shippingMinor": "5000",
+      "unpaidShippingMinor": "0",
+      "unreportedAttempts": 0
+    }
+  },
+  {
+    "id": "report-Time",
+    "schema": "reporting.schema.json#/$defs/Time",
+    "valid": true,
+    "data": {
+      "status": "missing",
+      "observedAt": null,
+      "recordedAt": null,
+      "actionId": null,
+      "clock": null
+    }
+  },
+  {
+    "id": "report-Measurement",
+    "schema": "reporting.schema.json#/$defs/Measurement",
+    "valid": true,
+    "data": {
+      "seconds": null,
+      "reason": "missing-boundary"
+    }
+  },
+  {
+    "id": "report-Filters",
+    "schema": "reporting.schema.json#/$defs/Filters",
+    "valid": true,
+    "data": {
+      "roundId": null,
+      "driverId": null,
+      "branchId": null,
+      "outcome": "partial"
+    }
+  },
+  {
+    "id": "report-Pieces",
+    "schema": "reporting.schema.json#/$defs/Pieces",
+    "valid": true,
+    "data": {
+      "dispatched": 3,
+      "delivered": 0,
+      "held": 1,
+      "returnRequired": 1,
+      "received": 1,
+      "lost": 1,
+      "damaged": 0
+    }
   }
 ]

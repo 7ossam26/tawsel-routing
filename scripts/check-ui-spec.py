@@ -127,9 +127,10 @@ def actions(document=None):
         if phase == 27 and op['id'] in ('source.deliverCommandIntent', 'source.getCommandStatus'): implemented_scope = True
         if phase in (29, 33, 34, 35) and family == 'local-ui': implemented_scope = True
         if phase == 34 and op['id'] in ('sync.submitActions', 'sync.listConflicts'): implemented_scope = True
+        if phase == 36 and op['id'] in ('report.listWorkdays', 'report.getWorkday', 'report.getRoundTiming'): implemented_scope = True
         if not implemented_scope:
-            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P29/P33–35 scope promoted: {op["id"]}')
-    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P29/P33–35 scope only; no UI completion inferred.')
+            require(op['lifecycle'] == 'designed', f'Operation outside verified workspace/P07–P29/P33–36 scope promoted: {op["id"]}')
+    print(f'PASS B: {len(rows)} action/effect rows cover all {len(known)} canonical operations; role/state/surface/phase/requirements present. Verified workspace/P07–P29/P33–36 scope only; no UI completion inferred.')
 
 
 def states(document=None, demo=False):

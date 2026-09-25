@@ -251,11 +251,12 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `report.getWorkday` | http-read | designed | [P36](phases/36-workday-timing-reports.md) | reports.read | Authorized workday results/quantities/collection with explicit denominators/currency. |
-| `report.getRoundTiming` | http-read | designed | [P36](phases/36-workday-timing-reports.md) | reports.read | Initial/revised forecast versus matching actual observations and uncertainty. |
+| `report.getWorkday` | http-read | verified-local | [P36](phases/36-workday-timing-reports.md) | reports.read | Authorized workday results/quantities/collection with explicit denominators/currency. |
+| `report.getRoundTiming` | http-read | verified-local | [P36](phases/36-workday-timing-reports.md) | reports.read | Initial/revised forecast versus matching actual observations and uncertainty. |
 | `report.requestExcelExport` | http-command | designed | [P37](phases/37-authorized-excel-export.md) | reports.export | Create authorized export bound to same filter/snapshot/timezone as report. |
 | `report.getExportStatus` | http-read | designed | [P37](phases/37-authorized-excel-export.md) | reports.export | Read pending/ready/failed/expired export status. |
 | `report.downloadExport` | http-read | designed | [P37](phases/37-authorized-excel-export.md) | reports.export | Reauthorize and download text-safe Excel artifact before expiry. |
+| `report.listWorkdays` | http-read | verified-local | [P36](phases/36-workday-timing-reports.md) | reports.read | List explicit authorized workdays; never a calendar-day aggregate. |
 
 ### diagnostics
 

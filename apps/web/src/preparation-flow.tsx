@@ -310,6 +310,7 @@ export function PreparationFlow() {
   if (loading && !daily) return <main className="tasks-shell preparation-shell"><StatusNotice title="جارٍ تحميل عمل اليوم" /></main>;
   return <main className="tasks-shell preparation-shell" dir="rtl">
     <header className="tasks-header"><div><p className="eyebrow">توصيل · عمل اليوم</p><h1>{preparation ? 'جهّز جولتك' : 'عملك اليوم'}</h1><p>{preparation ? 'اختر نقطة الانطلاق والمركبة، راجع الخطة، ثم ابدأ بعد تأكيد الخادم.' : 'العمل النشط أولًا، ثم الجاهز والقادم وما يحتاج مراجعة.'}</p></div><span className="tasks-logo" aria-hidden="true">{preparation ? <Route /> : <Truck />}</span></header>
+    {session?.access.effectiveCapabilities.includes('reports.read') ? <a className="edit-link" href={`/reports?kind=${kind}`}>تقارير أيام العمل</a> : null}
     {session && pendingExecutionLinks(session, '').length > 0 ? <section className="current-stage-card"><h2>تحقّق من الإجراءات السابقة قبل بدء جولة</h2>{pendingExecutionLinks(session, '').map(item => <a className="edit-link" key={item.id} href={item.href}>فتح الإجراء المعلّق</a>)}</section> : null}
     {localPending.items.length || localPending.error ? <StatusNotice tone="waiting" title="البدء ينتظر مراجعة العمل المحفوظ">{localPending.error}<a href={'/local-work?kind=' + kind}>مراجعة الإجراءات المحفوظة</a></StatusNotice> : null}
     {current?.workday ? <a className="edit-link" href={`/execution/closure?kind=${kind}&workdayId=${current.workday.workdayId}`}>ملخص العمل وإنهاء اليوم</a> : null}

@@ -1828,6 +1828,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/workdays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Authorized effective report using stored action and forecast evidence */
+        get: operations["report.listWorkdays"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/workdays/{workdayId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Authorized effective report using stored action and forecast evidence */
+        get: operations["report.getWorkday"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/workdays/{workdayId}/rounds/{roundId}/timing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Authorized effective report using stored action and forecast evidence */
+        get: operations["report.getRoundTiming"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/returns/actions/{actionId}": {
         parameters: {
             query?: never;
@@ -2126,6 +2177,15 @@ export interface components {
         "$defs-BatchResult": {
             results: components["schemas"]["Entry"][];
         };
+        "$defs-Collection": {
+            currency: string;
+            exponent: number;
+            goodsMinor: string;
+            reportedMinor: string;
+            shippingMinor: string;
+            unpaidShippingMinor: string;
+            unreportedAttempts: number;
+        };
         "$defs-CommandResult": {
             current: components["schemas"]["CommandResult"];
             outcome: components["schemas"]["Record"];
@@ -2152,6 +2212,21 @@ export interface components {
         };
         "$defs-Event": {
             change: components["schemas"]["$defs-Record"];
+        };
+        "$defs-Forecast": {
+            branchStops: number;
+            capturedAt: components["schemas"]["UtcInstant"];
+            customerAttempts: number;
+            /** @enum {unknown} */
+            endpoint: "last-customer" | "fixed" | "branch";
+            expectedFinishAt: components["schemas"]["UtcInstant"] | null;
+            forecastId: components["schemas"]["Uuid"];
+            /** @enum {unknown} */
+            kind: "ready" | "manual" | "partial" | "branch";
+            planId: components["schemas"]["Uuid"];
+            planRevision: number;
+            timeOrigin: components["schemas"]["UtcInstant"];
+            workloadId: components["schemas"]["Uuid"];
         };
         "$defs-Groups": {
             deferredShipments: number;
@@ -2740,6 +2815,17 @@ export interface components {
         BranchResult: components["schemas"]["Result"];
         BranchResumeCommand: components["schemas"]["ResumeCommand"];
         BranchTransition: components["schemas"]["$defs-Transition"];
+        BranchVisit: {
+            arrival: components["schemas"]["Time"];
+            branchId: components["schemas"]["Uuid"];
+            completion: components["schemas"]["Time"];
+            heading: components["schemas"]["Time"];
+            segmentId: components["schemas"]["Uuid"];
+            service: components["schemas"]["Measurement"];
+            serviceEstimateSeconds: number;
+            stage: string;
+            travel: components["schemas"]["Measurement"];
+        };
         /** @enum {string} */
         BusinessStatus: "pending" | "accepted" | "rejected" | "review-required";
         Calculation: {
@@ -3115,6 +3201,21 @@ export interface components {
             operationId?: "current.correctOrigin";
             payload?: components["schemas"]["CorrectOrigin"];
         };
+        Counts: {
+            attempts: number;
+            deferredAttempts: number;
+            deferredShipments: number;
+            failedAttempts: number;
+            fullDeliveryPercent: number | null;
+            fullShipments: number;
+            noAnswerShipments: number;
+            partialShipments: number;
+            processedAttempts: number;
+            processedShipments: number;
+            refusedShipments: number;
+            shipments: number;
+            unfinishedShipments: number;
+        };
         CreateIndependentCommand: components["schemas"]["action-envelope.v1.schema"] & {
             /** @constant */
             operationId?: "task.createIndependent";
@@ -3169,6 +3270,20 @@ export interface components {
         CycleList: {
             items: components["schemas"]["Task"][];
             nextCursor: components["schemas"]["Uuid"] | null;
+        };
+        DayList: {
+            branches: {
+                branchId: components["schemas"]["Uuid"];
+                label: string;
+            }[];
+            items: {
+                driverId: components["schemas"]["Uuid"];
+                driverLabel: string;
+                endedAt: components["schemas"]["UtcInstant"] | null;
+                openedAt: components["schemas"]["UtcInstant"];
+                workdayId: components["schemas"]["Uuid"];
+            }[];
+            nextBefore: components["schemas"]["UtcInstant"] | null;
         };
         Defer: {
             attemptId: components["schemas"]["Uuid"];
@@ -3601,6 +3716,12 @@ export interface components {
             /** @enum {string} */
             provider: "osrm" | "vroom" | "boundary";
         };
+        Filters: {
+            branchId: components["schemas"]["Uuid"] | null;
+            driverId: components["schemas"]["Uuid"] | null;
+            outcome: ("full" | "partial" | "refused" | "no-answer" | "unfinished" | "deferred") | null;
+            roundId: components["schemas"]["Uuid"] | null;
+        };
         Forecast: {
             expectedFinishAt: string | null;
             forecastId: components["schemas"]["Uuid"];
@@ -3625,6 +3746,20 @@ export interface components {
             sourceRevision: number;
             taskId: components["schemas"]["Uuid"];
         } & unknown;
+        ForecastStop: {
+            assignmentRevision: number;
+            capturedAt: components["schemas"]["UtcInstant"];
+            expectedArrivalAt: components["schemas"]["UtcInstant"] | null;
+            expectedCompletionAt: components["schemas"]["UtcInstant"] | null;
+            forecastId: components["schemas"]["Uuid"];
+            identityMatches: boolean;
+            /** @enum {unknown} */
+            membership: "assigned" | "manual" | "unassigned" | "excluded" | "paused";
+            pinRevision: number;
+            planRevision: number;
+            sourceRevision: number;
+            workloadId: components["schemas"]["Uuid"];
+        };
         /** @description Submit the ORIGINAL immutable execution envelope and action ID. This evidence-only endpoint never executes it, including when it is still owned. Exact duplicate returns the original business result. Not a second wrapper action. */
         FormerSubmission: components["schemas"]["SelectHeadingCommand"] | components["schemas"]["ArrivalCommand"] | components["schemas"]["CorrectOriginCommand"] | components["schemas"]["FullCommand"] | components["schemas"]["PartialCommand"] | components["schemas"]["RefusalCommand"] | components["schemas"]["NoAnswerCommand"] | components["schemas"]["DeferCommand"] | components["schemas"]["RetryCommand"] | components["schemas"]["ActivateCommand"] | components["schemas"]["$defs-UrgencyCommand"] | components["schemas"]["EndRoundCommand"] | components["schemas"]["EndDayCommand"];
         Freshness: {
@@ -3962,6 +4097,16 @@ export interface components {
             coverage: string;
             styleUrl: string;
         };
+        Measurement: {
+            reason: ("missing-boundary" | "uncertain-clock" | "clock-order" | "different-device" | "interrupted" | "changed-workload" | "unfinished" | "scoped-view" | "endpoint-unobserved" | "forecast-unavailable" | "identity-changed" | "identity-unavailable") | null;
+            seconds: number | null;
+        } & ({
+            reason?: string;
+            seconds?: null;
+        } | {
+            reason?: null;
+            seconds?: number;
+        });
         Member: {
             assignmentRevision: number;
             attemptId: components["schemas"]["Uuid"];
@@ -4209,6 +4354,15 @@ export interface components {
             sourceQuantity: number;
         };
         PieceCount: number;
+        Pieces: {
+            damaged: number;
+            delivered: number;
+            dispatched: number;
+            held: number;
+            lost: number;
+            received: number;
+            returnRequired: number;
+        };
         Pin: {
             /** Format: date-time */
             confirmedAt: string | null;
@@ -4603,6 +4757,9 @@ export interface components {
             evidence: "receiver-reported";
             reportedAt: components["schemas"]["UtcInstant"];
         };
+        ReportAttempt: components["schemas"]["reporting.schema_$defs-Attempt"];
+        ReportBranchVisit: components["schemas"]["BranchVisit"];
+        ReportCollection: components["schemas"]["$defs-Collection"];
         ReportCommand: {
             actionId: components["schemas"]["Uuid"];
             baseVersions: Record<string, never>;
@@ -4623,9 +4780,69 @@ export interface components {
             /** @constant */
             schemaVersion: "1.0.0";
         };
+        ReportCounts: components["schemas"]["Counts"];
+        ReportDayList: components["schemas"]["DayList"];
+        ReportFilters: components["schemas"]["Filters"];
+        ReportForecast: components["schemas"]["$defs-Forecast"];
+        ReportForecastStop: components["schemas"]["ForecastStop"];
+        "reporting.schema_$defs-Attempt": {
+            admittedAt: components["schemas"]["UtcInstant"];
+            assignmentRevision: number;
+            attemptId: components["schemas"]["Uuid"];
+            branchId: components["schemas"]["Uuid"] | null;
+            corrections: components["schemas"]["corrections.schema_$defs-Record"][];
+            deferred: boolean;
+            dispatchCycleId: components["schemas"]["Uuid"] | null;
+            history: components["schemas"]["Record"][];
+            outcome: components["schemas"]["Record"] | null;
+            pinRevision: number;
+            recipientName: string;
+            returns: components["schemas"]["Return"][];
+            roundId: components["schemas"]["Uuid"];
+            sourceRevision: number;
+            taskId: components["schemas"]["Uuid"];
+        };
+        "reporting.schema_$defs-Round": {
+            endedAt: components["schemas"]["UtcInstant"] | null;
+            roundId: components["schemas"]["Uuid"];
+            startedAt: components["schemas"]["UtcInstant"];
+        };
+        "reporting.schema_$defs-Workday": {
+            /** @constant */
+            acceptedOnly: true;
+            asOf: components["schemas"]["UtcInstant"];
+            attempts: components["schemas"]["reporting.schema_$defs-Attempt"][];
+            collections: components["schemas"]["$defs-Collection"][];
+            counts: components["schemas"]["Counts"];
+            /** @constant */
+            definitionVersion: "1.0.0";
+            /** @constant */
+            displayTimeZone: "Africa/Cairo";
+            driverId: components["schemas"]["Uuid"];
+            endedAt: components["schemas"]["UtcInstant"] | null;
+            filters: components["schemas"]["Filters"];
+            openedAt: components["schemas"]["UtcInstant"];
+            /** @constant */
+            pendingLocalActions: "not-known-to-server";
+            pieces: components["schemas"]["Pieces"] | null;
+            rounds: components["schemas"]["reporting.schema_$defs-Round"][];
+            scopeCounts: components["schemas"]["Counts"];
+            snapshotId: string;
+            timing: components["schemas"]["RoundTiming"][];
+            workdayId: components["schemas"]["Uuid"];
+        };
+        ReportMeasurement: components["schemas"]["Measurement"];
+        ReportPieces: components["schemas"]["Pieces"];
         ReportRead: {
             report: components["schemas"]["Report"] | null;
         };
+        ReportReturn: components["schemas"]["Return"];
+        ReportRound: components["schemas"]["reporting.schema_$defs-Round"];
+        ReportRoundTiming: components["schemas"]["RoundTiming"];
+        ReportStopTiming: components["schemas"]["StopTiming"];
+        ReportTime: components["schemas"]["Time"];
+        ReportTimingSnapshot: components["schemas"]["TimingSnapshot"];
+        ReportWorkday: components["schemas"]["reporting.schema_$defs-Workday"];
         Request: {
             driverId: components["schemas"]["Uuid"];
             expectedSettingsRevision: number;
@@ -4731,6 +4948,13 @@ export interface components {
         RetryResult: {
             eventId: components["schemas"]["Uuid"];
             scheduled: boolean;
+        };
+        Return: {
+            /** @enum {unknown} */
+            kind: "received" | "lost" | "damaged";
+            quantity: number;
+            sourceLineId: string;
+            transitionId: components["schemas"]["Uuid"];
         };
         ReturnActionResult: components["schemas"]["action-result.v1.schema"];
         ReturnActionStatus: components["schemas"]["returns.schema_$defs-ActionStatus"];
@@ -4899,6 +5123,29 @@ export interface components {
             firstWorkloadId: components["schemas"]["Uuid"];
             roundId: components["schemas"]["Uuid"];
             startedAt: components["schemas"]["UtcInstant"];
+        };
+        RoundTiming: {
+            acceptedEndAt: components["schemas"]["UtcInstant"] | null;
+            acceptedStartAt: components["schemas"]["UtcInstant"];
+            baseline: components["schemas"]["$defs-Forecast"] | null;
+            baselineFinishDifference: components["schemas"]["Measurement"];
+            branchVisits: components["schemas"]["BranchVisit"][];
+            /** @enum {unknown} */
+            closure: "open" | "ended-unfinished" | "ended-resolved" | "scoped-view";
+            elapsed: components["schemas"]["Measurement"];
+            end: components["schemas"]["Time"];
+            interrupted: boolean;
+            latest: components["schemas"]["$defs-Forecast"] | null;
+            latestFinishDifference: components["schemas"]["Measurement"];
+            revisions: components["schemas"]["$defs-Forecast"][];
+            roundId: components["schemas"]["Uuid"];
+            scopeChanged: boolean;
+            start: components["schemas"]["Time"];
+            stops: components["schemas"]["StopTiming"][];
+            unfinishedAttempts: number;
+            /** @enum {unknown} */
+            visibility: "whole-round" | "authorized-subset";
+            workdayId: components["schemas"]["Uuid"];
         };
         RoundWorkday: components["schemas"]["Workday"];
         RouteInput: {
@@ -5383,6 +5630,22 @@ export interface components {
         };
         /** @enum {string} */
         Status: "pending" | "running" | "complete" | "partial" | "failed" | "superseded";
+        StopTiming: {
+            arrival: components["schemas"]["Time"];
+            attemptId: components["schemas"]["Uuid"];
+            baseline: components["schemas"]["ForecastStop"] | null;
+            baselineArrivalDifference: components["schemas"]["Measurement"];
+            baselineCompletionDifference: components["schemas"]["Measurement"];
+            completion: components["schemas"]["Time"];
+            heading: components["schemas"]["Time"];
+            latest: components["schemas"]["ForecastStop"] | null;
+            latestArrivalDifference: components["schemas"]["Measurement"];
+            latestCompletionDifference: components["schemas"]["Measurement"];
+            revisions: components["schemas"]["ForecastStop"][];
+            service: components["schemas"]["Measurement"];
+            taskId: components["schemas"]["Uuid"];
+            travel: components["schemas"]["Measurement"];
+        };
         SubsetItem: {
             expectedRevision: number;
             itemId: components["schemas"]["Uuid"];
@@ -5508,9 +5771,25 @@ export interface components {
             items: components["schemas"]["Task"][];
             nextCursor?: string;
         };
+        Time: {
+            actionId: components["schemas"]["Uuid"] | null;
+            clock: components["schemas"]["ClockEvidence"] | null;
+            observedAt: components["schemas"]["UtcInstant"] | null;
+            recordedAt: components["schemas"]["UtcInstant"] | null;
+            /** @enum {unknown} */
+            status: "available" | "missing" | "uncertain";
+        } & unknown;
         TimeWindow: {
             earliestAt: components["schemas"]["UtcInstant"];
             latestAt?: components["schemas"]["UtcInstant"];
+        };
+        TimingSnapshot: {
+            asOf: components["schemas"]["UtcInstant"];
+            /** @constant */
+            displayTimeZone: "Africa/Cairo";
+            filters: components["schemas"]["Filters"];
+            snapshotId: string;
+            timing: components["schemas"]["RoundTiming"];
         };
         /** @description Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25. */
         TransferEvent: {
@@ -13770,6 +14049,194 @@ export interface operations {
                     "application/json": components["schemas"]["action-result.v1.schema"];
                     "application/problem+json": components["schemas"]["Problem"];
                 };
+            };
+        };
+    };
+    "report.listWorkdays": {
+        parameters: {
+            query: {
+                before?: string;
+                branchId?: string;
+                driverId?: string;
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One authorized coherent snapshot; local pending work is excluded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DayList"];
+                };
+            };
+            /** @description Invalid filter */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Report capability or branch denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Workday or round unavailable in current scope */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requested snapshot changed; refresh before exporting */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "report.getWorkday": {
+        parameters: {
+            query: {
+                branchId?: string;
+                driverId?: string;
+                kind: "personal" | "company";
+                outcome?: "full" | "partial" | "refused" | "no-answer" | "unfinished" | "deferred";
+                roundId?: string;
+                snapshotId?: string;
+            };
+            header?: never;
+            path: {
+                workdayId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One authorized coherent snapshot; local pending work is excluded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["reporting.schema_$defs-Workday"];
+                };
+            };
+            /** @description Invalid filter */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Report capability or branch denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Workday or round unavailable in current scope */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requested snapshot changed; refresh before exporting */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "report.getRoundTiming": {
+        parameters: {
+            query: {
+                branchId?: string;
+                driverId?: string;
+                kind: "personal" | "company";
+                outcome?: "full" | "partial" | "refused" | "no-answer" | "unfinished" | "deferred";
+                snapshotId?: string;
+            };
+            header?: never;
+            path: {
+                roundId: string;
+                workdayId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description One authorized coherent snapshot; local pending work is excluded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimingSnapshot"];
+                };
+            };
+            /** @description Invalid filter */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Report capability or branch denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Workday or round unavailable in current scope */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requested snapshot changed; refresh before exporting */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

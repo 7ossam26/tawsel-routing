@@ -105,6 +105,7 @@ export function AccountShell() {
           <StatusNotice tone="success" title="أنت مسجّل الدخول">{kind === 'company' ? 'الوصول حسب صلاحياتك الحالية في الشركة.' : 'مساحة حسابك المستقل منفصلة عن حساب الشركة.'}</StatusNotice>
           <dl className="status-list"><div><dt>{kind === 'company' ? 'اسم المستخدم' : 'رقم الهاتف'}</dt><dd><bdi dir="auto">{context.loginIdentifier}</bdi></dd></div><div><dt>بريد الاستعادة</dt><dd>{context.recoveryEmailVerified ? 'تم التحقق منه' : 'راجع جهة تسجيل الدخول'}</dd></div></dl>
           <a className="edit-link" href={`/day?kind=${kind}`}>عمل اليوم وتجهيز الجولة</a>
+          {context.access.effectiveCapabilities.includes('reports.read') ? <a className="edit-link" href={`/reports?kind=${kind}`}>تقارير أيام العمل</a> : null}
           <ActionButton busy={busy} onClick={() => void act(logout)}>تسجيل الخروج</ActionButton>
         </> : <>
           {exitPending ? <ActionButton busy={busy} onClick={() => void act(logout)}>إكمال تسجيل الخروج</ActionButton> : recovery || errorCode === 'session_expired' ? <ActionButton busy={busy} onClick={() => void act(() => begin(true))}>الدخول للحساب نفسه</ActionButton> : <ActionButton onClick={() => window.location.reload()}>إعادة المحاولة</ActionButton>}

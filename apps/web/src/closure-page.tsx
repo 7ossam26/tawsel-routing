@@ -72,6 +72,6 @@ export function ClosurePage() {
       </section> : null}
     </>}
     <ActionButton variant="quiet" disabled={action.busy} onClick={() => { setError(''); void refresh().catch(() => { setFresh(false); setError('لا يوجد تأكيد جديد؛ حدّث عند عودة الاتصال.'); }); }}>تحديث ملخص العمل</ActionButton>
-    <nav className="context-actions"><a href={`/day?kind=${kind}`}>العودة لعمل اليوم</a>{active ? <a href={`/rounds/current?kind=${kind}`}>العودة للجولة</a> : null}</nav>
+    <nav className="context-actions"><a href={`/day?kind=${kind}`}>العودة لعمل اليوم</a>{summary && session?.access.effectiveCapabilities.includes('reports.read') ? <a href={`/reports/workdays/${summary.workdayId}?kind=${kind}`}>التقرير التفصيلي والتوقيت</a> : null}{active ? <a href={`/rounds/current?kind=${kind}`}>العودة للجولة</a> : null}</nav>
   </main>;
 }

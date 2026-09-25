@@ -1029,19 +1029,23 @@
       "id": "report.getWorkday",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 36,
       "capability": "reports.read",
-      "description": "Authorized workday results/quantities/collection with explicit denominators/currency."
+      "description": "Authorized workday results/quantities/collection with explicit denominators/currency.",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays/{workdayId}"
     },
     {
       "id": "report.getRoundTiming",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 36,
       "capability": "reports.read",
-      "description": "Initial/revised forecast versus matching actual observations and uncertainty."
+      "description": "Initial/revised forecast versus matching actual observations and uncertainty.",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays/{workdayId}/rounds/{roundId}/timing"
     },
     {
       "id": "report.requestExcelExport",
@@ -1940,6 +1944,17 @@
       "description": "Authenticated external receiver status with separate durable received/applied watermarks and historical limitations.",
       "method": "GET",
       "path": "/api/v1/consumer/status"
+    },
+    {
+      "id": "report.listWorkdays",
+      "family": "reporting",
+      "kind": "http-read",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "List explicit authorized workdays; never a calendar-day aggregate.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays"
     }
   ],
   "authorizationFoundation": {

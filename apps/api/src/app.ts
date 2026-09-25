@@ -1,4 +1,5 @@
 import Fastify, { type FastifyInstance } from 'fastify';
+import { reportingRoutes } from './reporting/routes.js';
 import { syncRoutes } from './sync/routes.js';
 import type { HealthResponse } from '@tawsel/shared';
 import type { Pool } from 'pg';
@@ -59,6 +60,7 @@ export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: Prov
   if (database && auth) app.register(async scope => { await syncRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await returnDriverRoutes(scope, database, auth); });
   if (database && auth) app.register(async scope => { await monitoringRoutes(scope, database, auth); });
+  if (database && auth) app.register(async scope => { await reportingRoutes(scope, database, auth); });
   if (database && provisioning) app.register(async scope => { await provisioningRoutes(scope, database, provisioning, writeProjection); });
   if (database && provisioning) app.register(async scope => { await b2bIntakeRoutes(scope, database); });
   if (database && provisioning) app.register(async scope => { await returnReceiverRoutes(scope, database); });

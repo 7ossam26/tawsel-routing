@@ -49,6 +49,74 @@
   --motion-panel: 180ms;
 }
 
+/* P36: summary before detail, shared Cairo/navy surfaces and native disclosure. */
+.report-shell { max-inline-size: 1160px; margin-inline: auto; padding: 24px 28px 48px; }
+.report-shell h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.3rem); }
+.report-shell h2 { font-size: 1.25rem; margin-block: 0 10px; }
+.report-shell h4 { margin-block: 0 8px; }
+.report-shell p { line-height: 1.85; }
+.report-shell select { inline-size: 100%; min-block-size: 46px; padding: 9px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--foreground); font: inherit; }
+.report-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; padding: 22px; border: 1px solid var(--border); border-radius: 20px; background: var(--card); margin-block: 20px; }
+.report-filters label { display: grid; gap: 6px; font-weight: 700; min-inline-size: 0; }
+.report-filter-details { min-inline-size: 0; }
+.report-filter-details summary { cursor: pointer; min-block-size: 44px; padding-block: 10px; font-weight: 700; }
+.report-filter-options { display: grid; gap: 12px; }
+.report-period { display: flex; align-items: center; gap: 16px; color: var(--muted-foreground); margin-block: 20px; }
+.report-period p { margin-block: 3px; }
+.report-period svg { flex-shrink: 0; }
+.report-content { display: grid; gap: 20px; }
+.report-summary { background: var(--primary); color: var(--primary-foreground); border-radius: 22px; padding: 24px; border-block-start: 5px solid var(--brand); }
+.report-summary h2 { font-size: clamp(1.35rem, 3vw, 1.9rem); }
+.report-summary > p:first-child { color: #bcd8fc; margin-block-start: 0; }
+.report-summary-counts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-block: 22px 12px; }
+.report-summary-counts.personal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.report-summary-counts > div { background: #fff; color: var(--foreground); border-radius: 14px; padding: 15px; }
+.report-summary-counts dt { color: var(--muted-foreground); font-size: .9rem; }
+.report-summary-counts dd { margin: 3px 0 0; font-size: 1.85rem; font-weight: 800; }
+.report-denominator { margin-block-end: 0; color: #dce6f3; font-size: .92rem; }
+.report-section { border: 1px solid var(--border); border-radius: 20px; background: var(--card); padding: 22px; min-inline-size: 0; }
+.report-section > p { color: var(--muted-foreground); }
+.report-section summary, .report-round > summary, .report-attempt > summary { cursor: pointer; min-block-size: 44px; font-weight: 700; padding-block: 8px; }
+.report-round, .report-attempt { border-block-start: 1px solid var(--border); padding-block: 10px; }
+.report-round > summary > span, .report-attempt > summary > span { margin-inline-end: 14px; }
+.report-round > summary > span:last-child, .report-attempt > summary > span:last-child { color: var(--muted-foreground); font-size: .9rem; }
+.report-reference { color: var(--muted-foreground); font-size: .85rem; margin-block: 16px 4px; overflow-wrap: anywhere; }
+.report-reference summary { cursor: pointer; min-block-size: 44px; padding-block: 10px; }
+.report-reference p { margin-block: 8px; }
+.report-amount { font-size: 1.8rem; }
+.report-collection + .report-collection { padding-block-start: 18px; border-block-start: 1px solid var(--border); }
+.report-detail-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-block: 16px; }
+.report-detail-metrics > div { background: var(--muted); border-radius: 12px; padding: 12px; min-inline-size: 0; }
+.report-detail-metrics dt { color: var(--muted-foreground); font-size: .86rem; margin-block-end: 6px; }
+.report-detail-metrics dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+.report-forecast-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-block: 20px; }
+.report-forecast { border: 1px solid var(--border); border-radius: 14px; padding: 16px; min-inline-size: 0; }
+.report-forecast p { font-size: .9rem; }
+.report-note { border-inline-start: 3px solid var(--brand); padding: 10px 14px; background: var(--secondary); border-radius: 8px; }
+.report-comparison { margin-block: 16px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.report-comparison > div { display: grid; grid-template-columns: .6fr repeat(3, minmax(0, 1fr)); border-block-start: 1px solid var(--border); }
+.report-comparison > div:first-child { border: 0; background: var(--muted); }
+.report-comparison [role="cell"], .report-comparison [role="columnheader"], .report-comparison [role="rowheader"] { padding: 12px; overflow-wrap: anywhere; }
+.report-comparison [role="columnheader"] { font-size: .88rem; font-weight: 700; }
+.report-footnote { font-size: .86rem; color: var(--muted-foreground); }
+.report-shell :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; }
+@media (max-width: 680px) {
+ .report-shell { padding: 16px 12px 40px; }
+ .report-filters { grid-template-columns: 1fr; padding: 16px; gap: 12px; }
+ .report-summary, .report-section { padding: 18px 14px; }
+ .report-summary-counts { gap: 8px; }
+ .report-summary-counts > div { padding: 10px 6px; }
+ .report-summary-counts dt { font-size: .76rem; }
+ .report-summary-counts dd { font-size: 1.5rem; }
+ .report-detail-metrics, .report-forecast-grid { grid-template-columns: 1fr; }
+ .report-comparison > div { grid-template-columns: 1fr; padding: 10px; }
+ .report-comparison .report-table-head { display: none; }
+ .report-comparison [role="cell"] { display: grid; grid-template-columns: minmax(75px, .6fr) 1.4fr; padding: 8px 2px; gap: 10px; }
+ .report-comparison [role="cell"]::before { content: attr(data-label); color: var(--muted-foreground); }
+ .report-round > summary > span, .report-attempt > summary > span { margin-inline-end: 6px; }
+ .report-reference { font-size: .82rem; }
+}
+
 * { box-sizing: border-box; }
 html { min-width: 320px; background: var(--background); }
 body { min-width: 320px; min-height: 100vh; margin: 0; font-weight: 400; line-height: 1.75; }

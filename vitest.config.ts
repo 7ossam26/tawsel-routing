@@ -19,6 +19,9 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: ['apps/**/test/integration/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+          // Real isolated database creation and the retained migration stack can
+          // exceed 10s on a busy local host; business-test time bounds stay intact.
+          hookTimeout: 60_000,
           testTimeout: 10_000
         }
       }

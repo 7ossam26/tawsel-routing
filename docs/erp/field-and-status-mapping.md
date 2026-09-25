@@ -547,3 +547,21 @@ Optional additions preserve older canonical examples. Current server reads suppl
 | Action accepted/rejected/review-required | Server-received history evidence only; unsent phone actions remain unknown |
 
 Retries retain event and business identities. They must never transform a rejected source command into an accepted one or describe a merely received event as applied. Phase 32 adds no canonical field or status value; these labels map existing public reads to the staff/native ERP UI. [Evidence](../phase-32-evidence.md).
+
+## Phase 36 report fields — 25 September 2026
+
+| Public field | Meaning and consumer rule |
+| --- | --- |
+| workdayId, openedAt, endedAt | Explicit start/End-day lifecycle; never split on midnight or Cairo offset change. |
+| definitionVersion, filters, snapshotId, asOf, displayTimeZone | Versioned coherent authorized content; ID mismatch returns 409. Preserve exact selection/timezone. ID grants no access and is not historical lookup. |
+| counts / scopeCounts | Selected shipment outcomes versus authorized scope before outcome filtering; processed includes unsuccessful outcomes, full-delivery percentage does not. |
+| attempts / processedAttempts / failedAttempts | Distinct attempts; retries do not create extra shipments. Branch service is separate. |
+| collections[] | Exact minor-unit strings grouped by currency/exponent. Reported money is not remitted money. Unreported is unknown, not confirmed zero. Goods/shipping/unpaid remain separate. |
+| pieces | Current accepted disposition of selected cycles, possibly affected by a later receipt; dispatched = delivered + held + received + lost + damaged. returnRequired is within held. Personal reports return null. |
+| attempts[].outcome / history / corrections | Effective revision plus immutable original/correction history; do not sum revisions. |
+| timing[].baseline / latest / stops[].revisions | Captured forecast/workload/task/attempt/cycle identity; post-resolution forecasts cannot rewrite per-stop expectations. |
+| status: missing / uncertain / available | Observed action time quality. recordedAt is server provenance, never substituted for physical arrival. Null durations require explicit reasons. |
+| scopeChanged / interrupted / ended-unfinished / authorized-subset | Explanations restricting comparison; no ranking or simple lateness claim across changed/hidden/unfinished work. |
+| acceptedOnly / pendingLocalActions | Accepted server state only; unsent phone evidence remains unknown to server totals. |
+
+The APIs require a current human session with reports.read. ERP command and event authority is unchanged. [Definitions](../reporting.md), [public-response checker](../../tests/erp-conformance/reporting.ts).

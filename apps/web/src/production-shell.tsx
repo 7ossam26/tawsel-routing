@@ -13,8 +13,9 @@ import { useReplayLifecycle } from './replay-lifecycle';
 import { ConflictsPage } from './conflicts-page';
 import { AccountBoundary } from './account-boundary';
 import { UpdateNotice } from './update-notice';
+import { ReportingPage } from './reporting-page';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
-  const privatePage = /^\/(sync|local-work|monitoring|execution|rounds|day|prepare|locations|tasks)(\/|$)/.test(location.pathname);
+  const privatePage = /^\/(reports|sync|local-work|monitoring|execution|rounds|day|prepare|locations|tasks)(\/|$)/.test(location.pathname);
   return <><UpdateNotice />{privatePage && !fixtureRouteRequested ? <AccountBoundary><ConnectedShell /></AccountBoundary> : <ConnectedShell fixtureRouteRequested={fixtureRouteRequested} />}</>;
 }
 function ConnectedShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
@@ -23,6 +24,7 @@ function ConnectedShell({ fixtureRouteRequested = false }: { fixtureRouteRequest
   return <>{message ? <aside className="sync-notice" dir="rtl" role="status">{message} <a href={'/local-work?kind=' + kind}>مراجعة المزامنة</a></aside> : null}<ProductionRoutes fixtureRouteRequested={fixtureRouteRequested} /></>;
 }
 function ProductionRoutes({ fixtureRouteRequested }: { fixtureRouteRequested: boolean }) {
+  if (!fixtureRouteRequested && window.location.pathname.startsWith('/reports')) return <ReportingPage />;
   if (!fixtureRouteRequested && window.location.pathname === '/sync') return <ConflictsPage />;
   if (!fixtureRouteRequested && window.location.pathname === '/local-work') return <LocalWorkPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/monitoring')) return <MonitoringPage />;

@@ -12,6 +12,1272 @@ P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membe
 
 ## Common schemas and envelopes
 
+### ReportFilters
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Filters)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "roundId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "driverId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "enum": [
+            "full",
+            "partial",
+            "refused",
+            "no-answer",
+            "unfinished",
+            "deferred"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "roundId",
+    "driverId",
+    "branchId",
+    "outcome"
+  ]
+}
+```
+
+### ReportCounts
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Counts)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "shipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "processedAttempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failedAttempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deferredAttempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "processedShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fullShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "partialShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "refusedShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "noAnswerShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unfinishedShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deferredShipments": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fullDeliveryPercent": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "shipments",
+    "attempts",
+    "processedAttempts",
+    "failedAttempts",
+    "deferredAttempts",
+    "processedShipments",
+    "fullShipments",
+    "partialShipments",
+    "refusedShipments",
+    "noAnswerShipments",
+    "unfinishedShipments",
+    "deferredShipments",
+    "fullDeliveryPercent"
+  ]
+}
+```
+
+### ReportCollection
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Collection)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "exponent": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "reportedMinor": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "goodsMinor": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "shippingMinor": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "unpaidShippingMinor": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "unreportedAttempts": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "currency",
+    "exponent",
+    "reportedMinor",
+    "goodsMinor",
+    "shippingMinor",
+    "unpaidShippingMinor",
+    "unreportedAttempts"
+  ]
+}
+```
+
+### ReportPieces
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Pieces)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "dispatched": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "delivered": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "held": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "returnRequired": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "received": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lost": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "damaged": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "dispatched",
+    "delivered",
+    "held",
+    "returnRequired",
+    "received",
+    "lost",
+    "damaged"
+  ]
+}
+```
+
+### ReportReturn
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Return)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "transitionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "kind": {
+      "enum": [
+        "received",
+        "lost",
+        "damaged"
+      ]
+    },
+    "sourceLineId": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "transitionId",
+    "kind",
+    "sourceLineId",
+    "quantity"
+  ]
+}
+```
+
+### ReportTime
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Time)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "enum": [
+        "available",
+        "missing",
+        "uncertain"
+      ]
+    },
+    "observedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recordedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actionId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clock": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/ClockEvidence"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "status",
+    "observedAt",
+    "recordedAt",
+    "actionId",
+    "clock"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "missing"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "observedAt": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "observedAt": {
+            "$ref": "./common.schema.json#/$defs/UtcInstant"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+
+### ReportMeasurement
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Measurement)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "enum": [
+            "missing-boundary",
+            "uncertain-clock",
+            "clock-order",
+            "different-device",
+            "interrupted",
+            "changed-workload",
+            "unfinished",
+            "scoped-view",
+            "endpoint-unobserved",
+            "forecast-unavailable",
+            "identity-changed",
+            "identity-unavailable"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "seconds",
+    "reason"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "seconds": {
+          "type": "null"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "properties": {
+        "seconds": {
+          "type": "number"
+        },
+        "reason": {
+          "type": "null"
+        }
+      }
+    }
+  ]
+}
+```
+
+### ReportForecastStop
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/ForecastStop)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "forecastId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "workloadId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "planRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "capturedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "membership": {
+      "enum": [
+        "assigned",
+        "manual",
+        "unassigned",
+        "excluded",
+        "paused"
+      ]
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expectedArrivalAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedCompletionAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "identityMatches": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "forecastId",
+    "workloadId",
+    "planRevision",
+    "capturedAt",
+    "membership",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "expectedArrivalAt",
+    "expectedCompletionAt",
+    "identityMatches"
+  ]
+}
+```
+
+### ReportAttempt
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Attempt)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "dispatchCycleId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branchId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "recipientName": {
+      "type": "string"
+    },
+    "sourceRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "assignmentRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pinRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "admittedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "$ref": "./outcomes.schema.json#/$defs/Record"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "$ref": "./outcomes.schema.json#/$defs/Record"
+      }
+    },
+    "corrections": {
+      "type": "array",
+      "items": {
+        "$ref": "./corrections.schema.json#/$defs/Record"
+      }
+    },
+    "deferred": {
+      "type": "boolean"
+    },
+    "returns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Return"
+      }
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "roundId",
+    "dispatchCycleId",
+    "branchId",
+    "recipientName",
+    "sourceRevision",
+    "assignmentRevision",
+    "pinRevision",
+    "admittedAt",
+    "outcome",
+    "history",
+    "corrections",
+    "deferred",
+    "returns"
+  ]
+}
+```
+
+### ReportStopTiming
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/StopTiming)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "taskId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "attemptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "baseline": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ForecastStop"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ForecastStop"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ForecastStop"
+      }
+    },
+    "heading": {
+      "$ref": "#/$defs/Time"
+    },
+    "arrival": {
+      "$ref": "#/$defs/Time"
+    },
+    "completion": {
+      "$ref": "#/$defs/Time"
+    },
+    "travel": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "service": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "baselineArrivalDifference": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "baselineCompletionDifference": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "latestArrivalDifference": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "latestCompletionDifference": {
+      "$ref": "#/$defs/Measurement"
+    }
+  },
+  "required": [
+    "taskId",
+    "attemptId",
+    "baseline",
+    "latest",
+    "revisions",
+    "heading",
+    "arrival",
+    "completion",
+    "travel",
+    "service",
+    "baselineArrivalDifference",
+    "baselineCompletionDifference",
+    "latestArrivalDifference",
+    "latestCompletionDifference"
+  ]
+}
+```
+
+### ReportForecast
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Forecast)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "planId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "forecastId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "workloadId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "planRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "capturedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "timeOrigin": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "expectedFinishAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "customerAttempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "branchStops": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "endpoint": {
+      "enum": [
+        "last-customer",
+        "fixed",
+        "branch"
+      ]
+    },
+    "kind": {
+      "enum": [
+        "ready",
+        "manual",
+        "partial",
+        "branch"
+      ]
+    }
+  },
+  "required": [
+    "planId",
+    "forecastId",
+    "workloadId",
+    "planRevision",
+    "capturedAt",
+    "timeOrigin",
+    "expectedFinishAt",
+    "customerAttempts",
+    "branchStops",
+    "endpoint",
+    "kind"
+  ]
+}
+```
+
+### ReportBranchVisit
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/BranchVisit)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "segmentId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "branchId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "stage": {
+      "type": "string"
+    },
+    "serviceEstimateSeconds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "heading": {
+      "$ref": "#/$defs/Time"
+    },
+    "arrival": {
+      "$ref": "#/$defs/Time"
+    },
+    "completion": {
+      "$ref": "#/$defs/Time"
+    },
+    "travel": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "service": {
+      "$ref": "#/$defs/Measurement"
+    }
+  },
+  "required": [
+    "segmentId",
+    "branchId",
+    "stage",
+    "serviceEstimateSeconds",
+    "heading",
+    "arrival",
+    "completion",
+    "travel",
+    "service"
+  ]
+}
+```
+
+### ReportRoundTiming
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/RoundTiming)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "workdayId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "visibility": {
+      "enum": [
+        "whole-round",
+        "authorized-subset"
+      ]
+    },
+    "acceptedStartAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "acceptedEndAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "start": {
+      "$ref": "#/$defs/Time"
+    },
+    "end": {
+      "$ref": "#/$defs/Time"
+    },
+    "baseline": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Forecast"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "latest": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Forecast"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Forecast"
+      }
+    },
+    "scopeChanged": {
+      "type": "boolean"
+    },
+    "interrupted": {
+      "type": "boolean"
+    },
+    "unfinishedAttempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "closure": {
+      "enum": [
+        "open",
+        "ended-unfinished",
+        "ended-resolved",
+        "scoped-view"
+      ]
+    },
+    "baselineFinishDifference": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "latestFinishDifference": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "elapsed": {
+      "$ref": "#/$defs/Measurement"
+    },
+    "stops": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StopTiming"
+      }
+    },
+    "branchVisits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/BranchVisit"
+      }
+    }
+  },
+  "required": [
+    "roundId",
+    "workdayId",
+    "visibility",
+    "acceptedStartAt",
+    "acceptedEndAt",
+    "start",
+    "end",
+    "baseline",
+    "latest",
+    "revisions",
+    "scopeChanged",
+    "interrupted",
+    "unfinishedAttempts",
+    "closure",
+    "baselineFinishDifference",
+    "latestFinishDifference",
+    "elapsed",
+    "stops",
+    "branchVisits"
+  ]
+}
+```
+
+### ReportRound
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Round)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "roundId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "startedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "roundId",
+    "startedAt",
+    "endedAt"
+  ]
+}
+```
+
+### ReportWorkday
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/Workday)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "definitionVersion": {
+      "const": "1.0.0"
+    },
+    "snapshotId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "asOf": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "displayTimeZone": {
+      "const": "Africa/Cairo"
+    },
+    "acceptedOnly": {
+      "const": true
+    },
+    "pendingLocalActions": {
+      "const": "not-known-to-server"
+    },
+    "filters": {
+      "$ref": "#/$defs/Filters"
+    },
+    "workdayId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "driverId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "openedAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "endedAt": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scopeCounts": {
+      "$ref": "#/$defs/Counts"
+    },
+    "counts": {
+      "$ref": "#/$defs/Counts"
+    },
+    "collections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Collection"
+      }
+    },
+    "pieces": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Pieces"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Round"
+      }
+    },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Attempt"
+      }
+    },
+    "timing": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RoundTiming"
+      }
+    }
+  },
+  "required": [
+    "definitionVersion",
+    "snapshotId",
+    "asOf",
+    "displayTimeZone",
+    "acceptedOnly",
+    "pendingLocalActions",
+    "filters",
+    "workdayId",
+    "driverId",
+    "openedAt",
+    "endedAt",
+    "scopeCounts",
+    "counts",
+    "collections",
+    "pieces",
+    "rounds",
+    "attempts",
+    "timing"
+  ]
+}
+```
+
+### ReportDayList
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/DayList)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "workdayId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "driverId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "openedAt": {
+            "$ref": "./common.schema.json#/$defs/UtcInstant"
+          },
+          "endedAt": {
+            "anyOf": [
+              {
+                "$ref": "./common.schema.json#/$defs/UtcInstant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "driverLabel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "workdayId",
+          "driverId",
+          "openedAt",
+          "endedAt",
+          "driverLabel"
+        ]
+      }
+    },
+    "nextBefore": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "branchId": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "branchId",
+          "label"
+        ]
+      }
+    }
+  },
+  "required": [
+    "items",
+    "nextBefore",
+    "branches"
+  ]
+}
+```
+
+### ReportTimingSnapshot
+
+[Canonical definition](../../contracts/reporting.schema.json#/$defs/TimingSnapshot)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "snapshotId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "asOf": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "displayTimeZone": {
+      "const": "Africa/Cairo"
+    },
+    "filters": {
+      "$ref": "#/$defs/Filters"
+    },
+    "timing": {
+      "$ref": "#/$defs/RoundTiming"
+    }
+  },
+  "required": [
+    "snapshotId",
+    "asOf",
+    "displayTimeZone",
+    "filters",
+    "timing"
+  ]
+}
+```
+
 ### SyncBatch
 
 [Canonical definition](../../contracts/sync.schema.json#/$defs/Batch)
@@ -19266,6 +20532,12 @@ Examples include designed fixtures and captured local API results; consult contr
 | p35-same-account-recovery-fixture | session.schema.json#/$defs/LoginRequest | valid foundation shape |
 | p35-sealed-selection-fixture | local-work.schema.json#/$defs/Selection | valid foundation shape |
 | p35-scoped-form-draft-fixture | local-work.schema.json#/$defs/Draft | valid foundation shape |
+| report-Counts | reporting.schema.json#/$defs/Counts | valid foundation shape |
+| report-Collection | reporting.schema.json#/$defs/Collection | valid foundation shape |
+| report-Time | reporting.schema.json#/$defs/Time | valid foundation shape |
+| report-Measurement | reporting.schema.json#/$defs/Measurement | valid foundation shape |
+| report-Filters | reporting.schema.json#/$defs/Filters | valid foundation shape |
+| report-Pieces | reporting.schema.json#/$defs/Pieces | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19428,5 +20700,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | p35-account-restriction-without-reauth | session.schema.json#/$defs/LoginRequest | invalid (required) |
 | p35-account-restriction-not-an-auth-grant | session.schema.json#/$defs/LoginRequest | invalid (additionalProperties) |
 | p35-unknown-payload-not-v1 | sync.schema.json#/$defs/Batch | invalid (const) |
+| report-no-invented-actual | reporting.schema.json#/$defs/Time | invalid (type) |
+| report-null-needs-reason | reporting.schema.json#/$defs/Measurement | invalid (oneOf) |
+| report-money-is-exact | reporting.schema.json#/$defs/Collection | invalid (type) |
+| report-no-cross-tenant-filter | reporting.schema.json#/$defs/Filters | invalid (additionalProperties) |
 
 [Canonical example data](../../contracts/examples/README.md)

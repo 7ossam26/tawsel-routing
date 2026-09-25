@@ -6193,8 +6193,192 @@ paths:
           description: Authentication required
         "403":
           description: Own driver access required
+  /api/v1/reports/workdays:
+    get:
+      operationId: report.listWorkdays
+      summary: Authorized effective report using stored action and forecast evidence
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: driverId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: branchId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: before
+          in: query
+          required: false
+          schema: {"type":"string","format":"date-time"}
+      responses:
+        "200":
+          description: One authorized coherent snapshot; local pending work is excluded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportDayList"
+        "400":
+          description: Invalid filter
+        "401":
+          description: Session required
+        "403":
+          description: Report capability or branch denied
+        "404":
+          description: Workday or round unavailable in current scope
+        "409":
+          description: Requested snapshot changed; refresh before exporting
+  /api/v1/reports/workdays/{workdayId}:
+    get:
+      operationId: report.getWorkday
+      summary: Authorized effective report using stored action and forecast evidence
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: workdayId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+        - name: driverId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: branchId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: roundId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: outcome
+          in: query
+          required: false
+          schema: {"enum":["full","partial","refused","no-answer","unfinished","deferred"]}
+        - name: snapshotId
+          in: query
+          required: false
+          schema: {"type":"string","pattern":"^[a-f0-9]{64}$"}
+      responses:
+        "200":
+          description: One authorized coherent snapshot; local pending work is excluded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportWorkday"
+        "400":
+          description: Invalid filter
+        "401":
+          description: Session required
+        "403":
+          description: Report capability or branch denied
+        "404":
+          description: Workday or round unavailable in current scope
+        "409":
+          description: Requested snapshot changed; refresh before exporting
+  /api/v1/reports/workdays/{workdayId}/rounds/{roundId}/timing:
+    get:
+      operationId: report.getRoundTiming
+      summary: Authorized effective report using stored action and forecast evidence
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: workdayId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+        - name: roundId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+        - name: driverId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: branchId
+          in: query
+          required: false
+          schema: {"type":"string","format":"uuid"}
+        - name: outcome
+          in: query
+          required: false
+          schema: {"enum":["full","partial","refused","no-answer","unfinished","deferred"]}
+        - name: snapshotId
+          in: query
+          required: false
+          schema: {"type":"string","pattern":"^[a-f0-9]{64}$"}
+      responses:
+        "200":
+          description: One authorized coherent snapshot; local pending work is excluded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportTimingSnapshot"
+        "400":
+          description: Invalid filter
+        "401":
+          description: Session required
+        "403":
+          description: Report capability or branch denied
+        "404":
+          description: Workday or round unavailable in current scope
+        "409":
+          description: Requested snapshot changed; refresh before exporting
 components:
   schemas:
+    ReportFilters:
+      $ref: ./reporting.schema.json#/$defs/Filters
+    ReportCounts:
+      $ref: ./reporting.schema.json#/$defs/Counts
+    ReportCollection:
+      $ref: ./reporting.schema.json#/$defs/Collection
+    ReportPieces:
+      $ref: ./reporting.schema.json#/$defs/Pieces
+    ReportReturn:
+      $ref: ./reporting.schema.json#/$defs/Return
+    ReportTime:
+      $ref: ./reporting.schema.json#/$defs/Time
+    ReportMeasurement:
+      $ref: ./reporting.schema.json#/$defs/Measurement
+    ReportForecastStop:
+      $ref: ./reporting.schema.json#/$defs/ForecastStop
+    ReportAttempt:
+      $ref: ./reporting.schema.json#/$defs/Attempt
+    ReportStopTiming:
+      $ref: ./reporting.schema.json#/$defs/StopTiming
+    ReportForecast:
+      $ref: ./reporting.schema.json#/$defs/Forecast
+    ReportBranchVisit:
+      $ref: ./reporting.schema.json#/$defs/BranchVisit
+    ReportRoundTiming:
+      $ref: ./reporting.schema.json#/$defs/RoundTiming
+    ReportRound:
+      $ref: ./reporting.schema.json#/$defs/Round
+    ReportWorkday:
+      $ref: ./reporting.schema.json#/$defs/Workday
+    ReportDayList:
+      $ref: ./reporting.schema.json#/$defs/DayList
+    ReportTimingSnapshot:
+      $ref: ./reporting.schema.json#/$defs/TimingSnapshot
     SyncBatch:
       $ref: ./sync.schema.json#/$defs/Batch
     SyncEntry:
@@ -6894,6 +7078,8 @@ components:
       description: Out-of-band server operator token; bootstrap and recovery rotation only. Never
         distribute to ERP application users.
 tags:
+  - name: Reporting
+    description: Workday reports with accepted quantities, reported collection and preserved forecasts.
   - name: Sessions
     description: P07 same-origin browser session and issuer journeys.
   - name: Independent intake
