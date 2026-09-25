@@ -8,7 +8,9 @@ import { LocationReview } from './location-review';
 import { CurrentActivityPage } from './current-activity';
 import { PreparationFlow } from './preparation-flow';
 import { MonitoringPage } from './monitoring-page';
+import { LocalWorkPage } from './local-status';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
+  if (!fixtureRouteRequested && window.location.pathname === '/local-work') return <LocalWorkPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/monitoring')) return <MonitoringPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/execution/closure')) return <ClosurePage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/execution/branch')) return <BranchPage />;

@@ -10,6 +10,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'fast',
+          setupFiles: ['apps/web/test/storage-setup.ts'],
           include: ['apps/**/test/fast/**/*.test.{ts,tsx}', 'packages/**/test/fast/**/*.test.{ts,tsx}']
         }
       },

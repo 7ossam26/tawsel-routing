@@ -243,7 +243,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `evidence.received` | event | verified-local | [P20](phases/20-device-takeover-evidence.md) | recipient-scope | Durable submitting-account notification after rejected domain writes roll back. Query the scoped original action receipt; never imply business acceptance. No envelope/contact/money data in the notification. |
 | `evidence.adoptionResolved` | event | verified-local | [P23](phases/23-bounded-driver-corrections.md) | recipient-scope | Own-account notification of an accepted explicit adoption, linked to preserved evidence and effective outcome; blocked proposals emit evidence.received. |
 | `integration.applicationReported` | event | designed | [P26](phases/26-mock-inbox-projection-recovery.md) | recipient-scope | Reserved future application notification; P26 implements separately authenticated checkpoint HTTP reporting without recursive outbound events. |
-| `device.getSnapshot` | http-read | verified-local | [P20](phases/20-device-takeover-evidence.md) | execution.own | Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token. |
+| `device.getSnapshot` | http-read | verified-local | [P20](phases/20-device-takeover-evidence.md) | execution.own | Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token. P33 brackets authorized download reads with this locked owner/activity snapshot; local durability is a separate client transaction. |
 | `integration.getDeliveryDetail` | http-read | verified-local | [P25](phases/25-outbox-signed-delivery.md) | integration.manage | Inspect one scoped delivery and bounded retained attempts. |
 | `consumer.getStatus` | http-read | verified-local | [P26](phases/26-mock-inbox-projection-recovery.md) | external-consumer | Authenticated external receiver status with separate durable received/applied watermarks and historical limitations. |
 
@@ -273,13 +273,13 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `ui.openNavigation` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open external navigation; does not set heading/arrival. |
 | `ui.filterAndInspect` | local-ui | designed | [P03](phases/03-design-action-specification.md) | local | Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs. |
 | `ui.prepareDraft` | local-ui | designed | [P28](phases/28-online-preparation-journeys.md) | local | Enter unsaved forms/pin/route input; saving uses intake/location/planning operations. |
-| `ui.captureOfflineAction` | local-ui | designed | [P33](phases/33-offline-local-capture.md) | local | Atomic local journal and pending projection for allowed downloaded started work. |
-| `ui.requestPersistentStorage` | local-ui | designed | [P33](phases/33-offline-local-capture.md) | local | Request browser storage persistence and report actual availability. |
+| `ui.captureOfflineAction` | local-ui | verified-local | [P33](phases/33-offline-local-capture.md) | local | Atomic local journal and pending projection for allowed downloaded started work. |
+| `ui.requestPersistentStorage` | local-ui | verified-local | [P33](phases/33-offline-local-capture.md) | local | Request browser storage persistence and report actual availability. |
 | `ui.retrySynchronization` | local-ui | designed | [P34](phases/34-ordered-replay-conflict-recovery.md) | local | Trigger authenticated replay using original action identities. |
 | `ui.reauthenticateSameAccount` | local-ui | designed | [P35](phases/35-offline-auth-updates-ux.md) | local | Preserve queue and invoke session login for its owning account. |
 | `ui.switchAccount` | local-ui | designed | [P35](phases/35-offline-auth-updates-ux.md) | local | Block unsynchronized exit; otherwise use safe logout/login, no identity merge. |
 | `ui.applySafeUpdate` | local-ui | designed | [P35](phases/35-offline-auth-updates-ux.md) | local | Apply versioned shell/storage update only at safe pending-work boundary. |
-| `ui.downloadStartedWork` | local-ui | designed | [P33](phases/33-offline-local-capture.md) | local | Store authorized snapshots/geometry for confirmed round; not offline new-round start. |
+| `ui.downloadStartedWork` | local-ui | verified-local | [P33](phases/33-offline-local-capture.md) | local | Store authorized snapshots/geometry for confirmed round; not offline new-round start. |
 
 ### workspace
 

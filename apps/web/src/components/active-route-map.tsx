@@ -4,10 +4,11 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
 type Target = { taskId: string; attemptId: string; recipientName: string; coordinates: { latitude: number; longitude: number } };
+type Point = { latitude: number; longitude: number };
 let initialized = false;
 
 /** Read-only execution overview. Pins are destinations, never movement evidence. */
-export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSelect, disabled = false }: { targets: Target[]; selectedTaskId: string; currentAttemptId: string | undefined; onSelect: (taskId: string) => void; disabled?: boolean }) {
+export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSelect, disabled = false, road, offline = false }: { targets: Target[]; selectedTaskId: string; currentAttemptId: string | undefined; onSelect: (taskId: string) => void; disabled?: boolean; road?: Point[] | undefined; offline?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const map = useRef<LibreMap | null>(null);
   const markers = useRef<Marker[]>([]);
@@ -15,6 +16,8 @@ export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSe
 
   useEffect(() => {
     let disposed = false;
+    if (offline) { setFailure('خريطة الأساس غير متاحة دون اتصال؛ التفاصيل ومسار الطريق المنزّل متاحان.'); return; }
+    setFailure('');
     if (!host.current || typeof window.matchMedia !== 'function') return;
     void (async () => {
       try {
@@ -47,25 +50,39 @@ export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSe
           return new lib.Marker({ element: button }).setLngLat([target.coordinates.longitude, target.coordinates.latitude]).addTo(instance);
         });
         instance.on('load', () => {
+          if (road?.length) {
+            instance.addSource('downloaded-road', { type: 'geojson', data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: road.map(point => [point.longitude, point.latitude]) } } });
+            instance.addLayer({ id: 'downloaded-road', type: 'line', source: 'downloaded-road', paint: { 'line-color': '#2872c5', 'line-width': 4 } });
+          }
           if (targets.length > 1) {
             const bounds = new lib.LngLatBounds();
             targets.forEach(target => bounds.extend([target.coordinates.longitude, target.coordinates.latitude]));
             instance.fitBounds(bounds, { padding: 48, maxZoom: 14, duration: 0 });
           }
         });
+        instance.on('error', () => { if (!disposed) setFailure('تعذّر عرض خريطة الأساس؛ تفاصيل المحطات والمسار المنزّل باقية.'); });
       } catch {
         if (!disposed) setFailure('تعذّر عرض الخريطة الآن؛ قائمة المحطات كاملة ومتاحة.');
       }
     })();
     return () => { disposed = true; markers.current.forEach(marker => marker.remove()); markers.current = []; map.current?.remove(); map.current = null; };
-  }, [currentAttemptId, onSelect, selectedTaskId, targets, disabled]);
+  }, [currentAttemptId, onSelect, selectedTaskId, targets, disabled, road, offline]);
 
   return <section className="active-route" aria-labelledby="route-overview-title">
     <div className="active-route__heading"><div><p className="eyebrow">الجولة النشطة</p><h2 id="route-overview-title">الخريطة والمحطات</h2></div><span>{targets.length} متاحة</span></div>
     <div className="active-route__layout">
-      <div ref={host} className="active-route__map" role="region" aria-label="خريطة مواقع المحطات؛ لا تسجل حركة المندوب" />
+      <div ref={host} hidden={offline || Boolean(failure)} className="active-route__map" role="region" aria-label="خريطة مواقع المحطات؛ لا تسجل حركة المندوب" />
+      {offline || failure ? <div className="active-route__map local-route-context"><StoredRoad road={road} /></div> : null}
       <ol className="active-route__list" aria-label="قائمة المحطات المتاحة">{targets.map((target, index) => <li key={target.attemptId}><button type="button" disabled={disabled} aria-current={target.attemptId === currentAttemptId ? 'step' : undefined} aria-pressed={target.taskId === selectedTaskId} onClick={() => onSelect(target.taskId)}><span>{index + 1}</span><span><strong><bdi>{target.recipientName}</bdi></strong><small>{target.attemptId === currentAttemptId ? 'المحطة الحالية' : target.taskId === selectedTaskId ? 'محددة للعرض' : 'لم يبدأ الاتجاه'}</small></span></button></li>)}</ol>
     </div>
     {failure ? <p className="field-hint" role="status">{failure}</p> : <p className="field-hint">الدبابيس لعرض وجهات الجولة فقط؛ فتحها أو اختيارها لا يسجل اتجاهًا أو وصولًا.</p>}
   </section>;
+}
+
+function StoredRoad({ road }: { road?: Point[] | undefined }) {
+  if (!road?.length) return <p>لم يُنزّل مسار طريق لهذه الخطة. قائمة المحطات والعناوين متاحة.</p>;
+  const minX = Math.min(...road.map(p => p.longitude)), maxX = Math.max(...road.map(p => p.longitude));
+  const minY = Math.min(...road.map(p => p.latitude)), maxY = Math.max(...road.map(p => p.latitude));
+  const points = road.map(p => `${20 + (p.longitude - minX) / (maxX - minX || 1) * 280},${200 - (p.latitude - minY) / (maxY - minY || 1) * 180}`).join(' ');
+  return <><p>مسار الطريق المنزّل — دون خريطة أساس</p><svg viewBox="0 0 320 220" role="img" aria-label="شكل مسار الخطة المنزّلة؛ لا يمثل حركة الهاتف"><polyline points={points} fill="none" stroke="#2872c5" strokeWidth="4" strokeLinejoin="round" /></svg><small>سياق الخطة وقت التنزيل؛ ليس ملاحة أو تتبعًا.</small></>;
 }

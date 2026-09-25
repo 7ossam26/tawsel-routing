@@ -1,3 +1,5 @@
+import { localWork, storageReadiness, type Download, type PendingEffect, type LocalEnvelope } from './local-work';
+import { downloadWork } from './download-work';
 import { ExceptionEditor } from './exception-editor';
 import type { Replacement } from './execution-result';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -9,7 +11,7 @@ import { OutcomesClient } from '@tawsel/api-client/src/outcomes';
 import { RoundsClient } from '@tawsel/api-client/src/rounds';
 import { ActiveRouteMap } from './components/active-route-map';
 import { ActionButton, ContactActions, ProgressSummary, StatusNotice, StopIdentity } from './components/ui';
-import { api, deviceId, nextSequence } from './independent-tasks';
+import { api, deviceId } from './independent-tasks';
 
 type Snapshot = components['schemas']['CurrentSnapshot'];
 type Target = Snapshot['targets'][number];
@@ -26,7 +28,7 @@ const amountLabel = (amount: { amountMinor: number } | null) => amount ? egp.for
 function envelope(context: Context, state: Snapshot, target: Target, operationId: CurrentCommand['operationId'] | OutcomeCommand['operationId'], snapshotToken: string | null) {
   return {
     schemaVersion: '1.0.0' as const, payloadVersion: '1.0.0' as const, actionId: crypto.randomUUID(), operationId,
-    context: { kind: 'device' as const, tenantId: context.access.tenantId, accountId: context.access.sourceId, deviceId: deviceId(), deviceGeneration: state.owner.generation, deviceSequence: nextSequence(), ...(snapshotToken ? { snapshotToken } : {}) },
+    context: { kind: 'device' as const, tenantId: context.access.tenantId, accountId: context.access.sourceId, deviceId: deviceId(), deviceGeneration: state.owner.generation, deviceSequence: 1, ...(snapshotToken ? { snapshotToken } : {}) },
     resources: { tripId: state.roundId, taskId: target.taskId, attemptId: target.attemptId }, baseVersions: {}, dependsOnActionIds: [],
     observation: { observedAt: new Date().toISOString(), clock: { quality: 'uncertain' as const } },
     payload: { roundId: state.roundId, taskId: target.taskId, attemptId: target.attemptId, expectedActivityRevision: state.revision, expectedCurrentAttemptId: state.currentActivity?.attemptId ?? null, expectedSourceRevision: target.sourceRevision, expectedAssignmentRevision: target.assignmentRevision, expectedPinRevision: target.pinRevision }
@@ -43,74 +45,111 @@ export function CurrentActivityPage() {
   const [error, setError] = useState(''), [success, setSuccess] = useState(''), [externalFeedback, setExternalFeedback] = useState(''), [pending, setPending] = useState<Pending | null>(null);
   const [snapshotToken, setSnapshotToken] = useState<string | null>(null), [snapshotRequired, setSnapshotRequired] = useState(false);
   const [exception, setException] = useState<'partial' | 'refused' | null>(null);
-  const pendingKey = useRef(''), inFlight = useRef(false), headingRef = useRef<HTMLHeadingElement>(null);
-  const discardPending = useCallback((key = pendingKey.current) => { if (key) sessionStorage.removeItem(key); setPending(null); }, []);
-
-  const recover = useCallback(async (saved: Pending, key: string, roundId: string) => {
-    setPending(saved);
-    if (saved.kind === 'current') {
-      const status = await currentClient.result(saved.command.actionId); if (status.status === 'pending') return; discardPending(key);
-      if (status.status === 'accepted') setSuccess('أكّد الخادم الإجراء السابق.'); else setError(status.result.receipt.problem?.detail ?? 'لم يُقبل الإجراء السابق.');
-    } else if (saved.kind === 'outcome') {
-      const status = await outcomeClient.result(saved.command.actionId); if (status.status === 'pending') return; discardPending(key);
-      if (status.status === 'accepted') setSuccess('تم تأكيد نتيجة العميل من الخادم. المحطة التالية لم يبدأ الاتجاه إليها.'); else setError(status.result.receipt.problem?.detail ?? 'لم تُقبل النتيجة.');
-    } else {
-      const status = await devicesClient.result(saved.command.actionId); if (status.status === 'pending') return;
-      if (status.status !== 'accepted') { discardPending(key); setError(status.result.receipt.problem?.detail ?? 'لم يُقبل نقل التنفيذ.'); return; }
-      const snapshot = await devicesClient.snapshot(roundId, deviceId());
-      if (snapshot.context.mode === 'owner' && snapshot.context.roundState === 'active' && snapshot.snapshotToken) { sessionStorage.setItem(`tawsel:owner-snapshot:${roundId}:${deviceId()}`, snapshot.snapshotToken); setSnapshotToken(snapshot.snapshotToken); discardPending(key); setSuccess('اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.'); }
-      else setError('قُبل طلب سابق، لكن هذا الهاتف لم يعد المالك. حدّث الحالة قبل أي كتابة.');
-    }
-  }, [currentClient, devicesClient, discardPending, outcomeClient]);
-
+  const [download, setDownload] = useState<Download | null>(null), [effects, setEffects] = useState<PendingEffect[]>([]);
+  const [readiness, setReadiness] = useState(''), [offline, setOffline] = useState(!navigator.onLine);
+  const inFlight = useRef(false), headingRef = useRef<HTMLHeadingElement>(null);
+  const showDownload = useCallback(async (value: Download) => {
+    const next = await localWork.preview(value), local = await localWork.pendingFor(value.scope);
+    setDownload(value); setContext(value.session); setState(next); setOutcomes(value.outcomes); setEffects(local);
+    setSnapshotToken(value.snapshotToken); setSnapshotRequired(value.ownership.snapshotRequired); setLoaded(true);
+    setSelected(previous => next.targets.some(target => target.taskId === previous) ? previous : next.currentActivity?.taskId ?? next.nextSuggestion?.taskId ?? next.targets[0]?.taskId ?? '');
+  }, []);
   const refresh = useCallback(async () => {
-    const session = await api(`/api/session/context?kind=${kind}`) as Context; setContext(session);
-    const round = (await new RoundsClient(kind).current()).round;
-    if (!round) { setState(null); setOutcomes(null); setLoaded(true); return; }
-    const key = `tawsel:delivery-pending:${session.access.tenantId}:${session.access.sourceId}:${round.roundId}:${deviceId()}`; pendingKey.current = key;
-    const savedValue = sessionStorage.getItem(key);
-    if (savedValue) { try { await recover(JSON.parse(savedValue) as Pending, key, round.roundId); } catch { setError('تعذر التحقق من الإجراء المحفوظ. سيبقى بنفس المعرّف حتى عودة الاتصال.'); } }
-    const ownership = await devicesClient.context(round.roundId, deviceId()); setSnapshotRequired(ownership.snapshotRequired);
-    let confirmedToken = sessionStorage.getItem(`tawsel:owner-snapshot:${round.roundId}:${deviceId()}`);
-    if (ownership.mode === 'owner' && ownership.snapshotRequired) {
-      const confirmed = await devicesClient.snapshot(round.roundId, deviceId()); confirmedToken = confirmed.snapshotToken;
-      if (!confirmedToken) throw new Error('تعذر تحميل رمز الحالة المؤكدة لهذا الهاتف.'); sessionStorage.setItem(`tawsel:owner-snapshot:${round.roundId}:${deviceId()}`, confirmedToken);
+    setPending(null);
+    if (!navigator.onLine) {
+      const saved = await localWork.downloaded(kind, deviceId());
+      if (!saved) throw new Error('لا توجد جولة مبدوءة منزّلة لهذا الحساب والهاتف. التنزيل والبدء يحتاجان اتصالًا.');
+      await showDownload(saved); return;
     }
-    setSnapshotToken(confirmedToken);
-    const [next, result] = await Promise.all([currentClient.read(round.roundId), outcomeClient.read(round.roundId)]); setState(next); setOutcomes(result);
-    setSelected(previous => next.targets.some(target => target.taskId === previous) ? previous : next.currentActivity?.taskId ?? next.nextSuggestion?.taskId ?? next.targets[0]?.taskId ?? ''); setLoaded(true);
-  }, [currentClient, devicesClient, kind, outcomeClient, recover]);
-  useEffect(() => { void refresh().catch(failure => { setError(failure instanceof Error ? failure.message : 'تعذر تحميل الجولة.'); setLoaded(true); }); }, [refresh]);
-
-  const execute = useCallback(async (item: Pending) => {
-    if (inFlight.current) return; inFlight.current = true; setBusy(true); setError(''); setSuccess(''); let completed = false;
-    try {
-      sessionStorage.setItem(pendingKey.current, JSON.stringify(item)); setPending(item);
-      if (item.kind === 'current') {
-        const result = item.command.operationId === 'current.selectHeading' ? await currentClient.heading(item.command) : await currentClient.arrival(item.command);
-        if (result.receipt.businessStatus !== 'accepted') throw Object.assign(new Error(result.receipt.problem?.detail ?? 'لم يُقبل الإجراء.'), { terminal: true });
-      } else if (item.kind === 'outcome') {
-        const result = item.command.operationId === 'outcome.recordFull' ? await outcomeClient.full(item.command) : item.command.operationId === 'outcome.recordPartial' ? await outcomeClient.partial(item.command) : item.command.operationId === 'outcome.recordRefusal' ? await outcomeClient.refusal(item.command) : await outcomeClient.noAnswer(item.command);
-        if (result.receipt.businessStatus !== 'accepted') throw Object.assign(new Error(result.receipt.problem?.detail ?? 'لم تُقبل النتيجة.'), { terminal: true });
-        setSuccess(item.command.operationId === 'outcome.recordFull' ? 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : item.command.operationId !== 'outcome.recordNoAnswer' ? 'تم تأكيد النتيجة والتحصيل من الخادم؛ السجل محفوظ.' : 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.');
-      } else {
-        const result = await devicesClient.continueOnThisPhone(item.command);
-        if (result.result.receipt.businessStatus !== 'accepted' || result.snapshot?.context.mode !== 'owner') throw Object.assign(new Error(result.result.receipt.problem?.detail ?? 'لم يكتمل نقل التنفيذ وتحميل الحالة.'), { terminal: result.result.receipt.businessStatus !== 'accepted' });
-        if (!result.snapshot.snapshotToken) throw new Error('لم يصل رمز الحالة المؤكدة؛ التنفيذ ما زال معطّلًا.');
-        sessionStorage.setItem(`tawsel:owner-snapshot:${item.command.payload.roundId}:${deviceId()}`, result.snapshot.snapshotToken); setSnapshotToken(result.snapshot.snapshotToken);
-        setSuccess('اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.');
+    const session = await api('/api/session/context?kind=' + kind) as Context;
+    const scope = await localWork.select(session, deviceId()); setContext(session);
+    const existing = await localWork.downloaded(kind, deviceId()), local = await localWork.pendingFor(scope);
+    if (existing && local.length) {
+      const ownerState = await devicesClient.context(existing.roundId, deviceId());
+      if (ownerState.mode !== 'owner' || ownerState.owner.generation !== existing.ownership.owner.generation || ownerState.roundState !== 'active') {
+        await localWork.blockSelected(); throw new Error('تغيّرت ملكية الجولة. الدليل محفوظ على الهاتف للمراجعة؛ التنفيذ متوقف.');
       }
-      completed = true; setException(null); discardPending(); await refresh(); headingRef.current?.focus();
+      // A received action may already be included in the next download. An
+      // unknown response must retain its original base until explicitly checked.
+      const unknown = await Promise.all(local.map(effect => localWork.acknowledgements.get([scope, effect.actionId])));
+      if (unknown.some(value => !value)) { await showDownload(existing); return; }
+    }
+    const round = (await new RoundsClient(kind).current()).round;
+    if (!round) { setState(null); setOutcomes(null); setDownload(null); setLoaded(true); await localWork.downloads.where('scope').equals(scope).delete(); return; }
+    const legacyKey = 'tawsel:delivery-pending:' + session.access.tenantId + ':' + session.access.sourceId + ':' + round.roundId + ':' + deviceId();
+    const legacyBytes = sessionStorage.getItem(legacyKey);
+    if (legacyBytes) {
+      const legacy = JSON.parse(legacyBytes) as Pending;
+      // Earlier online sessions may already have sent these exact bytes. Import
+      // unchanged before querying the result; never enrich/reissue under a new ID.
+      await localWork.capture(scope, legacy.command, '/rounds/current?kind=' + kind, false, true);
+      sessionStorage.removeItem(legacyKey);
+      const status = legacy.kind === 'current' ? await currentClient.result(legacy.command.actionId) : legacy.kind === 'outcome' ? await outcomeClient.result(legacy.command.actionId) : await devicesClient.result(legacy.command.actionId);
+      if (status.status !== 'pending') await localWork.acknowledge(scope, status.result);
+      else if (legacy.kind === 'takeover') setPending(legacy);
+    }
+    const ownership = await devicesClient.context(round.roundId, deviceId());
+    if (ownership.mode !== 'owner') {
+      await localWork.downloads.where('scope').equals(scope).delete();
+      const [next, outcome] = await Promise.all([currentClient.read(round.roundId), outcomeClient.read(round.roundId)]);
+      setState(next); setOutcomes(outcome); setDownload(null); setSnapshotRequired(true); setSelected(next.targets[0]?.taskId ?? ''); setLoaded(true); return;
+    }
+    const value = await downloadWork(kind);
+    if (value) { await showDownload(value); const ready = await storageReadiness(); setReadiness(ready.persisted ? 'الجولة منزّلة؛ التخزين المستمر مسموح.' : 'الجولة منزّلة؛ المتصفح لم يضمن الاحتفاظ بالتخزين.'); }
+  }, [currentClient, devicesClient, kind, outcomeClient, showDownload]);
+  const load = useCallback(async () => {
+    try { await refresh(); }
+    catch (failure) {
+      const network = failure instanceof TypeError || (failure instanceof Error && 'code' in failure && failure.code === 'network');
+      if (network || !navigator.onLine) {
+        try { const saved = await localWork.downloaded(kind, deviceId()); if (saved) { await showDownload(saved); setOffline(true); return; } } catch { /* keep the original failure visible */ }
+      }
+      if (failure instanceof Error && 'code' in failure && ['access_disabled', 'session_expired', 'access_denied'].includes(String(failure.code))) await localWork.blockSelected();
+      // A known server/account/storage failure cannot leave old write controls active.
+      setDownload(null); setState(null); setContext(null); setError(failure instanceof Error ? failure.message : 'تعذر تحميل الجولة.'); setLoaded(true);
+    }
+  }, [kind, refresh, showDownload]);
+  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { const changed = () => setOffline(!navigator.onLine); window.addEventListener('online', changed); window.addEventListener('offline', changed); return () => { window.removeEventListener('online', changed); window.removeEventListener('offline', changed); }; }, []);
+
+  const execute = useCallback(async (item: Pending, retry = false) => {
+    if (inFlight.current || !context) return; inFlight.current = true; setBusy(true); setError(''); setSuccess(''); let saved = false;
+    try {
+      const partition = await localWork.active(kind, deviceId());
+      if (!partition) throw new Error('تعذر فتح تخزين هذا الحساب. المدخلات ما زالت أمامك.');
+      const captured = await localWork.capture(partition.scope, item.command as LocalEnvelope, '/rounds/current?kind=' + kind, item.kind !== 'takeover', retry);
+      const exact = { ...item, command: captured.envelope } as Pending;
+      saved = true;
+      if (download && item.kind !== 'takeover') await showDownload(download);
+      setException(null);
+      const dependencies = exact.command.dependsOnActionIds;
+      const ready = await Promise.all(dependencies.map(id => localWork.acknowledgements.get([partition.scope, id])));
+      if (offline || !navigator.onLine || ready.some(value => value?.result.receipt.businessStatus !== 'accepted')) return;
+      setPending(exact);
+      let result: components['schemas']['ActionResult'];
+      if (exact.kind === 'current') result = exact.command.operationId === 'current.selectHeading' ? await currentClient.heading(exact.command) : await currentClient.arrival(exact.command);
+      else if (exact.kind === 'outcome') result = exact.command.operationId === 'outcome.recordFull' ? await outcomeClient.full(exact.command) : exact.command.operationId === 'outcome.recordPartial' ? await outcomeClient.partial(exact.command) : exact.command.operationId === 'outcome.recordRefusal' ? await outcomeClient.refusal(exact.command) : await outcomeClient.noAnswer(exact.command);
+      else result = await devicesClient.takeover(exact.command);
+      await localWork.acknowledge(partition.scope, result); setPending(null);
+      if (result.receipt.businessStatus !== 'accepted') { setError(result.receipt.problem?.detail ?? 'لم يُقبل الإجراء؛ الدليل محفوظ.'); await refresh(); return; }
+      setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.' : 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
+      await refresh(); headingRef.current?.focus();
     } catch (failure) {
-      if (completed) setError('قُبل الإجراء، لكن تعذر تحديث العرض. حدّث الجولة لعرض الحالة المؤكدة.');
-      else if (failure instanceof Error && 'terminal' in failure && failure.terminal) { discardPending(); setError(failure.message); }
-      else setError('لم يتأكد حفظ الإجراء. تحقّق أو أعد إرسال الطلب نفسه؛ لم ننشئ إجراءً جديدًا.');
+      setError(saved ? 'الإجراء محفوظ على الهاتف؛ تعذر تأكيده أو تحديث الحالة. راجع الإجراءات المحفوظة.' : failure instanceof Error ? 'لم يُحفظ على الهاتف. ' + failure.message : 'لم يُحفظ على الهاتف؛ احتفظ بالمدخلات وحاول مجددًا.');
     } finally { inFlight.current = false; setBusy(false); }
-  }, [currentClient, devicesClient, discardPending, outcomeClient, refresh]);
+  }, [context, currentClient, devicesClient, download, kind, offline, outcomeClient, refresh, showDownload]);
+  const retryFirst = async () => {
+    if (!download || !effects[0]) return;
+    const unreceived = await Promise.all(effects.map(async effect => await localWork.acknowledgements.get([download.scope, effect.actionId]) ? null : effect));
+    const first = unreceived.find(effect => effect !== null);
+    if (!first) { await load(); return; }
+    const action = await localWork.actions.get([download.scope, first.actionId]);
+    if (action && (action.envelope.operationId.startsWith('current.') || action.envelope.operationId.startsWith('outcome.'))) await execute({ kind: action.envelope.operationId.startsWith('current.') ? 'current' : 'outcome', command: action.envelope } as Pending, true);
+  };
 
   const target = state?.targets.find(item => item.taskId === selected), current = state?.currentActivity;
   const same = current?.taskId === target?.taskId, owner = Boolean(state && state.owner.accountId === context?.access.sourceId && state.owner.deviceId === deviceId());
-  const canWrite = owner && (!snapshotRequired || Boolean(snapshotToken));
+  const canWrite = owner && Boolean(download) && (!snapshotRequired || Boolean(snapshotToken));
   const selectTarget = useCallback((taskId: string) => { if (!busy && !pending && owner) setSelected(taskId); }, [busy, owner, pending]);
   const move = () => { if (!state || !context || !target || pending) return; const arrival = same && current?.stage === 'heading'; void execute({ kind: 'current', command: envelope(context, state, target, arrival ? 'current.recordArrival' : 'current.selectHeading', snapshotToken) as CurrentCommand }); };
   const recordOutcome = (operationId: OutcomeCommand['operationId']) => {
@@ -127,22 +166,24 @@ export function CurrentActivityPage() {
   };
   const takeOver = () => {
     if (!state || !context || pending) return;
-    const command: TakeoverCommand = { schemaVersion: '1.0.0', payloadVersion: '1.0.0', actionId: crypto.randomUUID(), operationId: 'device.takeOver', context: { kind: 'device', tenantId: context.access.tenantId, accountId: context.access.sourceId, deviceId: deviceId(), deviceGeneration: state.owner.generation, deviceSequence: nextSequence() }, resources: { tripId: state.roundId }, baseVersions: { deviceGeneration: state.owner.generation }, dependsOnActionIds: [], observation: { observedAt: new Date().toISOString(), clock: { quality: 'uncertain' } }, payload: { roundId: state.roundId, expectedGeneration: state.owner.generation } };
+    const command: TakeoverCommand = { schemaVersion: '1.0.0', payloadVersion: '1.0.0', actionId: crypto.randomUUID(), operationId: 'device.takeOver', context: { kind: 'device', tenantId: context.access.tenantId, accountId: context.access.sourceId, deviceId: deviceId(), deviceGeneration: state.owner.generation, deviceSequence: 1 }, resources: { tripId: state.roundId }, baseVersions: { deviceGeneration: state.owner.generation }, dependsOnActionIds: [], observation: { observedAt: new Date().toISOString(), clock: { quality: 'uncertain' } }, payload: { roundId: state.roundId, expectedGeneration: state.owner.generation } };
     void execute({ kind: 'takeover', command });
   };
-  const total = (outcomes?.progress.processed ?? 0) + (state?.targets.length ?? 0);
+  const total = (outcomes?.progress.processed ?? 0) + (download?.current.targets.length ?? state?.targets.length ?? 0);
 
   const editor = exception && target && context ? <ExceptionEditor key={`${target.attemptId}:${exception}`} mode={exception} delivery={target.delivery} draftKey={`tawsel:exception:${context.access.tenantId}:${context.access.sourceId}:${target.attemptId}:${target.sourceRevision}:${exception}`} disabled={!canWrite || Boolean(pending)} busy={busy} error={error} pending={Boolean(pending)} onClose={() => { setException(null); requestAnimationFrame(() => document.getElementById('task-options')?.focus()); }} onSave={saveException} /> : null;
   if (exception === 'partial') return editor;
   return <main className="tasks-shell current-shell" dir="rtl"><header className="tasks-header"><div><p className="eyebrow">توصيل · جولتك</p><h1 ref={headingRef} tabIndex={-1}>المحطة الحالية</h1><p>{state?.branchActivity ? 'زيارة الفرع جارية؛ ترتيب العملاء محفوظ حتى الاستئناف.' : current?.stage === 'arrived' ? 'الوصول مسجّل؛ أكّد التسليم والتحصيل مرة واحدة.' : current ? 'أكّد الوصول عند العميل، أو سجّل عدم الرد دون اختلاق وصول.' : 'اختر المحطة ثم ابدأ الاتجاه إليها صراحةً.'}</p></div><MapPin aria-hidden="true" /></header>
     {error ? <StatusNotice tone="error" title="تحتاج الجولة مراجعة" live>{error}</StatusNotice> : null}{success ? <StatusNotice tone="success" title="تأكيد من الخادم" live>{success}</StatusNotice> : null}
     {externalFeedback ? <StatusNotice title="تم فتح تطبيق خارجي" live>{externalFeedback} لم نسجّل اتجاهًا أو وصولًا أو نجاح تواصل.</StatusNotice> : null}
-    {pending ? <StatusNotice tone="waiting" title="إجراء ينتظر التأكيد" live>المعرّف والطلب محفوظان لهذه الجلسة فقط. <ActionButton busy={busy} onClick={() => void execute(pending)}>تحقّق وأعد إرسال الطلب نفسه</ActionButton></StatusNotice> : null}
+    {pending ? <StatusNotice tone="waiting" title="إجراء ينتظر التأكيد" live>الطلب محفوظ على الهاتف؛ لم يتأكد قبوله. <ActionButton variant="secondary" busy={busy} onClick={() => void execute(pending, true)}>تحقّق وأعد إرسال الطلب نفسه</ActionButton></StatusNotice> : null}
+    {effects.length ? <StatusNotice tone="waiting" title="محفوظ على الهاتف" live>{effects.length} إجراء ينتظر المزامنة؛ أثره محلي فقط، وتقدم الخادم أدناه لم يتغير.<a className="edit-link" href={'/local-work?kind=' + kind}>مراجعة الإجراءات المحفوظة</a>{!pending && !offline ? <ActionButton variant="secondary" disabled={busy} onClick={() => void retryFirst()}>تحقّق من أول إجراء محفوظ</ActionButton> : null}</StatusNotice> : null}
+    {download ? <p className="field-hint">{offline ? 'العمل المنزّل متاح دون اتصال؛ البدء الجديد يحتاج الخادم.' : readiness} <a href={'/account?kind=' + kind}>حسابي</a></p> : null}
     {!loaded ? <StatusNotice title="جارٍ تحميل الجولة" /> : !state ? (!error ? <StatusNotice title="لا توجد جولة نشطة">ابدأ جولة متزامنة أولًا من تجهيز العمل.</StatusNotice> : null) : <>
-      {outcomes ? <ProgressSummary processed={outcomes.progress.processed} total={total} delivered={outcomes.progress.full} held={outcomes.progress.heldReturnRequiredPieces} /> : null}
-      {!owner ? <StatusNotice tone="waiting" title="الجولة تعمل على هاتف آخر">العرض للمتابعة فقط. انقل التنفيذ وحمّل الحالة المؤكدة قبل أي كتابة.<ActionButton variant="secondary" busy={busy} disabled={Boolean(pending)} onClick={takeOver}>انقل التنفيذ لهذا الهاتف</ActionButton></StatusNotice> : null}
+      {outcomes ? <section aria-label="آخر تقدم مؤكّد من الخادم"><ProgressSummary processed={outcomes.progress.processed} total={total} delivered={outcomes.progress.full} held={outcomes.progress.heldReturnRequiredPieces} /></section> : null}
+      {!owner ? <StatusNotice tone="waiting" title="الجولة تعمل على هاتف آخر">العرض للمتابعة فقط. انقل التنفيذ وحمّل الحالة المؤكدة قبل أي كتابة.<ActionButton variant="secondary" busy={busy} disabled={Boolean(pending) || offline} onClick={takeOver}>انقل التنفيذ لهذا الهاتف</ActionButton></StatusNotice> : null}
       {state.branchActivity ? <section className="current-stage-card"><h2>{state.branchActivity.stage === 'heading' ? 'متجه لفرع المصدر' : 'بانتظار تأكيد الفرع'}</h2><p>ترتيب {state.branchActivity.retainedSequence.length} عميل محفوظ في الجولة نفسها.</p><a className="action-link action-link--primary" href="/execution/branch?kind=company">متابعة زيارة الفرع</a></section> : <>
-      <ActiveRouteMap targets={state.targets} selectedTaskId={selected} currentAttemptId={current?.attemptId} onSelect={selectTarget} disabled={busy || Boolean(pending) || !owner} />
+      <ActiveRouteMap targets={state.targets} selectedTaskId={selected} currentAttemptId={current?.attemptId} onSelect={selectTarget} disabled={busy || Boolean(pending) || !owner} road={download?.road?.geometry} offline={offline} />
       {target ? <section className="current-stage-card" aria-label="تفاصيل المحطة"><StopIdentity recipientName={target.recipientName} phone={target.recipientPhone} address={target.address ?? 'نقطة التوصيل مؤكّدة على الخريطة'} stageLabel={same ? current?.stage === 'arrived' ? 'وصلت للعميل' : 'متجه للعميل' : 'محطة محددة — لم يبدأ الاتجاه'} /><ContactActions phone={target.recipientPhone} coordinates={target.coordinates} onExternalOpen={label => setExternalFeedback(`فتحت ${label}.`)} />
         {target.delivery.fullCollection ? <div className="collection-due"><span>المطلوب عند التسليم الكامل</span><strong><bdi>{amountLabel(target.delivery.fullCollection)}</bdi></strong>{target.delivery.kind === 'company' ? <small>البضاعة {amountLabel(target.delivery.goodsDue)} · الشحن {amountLabel(target.delivery.shippingDue)}</small> : <small>مبلغ اختياري حُفظ مع مهمة الحساب المستقل.</small>}</div> : <div className="collection-due collection-due--none"><span>التسليم الكامل</span><strong>بدون تحصيل</strong></div>}
         {!same || current?.stage !== 'arrived' ? <ActionButton onClick={move} busy={busy} disabled={!canWrite || Boolean(pending)}>{same ? 'وصلت' : 'اتجه للعميل'}</ActionButton> : <ActionButton onClick={() => recordOutcome('outcome.recordFull')} busy={busy} disabled={!canWrite || Boolean(pending)}><CheckCircle2 aria-hidden="true" />{target.delivery.fullCollection ? `تأكيد التسليم وتحصيل ${amountLabel(target.delivery.fullCollection)}` : 'تأكيد التسليم الكامل'}</ActionButton>}
@@ -158,6 +199,6 @@ export function CurrentActivityPage() {
       <a className="edit-link" href={`/execution/closure?kind=${kind}`}>ملخص العمل وإنهاء الجولة أو اليوم</a>
     </>}
     {editor}
-    <ActionButton variant="quiet" disabled={busy} onClick={() => { setError(''); void refresh().catch(() => setError('تعذر تحديث الجولة؛ الحالة المعروضة هي آخر ما تم تحميله.')); }}><RefreshCw aria-hidden="true" />تحديث الجولة</ActionButton>
+    <ActionButton variant="quiet" disabled={busy} onClick={() => { setError(''); void load(); }}><RefreshCw aria-hidden="true" />تحديث الجولة</ActionButton>
   </main>;
 }

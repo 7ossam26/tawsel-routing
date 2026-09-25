@@ -8336,6 +8336,17 @@ Validated provider candidate only, not a published or policy-verified route, arr
         "serviceEstimateSeconds"
       ],
       "additionalProperties": false
+    },
+    "roadRoute": {
+      "anyOf": [
+        {
+          "$ref": "routing.schema.json#/$defs/RouteResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "P33 optional OSRM-validated road geometry for this immutable plan order, captured outside the publication transaction. Null or absent means unavailable (including older/manual plans). It does not establish basemap coverage, movement, arrival or a new forecast."
     }
   },
   "required": [
@@ -19037,6 +19048,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | p30-correction-view-retained-original | corrections.schema.json#/$defs/Availability | valid foundation shape |
 | p31-recovered-pending-requests | returns.schema.json#/$defs/Groups | valid foundation shape |
 | p31-ended-round-activity-revision | workday-closure.schema.json#/$defs/RoundSummary | valid foundation shape |
+| local-started-download-v1 | local-work.schema.json#/$defs/Download | valid foundation shape |
+| local-immutable-capture-v1 | local-work.schema.json#/$defs/Action | valid foundation shape |
+| p33-plan-with-downloaded-road-context | planning.schema.json#/$defs/Plan | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19190,5 +19204,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | p30-fractional-frozen-pieces | current-activity.schema.json#/$defs/DeliveryAffordance | invalid (type) |
 | p31-malformed-pending-request | returns.schema.json#/$defs/Groups | invalid (required) |
 | p31-negative-round-activity-revision | workday-closure.schema.json#/$defs/RoundSummary | invalid (minimum) |
+| local-unsupported-download-format | local-work.schema.json#/$defs/Download | invalid (const) |
+| p33-plan-fabricated-road-provenance | planning.schema.json#/$defs/Plan | invalid (const) |
 
 [Canonical example data](../../contracts/examples/README.md)

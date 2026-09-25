@@ -4848,6 +4848,8 @@ export interface components {
             /** @enum {unknown} */
             method: "grouped-heuristic" | "manual" | "branch-service";
             orderedTaskIds: components["schemas"]["Uuid"][];
+            /** @description P33 optional OSRM-validated road geometry for this immutable plan order, captured outside the publication transaction. Null or absent means unavailable (including older/manual plans). It does not establish basemap coverage, movement, arrival or a new forecast. */
+            roadRoute?: components["schemas"]["RouteResult"] | null;
             /** @constant */
             version: 1;
         } & unknown;

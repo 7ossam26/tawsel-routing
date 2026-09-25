@@ -1133,7 +1133,7 @@
       "id": "ui.captureOfflineAction",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 33,
       "capability": "local",
       "description": "Atomic local journal and pending projection for allowed downloaded started work."
@@ -1142,7 +1142,7 @@
       "id": "ui.requestPersistentStorage",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 33,
       "capability": "local",
       "description": "Request browser storage persistence and report actual availability."
@@ -1187,7 +1187,7 @@
       "id": "ui.downloadStartedWork",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 33,
       "capability": "local",
       "description": "Store authorized snapshots/geometry for confirmed round; not offline new-round start."
@@ -1746,7 +1746,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 20,
       "capability": "execution.own",
-      "description": "Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token.",
+      "description": "Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token. P33 brackets authorized download reads with this locked owner/activity snapshot; local durability is a separate client transaction.",
       "method": "GET",
       "path": "/api/v1/devices/rounds/{roundId}/snapshot"
     },

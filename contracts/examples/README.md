@@ -56,3 +56,6 @@ P19 examples (`p19-*`) capture the actual disposable HTTP/PostgreSQL demonstrati
 # Phase 20 evidence provenance
 
 `p20-view`, takeover command/result/status, snapshot, received/duplicate/evidence, former outcome and three account-notification payloads are captured from `npm run devices:demo` (real HTTP, separate application sessions, isolated PostgreSQL and API restart; signed issuer fixture). `p20-adoption-designed-only` is a shape fixture with no handler. P20 invalid examples exercise absent generations/receipts, malformed tokens and forbidden override/time-winner fields. Canonical JSON examples remain owned here; ERP guides link to them.
+## Phase 33 examples
+
+`local-started-download-v1` and `local-immutable-capture-v1` describe browser-only records; `local-unsupported-download-format` must fail. `p33-plan-with-downloaded-road-context` extends a valid public plan with optional verified road data; `p33-plan-fabricated-road-provenance` must fail. Local saved evidence is not an accepted server/ERP result. Canonical ownership remains the corresponding schemas, with transactional/real-browser evidence in `docs/phase-33-evidence.md`.

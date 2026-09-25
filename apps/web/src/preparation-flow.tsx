@@ -8,6 +8,8 @@ import { RoundsClient } from '@tawsel/api-client/src/rounds';
 import { ActionButton, Field, StatusNotice } from './components/ui';
 import { api, deviceId, nextSequence } from './independent-tasks';
 import { pendingExecutionLinks } from './execution-command';
+import { assertNoLocalPending, useLocalPending } from './local-status';
+import { localWork, storageReadiness } from './local-work';
 
 type Session = components['schemas']['SessionContext'];
 type Daily = components['schemas']['MonitoringSnapshot'];
@@ -83,6 +85,7 @@ function taskName(daily: Daily | null, taskId: string) {
 }
 
 export function PreparationFlow() {
+  const localPending = useLocalPending();
   const kind = new URLSearchParams(window.location.search).get('kind') === 'company' ? 'company' : 'personal';
   const preparation = window.location.pathname.startsWith('/prepare');
   const planning = useMemo(() => new PlanningClient(kind), [kind]);
@@ -256,6 +259,8 @@ export function PreparationFlow() {
     finally { setBusy(false); }
   }
   async function startRound() {
+    try { await assertNoLocalPending(); if (!navigator.onLine) throw new Error('بدء جولة جديدة يحتاج اتصالًا وقبول الخادم.'); await storageReadiness(); if (session) await localWork.select(session, deviceId()); }
+    catch (failure) { setError(failure instanceof Error ? failure.message : 'تعذر التحقق من تخزين الهاتف.'); return; }
     if (!session || !session.access.driverId || !startable || dirty || pendingExecutionLinks(session, '').length) return;
     setBusy(true); setError('');
     try {
@@ -298,6 +303,7 @@ export function PreparationFlow() {
   return <main className="tasks-shell preparation-shell" dir="rtl">
     <header className="tasks-header"><div><p className="eyebrow">توصيل · عمل اليوم</p><h1>{preparation ? 'جهّز جولتك' : 'عملك اليوم'}</h1><p>{preparation ? 'اختر نقطة الانطلاق والمركبة، راجع الخطة، ثم ابدأ بعد تأكيد الخادم.' : 'العمل النشط أولًا، ثم الجاهز والقادم وما يحتاج مراجعة.'}</p></div><span className="tasks-logo" aria-hidden="true">{preparation ? <Route /> : <Truck />}</span></header>
     {session && pendingExecutionLinks(session, '').length > 0 ? <section className="current-stage-card"><h2>تحقّق من الإجراءات السابقة قبل بدء جولة</h2>{pendingExecutionLinks(session, '').map(item => <a className="edit-link" key={item.id} href={item.href}>فتح الإجراء المعلّق</a>)}</section> : null}
+    {localPending.items.length || localPending.error ? <StatusNotice tone="waiting" title="البدء ينتظر مراجعة العمل المحفوظ">{localPending.error}<a href={'/local-work?kind=' + kind}>مراجعة الإجراءات المحفوظة</a></StatusNotice> : null}
     {current?.workday ? <a className="edit-link" href={`/execution/closure?kind=${kind}&workdayId=${current.workday.workdayId}`}>ملخص العمل وإنهاء اليوم</a> : null}
     {error ? <StatusNotice tone="error" title="تحتاج مراجعة" live>{error}</StatusNotice> : null}
     {notice ? <StatusNotice tone="waiting" title="الحالة الحالية" live>{notice}</StatusNotice> : null}

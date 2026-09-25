@@ -37,7 +37,8 @@ export async function providerFixture(options:{beforeResponse?:()=>Promise<void>
    if(options.roadStatus){res.statusCode=options.roadStatus;res.end('controlled road failure');return;}
    // Labelled OSRM HTTP endpoint fixture: one 25-second/250-metre leg.
    const points=new URL(req.url!,'http://fixture').pathname.split('/').at(-1)!.split(';').map(p=>p.split(',').map(Number));
-   res.setHeader('content-type','application/json');res.end(JSON.stringify({code:'Ok',waypoints:points.map(location=>({location})),routes:[{duration:25,distance:250,legs:[{duration:25,distance:250}],geometry:{type:'LineString',coordinates:points}}]}));return;
+   const legs=points.slice(1).map(()=>({duration:25,distance:250}));
+   res.setHeader('content-type','application/json');res.end(JSON.stringify({code:'Ok',waypoints:points.map(location=>({location})),routes:[{duration:25*legs.length,distance:250*legs.length,legs,geometry:{type:'LineString',coordinates:points}}]}));return;
   }
   const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));
   const body=JSON.parse(Buffer.concat(chunks).toString()) as {jobs:{id:number;location:number[];service:number}[];vehicles:{start:number[];end?:number[]}[]};

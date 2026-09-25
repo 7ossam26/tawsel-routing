@@ -7,6 +7,7 @@ import { LocationClient } from '@tawsel/api-client/src/locations';
 import { ActionButton, StatusNotice } from './components/ui';
 import { api, deviceId } from './independent-tasks';
 import { confirmedExecutionOwner, executionEnvelope, pendingExecutionLinks, useExecutionCommand } from './execution-command';
+import { useLocalPending } from './local-status';
 
 type S = components['schemas'];
 type Command = S['ClosureEndRoundCommand'] | S['ClosureEndDayCommand'];
@@ -14,6 +15,7 @@ const blockers: Record<string, string> = { 'result-required': 'راجع النت
 function money(minor: string) { const amount = BigInt(minor); return `${(amount / 100n).toLocaleString('ar-EG')}٫${(amount % 100n).toLocaleString('ar-EG', { minimumIntegerDigits: 2, useGrouping: false })} ج.م`; }
 
 export function ClosurePage() {
+  const local = useLocalPending();
   const kind = new URLSearchParams(window.location.search).get('kind') === 'company' ? 'company' : 'personal';
   const client = useMemo(() => new ClosureClient(kind), [kind]);
   const [session, setSession] = useState<S['SessionContext'] | null>(null), [summary, setSummary] = useState<S['ClosureSummary'] | null>(null);
@@ -39,7 +41,7 @@ export function ClosurePage() {
   useEffect(() => { void refresh().catch(e => { setLoaded(true); setError(e instanceof Error ? e.message : 'تعذر تحميل اليوم.'); }); }, [refresh]);
   async function run(command?: Command) { const accepted = await action.execute(command); if (accepted) setPause(false); try { await refresh(); } catch { setFresh(false); setError('تعذر تحديث الملخص؛ تحقّق من الخادم قبل المتابعة.'); } }
   const anchor = summary?.rounds.at(-1), active = Boolean(current), arrived = current?.currentActivity?.stage === 'arrived', heading = current?.currentActivity?.stage === 'heading';
-  const unresolved = session ? pendingExecutionLinks(session, key) : [];
+  const unresolved = [...(session ? pendingExecutionLinks(session, key) : []), ...local.items.filter(item => item.actionId !== action.pending?.actionId).map(item => ({ id: item.actionId, href: item.href }))];
   const branch = current?.branchActivity, blocked = !fresh || owner?.mode !== 'owner' || Boolean(action.pending) || action.busy || unresolved.length > 0 || arrived || Boolean(branch) || (heading && !pause) || (!active && anchor?.activityRevision === undefined);
   function close() {
     if (blocked || !session || !summary || !anchor || !owner || summary.endedAt) return;

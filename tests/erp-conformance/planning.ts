@@ -8,6 +8,12 @@ import { assertRoutingCandidate } from './routing.js';
  * import backend/database code or imply delivery of an outbox event. */
 export function assertPlanningPlan(plan:components['schemas']['PlanningPlan']){
  assert.ok(plan.input.settings);
+ if(plan.routePolicy?.roadRoute){
+  assert.equal(plan.routePolicy.roadRoute.geometrySource,'osrm-road');
+  assert.equal(plan.routePolicy.roadRoute.mode,plan.input.settings.mode);
+  assert.ok(plan.routePolicy.roadRoute.geometry.length>=2);
+  assert.equal(plan.routePolicy.roadRoute.legs.length,plan.routePolicy.orderedTaskIds.length+(plan.input.settings.endpoint.kind==='last-customer'?0:1));
+ }
  const eligible=plan.input.members.filter(m=>m.eligible);
  assert.ok(eligible.length+(plan.input.settings.endpoint.kind==='branch'?1:0)<=50);
  for(const m of eligible){assert.equal(m.exclusionReason,null);assert.ok(m.coordinates);if(m.earliestAt)assert.ok(Date.parse(m.earliestAt)<=Date.parse(plan.input.settings.plannedStartAt));}
@@ -58,7 +64,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const examples=JSON.parse(await readFile(new URL('../../contracts/examples/valid.json',import.meta.url),'utf8')) as {id:string;data:components['schemas']['PlanningPlan']}[];
  const sample=examples.find(e=>e.id==='p13-partial')!.data;
  assertPlanningPlan(sample);
- for(const example of examples.filter(e=>['p14-ready','p14-partial-urgent','p14-manual'].includes(e.id)))assertPlanningPlan(example.data);
+ for(const example of examples.filter(e=>['p14-ready','p14-partial-urgent','p14-manual','p33-plan-with-downloaded-road-context'].includes(e.id)))assertPlanningPlan(example.data);
  const manual=examples.find(e=>e.id==='p14-manual')!.data;
  assert.throws(()=>assertPlanningPlan({...manual,routePolicy:{...manual.routePolicy!,orderedTaskIds:[...manual.routePolicy!.orderedTaskIds].reverse()}}));
  assert.throws(()=>assertPlanningPlan({...sample,forecast:{...sample.forecast,expectedFinishAt:'2026-09-23T11:00:00Z'}}));

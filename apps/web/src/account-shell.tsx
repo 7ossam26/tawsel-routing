@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Truck } from 'lucide-react';
 import type { components } from '@tawsel/api-client';
 import { ActionButton, Field, StatusNotice } from './components/ui';
+import { assertNoLocalPending, useLocalPending } from './local-status';
+import { localWork } from './local-work';
 
 type Kind = 'company' | 'personal';
 type Context = components['schemas']['SessionContext'];
@@ -33,6 +35,7 @@ async function send(path: string, body?: object) {
 }
 
 export function AccountShell() {
+  const local = useLocalPending();
   const query = new URLSearchParams(window.location.search);
   const path = window.location.pathname;
   const kind: Kind = query.get('kind') === 'personal' || ['/login/independent', '/register', '/verify-email'].includes(path) ? 'personal' : 'company';
@@ -63,6 +66,7 @@ export function AccountShell() {
     finally { setBusy(false); }
   }
   async function begin(reauthenticate = false) {
+    if (!reauthenticate) await assertNoLocalPending();
     const result = await send(`/api/session/${intent === 'login' ? 'login' : intent}`, { kind, ...(company ? { companyCode: company.code } : {}), ...(phone ? { phone } : {}), ...(reauthenticate ? { reauthenticate: true } : {}) });
     window.location.assign(result.authorizationUrl);
   }
@@ -75,7 +79,7 @@ export function AccountShell() {
           <StatusNotice tone="success" title="أنت مسجّل الدخول">{kind === 'company' ? 'الوصول حسب صلاحياتك الحالية في الشركة.' : 'مساحة حسابك المستقل منفصلة عن حساب الشركة.'}</StatusNotice>
           <dl className="status-list"><div><dt>{kind === 'company' ? 'اسم المستخدم' : 'رقم الهاتف'}</dt><dd><bdi dir="auto">{context.loginIdentifier}</bdi></dd></div><div><dt>بريد الاستعادة</dt><dd>{context.recoveryEmailVerified ? 'تم التحقق منه' : 'راجع جهة تسجيل الدخول'}</dd></div></dl>
           <a className="edit-link" href={`/day?kind=${kind}`}>عمل اليوم وتجهيز الجولة</a>
-          <ActionButton busy={busy} onClick={() => void act(async () => { await send('/api/session/logout', { kind }); window.location.assign(`/login?kind=${kind}`); })}>تسجيل الخروج</ActionButton>
+          <ActionButton busy={busy} onClick={() => void act(async () => { await assertNoLocalPending(); await send('/api/session/logout', { kind }); await localWork.exit(); window.location.assign(`/login?kind=${kind}`); })}>تسجيل الخروج</ActionButton>
         </> : <>
           {errorCode === 'session_expired' ? <ActionButton busy={busy} onClick={() => void act(() => begin(true))}>الدخول للحساب نفسه</ActionButton> : <ActionButton onClick={() => window.location.reload()}>إعادة المحاولة</ActionButton>}
           <a className="account-link" href={`/recover?kind=${kind}`}>استعادة الحساب</a>
@@ -90,5 +94,6 @@ export function AccountShell() {
         </form>
         <div className="account-secondary">{intent === 'login' ? <><a href={`/recover?kind=${kind}`}>نسيت كلمة المرور؟</a>{kind === 'personal' ? <a href="/register">حساب جديد</a> : null}</> : <a href={`/login?kind=${kind}`}>العودة للدخول</a>}</div>
       </>}
+      {local.items.length || local.error ? <StatusNotice tone="waiting" title="راجع العمل المحفوظ قبل تغيير الحساب">{local.error || 'إجراءات على الهاتف تنتظر المزامنة. لم تُحذف.'}<a className="edit-link" href={'/local-work?kind=' + (local.kind ?? kind)}>مراجعة الإجراءات المحفوظة</a><a className="edit-link" href={'/rounds/current?kind=' + (local.kind ?? kind)}>العودة للجولة</a></StatusNotice> : null}
     </section><p className="account-footnote">تحتاج إلى اتصال لإتمام الدخول أو الاستعادة.</p></main>;
 }

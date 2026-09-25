@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tawsel.invalid/v1/local-work.schema.json",
+  "title": "P33 browser-local storage records v1",
+  "description": "Local storage format only, never an HTTP acceptance or authorization grant. IndexedDB schema 1; immutable action schema/payload v1. Preserve unknown/newer data, stop writes and ask for a compatible application; never delete/recreate or expire pending records.",
+  "$defs": {
+    "Download": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600,
+          "description": "JSON.stringify([kind, tenantId, accountId, deviceId]); every business store uses this full partition key. Not a credential."
+        },
+        "roundId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "format": {
+          "const": 1
+        },
+        "downloadedAt": {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        "session": {
+          "$ref": "session.schema.json#/$defs/SessionContext"
+        },
+        "ownership": {
+          "$ref": "device-ownership.schema.json#/$defs/Context"
+        },
+        "snapshotToken": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current": {
+          "$ref": "current-activity.schema.json#/$defs/Snapshot"
+        },
+        "outcomes": {
+          "$ref": "outcomes.schema.json#/$defs/Snapshot"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "planning.schema.json#/$defs/Plan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "road": {
+          "anyOf": [
+            {
+              "$ref": "routing.schema.json#/$defs/RouteResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "scope",
+        "roundId",
+        "format",
+        "downloadedAt",
+        "session",
+        "ownership",
+        "snapshotToken",
+        "current",
+        "outcomes",
+        "plan",
+        "road"
+      ],
+      "additionalProperties": false
+    },
+    "Action": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600,
+          "description": "JSON.stringify([kind, tenantId, accountId, deviceId]); every business store uses this full partition key. Not a credential."
+        },
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "roundId": {
+          "type": "string"
+        },
+        "envelope": {
+          "$ref": "action-envelope.v1.schema.json"
+        },
+        "bytes": {
+          "type": "string",
+          "description": "Original JSON serialization sent to the server, immutable for this action ID. Typed clients stringify this same stored envelope without mutation."
+        },
+        "capturedAt": {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        },
+        "href": {
+          "type": "string",
+          "pattern": "^/"
+        }
+      },
+      "required": [
+        "scope",
+        "actionId",
+        "sequence",
+        "roundId",
+        "envelope",
+        "bytes",
+        "capturedAt",
+        "href"
+      ],
+      "additionalProperties": false
+    },
+    "Pending": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600,
+          "description": "JSON.stringify([kind, tenantId, accountId, deviceId]); every business store uses this full partition key. Not a credential."
+        },
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "roundId": {
+          "type": "string"
+        },
+        "operationId": {
+          "$ref": "common.schema.json#/$defs/OperationId"
+        },
+        "taskId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "href": {
+          "type": "string",
+          "pattern": "^/"
+        }
+      },
+      "required": [
+        "scope",
+        "actionId",
+        "sequence",
+        "roundId",
+        "operationId",
+        "taskId",
+        "href"
+      ],
+      "additionalProperties": false
+    },
+    "Acknowledgement": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 600,
+          "description": "JSON.stringify([kind, tenantId, accountId, deviceId]); every business store uses this full partition key. Not a credential."
+        },
+        "actionId": {
+          "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "result": {
+          "$ref": "action-result.v1.schema.json"
+        },
+        "savedAt": {
+          "$ref": "common.schema.json#/$defs/UtcInstant"
+        }
+      },
+      "required": [
+        "scope",
+        "actionId",
+        "result",
+        "savedAt"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

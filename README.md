@@ -1,5 +1,7 @@
 # tawsel-routing
 
+Phase 33 now provides a production PWA shell, account-scoped downloaded started work and atomic local driver capture. See [behavior, schema boundaries and reproducible offline demonstration](docs/offline-local-capture.md) and [verification evidence](docs/phase-33-evidence.md). Automatic replay and complete account/update recovery remain Phases 34–35; older phase summaries below retain their historical scope.
+
 Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
 
 ## Application workspace, identity, intake and planning (through Phase 16)

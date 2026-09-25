@@ -512,3 +512,6 @@ h2 { line-height: 1.55; }
 .closure-pause { display: flex; align-items: start; gap: .65rem; padding-block: 1rem; }
 .closure-pause input { margin-block-start: .4rem; width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
 .branch-shell .action-button, .closure-shell .action-button { white-space: normal; }
+ .local-route-context { display: grid; place-content: center; padding: 1rem; text-align: center; }
+ .local-route-context svg { width: 100%; max-height: 240px; }
+ .current-stage-card pre { max-width: 100%; overflow: auto; font-size: .8rem; text-align: left; }

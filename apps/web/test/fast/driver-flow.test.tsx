@@ -1,4 +1,5 @@
 import { connectedIds, installConnectedFetch } from './execution-fixture';
+import { localWork } from '../../src/local-work';
 // @vitest-environment jsdom
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -120,9 +121,9 @@ describe('connected ordinary delivery flow', () => {
     await user.click(await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ }));
     await screen.findByText('إجراء ينتظر التأكيد');
     const list = screen.getByRole('list', { name: 'قائمة المحطات المتاحة' });
-    expect((list.querySelector('button') as HTMLButtonElement).disabled).toBe(true);
-    await user.click(screen.getByText('خيارات المهمة'));
-    expect((screen.getByRole('button', { name: 'تسليم بعض القطع' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(list.querySelector('button')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'تسليم بعض القطع' })).toBeNull();
+    expect((await localWork.actions.toArray())[0]?.envelope.resources.taskId).toBe(connectedIds.task);
   });
 
   it('uses the server amount in one full delivery-plus-collection command', async () => {
@@ -147,7 +148,8 @@ describe('connected ordinary delivery flow', () => {
     const posts = installConnectedFetch({ loseFirstOutcome: true }); const user = userEvent.setup(); render(<ProductionShell />);
     await user.click(await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ }));
     expect(await screen.findByText('إجراء ينتظر التأكيد')).toBeTruthy();
-    expect(sessionStorage.getItem(`tawsel:delivery-pending:${connectedIds.tenant}:${connectedIds.account}:${connectedIds.round}:${connectedIds.device}`)).toContain(connectedIds.action);
+    expect((await localWork.actions.toArray())[0]?.actionId).toBe(connectedIds.action);
+    expect((await localWork.pending.toArray())[0]?.actionId).toBe(connectedIds.action);
     await user.click(screen.getByRole('button', { name: 'تحقّق وأعد إرسال الطلب نفسه' }));
     await waitFor(() => expect(posts).toHaveLength(2));
     expect(posts[1]).toEqual(posts[0]);

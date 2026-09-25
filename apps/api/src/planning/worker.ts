@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
 import { withTransaction, type Transaction } from '../db/transaction.js';
 import { lockInvariants } from '../commands/locks.js';
-import { EngineError, type OptimizationInput, type OptimizationResult } from '../engine/index.js';
+import { EngineError, type OptimizationInput, type OptimizationResult, type RouteResult } from '../engine/index.js';
+import { validateModel } from '../engine/models.js';
 import { enqueuePlanning, fingerprint, planningState, snapshot } from './queue.js';
 import type { JobRow, Job } from './models.js';
 import { instant, planRoute, validateCompleteRoute, type Planner } from './policy.js';
@@ -60,7 +61,7 @@ export function engineInput(job:JobRow):OptimizationInput {
 }
 /** Atomic append and pointer update; the lease fence prevents duplicate
  * effective publication even if a lost worker later returns. */
-export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candidate:OptimizationResult}|{error:NonNullable<Job['error']>},maxAttempts=3):Promise<boolean> {
+export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candidate:OptimizationResult;roadRoute?:RouteResult|null}|{error:NonNullable<Job['error']>},maxAttempts=3):Promise<boolean> {
  return withTransaction(pool,async tx=>{
   await driverLock(tx,job.tenant_id,job.driver_id);
   const state=await planningState(tx,job.tenant_id,job.driver_id);
@@ -91,7 +92,7 @@ export async function persistPlanningResult(pool:Pool,job:Claim,outcome:{candida
   const candidate=result.candidate;
   const planState=candidate.status==='complete'?'ready':'partial';
   const currentMissing=!!row.input.currentTarget&&candidate.unassignedTaskIds.includes(row.input.currentTarget.taskId);
-  const routePolicy={version:1,method:'grouped-heuristic',orderedTaskIds:candidate.visits.map(v=>v.taskId),exceptions:candidate.unassignedTaskIds.map(taskId=>({taskId,reason:taskId===row.input.currentTarget?.taskId?'unassigned-current':currentMissing?'blocked-by-current':row.input.members.find(m=>m.taskId===taskId)!.priority==='urgent'?'unassigned-urgent':'unassigned-ordinary'}))};
+  const routePolicy={version:1,method:'grouped-heuristic',roadRoute:result.roadRoute??null,orderedTaskIds:candidate.visits.map(v=>v.taskId),exceptions:candidate.unassignedTaskIds.map(taskId=>({taskId,reason:taskId===row.input.currentTarget?.taskId?'unassigned-current':currentMissing?'blocked-by-current':row.input.members.find(m=>m.taskId===taskId)!.priority==='urgent'?'unassigned-urgent':'unassigned-ordinary'}))};
   const planId=randomUUID(),forecastId=randomUUID(),workloadId=randomUUID(),revision=Number(state.next_plan_revision),anchor=row.input.settings!.plannedStartAt;
   await tx.query(`INSERT INTO tawsel.plan_revisions (tenant_id,driver_id,plan_id,job_id,revision,fingerprint,candidate,state,route_policy) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[row.tenant_id,row.driver_id,planId,row.job_id,revision,row.fingerprint,candidate,planState,routePolicy]);
   await tx.query(`INSERT INTO tawsel.forecast_revisions (tenant_id,forecast_id,plan_id,workload_id,time_origin,expected_finish_at) VALUES ($1,$2,$3,$4,$5,$6)`,
@@ -125,7 +126,18 @@ export async function runPlanningOnce(pool:Pool,planner:Planner,options:{leaseMs
  let outcome:Parameters<typeof persistPlanningResult>[2];
  try {
   const timeout=AbortSignal.timeout(Math.max(1,leaseMs-100));
-  outcome={candidate:await planRoute(job.input,planner,options.signal?AbortSignal.any([timeout,options.signal]):timeout)};
+  const signal=options.signal?AbortSignal.any([timeout,options.signal]):timeout;
+  const candidate=await planRoute(job.input,planner,signal);
+  let roadRoute:RouteResult|null=null;
+  if(planner.route&&candidate.visits.length){
+   const settings=job.input.settings!,coordinates=[settings.origin.coordinates,...candidate.visits.map(visit=>visit.coordinates),...(settings.endpoint.kind==='last-customer'?[]:[settings.endpoint.coordinates])];
+   try{
+    const road=await planner.route({mode:settings.mode,coordinates},AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(3000,leaseMs/10)))]));
+    validateModel('RouteResult',road,true);
+    if(road.mode===settings.mode&&road.legs.length===coordinates.length-1)roadRoute=road;
+   }catch{ /* Road display is optional; do not discard a valid plan if unavailable. */ }
+  }
+  outcome={candidate,roadRoute};
  }catch(error){outcome={error:error instanceof EngineError?error.toJSON():{code:'provider_error',provider:'boundary'}};}
  await persistPlanningResult(pool,job,outcome,options.maxAttempts??3);
  return true;

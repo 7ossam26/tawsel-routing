@@ -6,7 +6,7 @@ import { BranchPage } from '../../src/branch-page';
 import { ClosurePage } from '../../src/closure-page';
 import { pendingExecutionLinks } from '../../src/execution-command';
 import type { components } from '@tawsel/api-client';
-import { connectedIds as ids } from './execution-fixture';
+import { connectedIds as ids, connectedContext, receiptFixture } from './execution-fixture';
 
 beforeEach(() => { window.history.replaceState({}, '', '/execution/branch?kind=company'); localStorage.clear(); sessionStorage.clear(); localStorage.setItem('tawsel:device-id', ids.device); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -19,7 +19,7 @@ function fixture(options: { arrived?: boolean; visit?: 'heading' | 'arrived'; co
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = String(input); let value: unknown;
     if (url.includes('/bootstrap')) value = { csrfToken: 'csrf' };
-    else if (url.includes('/session/context')) value = { access: { tenantId: ids.tenant, sourceId: ids.account } };
+    else if (url.includes('/session/context')) value = { ...connectedContext, kind: new URLSearchParams(location.search).get('kind') ?? 'company' };
     else if (url.includes('/rounds/current')) value = { round: { roundId: ids.round } };
     else if (url.includes('/current/rounds/')) value = { roundId: ids.round, revision: 7, branchActivity: branch(), currentActivity: visit ? null : { taskId: ids.task, attemptId: ids.attempt, stage: options.arrived ? 'arrived' : 'heading' }, targets: [{ taskId: ids.task, recipientName: 'العميل المتوقف' }] };
     else if (url.includes('/devices/rounds/')) value = { mode: options.otherPhone ? 'view-only' : 'owner', owner: { generation: 2 }, snapshotRequired: false };
@@ -33,7 +33,7 @@ function fixture(options: { arrived?: boolean; visit?: 'heading' | 'arrived'; co
       if (body.operationId === 'branch.interruptRound') visit = 'heading';
       if (body.operationId === 'branch.recordArrival') visit = 'arrived';
       if (body.operationId === 'branch.resumeRound') visit = undefined;
-      value = { receipt: { businessStatus: 'accepted' }, response: { body: body.operationId === 'return.requestHandover' ? { request } : {} } };
+      value = receiptFixture(body, false, body.operationId === 'return.requestHandover' ? { request } : {});
     } else throw new Error(url);
     return new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } });
   });
@@ -42,7 +42,8 @@ function fixture(options: { arrived?: boolean; visit?: 'heading' | 'arrived'; co
 it('A: sends chosen source items, then pauses heading and arrives through distinct real client routes', async () => {
   const posts = fixture(), user = userEvent.setup(); render(<BranchPage />);
   await user.clear(await screen.findByLabelText('الكمية المعروضة — شحنة ١/pieces')); await user.type(screen.getByLabelText('الكمية المعروضة — شحنة ١/pieces'), '3'); await user.click(screen.getByRole('button', { name: 'أرسل طلب الإرجاع' }));
-  await user.clear(await screen.findByLabelText('القطع المطلوب تأكيدها — شحنة ١/pieces')); await user.type(screen.getByLabelText('القطع المطلوب تأكيدها — شحنة ١/pieces'), '2'); await user.click(screen.getByRole('button', { name: 'اتجه للفرع واحفظ ترتيب العملاء' }));
+  await waitFor(() => expect((screen.getByLabelText('القطع المطلوب تأكيدها — شحنة ١/pieces') as HTMLInputElement).disabled).toBe(false));
+  await user.clear(screen.getByLabelText('القطع المطلوب تأكيدها — شحنة ١/pieces')); await user.type(screen.getByLabelText('القطع المطلوب تأكيدها — شحنة ١/pieces'), '2'); await user.click(screen.getByRole('button', { name: 'اتجه للفرع واحفظ ترتيب العملاء' }));
   await screen.findByText('العميل المتوقف — أوقفنا الاتجاه إليه'); await user.click(screen.getByRole('button', { name: 'وصلت للفرع' })); await screen.findByText('وصلت للفرع — الاستلام منفصل');
   expect(posts.map(p => p.body.operationId)).toEqual(['return.requestHandover', 'branch.interruptRound', 'branch.recordArrival']);
   expect(posts[0]!.body.payload).toMatchObject({ sourceBranchId: 'source-branch', items: [{ quantity: 3, sourceLineId: 'pieces' }] });
@@ -78,19 +79,19 @@ it('B: another phone sees the request and fifty paused customers without writing
 function closureFixture(options: { stage?: 'heading' | 'arrived'; endedRound?: boolean; personal?: boolean; pending?: boolean; lose?: boolean; otherPhone?: boolean; branch?: boolean } = {}) {
   window.history.replaceState({}, '', `/execution/closure?kind=${options.personal ? 'personal' : 'company'}`);
   const posts: Record<string, unknown>[] = []; let roundEnded = Boolean(options.endedRound), dayEnded = false, lost = false;
-  const accepted = { receipt: { businessStatus: 'accepted' }, response: { body: {} } };
+  const accepted = () => receiptFixture(posts.at(-1)! as { actionId: string; operationId: string });
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = String(input); let value: unknown;
     if (url.includes('/bootstrap')) value = { csrfToken: 'csrf' };
-    else if (url.includes('/session/context')) value = { access: { tenantId: ids.tenant, sourceId: ids.account } };
+    else if (url.includes('/session/context')) value = { ...connectedContext, kind: new URLSearchParams(location.search).get('kind') ?? 'company' };
     else if (url.includes('/rounds/current')) value = { workday: dayEnded ? null : { workdayId: ids.workday }, round: roundEnded ? null : { roundId: ids.round, workdayId: ids.workday } };
     else if (url.includes('/summary')) value = { workdayId: ids.workday, openedAt: '2026-09-24T20:00:00Z', endedAt: dayEnded ? '2026-09-25T03:00:00Z' : null, rounds: [{ roundId: ids.round, activityRevision: 9 }], scope: { fullShipments: 1, partialShipments: 0, refusedShipments: 1, noAnswerShipments: 0, unfinishedShipments: 1 }, collection: [{ reportedMinor: '25000', unreportedAttempts: 0 }], carryForward: { items: [{ taskId: ids.task, heldPieces: options.personal ? null : 3, disposition: 'unfinished', blocker: null, unpaidShippingMinor: '0' }] } };
     else if (url.includes('/current/rounds/')) value = { roundId: ids.round, revision: 8, currentActivity: options.stage ? { stage: options.stage, attemptId: ids.attempt } : null, branchActivity: options.branch ? {} : null };
     else if (url.includes('/devices/') && url.includes('/snapshot')) value = { snapshotToken: 'confirmed-owner-generation' };
     else if (url.includes('/devices/')) value = { mode: options.otherPhone ? 'view-only' : 'owner', owner: { generation: 2 }, snapshotRequired: true };
     else if (url.includes('/locations')) value = { items: [{ taskId: ids.task, recipientName: 'عميل العمل المتبقي' }] };
-    else if (url.includes('/closure/actions/')) value = { status: options.pending ? 'pending' : 'accepted', ...(!options.pending ? { result: accepted } : {}) };
-    else if (init?.method === 'POST') { const body = JSON.parse(String(init.body)); posts.push(body); if (options.pending) value = { status: 'pending', actionId: body.actionId }; else { roundEnded = true; dayEnded = body.operationId === 'workday.end'; if (options.lose && !lost) { lost = true; throw new Error('lost response'); } value = accepted; } }
+    else if (url.includes('/closure/actions/')) value = { status: options.pending ? 'pending' : 'accepted', ...(!options.pending ? { result: accepted() } : {}) };
+    else if (init?.method === 'POST') { const body = JSON.parse(String(init.body)); posts.push(body); if (options.pending) value = { status: 'pending', actionId: body.actionId }; else { roundEnded = true; dayEnded = body.operationId === 'workday.end'; if (options.lose && !lost) { lost = true; throw new Error('lost response'); } value = accepted(); } }
     else throw new Error(url);
     return new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } });
   });

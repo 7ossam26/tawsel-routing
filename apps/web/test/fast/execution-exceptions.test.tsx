@@ -3,7 +3,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { ProductionShell } from '../../src/production-shell';
-import { connectedIds, installConnectedFetch } from './execution-fixture';
+import { connectedIds, connectedContext, receiptFixture, installConnectedFetch } from './execution-fixture';
 import { ExecutionOptionsPage } from '../../src/execution-options';
 import { CorrectionPage } from '../../src/correction-page';
 
@@ -40,6 +40,7 @@ it.each([false, true])('maps refusal shipping choice unpaid=%s to exact amounts;
 });
 
 it.each([{ personal: true }, { noSplit: true }])('hides forbidden splitting for %j', async options => {
+  if (options.personal) window.history.replaceState({}, '', '/rounds/current?kind=personal');
   const posts = installConnectedFetch(options); const user = userEvent.setup(); render(<ProductionShell />); await user.click(await screen.findByText('خيارات المهمة'));
   expect(screen.queryByRole('button', { name: 'تسليم بعض القطع' })).toBeNull();
   if (options.personal) { await user.click(screen.getByRole('button', { name: 'رفض الاستلام' })); expect(screen.queryByText('دفع الشحن')).toBeNull(); expect(screen.queryByText(/المتبقي معك للإرجاع/)).toBeNull(); await user.click(screen.getByRole('button', { name: 'تأكيد النتيجة والتحصيل' })); await waitFor(() => expect(posts).toHaveLength(1)); expect(JSON.stringify(posts[0])).not.toMatch(/shippingPayment|reportedCollection|pieces/); }
@@ -50,9 +51,9 @@ function schedulingFetch(blocker: 'capacity' | 'earliest-time' | null = null, tr
   const item = { taskId: connectedIds.task, attemptId: connectedIds.attempt, revision: 4, sourceRevision: 2, assignmentRevision: 3, pinRevision: 1, earliestAt: '2030-01-02T10:00:00Z', urgency: 'ordinary', deferred: true, latestOutcomeId: null, actions: Object.fromEntries(['defer', 'retry', 'activate', 'urgency'].map(action => [action, { allowed: !blocker || action === 'urgency', blocker, message: blocker === 'capacity' ? 'الجولة بها ٥٠ محطة متبقية؛ أكمل محطة قبل الإضافة.' : 'لم يحن وقت الإتاحة بعد.' }])) };
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = String(input); let value: unknown;
-    if (url.includes('/session/context')) value = { access: { tenantId: connectedIds.tenant, sourceId: connectedIds.account } };
+    if (url.includes('/session/context')) value = connectedContext;
     else if (url.includes('/bootstrap')) value = { csrfToken: 'csrf' };
-    else if (init?.method === 'POST') { posts.push({ url, body: JSON.parse(String(init.body)) }); value = { receipt: { businessStatus: 'accepted' } }; }
+    else if (init?.method === 'POST') { posts.push({ url, body: JSON.parse(String(init.body)) }); value = receiptFixture(JSON.parse(String(init?.body))); }
     else if (url.includes('/eligibility/rounds/')) value = { roundId: connectedIds.round, mode: 'active-round', activityRevision: 7, currentAttemptId: connectedIds.attempt, items: [item], history: [] };
     else if (url.includes('/devices/') && url.includes('/snapshot')) value = { snapshotToken: 'confirmed-generation-two' };
     else if (url.includes('/devices/')) value = { mode: 'owner', owner: { generation: 2 }, roundState: 'active', snapshotRequired: transferred };
@@ -76,6 +77,7 @@ it('uses actual urgency and future deferral mappings with protected-current and 
   const posts = schedulingFetch(), user = userEvent.setup(); render(<ExecutionOptionsPage />);
   await user.click(await screen.findByRole('button', { name: 'أولوية المهمة' })); await waitFor(() => expect(posts).toHaveLength(1));
   expect(posts[0]).toMatchObject({ url: '/api/v1/eligibility/urgency?kind=company', body: { operationId: 'task.setDriverUrgency', payload: { urgency: 'urgent', expectedCurrentAttemptId: connectedIds.attempt, expectedActivityRevision: 7, expectedEligibilityRevision: 4 } } });
+  await waitFor(() => expect((screen.getByLabelText('اختر الإجراء') as HTMLSelectElement).disabled).toBe(false));
   await user.selectOptions(screen.getByLabelText('اختر الإجراء'), 'defer');
   const field = screen.getByLabelText('الإتاحة بدءًا من');
   // Native datetime-local editing is simulated; server date validation is covered by PostgreSQL/browser tests.
@@ -91,10 +93,10 @@ function correctionFetch(denied: 'receipt' | 'day' | null, lost = false, executi
   const reason = denied === 'receipt' ? 'أكد الفرع استلامًا مرتبطًا؛ السجل محفوظ.' : 'انتهى يوم العمل؛ السجل محفوظ للمراجعة.';
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = String(input); let value: unknown;
-    if (url.includes('/session/context')) value = { access: { tenantId: connectedIds.tenant, sourceId: connectedIds.account } };
+    if (url.includes('/session/context')) value = connectedContext;
     else if (url.includes('/bootstrap')) value = { csrfToken: 'csrf' };
-    else if (url.includes('/corrections/outcomes')) { posts.push(JSON.parse(String(init?.body))); attempted = true; accepted = !denied; if (lost) throw new TypeError('Failed to fetch'); value = { receipt: { businessStatus: denied ? 'review-required' : 'accepted', ...(denied ? { problem: { detail: reason } } : {}) } }; }
-    else if (url.includes('/corrections/actions/')) value = { status: 'accepted', result: { receipt: { businessStatus: 'accepted' } } };
+    else if (url.includes('/corrections/outcomes')) { posts.push(JSON.parse(String(init?.body))); attempted = true; accepted = !denied; if (lost) throw new TypeError('Failed to fetch'); value = receiptFixture(JSON.parse(String(init?.body)), Boolean(denied), {}, reason); }
+    else if (url.includes('/corrections/actions/')) value = { status: 'accepted', result: receiptFixture(posts.at(-1)! as { actionId: string; operationId: string }) };
     else if (url.includes('/corrections/attempts/')) value = { executionRoundId: executionRound, roundId: connectedIds.round, taskId: connectedIds.task, attemptId: connectedIds.attempt, allowed: !denied || !attempted, message: denied && attempted ? reason : 'يمكن التصحيح', constraints: [], originalOutcome: original, effectiveOutcome: accepted ? { ...original, outcome: 'full', revision: 2, collection: { reported: money(35000), unpaidShipping: money(0) } } : original, effectiveOutcomeRevision: accepted ? 2 : 1, delivery: { kind: 'company', allowedActions: ['full', 'partial', 'refusal', 'no-answer'], fullCollection: money(35000), shippingDue: money(5000), goodsDue: money(30000), lines: [{ sourceLineId: 'line', description: 'قميص', quantity: 3, unitDue: money(10000) }] } };
     else if (url.includes('/devices/') && url.includes('/snapshot')) value = { snapshotToken: 'latest-round-snapshot' };
     else if (url.includes('/devices/')) value = { roundId: executionRound, mode: 'owner', owner: { generation: 3 }, roundState: 'ended', snapshotRequired: executionRound !== connectedIds.round };

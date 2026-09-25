@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+P33 update — 25 September 2026: [durable account-scoped downloads and atomic capture](../offline-local-capture.md) now have simulated IndexedDB, real transaction-abort, production service-worker/offline browser process-reopen and server-monitor exclusion evidence. [Ordered results and exact limits](../phase-33-evidence.md). Phase 34 is next; it must replay the original persisted envelopes without changing IDs or observations. P35 recovery/updates and P41 physical-device/elapsed observation remain separate.
+
 P31 update — 25 September 2026: [connected driver branch/receipt/resume and round/day closure](../phase-31-evidence.md) now have real native mock ERP subset, takeover, reload and carry-forward browser proof. Phase 32 is next; use the verified artifacts and exact limitations in that handoff. Earlier numbered updates below retain their historical scope.
 
 P29 update — 25 September 2026: [the ordinary connected driver path](../phase-29-evidence.md) now covers active map/list, explicit heading/arrival, exact full delivery, simple no-answer, same-action recovery and confirmed online takeover state. Phase 30 is next and may extend this verified common path with focused exceptions/correction; earlier updates are historical.

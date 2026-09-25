@@ -3,6 +3,7 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProductionShell } from '../../src/production-shell';
+import { localWork } from '../../src/local-work';
 
 const ids = {
   tenant: '90000000-0000-4000-8000-000000000001', account: '90000000-0000-4000-8000-000000000002', driver: '90000000-0000-4000-8000-000000000003',
@@ -10,6 +11,18 @@ const ids = {
   prepared: '90000000-0000-4000-8000-000000000012', future: '90000000-0000-4000-8000-000000000013', plan: '90000000-0000-4000-8000-000000000020',
   job: '90000000-0000-4000-8000-000000000021', readiness: '90000000-0000-4000-8000-000000000022', round: '90000000-0000-4000-8000-000000000023', workday: '90000000-0000-4000-8000-000000000024'
 };
+
+it('P33 refuses a new server start when the real Dexie write probe fails (simulated IndexedDB quota)', async () => {
+  window.history.replaceState({}, '', '/prepare?kind=personal');
+  const capture = installFetch(), user = userEvent.setup(); render(<ProductionShell />);
+  await screen.findByText('خطة جاهزة');
+  function quota() { throw new DOMException('لا توجد مساحة لحفظ الجولة', 'QuotaExceededError'); }
+  localWork.health.hook('creating', quota);
+  try {
+    await user.click(screen.getByRole('button', { name: 'ابدأ الجولة' }));
+    await screen.findByText(/لا توجد مساحة لحفظ الجولة/); expect(capture.startBodies).toHaveLength(0);
+  } finally { localWork.health.hook('creating').unsubscribe(quota); }
+});
 const context = { kind: 'personal', access: { tenantId: ids.tenant, tenantKind: 'personal', principalKind: 'account', sourceId: ids.account, branchIds: [], driverId: ids.driver, effectiveCapabilities: ['execution.own'] }, expiresAt: '2026-09-25T00:00:00Z', recoveryEmailVerified: true, loginIdentifier: '+201012345678', phoneOwnershipVerified: false };
 const task = (taskId: string, recipientName: string, state: string, coordinates: { latitude: number; longitude: number } | null, eligible: boolean, deferred = false) => ({ taskId, dispatchCycleId: null, attemptId: taskId, branchId: null, integrationId: null, sourceRevision: 1, assignmentRevision: 1, recipientName, recipientPhone: '01012345678', coordinates, state, earliestAt: null, deferred, outcome: null, outcomeRevision: 0, heldPieces: null, returnRequiredPieces: 0, eligible });
 const daily = {
