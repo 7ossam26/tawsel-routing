@@ -37,6 +37,7 @@ async function fixture(){
 test('A: heading pauses visibly, branch arrival changes origin, claimed subset resumes same round preserving order/history',async()=>{
  const f=await fixture();expect((await f.current.command(f.principal,f.make(1,'current.selectHeading',{},1))).receipt.businessStatus).toBe('accepted');
  const c=await f.interrupt(),b=accepted(await f.branches.command(f.principal,c));
+ expect((await f.returns.groups(f.principal)).pendingRequests).toEqual([f.request]);
  expect(b.branchActivity).toMatchObject({stage:'heading',pausedActivity:{taskId:f.tasks[1],stage:'heading'},retainedSequence:[{taskId:f.tasks[1]}]});
  expect((await f.current.read(f.principal,f.round.roundId))).toMatchObject({currentActivity:null,nextSuggestion:null,branchActivity:{stage:'heading'}});
  expect((await f.branches.command(f.principal,c)).response!.body).toEqual(b);
@@ -48,6 +49,7 @@ test('A: heading pauses visibly, branch arrival changes origin, claimed subset r
  expect((await new ReturnReceiver(db.pool).command(f.authorization,'return.confirmSubsetReceipt',f.receipt())).receipt.businessStatus).toBe('accepted');
  const resumed=accepted(await f.branches.command(f.principal,f.transition('branch.resumeRound',arrived)));
  expect(resumed.branchActivity.stage).toBe('resumed');expect((await f.returns.read(f.principal,f.request.requestId)).items[0]).toMatchObject({received:2,unresolved:1,custody:{held:1}});
+ expect((await f.returns.groups(f.principal)).pendingRequests?.[0]?.items[0]).toMatchObject({requested:3,received:2,unresolved:1});
  const read=await f.current.read(f.principal,f.round.roundId);expect(read).toMatchObject({branchActivity:null,currentActivity:null,nextSuggestion:{taskId:f.tasks[1]}});
  const plans=await f.service.plans(f.principal,f.driverId);expect(plans.items[0]).toMatchObject({state:'manual',routePolicy:{orderedTaskIds:[f.tasks[1]]},input:{settings:{origin:{kind:'branch-pin'}}}});
  expect(plans.items.find(p=>p.planId===b.planId)!.forecast.members.find(m=>m.taskId===f.tasks[1])).toMatchObject({membership:'paused',position:1,expectedArrivalAt:null});

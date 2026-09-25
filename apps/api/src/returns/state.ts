@@ -31,7 +31,8 @@ export async function requestView(tx:Transaction,row:RequestRow):Promise<Request
  const items:Item[]=rows.map(i=>({itemId:i.item_id,taskId:i.task_id,dispatchCycleId:i.dispatch_cycle_id,outcomeId:i.outcome_id,attemptId:i.attempt_id,sourceLineId:i.source_line_id,externalId:i.external_id,sourceDispatchCycleId:i.source_dispatch_cycle_id,sourceRevision:Number(i.source_revision),revision:Number(i.revision),requested:i.requested,received:i.received,lost:i.lost,damaged:i.damaged,unresolved:i.requested-i.received-i.lost-i.damaged,
  eligibility:!i.latest||i.state!=='held'||i.holder!==row.driver_id?'superseded':i.requested===i.received+i.lost+i.damaged?'settled':'pending',
  custody:{sourceQuantity:i.source_quantity,delivered:i.delivered,held:i.held_return_required-i.all_received-i.all_lost-i.all_damaged,received:i.all_received,lost:i.all_lost,damaged:i.all_damaged}}));
- const result={requestId:row.request_id,driverId:row.driver_id,sourceBranchId:row.branch_id,integrationId:row.integration_id,roundId:row.round_id,requestedAt:row.requested_at.toISOString(),items};requireReturn('RequestView',result);return result;
+ const sourceBranchName=(await tx.query("SELECT state->>'name' AS name FROM tawsel.provisioning_records WHERE tenant_id=$1 AND integration_id=$2 AND entity='branch' AND resource_id=$3",[row.tenant_id,row.integration_id,row.branch_id])).rows[0]?.name??null;
+ const result={sourceBranchName,requestId:row.request_id,driverId:row.driver_id,sourceBranchId:row.branch_id,integrationId:row.integration_id,roundId:row.round_id,requestedAt:row.requested_at.toISOString(),items};requireReturn('RequestView',result);return result;
 }
 /** Caller holds the same driver guard as a future P22 resume transaction. */
 export function confirmation(request:RequestView,claims:{itemId:string;quantity:number}[]){

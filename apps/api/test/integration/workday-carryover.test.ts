@@ -48,6 +48,7 @@ test('B: generic close explains heading; explicit pause preserves evidence; arri
  expect(resultBody(paused).closure.pausedActivity).toEqual(before.currentActivity);
  const stored=(await db.pool.query('SELECT * FROM tawsel.execution_attempts WHERE attempt_id=$1',[attempt])).rows[0];expect(stored.stage).toBe('paused');expect(stored.heading).toEqual(before.currentActivity!.heading);expect(stored.arrival).toBe(null);expect(stored.resolution).toBe(null);
  expect((await new Rounds(db.pool).current(principals.personal))).toMatchObject({round:null,workday:{workdayId:f.round.workdayId}});
+ expect((await new WorkdayReads(db.pool).summary(principals.personal,f.round.workdayId)).rounds.at(-1)).toMatchObject({roundId:f.round.roundId,activityRevision:2});
  expect((await db.pool.query('SELECT count(*)::int n FROM tawsel.delivery_outcomes')).rows[0].n).toBe(0);
  const ended=await service.command(principals.personal,closeCommand(f,'workday.end',{expectedActiveRoundId:null,expectedActivityRevision:2}));expect(ended.receipt.businessStatus).toBe('accepted');expect(resultBody(ended).closure.endedRoundId).toBe(null);
  await expect(db.pool.query('UPDATE tawsel.workdays SET ended_at=NULL WHERE workday_id=$1',[f.round.workdayId])).rejects.toMatchObject({code:'23514'});

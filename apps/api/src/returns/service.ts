@@ -53,13 +53,18 @@ export class Returns {
  }
  async groups(principal:AuthenticatedPrincipal):Promise<components['schemas']['ReturnGroups']>{
   return withAccess(this.pool,principal,async(a,tx)=>{const driver=await driverAccess(a);await lockDriver(tx,a.context.tenantId,driver);const scope=a.sqlPredicate(own,'q');
-   const rows=(await tx.query(`SELECT q.*,t.external_id,c.source_dispatch_cycle_id,
+   const rows=(await tx.query(`SELECT q.*,t.external_id,c.source_dispatch_cycle_id,(SELECT p.state->>'name' FROM tawsel.provisioning_records p WHERE p.tenant_id=q.tenant_id AND p.integration_id=q.integration_id AND p.entity='branch' AND p.resource_id=q.branch_id) AS source_branch_name,
     (SELECT COALESCE(sum(i.requested-i.received-i.lost-i.damaged),0) FROM tawsel.return_items i WHERE i.tenant_id=q.tenant_id AND i.outcome_id=q.outcome_id AND i.source_line_id=q.source_line_id) AS offered
     FROM tawsel.cycle_custody q JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) JOIN tawsel.b2b_dispatch_cycles c USING(tenant_id,dispatch_cycle_id)
     WHERE ${scope.text} AND c.state='held' AND c.driver_id=q.driver_id AND q.held>0 ORDER BY q.branch_id,q.integration_id,q.task_id,q.source_line_id`,scope.values)).rows;
    const groups:components['schemas']['ReturnGroup'][]=[];
-   for(const q of rows){let g=groups.find(g=>g.sourceBranchId===q.branch_id&&g.integrationId===q.integration_id);if(!g){g={sourceBranchId:q.branch_id,integrationId:q.integration_id,items:[]};groups.push(g);}g.items.push({taskId:q.task_id,dispatchCycleId:q.dispatch_cycle_id,outcomeId:q.outcome_id,sourceLineId:q.source_line_id,externalId:q.external_id,sourceDispatchCycleId:q.source_dispatch_cycle_id,availableToRequest:q.held-Number(q.offered),custody:{sourceQuantity:q.source_quantity,delivered:q.delivered,held:q.held,received:q.received,lost:q.lost,damaged:q.damaged}});}
-   requireReturn('Groups',{groups});return {groups};
+   for(const q of rows){let g=groups.find(g=>g.sourceBranchId===q.branch_id&&g.integrationId===q.integration_id);if(!g){g={sourceBranchName:q.source_branch_name??null,sourceBranchId:q.branch_id,integrationId:q.integration_id,items:[]};groups.push(g);}g.items.push({taskId:q.task_id,dispatchCycleId:q.dispatch_cycle_id,outcomeId:q.outcome_id,sourceLineId:q.source_line_id,externalId:q.external_id,sourceDispatchCycleId:q.source_dispatch_cycle_id,availableToRequest:q.held-Number(q.offered),custody:{sourceQuantity:q.source_quantity,delivered:q.delivered,held:q.held,received:q.received,lost:q.lost,damaged:q.damaged}});}
+   // Recover offers on another installation without relying on browser storage.
+   // Reuse requestRow's own-driver/source/branch authorization for every row.
+   const pendingRequests:components['schemas']['ReturnRequestView'][]=[];
+   const offered=(await tx.query<{request_id:string}>(`SELECT r.request_id FROM tawsel.return_requests r WHERE r.tenant_id=$1 AND r.driver_id=$2 AND EXISTS (SELECT 1 FROM tawsel.return_items i WHERE i.tenant_id=r.tenant_id AND i.request_id=r.request_id AND i.requested>i.received+i.lost+i.damaged) ORDER BY r.requested_at,r.request_id`,[a.context.tenantId,driver])).rows;
+   for(const row of offered){const request=await requestView(tx,await requestRow(tx,a,row.request_id));if(request.items.some(i=>i.eligibility==='pending'))pendingRequests.push(request);}
+   requireReturn('Groups',{groups,pendingRequests});return {groups,pendingRequests};
   });
  }
  async read(principal:AuthenticatedPrincipal,id:string){uuid(id);return withAccess(this.pool,principal,async(a,tx)=>{await driverAccess(a);const r=await requestRow(tx,a,id);await lockDriver(tx,r.tenant_id,r.driver_id);return requestView(tx,r);});}

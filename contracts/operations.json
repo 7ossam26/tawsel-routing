@@ -706,7 +706,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 21,
       "capability": "execution.own",
-      "description": "Group held return-required portions by originating branch.",
+      "description": "Group held return-required portions by originating branch, with display labels and authorized unresolved requests for cross-phone recovery (P31).",
       "method": "GET",
       "path": "/api/v1/returns/groups"
     },
@@ -1712,7 +1712,7 @@
       "kind": "http-read",
       "ownerPhase": 19,
       "capability": "execution.own",
-      "description": "Basic explicit-workday outcome/collection summary with admission denominators.",
+      "description": "Basic explicit-workday outcome/collection summary, held carry-forward and retained per-round activity revisions for between-round closure (P31).",
       "lifecycle": "verified-local",
       "method": "GET",
       "path": "/api/v1/workdays/{workdayId}/summary"

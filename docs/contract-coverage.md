@@ -170,7 +170,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `task.getEligibilityAction` | http-read | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | execution.own | Server-derived permissions/history or stable action recovery. |
 | `task.deferredActivated` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Committed assigned-driver eligibility change; source-scoped durable intent. |
 | `task.driverUrgencyChanged` | event | verified-local | [P18](phases/18-deferral-retry-driver-urgency.md) | recipient-scope | Committed assigned-driver eligibility change; source-scoped durable intent. |
-| `workday.getSummary` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Basic explicit-workday outcome/collection summary with admission denominators. |
+| `workday.getSummary` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Basic explicit-workday outcome/collection summary, held carry-forward and retained per-round activity revisions for between-round closure (P31). |
 | `workday.getCarryForward` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Current held work for the workday holder; no per-day cloning or implicit retry. |
 | `closure.getResult` | http-read | verified-local | [P19](phases/19-workday-closure-carryover.md) | execution.own | Recover a retained closure result; unknown action remains pending. |
 | `outcome.getCorrectionAvailability` | http-read | verified-local | [P23](phases/23-bounded-driver-corrections.md) | execution.own | Read original/effective correction eligibility and permitted next steps. P30 includes original outcome and replacement delivery inputs excluding the replaced attempt from prior shipping; allowed/constraints remain the authority. |
@@ -180,7 +180,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `return.listSourceBranchGroups` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Group held return-required portions by originating branch. |
+| `return.listSourceBranchGroups` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Group held return-required portions by originating branch, with display labels and authorized unresolved requests for cross-phone recovery (P31). |
 | `return.requestHandover` | http-command | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Driver offers source-branch pieces; request is not receipt/stock. |
 | `return.getRequest` | http-read | verified-local | [P21](phases/21-source-return-receipt.md) | execution.own | Scoped request, offered/received/unresolved subsets and revisions. |
 | `return.confirmSubsetReceipt` | http-command | verified-local | [P21](phases/21-source-return-receipt.md) | return.receive | Native ERP trusted actor confirms actually received requested subset. |

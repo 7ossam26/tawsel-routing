@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+P31 update — 25 September 2026: [connected driver branch/receipt/resume and round/day closure](../phase-31-evidence.md) now have real native mock ERP subset, takeover, reload and carry-forward browser proof. Phase 32 is next; use the verified artifacts and exact limitations in that handoff. Earlier numbered updates below retain their historical scope.
+
 P29 update — 25 September 2026: [the ordinary connected driver path](../phase-29-evidence.md) now covers active map/list, explicit heading/arrival, exact full delivery, simple no-answer, same-action recovery and confirmed online takeover state. Phase 30 is next and may extend this verified common path with focused exceptions/correction; earlier updates are historical.
 
 P27 update — 24 September 2026: private native source forms/OIDC sessions and transactional source delivery are implemented and locally verified. [Two-way standalone quickstart](../erp/consumer-quickstart.md), [ordered evidence](../phase-27-evidence.md). Phase 28 is next; it may use the verified mock-supplied work and public source/receiver boundaries. Earlier updates are historical.

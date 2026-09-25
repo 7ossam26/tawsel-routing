@@ -761,6 +761,12 @@
         },
         "firstWorkloadId": {
           "$ref": "common.schema.json#/$defs/Uuid"
+        },
+        "activityRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "Current retained activity revision, including a closure pause; use for explicit day end between rounds."
         }
       },
       "required": [

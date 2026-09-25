@@ -64,3 +64,9 @@ Events are `return.requested` (offer snapshot), `return.subsetReceived` (one act
 ## Handoff
 
 P22 may rely on migration 0019, `returns/state.ts` locked confirmation/request reads, native receipt/disposition API/client, immutable per-item transitions, dependency facts and accurate current custody. It must still implement branch interruption/resume and new dispatch provenance without reopening a prior cycle. P23 owns correction/adoption races. P27 implements native pending/receipt/disposition screens and source outbox using these public APIs, with no required Tawsel staff receiver screen. No next phase is executed here.
+
+## Phase 31 connected driver return
+
+The driver page at `/execution/branch?kind=company` uses the existing offer, interruption, arrival, confirmation and resume boundaries. Source groups now optionally include `pendingRequests`: own authorized unresolved offers, recovered after reload or on another phone. Current server responses supply this field; missing legacy data is not proof that no request exists. Groups and request views additionally supply `sourceBranchName` (source-provisioned label or null); branch UUID remains authoritative. Labels grant no permission. The same optional label is captured in a new `return.requested` request snapshot; a retained event is immutable, while subsequent reads use the current label.
+
+Each offered line shows requested, physically received, unresolved, lost, damaged and current held portions. A visit freezes the cumulative claimed subset, including already received pieces; resume requires actual receipt for those claims only. Staff confirmation stays in native ERP. An uncertain request/arrival/resume keeps its original action ID and blocks another command until recovered. [UI/browser evidence](phase-31-evidence.md).

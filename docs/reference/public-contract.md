@@ -14796,6 +14796,12 @@ roundId anchors execution ownership. Day end without an active round must name t
     },
     "firstWorkloadId": {
       "$ref": "common.schema.json#/$defs/Uuid"
+    },
+    "activityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Current retained activity revision, including a closure pause; use for explicit day end between rounds."
     }
   },
   "required": [
@@ -16046,6 +16052,14 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
         "$ref": "#/$defs/Item"
       },
       "minItems": 1
+    },
+    "sourceBranchName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Current source-provisioned branch label for driver display; sourceBranchId remains authoritative."
     }
   },
   "required": [
@@ -16164,6 +16178,14 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
         "$ref": "#/$defs/GroupLine"
       },
       "minItems": 1
+    },
+    "sourceBranchName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Current source-provisioned branch label for driver display; sourceBranchId remains authoritative."
     }
   },
   "required": [
@@ -16189,6 +16211,13 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
         "$ref": "#/$defs/Group"
       },
       "minItems": 0
+    },
+    "pendingRequests": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/RequestView"
+      },
+      "description": "Authorized unresolved offers rediscovered across reload and phone takeover; request is not physical receipt."
     }
   },
   "required": [
@@ -19006,6 +19035,8 @@ Examples include designed fixtures and captured local API results; consult contr
 | p27-source-completed-capture | source.schema.json#/$defs/Status | valid foundation shape |
 | p30-frozen-piece-delivery | current-activity.schema.json#/$defs/DeliveryAffordance | valid foundation shape |
 | p30-correction-view-retained-original | corrections.schema.json#/$defs/Availability | valid foundation shape |
+| p31-recovered-pending-requests | returns.schema.json#/$defs/Groups | valid foundation shape |
+| p31-ended-round-activity-revision | workday-closure.schema.json#/$defs/RoundSummary | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -19157,5 +19188,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | p27-source-phantom-acceptance | source.schema.json#/$defs/Status | invalid (type) |
 | p27-source-rejection-cannot-be-accepted | source.schema.json#/$defs/Status | invalid (const) |
 | p30-fractional-frozen-pieces | current-activity.schema.json#/$defs/DeliveryAffordance | invalid (type) |
+| p31-malformed-pending-request | returns.schema.json#/$defs/Groups | invalid (required) |
+| p31-negative-round-activity-revision | workday-closure.schema.json#/$defs/RoundSummary | invalid (minimum) |
 
 [Canonical example data](../../contracts/examples/README.md)

@@ -7,6 +7,7 @@ import { PlanningClient } from '@tawsel/api-client/src/planning';
 import { RoundsClient } from '@tawsel/api-client/src/rounds';
 import { ActionButton, Field, StatusNotice } from './components/ui';
 import { api, deviceId, nextSequence } from './independent-tasks';
+import { pendingExecutionLinks } from './execution-command';
 
 type Session = components['schemas']['SessionContext'];
 type Daily = components['schemas']['MonitoringSnapshot'];
@@ -255,7 +256,7 @@ export function PreparationFlow() {
     finally { setBusy(false); }
   }
   async function startRound() {
-    if (!session || !session.access.driverId || !startable || dirty) return;
+    if (!session || !session.access.driverId || !startable || dirty || pendingExecutionLinks(session, '').length) return;
     setBusy(true); setError('');
     try {
       const actionIds = acceptedActionsKey ? JSON.parse(sessionStorage.getItem(acceptedActionsKey) ?? '[]') as string[] : [];
@@ -296,6 +297,8 @@ export function PreparationFlow() {
   if (loading && !daily) return <main className="tasks-shell preparation-shell"><StatusNotice title="جارٍ تحميل عمل اليوم" /></main>;
   return <main className="tasks-shell preparation-shell" dir="rtl">
     <header className="tasks-header"><div><p className="eyebrow">توصيل · عمل اليوم</p><h1>{preparation ? 'جهّز جولتك' : 'عملك اليوم'}</h1><p>{preparation ? 'اختر نقطة الانطلاق والمركبة، راجع الخطة، ثم ابدأ بعد تأكيد الخادم.' : 'العمل النشط أولًا، ثم الجاهز والقادم وما يحتاج مراجعة.'}</p></div><span className="tasks-logo" aria-hidden="true">{preparation ? <Route /> : <Truck />}</span></header>
+    {session && pendingExecutionLinks(session, '').length > 0 ? <section className="current-stage-card"><h2>تحقّق من الإجراءات السابقة قبل بدء جولة</h2>{pendingExecutionLinks(session, '').map(item => <a className="edit-link" key={item.id} href={item.href}>فتح الإجراء المعلّق</a>)}</section> : null}
+    {current?.workday ? <a className="edit-link" href={`/execution/closure?kind=${kind}&workdayId=${current.workday.workdayId}`}>ملخص العمل وإنهاء اليوم</a> : null}
     {error ? <StatusNotice tone="error" title="تحتاج مراجعة" live>{error}</StatusNotice> : null}
     {notice ? <StatusNotice tone="waiting" title="الحالة الحالية" live>{notice}</StatusNotice> : null}
     {current?.round ? <section className="preparation-stage preparation-stage--active"><p className="eyebrow">جولة نشطة</p><h2>{activeOtherPhone ? 'الجولة تعمل على هاتف آخر' : 'جولتك بدأت بالفعل'}</h2><p>{activeOtherPhone ? 'لن ننشئ بداية ثانية. يمكنك عرض الجولة أو نقل التنفيذ صراحةً لهذا الهاتف.' : 'افتح الجولة الحالية واستكمل من الحالة المؤكدة على الخادم.'}</p><div className="preparation-actions"><a className="action-link action-link--primary" href={`/rounds/current?kind=${kind}`}>متابعة الجولة</a>{activeOtherPhone ? <ActionButton variant="secondary" busy={busy} onClick={() => void takeover()}>انقل التنفيذ لهذا الهاتف</ActionButton> : null}</div></section> : preparation ? <>
@@ -315,7 +318,7 @@ export function PreparationFlow() {
         {(job?.status === 'failed' || partial || plans?.continuation) && manualOrder.length ? <div className="manual-order"><h3>ترتيب يدوي واضح</h3><p>غيّر الترتيب ثم اعتمده. لا توجد أزمنة طريق محسوبة في هذا الوضع.</p><ol>{manualOrder.map((taskId, index) => <li key={taskId}><span>{taskName(daily, taskId)}</span><span><button aria-label={`حرّك ${taskName(daily, taskId)} لأعلى`} disabled={index === 0 || busy} onClick={() => move(taskId, -1)}><ArrowUp aria-hidden="true" /></button><button aria-label={`حرّك ${taskName(daily, taskId)} لأسفل`} disabled={index === manualOrder.length - 1 || busy} onClick={() => move(taskId, 1)}><ArrowDown aria-hidden="true" /></button></span></li>)}</ol><ActionButton variant="secondary" busy={busy} disabled={dirty} onClick={publishManual}>{pendingPlanning?.operationId === 'planning.setManualOrder' ? 'أعد إرسال الترتيب نفسه' : 'اعتماد الترتيب اليدوي'}</ActionButton></div> : null}
       </section>
       <section className="preparation-stage preparation-start" aria-labelledby="start-title"><p className="eyebrow">٣ · بدء الجولة</p><h2 id="start-title">ابدأ بعد التحقق المتصل</h2>{dirty ? <StatusNotice tone="waiting" title="الاختيارات أحدث من الخطة">احفظ اختيارات التجهيز وانتظر خطة النسخة الحالية.</StatusNotice> : null}{pendingStart ? <StatusNotice tone="waiting" title="بدء الجولة غير محسوم">تحقق من معرّف الإجراء المحفوظ قبل إعادة إرساله أو إنشاء أي طلب جديد.</StatusNotice> : null}
-        {pendingStart ? <div className="preparation-actions"><ActionButton busy={busy} onClick={() => void checkStart()}>تحقق من بدء الجولة</ActionButton><ActionButton variant="secondary" busy={busy} onClick={() => void sendStart(pendingStart)}>أعد إرسال طلب البدء نفسه</ActionButton></div> : <ActionButton busy={busy} disabled={!startable || dirty} onClick={() => void startRound()}>ابدأ الجولة</ActionButton>}
+        {pendingStart ? <div className="preparation-actions"><ActionButton busy={busy} onClick={() => void checkStart()}>تحقق من بدء الجولة</ActionButton><ActionButton variant="secondary" busy={busy} onClick={() => void sendStart(pendingStart)}>أعد إرسال طلب البدء نفسه</ActionButton></div> : <ActionButton busy={busy} disabled={!startable || dirty || Boolean(session && pendingExecutionLinks(session, '').length)} onClick={() => void startRound()}>ابدأ الجولة</ActionButton>}
         {!startable && !pendingStart ? <p className="field-hint">يلزم خطة كاملة أو ترتيب يدوي صالح للنسخة الحالية. لا توجد موافقة إضافية من المرسل.</p> : null}
       </section>
     </> : <DailyWork kind={kind} ready={ready} unresolved={unresolved} prepared={prepared} held={held} deferred={deferred} onRefresh={() => void load()} />}

@@ -496,3 +496,15 @@ Schemas own fields and examples: [current](../../contracts/current-activity.sche
 | `allowed`, `constraints`, review-required receipt | Current owner/open-day/dependency checks remain final; retain rejected evidence and effective result. |
 
 Fields are additive and optional in older examples. Current server reads supply them; connected forms refuse to infer absent prices. ERP source/receipt commands and outbound event shapes are unchanged. [Actual evidence](../phase-30-evidence.md).
+
+## Phase 31 additive reads
+
+| Field/state | Consumer meaning |
+| --- | --- |
+| `ReturnGroups.pendingRequests[]` | Own authorized unresolved offers, rediscoverable on another phone. Offer is not receipt. |
+| `ReturnGroup/ReturnRequestView.sourceBranchName` | Current source label or null, for display only; retain sourceBranchId identity. |
+| `ClosureRoundSummary.activityRevision` | Retained current activity revision, including a heading pause; use with latest ended round and active=null for between-round End day. |
+| Visit claims + confirmation | Cumulative per-item received threshold for this visit; unrelated unresolved/lost/damaged portions do not impose whole-batch clearance. |
+| `summary.endedAt` + carryForward | Explicit workday closure alongside actual held records; no delivery/receipt/settlement inference. |
+
+Optional additions preserve older canonical examples. Current server reads supply them; driver controls fail closed for missing closure revision. [Public-only conformance](../../tests/erp-conformance/branch-closure.ts).

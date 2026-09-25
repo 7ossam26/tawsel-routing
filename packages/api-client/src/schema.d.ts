@@ -3595,6 +3595,8 @@ export interface components {
             integrationId: components["schemas"]["Uuid"];
             items: components["schemas"]["GroupLine"][];
             sourceBranchId: components["schemas"]["Uuid"];
+            /** @description Current source-provisioned branch label for driver display; sourceBranchId remains authoritative. */
+            sourceBranchName?: string | null;
         };
         GroupLine: {
             availableToRequest: number;
@@ -3608,6 +3610,8 @@ export interface components {
         };
         Groups: {
             groups: components["schemas"]["Group"][];
+            /** @description Authorized unresolved offers rediscovered across reload and phone takeover; request is not physical receipt. */
+            pendingRequests?: components["schemas"]["RequestView"][];
         };
         HeadingEvent: {
             activityRevision: number;
@@ -4585,6 +4589,8 @@ export interface components {
             requestId: components["schemas"]["Uuid"];
             roundId: components["schemas"]["Uuid"];
             sourceBranchId: components["schemas"]["Uuid"];
+            /** @description Current source-provisioned branch label for driver display; sourceBranchId remains authoritative. */
+            sourceBranchName?: string | null;
         };
         ResourceContext: {
             assignmentId?: components["schemas"]["Uuid"];
@@ -4813,6 +4819,8 @@ export interface components {
         RoundStartedEvent: components["schemas"]["StartedEvent"];
         RoundStartResult: components["schemas"]["StartResult"];
         RoundSummary: {
+            /** @description Current retained activity revision, including a closure pause; use for explicit day end between rounds. */
+            activityRevision?: number;
             endedAt: components["schemas"]["UtcInstant"] | null;
             firstForecastId: components["schemas"]["Uuid"];
             firstPlanId: components["schemas"]["Uuid"];

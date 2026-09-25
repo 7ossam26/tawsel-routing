@@ -208,3 +208,9 @@ Paper demo: `python scripts/check-ui-spec.py demo` reads J01–J07 and the block
 ## Phase 30 connected surfaces
 
 As-built navigation uses the current page's contextual task options for a full-width partial page or single refusal sheet, `/execution/options` for selected-task scheduling/pin/history, and `/execution/correction` for bounded comparison. Query parameters identify kind/round/task/attempt; server reads enforce ownership and scope. Original/effective result cards and neutral proposed amounts remain separate. Cancellation retains session drafts without commands; uncertain requests retain exact identities; receipt/day denial retains input and review evidence. This implements the proposed focused surfaces without adding branch/closure UI. [Interaction and render findings](phase-30-evidence.md).
+
+## Phase 31 connected branch and closure surfaces
+
+`/execution/branch` is company-only: source/item offer → explicit claimed subset and heading pause → branch arrival → server confirmation → same-round resume. The current page shows branch activity instead of customer actions during interruption. Display the complete paused sequence and requested/received/unresolved/lost/damaged portions. Native ERP owns receipt; unavailable confirmation leaves resume disabled. One active stage action is dominant.
+
+`/execution/closure` reviews basic accepted outcomes, reported collection and held work, then distinct round/day consequences. Explicit heading pause, actionable arrived/branch blockers, owner generation/token and exact uncertain-action recovery are required. Between-round day end uses the retained activity revision. Workday URL survives accepted closure/reload; daily continuation uses original held tasks. B2C has no piece/branch/receiver content. Known in-session pending execution also blocks a fresh start. [Interaction/render evidence](phase-31-evidence.md).

@@ -433,6 +433,14 @@
             "$ref": "#/$defs/Item"
           },
           "minItems": 1
+        },
+        "sourceBranchName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Current source-provisioned branch label for driver display; sourceBranchId remains authoritative."
         }
       },
       "required": [
@@ -530,6 +538,14 @@
             "$ref": "#/$defs/GroupLine"
           },
           "minItems": 1
+        },
+        "sourceBranchName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Current source-provisioned branch label for driver display; sourceBranchId remains authoritative."
         }
       },
       "required": [
@@ -548,6 +564,13 @@
             "$ref": "#/$defs/Group"
           },
           "minItems": 0
+        },
+        "pendingRequests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RequestView"
+          },
+          "description": "Authorized unresolved offers rediscovered across reload and phone takeover; request is not physical receipt."
         }
       },
       "required": [

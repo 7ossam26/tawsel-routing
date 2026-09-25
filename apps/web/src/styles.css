@@ -440,3 +440,16 @@ h2 { line-height: 1.55; }
 .collection-due--preview strong { color: var(--foreground); }
 
 .action-button[aria-disabled="true"] { opacity: .65; cursor: not-allowed; }
+/* P31: branch quantities and closure share the established RTL card system. */
+.branch-shell, .closure-shell { max-width: 860px; }
+.return-item { border-block-start: 1px solid var(--outline-variant, #c5c6cd); padding-block: 1rem; min-width: 0; }
+.return-item h3, .branch-shell bdi, .retained-sequence li { overflow-wrap: anywhere; }
+.return-counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: .5rem; margin: 1rem 0; }
+.return-counts > div { background: var(--surface-container-low, #f2f4f6); border-radius: .75rem; padding: .75rem .5rem; text-align: center; }
+.return-counts dt { font-size: .8rem; }
+.return-counts dd { margin: .25rem 0 0; font-size: 1.5rem; font-weight: 800; color: var(--primary, #091426); }
+.retained-sequence { padding-inline-start: 1.75rem; }
+.retained-sequence li { padding-block: .4rem; }
+.closure-pause { display: flex; align-items: start; gap: .65rem; padding-block: 1rem; }
+.closure-pause input { margin-block-start: .4rem; width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
+.branch-shell .action-button, .closure-shell .action-button { white-space: normal; }

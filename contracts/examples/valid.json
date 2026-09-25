@@ -12142,5 +12142,65 @@
       },
       "executionRoundId": "c0028d75-ff9d-4028-a3bb-b1a50e755af9"
     }
+  },
+  {
+    "id": "p31-recovered-pending-requests",
+    "schema": "returns.schema.json#/$defs/Groups",
+    "valid": true,
+    "data": {
+      "groups": [],
+      "pendingRequests": [
+        {
+          "requestId": "4a1583fd-b294-4c79-ac0f-7446bdb633c2",
+          "driverId": "1a5dd8b8-2949-428e-8ac6-586124d4a8ea",
+          "sourceBranchId": "ee1cf434-da2f-46e4-a8bc-a21863263bad",
+          "integrationId": "3e40e2fd-3af6-4b47-b16e-2ab04459afcc",
+          "roundId": "0cd465eb-227d-448a-8b15-bc18e5fffa3c",
+          "requestedAt": "2026-09-24T09:49:04.825Z",
+          "items": [
+            {
+              "itemId": "dd27ed0a-f5b5-4b22-ada7-5f91bb42d255",
+              "taskId": "54ebc86b-17c4-5cd4-a502-3ae201e87b33",
+              "dispatchCycleId": "aa489647-277a-42ab-8503-829b5b7a593a",
+              "outcomeId": "8b01e1d3-c24d-4ec9-a8da-ac307e7f5f40",
+              "attemptId": "03308e54-4446-4d77-91bd-f54e5c17425c",
+              "sourceLineId": "pieces",
+              "externalId": "shipment-0",
+              "sourceDispatchCycleId": "cycle",
+              "sourceRevision": 1,
+              "revision": 0,
+              "requested": 3,
+              "received": 0,
+              "lost": 0,
+              "damaged": 0,
+              "unresolved": 3,
+              "eligibility": "pending",
+              "custody": {
+                "sourceQuantity": 3,
+                "delivered": 0,
+                "held": 3,
+                "received": 0,
+                "lost": 0,
+                "damaged": 0
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "p31-ended-round-activity-revision",
+    "schema": "workday-closure.schema.json#/$defs/RoundSummary",
+    "valid": true,
+    "data": {
+      "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+      "startedAt": "2026-09-24T08:00:45.716Z",
+      "endedAt": "2026-09-24T08:00:46.163Z",
+      "firstPlanId": "8a034001-a3f2-406a-b7c6-a02f311ca136",
+      "firstForecastId": "d50f23d8-9b79-41d0-9344-51a5a8d74727",
+      "firstWorkloadId": "d60eecfd-d878-4359-876a-264af8caa8d7",
+      "activityRevision": 9
+    }
   }
 ]

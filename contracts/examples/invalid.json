@@ -6618,5 +6618,34 @@
         }
       ]
     }
+  },
+  {
+    "id": "p31-malformed-pending-request",
+    "schema": "returns.schema.json#/$defs/Groups",
+    "valid": false,
+    "data": {
+      "groups": [],
+      "pendingRequests": [
+        {
+          "requestId": "invented"
+        }
+      ]
+    },
+    "keyword": "required"
+  },
+  {
+    "id": "p31-negative-round-activity-revision",
+    "schema": "workday-closure.schema.json#/$defs/RoundSummary",
+    "valid": false,
+    "data": {
+      "roundId": "e3d0d0cb-0faa-4366-86d0-0558435a5a5e",
+      "startedAt": "2026-09-24T08:00:45.716Z",
+      "endedAt": "2026-09-24T08:00:46.163Z",
+      "firstPlanId": "8a034001-a3f2-406a-b7c6-a02f311ca136",
+      "firstForecastId": "d50f23d8-9b79-41d0-9344-51a5a8d74727",
+      "firstWorkloadId": "d60eecfd-d878-4359-876a-264af8caa8d7",
+      "activityRevision": -1
+    },
+    "keyword": "minimum"
   }
 ]

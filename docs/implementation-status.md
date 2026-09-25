@@ -1,5 +1,17 @@
 # Tawsel implementation status
 
+## Phase 31 — 25 September 2026
+
+Implemented connected source-branch offers, explicit visit claims/arrival, visible paused customer sequence, actual subset confirmation and same-round resume; distinct end-round/end-day review with reported collection and held-work carryover; existing-round viewing/explicit owner takeover and reload recovery. Uncertain online commands retain exact identities and block closure/new start across execution pages in the current session. B2C has no branch/piece/receiver procedure. Native ERP remains the only staff receipt surface.
+
+Prerequisites **6 files / 123 tests passed**; ordered UI checkpoints **4 → 26 (with driver regression) → 16 focused**, final **3 files / 49 UI tests passed**; initial post-change branch/closure PostgreSQL regression **26/26**. Final real Keycloak/Chromium/Fastify/PostgreSQL/native mock ERP journey passed **1/1 (47.1s)**, including real native two-of-three subset, second-phone transfer, lost arrival/closure response recovery, closure-start pending guard and new day with original held task IDs. Eight reviewed captures, public-response conformance, exact failures/fixes and remaining limits are in [Phase 31 evidence](phase-31-evidence.md). Final broader regression result is recorded there.
+
+Full regression: **918 passed / 2 failed of 920**; the two failures were missing new invalid-example error labels, corrected along with generated reference drift. Subsequent contract plus UI rerun: **466/466 passed**, covering all failures and the final task-specific recovery links. All database-backed suites passed; exact invocations/results are retained in the evidence.
+
+Additive optional reads: `ReturnGroups.pendingRequests`, group/request `sourceBranchName` and `ClosureRoundSummary.activityRevision`; source labels may also be captured in existing request/event snapshots. No command authority, database migration or dependency changes. Updated canonical schemas/examples/generated client/reference/operation map and ERP planning/mapping/quickstart/conformance. Inventory **26 / 251 valid / 153 invalid / 185 operations**. Audit, lint, contracts, types, UI-spec checks and full production builds passed. Node 24.19.0 verification; exact Codex picker variant/effort is unavailable, so requested Astra/high is not asserted.
+
+Phase 32 may rely on the verified branch/closure/owner states and connected pages listed in the evidence. Physical-device/owner acceptance, commercial ERP/live Engine, full reports/export and durable offline capture/replay remain separate. No Phase 32 execution or deployment. The user's explicit request authorizes the final `phase 31` commit and push after verification.
+
 ## Phase 30 — 25 September 2026
 
 Implemented focused whole-piece partial delivery and paid/unpaid refusal, contextual scheduling/whole retry/urgency/pin/history, and bounded original/effective/proposed correction with retained review evidence. Ordinary full delivery keeps one dominant action; B2C has simple outcomes/corrections without piece, fee or branch controls. Added frozen line inputs and original/replacement read projections without changing command/event authority.
