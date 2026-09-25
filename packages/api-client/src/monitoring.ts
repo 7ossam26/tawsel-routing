@@ -1,5 +1,5 @@
 import type {components} from './schema.js';
-export type MonitoringPage={branchId?:string;limit?:number;cursor?:string;etag?:string};
+export type MonitoringPage={branchId?:string;limit?:number;cursor?:string;etag?:string;signal?:AbortSignal};
 export type MonitoringRead<T>={status:200;data:T;etag:string;scopeKey:string;revision:number;refreshedAt:string}|{status:304;data:null;etag:string;scopeKey:string;revision:number;refreshedAt:string};
 /** No polling or automatic application. Consumers compare revision only within
  * scopeKey, retain their body on 304, and omit ETag for a reconnect full read. */
@@ -10,7 +10,7 @@ export class MonitoringClient {
   if(page.branchId)query.set('branchId',page.branchId);if(page.limit!==undefined)query.set('limit',String(page.limit));if(page.cursor)query.set('cursor',page.cursor);if(sourceId)query.set('sourceId',sourceId);
   const headers:Record<string,string>={};if(this.options.authorization)headers.Authorization=this.options.authorization;if(page.etag)headers['If-None-Match']=page.etag;
   const fetcher=this.options.fetcher??((...args:Parameters<typeof fetch>)=>globalThis.fetch(...args));
-  const response=await fetcher(`${this.options.baseUrl??''}/api/v1/${this.options.kind?'':'erp/'}monitoring/${path}?${query}`,{credentials:'same-origin',cache:'no-cache',headers});
+  const response=await fetcher(`${this.options.baseUrl??''}/api/v1/${this.options.kind?'':'erp/'}monitoring/${path}?${query}`,{credentials:'same-origin',cache:'no-cache',headers,...(page.signal?{signal:page.signal}:{})});
   if(response.status!==200&&response.status!==304){const problem=await response.json();throw Object.assign(new Error(problem.detail??'Refresh failed.'),{status:response.status,code:problem.code});}
   const etag=response.headers.get('etag'),scopeKey=response.headers.get('x-snapshot-scope'),refreshedAt=response.headers.get('x-refreshed-at'),revision=Number(response.headers.get('x-snapshot-revision'));
   if(!etag||!scopeKey||!refreshedAt||!Number.isSafeInteger(revision)||revision<1)throw new Error('Missing monitoring revision metadata.');

@@ -318,3 +318,9 @@ For correction ownership reads use `executionRoundId` (fall back to `roundId` fo
 ## Phase 31 connected acceptance
 
 With existing local PostgreSQL and Keycloak running, use `npm run test:browser:branch-closure`, then `node --import tsx tests/erp-conformance/branch-closure.ts .local/phase-31-browser-evidence.json`. The browser creates disposable source/driver/staff identities and two databases. A driver offers three pieces, claims two, and arrives. Staff logs into the separate native mock ERP and confirms two through its form/outbox/public API. The driver sees one unresolved remainder and resumes the same round after explicit second-phone takeover. End round/day and a new day retain original held task identity. Routing is controlled HTTP; this is not commercial ERP or physical-phone certification. Running conformance without a report validates canonical fixtures and a negative quantity control only.
+
+## Phase 32 monitoring and native ERP status
+
+Run `npm run test:monitoring -- --maxWorkers=1` for coherent snapshot/history isolation, `npm run test:browser:monitoring` for the real staff browser flow, and the mock ERP fast tests through the normal test suite. The browser command requires the documented local PostgreSQL and Keycloak prerequisites and creates disposable identities/database state.
+
+Consumers should poll the monitoring snapshot conditionally with its ETag, allow only one in-flight request, ignore lower revisions within the same scope, and force an unconditional read after reconnect or foreground return. Treat ten seconds without a successful response as stale transport evidence, not proof that a driver is offline. In ERP tooling, show durable receipt separately from projection application and keep an application failure visible until repaired. These are presentation/refresh rules over existing public contracts; no streaming or commercial ERP interoperability is claimed. [Evidence and screenshots](../phase-32-evidence.md).

@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Map as LibreMap, Marker } from 'maplibre-gl';
-import type { components } from '@tawsel/api-client';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 
-type Target = components['schemas']['CurrentSnapshot']['targets'][number];
+type Target = { taskId: string; attemptId: string; recipientName: string; coordinates: { latitude: number; longitude: number } };
 let initialized = false;
 
 /** Read-only execution overview. Pins are destinations, never movement evidence. */

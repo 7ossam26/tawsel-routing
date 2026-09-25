@@ -123,7 +123,8 @@
     "mock-erp:source-worker": "node --env-file-if-exists=.local/mock-erp.database.env apps/mock-erp/dist/main.js source-worker",
     "test:erp:source": "node --import tsx tests/erp-conformance/source.ts",
     "test:browser:exceptions": "npm run build:foundation && playwright test -c playwright.exceptions.config.ts",
-    "test:browser:branch-closure": "npm run build:foundation && playwright test -c playwright.branch-closure.config.ts"
+    "test:browser:branch-closure": "npm run build:foundation && playwright test -c playwright.branch-closure.config.ts",
+    "test:browser:monitoring": "npm run build:foundation && playwright test -c playwright.monitoring.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

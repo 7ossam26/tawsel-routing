@@ -8,8 +8,8 @@ import type { ActionEnvelope,CommandResult } from '../../src/commands/kernel.js'
 
 type StartTransport=(args:{principal:Awaited<ReturnType<typeof companyPlanningFixture>>['principal'];readiness:components['schemas']['RoundReadinessRequest'];start:ActionEnvelope})=>Promise<CommandResult>;
 
-export async function outcomeCompanyFixture(db:Awaited<ReturnType<typeof createTestDatabase>>,overrides:Partial<components['schemas']['B2bSourceSnapshot']>[]= [{},{}],startTransport?:StartTransport){
- const f=await companyPlanningFixture(db);
+export async function outcomeCompanyFixture(db:Awaited<ReturnType<typeof createTestDatabase>>,overrides:Partial<components['schemas']['B2bSourceSnapshot']>[]= [{},{}],startTransport?:StartTransport,options:{issuer?:string}={}){
+ const f=await companyPlanningFixture(db,options);
  try{
   const tasks:string[]=[];
   for(let i=0;i<overrides.length;i++){

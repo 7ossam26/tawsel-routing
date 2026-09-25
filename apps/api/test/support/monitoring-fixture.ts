@@ -6,8 +6,8 @@ import {bindSource,send,operatorToken} from './provisioning-fixture.js';
 /** Identity/shared-reference setup is a labelled fixture. Every shipment,
  * receipt, active-round admission and outcome uses the actual public boundary.
  * P08 has no operator API for linking two source references to one driver. */
-export async function mixedMonitoringFixture(db:Awaited<ReturnType<typeof createTestDatabase>>){
- const f=await outcomeCompanyFixture(db,[{},{}]);
+export async function mixedMonitoringFixture(db:Awaited<ReturnType<typeof createTestDatabase>>,issuer?:string){
+ const f=await outcomeCompanyFixture(db,[{},{}],undefined,{...(issuer?{issuer}:{})});
  try{
   const grant=structuredClone(f.source.bootstrapCommand);grant.actionId=randomUUID();grant.payload.sourceRevision=3;grant.payload.monitoringCapabilities=['monitor.read'];
   const granted=await send(f.app,operatorToken,grant);if(granted.statusCode!==200)throw new Error(granted.body);

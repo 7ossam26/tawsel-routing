@@ -1,5 +1,15 @@
 # Tawsel implementation status
 
+## Phase 32 — 25 September 2026
+
+Implemented the production authorized monitoring workspace at `/monitoring`: branch/source filters, selected-driver map/list/detail, coherent progress and current state, received-action filters, departed read-only behavior, and concise Arabic loading/empty/denied/error/stale feedback. The refresh controller polls visible views each second with one cancellable in-flight request, conditional ETags, scope/revision nonregression, bounded backoff, a ten-second stale threshold and unconditional foreground/reconnect reads. Successful idle 304s remain fresh and never label the driver offline.
+
+The native mock ERP status view now separates Tawsel command acceptance, durable ERP receipt, application, application failure and transport retry context. Unsent driver actions remain absent from staff monitoring. The only prerequisite repair was optional `AbortSignal` support in the existing public monitoring client; no wire schema, operation, migration or dependency changed.
+
+Focused client/status tests passed **2 files / 8 tests**; existing monitoring PostgreSQL/isolation tests passed **2 files / 34 tests**; the final broad suite passed **47 files / 928 tests**; and actual local Keycloak/Chromium/Fastify/isolated-PostgreSQL acceptance passed **1/1** with desktop/mobile reviewed captures. Lint, generated-contract drift, contract lint, types, production builds and the high-severity dependency audit also passed. The final committed-change diagnostic rendered in **3899 ms**, which is not a Phase 38 p95/load claim. Exact checkpoints, failed setup runs, commands, paths and limits are in [Phase 32 evidence](phase-32-evidence.md).
+
+Requested GPT-5.6 Sol/high is a recommendation; runtime exposes only the GPT-5 family, so exact picker/effort is not asserted. No GPS/presence, stream infrastructure, offline unsent visibility, staff execution override, commercial ERP, physical-device approval or production freshness SLO. Phase 33 may rely on the verified online controller/status boundaries; durable offline capture/replay remains P33–35.
+
 ## Phase 31 — 25 September 2026
 
 Implemented connected source-branch offers, explicit visit claims/arrival, visible paused customer sequence, actual subset confirmation and same-round resume; distinct end-round/end-day review with reported collection and held-work carryover; existing-round viewing/explicit owner takeover and reload recovery. Uncertain online commands retain exact identities and block closure/new start across execution pages in the current session. B2C has no branch/piece/receiver procedure. Native ERP remains the only staff receipt surface.
@@ -255,7 +265,7 @@ Each row records implementation, verification and owner review separately. None 
 | [29 — Connected ordinary driver delivery UI](phases/29-ordinary-driver-delivery-ui.md) | Not started | Not run | No implementation result yet |
 | [30 — Focused driver exception and correction UI](phases/30-driver-exception-correction-ui.md) | Not started | Not run | No implementation result yet |
 | [31 — Driver branch handover, resume and workday closure UI](phases/31-driver-branch-closure-ui.md) | Not started | Not run | No implementation result yet |
-| [32 — Dispatcher monitoring and online synchronization feedback](phases/32-monitoring-sync-online-ui.md) | Not started | Not run | No implementation result yet |
+| [32 — Dispatcher monitoring and online synchronization feedback](phases/32-monitoring-sync-online-ui.md) | Implemented 25 Sep 2026 | 7 focused + 34 PostgreSQL tests and 1 actual browser scenario passed; final gates in evidence | [Evidence](phase-32-evidence.md), [monitoring guide](monitoring.md); Phase 38 owns p95/load measurement |
 | [33 — PWA downloads and atomic local action capture](phases/33-offline-local-capture.md) | Not started | Not run | No implementation result yet |
 | [34 — Ordered replay and durable conflict recovery](phases/34-ordered-replay-conflict-recovery.md) | Not started | Not run | No implementation result yet |
 | [35 — Safe offline account recovery and application updates](phases/35-offline-auth-updates-ux.md) | Not started | Not run | No implementation result yet |

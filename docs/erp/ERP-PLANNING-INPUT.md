@@ -250,3 +250,9 @@ Correction availability supplies `executionRoundId` for the latest device owners
 ## Phase 31 driver branch and closure reads
 
 ERP command and stock/settlement authority are unchanged. The optional branch display label can also appear in the existing return-request snapshot within `return.requested`; event meaning and identity are unchanged. The driver now requests source-bound offers and waits for native ERP actual subsets before resuming. Loss/damage and unclaimed remainders stay visible. Additive own-driver reads are `ReturnGroups.pendingRequests`, `ReturnGroup/ReturnRequestView.sourceBranchName` and `ClosureRoundSummary.activityRevision`; they enable reload, second-phone discovery and between-round closure. Names are current source labels; IDs and committed ledgers remain authoritative. Real local native mock ERP form → durable source worker → public receipt → driver resume is verified in [P31 evidence](../phase-31-evidence.md). Commercial ERP/device validation remains separate.
+
+## Phase 32 monitoring and synchronization feedback
+
+Phase 32 changes no ERP planning input or event schema. Scoped staff monitoring consumes the existing coherent driver snapshot and task history; it cannot mutate departed execution. A source filter is applied only after server authorization and therefore does not expand branch or tenant visibility.
+
+The native mock ERP status panel deliberately keeps four facts separate: Tawsel accepted the source command, the ERP durably received an outbound event, the ERP applied that event to its projection, or application failed. A retry of the same event repairs delivery/application only; it does not alter the original business acceptance. Server monitoring cannot report unsent phone work and does not infer driver presence from a quiet connection. See [Phase 32 evidence](../phase-32-evidence.md).

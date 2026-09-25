@@ -508,3 +508,16 @@ Fields are additive and optional in older examples. Current server reads supply 
 | `summary.endedAt` + carryForward | Explicit workday closure alongside actual held records; no delivery/receipt/settlement inference. |
 
 Optional additions preserve older canonical examples. Current server reads supply them; driver controls fail closed for missing closure revision. [Public-only conformance](../../tests/erp-conformance/branch-closure.ts).
+
+## Phase 32 status presentation
+
+| Presented fact | Exact meaning |
+| --- | --- |
+| Tawsel source command accepted/rejected | Business command result at Tawsel; independent of outbound transport |
+| ERP received | A durable inbox checkpoint exists for the event |
+| ERP applied | The receiver projection advanced through the event |
+| ERP application failed | Receipt may exist, but projection application failed and remains operationally actionable |
+| Monitoring fresh/stale | Age of the last successful coherent HTTP refresh; never driver online/offline presence |
+| Action accepted/rejected/review-required | Server-received history evidence only; unsent phone actions remain unknown |
+
+Retries retain event and business identities. They must never transform a rejected source command into an accepted one or describe a merely received event as applied. Phase 32 adds no canonical field or status value; these labels map existing public reads to the staff/native ERP UI. [Evidence](../phase-32-evidence.md).

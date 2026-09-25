@@ -7,7 +7,9 @@ import { IndependentTasksPage } from './independent-tasks';
 import { LocationReview } from './location-review';
 import { CurrentActivityPage } from './current-activity';
 import { PreparationFlow } from './preparation-flow';
+import { MonitoringPage } from './monitoring-page';
 export function ProductionShell({ fixtureRouteRequested = false }: { fixtureRouteRequested?: boolean }) {
+  if (!fixtureRouteRequested && window.location.pathname.startsWith('/monitoring')) return <MonitoringPage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/execution/closure')) return <ClosurePage />;
   if (!fixtureRouteRequested && window.location.pathname.startsWith('/execution/branch')) return <BranchPage />;
   if (!fixtureRouteRequested) return window.location.pathname.startsWith('/execution/correction') ? <CorrectionPage /> : window.location.pathname.startsWith('/execution/options') ? <ExecutionOptionsPage /> : window.location.pathname.startsWith('/rounds/current') ? <CurrentActivityPage /> : window.location.pathname.startsWith('/day') || window.location.pathname.startsWith('/prepare') ? <PreparationFlow /> : window.location.pathname.startsWith('/locations') ? <LocationReview /> : window.location.pathname.startsWith('/tasks') ? <IndependentTasksPage /> : <AccountShell />;
