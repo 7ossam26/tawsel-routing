@@ -17,9 +17,18 @@ test('rejects exposed ports, writable Engine mounts and mutable images in applic
 
 test('requires current target-bound inventory, restore evidence and exact release config', () => {
   const now = Date.now(), date = new Date(now - 1000).toISOString(), image = 'example/app@sha256:' + 'a'.repeat(64), compose = 'fixture';
-  const e: ReleaseEvidence = { environment: 'live', project: 'tawsel-fixture', target: 'fixture-host', composeSha256: createHash('sha256').update(compose).digest('hex'), images: { app: image, web: image, issuer: image }, previousImages: { app: image, web: image, issuer: image }, inventory: { recordedAt: date, engineMountsReviewed: true, portsReviewed: true, resourcesReviewed: true, privateNetworkReviewed: true }, backup: { target: 'fixture-host', completedAt: date, restoredAt: date, separateFailureDomain: true, reportSha256: 'b'.repeat(64), app: true, identity: true, secrets: true }, oldQueueCheckPassed: true };
+  const e: ReleaseEvidence = { environment: 'live', project: 'tawsel-fixture', target: 'fixture-host', composeSha256: createHash('sha256').update(compose).digest('hex'), images: { app: image, web: image, issuer: image }, previousImages: { app: image, web: image, issuer: image }, inventory: { recordedAt: date, engineMountsReviewed: true, portsReviewed: true, resourcesReviewed: true, privateNetworkReviewed: true }, backup: { target: 'fixture-host', completedAt: date, restoredAt: date, separateFailureDomain: true, reportSha256: 'b'.repeat(64), app: true, identity: true, secrets: true, measuredRpoSeconds: 60, measuredRtoSeconds: 90, archiveHealthy: true, businessCheckpointVerified: true }, oldQueueCheckPassed: true };
   expect(() => validateRelease(e, compose, now)).not.toThrow();
   for (const modified of [
+    { ...e, backup: { ...e.backup, measuredRpoSeconds: 901 } },
+    { ...e, backup: { ...e.backup, measuredRtoSeconds: 14401 } },
+    { ...e, backup: { ...e.backup, measuredRpoSeconds: NaN } },
+    { ...e, backup: { ...e.backup, measuredRtoSeconds: -1 } },
+    { ...e, backup: { ...e.backup, archiveHealthy: false } },
+    { ...e, backup: { ...e.backup, businessCheckpointVerified: false } },
+    { ...e, backup: { ...e.backup, separateFailureDomain: false } },
+    { ...e, backup: { ...e.backup, identity: false } },
+    { ...e, backup: { ...e.backup, secrets: false } },
     { ...e, composeSha256: 'wrong' }, { ...e, oldQueueCheckPassed: false },
     { ...e, backup: { ...e.backup, completedAt: new Date(now - 901000).toISOString() } },
     { ...e, backup: { ...e.backup, target: 'other-host' } },

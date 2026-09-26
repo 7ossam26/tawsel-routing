@@ -20,15 +20,15 @@ import {checkOutboxCapture,type OutboxCapture} from '../tests/erp-conformance/ou
 /** Shared P25/P26 scenario preparation: actual prior domain commands/commits
  * and real PostgreSQL. Identity/provider setup is a labelled fixture; the demo
  * wrappers below and in receiver-demo.ts exercise the public signed HTTP boundary. */
-export async function prepareOutboxBusiness(){
+export async function prepareOutboxBusiness(options:{issuer?:string;driverSubject?:string}={}){
  const db=await createTestDatabase();await prepareAccessFixture(db.pool);
- const f=await outcomeCompanyFixture(db,[{},{}]);
+ const f=await outcomeCompanyFixture(db,[{},{}],undefined,options);
  const scope={tenantId:f.source.tenantId,integrationId:f.source.integrationId},key={keyId:'demo_v1',secret:randomBytes(32).toString('hex')};
  try{
   const bootstrap=structuredClone(f.source.bootstrapCommand);bootstrap.actionId=randomUUID();bootstrap.payload.sourceRevision=3;bootstrap.payload.returnCapabilities=['return.receive','return.dispose'];
   if((await send(f.app,operatorToken,bootstrap)).statusCode!==200)throw new Error('Return source grant');
   if((await send(f.app,f.source.token,f.source.command('role.defineCapabilities',{externalId:'role',sourceRevision:2,name:'Driver',capabilities:['execution.own','correction.own']}))).statusCode!==200)throw new Error('Correction source grant');
-  const outcomes=new Outcomes(db.pool);await outcomes.command(f.principal,f.make(0,'outcome.recordNoAnswer'));
+  const outcomes=new Outcomes(db.pool),knownAction=f.make(0,'outcome.recordNoAnswer');await outcomes.command(f.principal,knownAction);
   await outcomes.command(f.principal,f.make(1,'outcome.recordNoAnswer',{},1));
   const original=(await outcomes.read(f.principal,f.round.roundId)).items[0]!;
   const correction=f.planCommand('outcome.correct',{roundId:f.round.roundId,taskId:original.taskId,attemptId:original.attemptId,expectedOutcomeRevision:original.revision,replacement:{outcome:'partial',pieces:[{sourceLineId:'pieces',delivered:2}],reportedCollection:{amountMinor:25000,currency:'EGP',exponent:2}}});delete correction.payload.driverId;
@@ -38,7 +38,7 @@ export async function prepareOutboxBusiness(){
   const returned=await returns.request(f.principal,requestCommand),request=returned.response!.body.request as components['schemas']['ReturnRequestView'];
   const receipt=f.source.command('return.confirmSubsetReceipt',{requestId:request.requestId,receivingBranchId:request.sourceBranchId,items:[{itemId:request.items[0]!.itemId,expectedRevision:request.items[0]!.revision,quantity:1}]});
   if((await new ReturnReceiver(db.pool).command(`Bearer ${f.source.token}`,'return.confirmSubsetReceipt',receipt)).receipt.businessStatus!=='accepted')throw new Error('Actual receipt failed');
-  return {db,f,scope,key,async close(){await f.close();await db.close();}};
+  return {db,f,scope,key,knownAction,async close(){await f.close();await db.close();}};
  }catch(e){await f.close();await db.close();throw e;}
 }
 export async function outboxDemo(){

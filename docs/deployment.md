@@ -1,5 +1,7 @@
 # Recoverable application release
 
+Phase 40 adds the [local physical recovery rehearsal](recovery.md) and [measured evidence](verification/restore.md). Release evidence now requires finite measured RPO ≤900 seconds, RTO ≤14400 seconds, healthy WAL archiving and a verified business checkpoint, in addition to target-bound app/identity/secrets and separate failure-domain attestations. Its local same-host report cannot satisfy the live release gate. The Phase 39 narrative below retains its original scope.
+
 Phase 39 is prepared locally. [Actual checks, failures and pending target work](verification/deployment.md) are the evidence of execution. There is no authorized target connection yet. Do not infer launch readiness from this procedure or a Compose parse. Phase 40 owns independent backup/restore proof.
 
 ## Inventory before touching a target

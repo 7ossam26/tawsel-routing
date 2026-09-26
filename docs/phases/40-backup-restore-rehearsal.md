@@ -1,5 +1,7 @@
 # Phase 40 — Backup, isolated restore and recovery proof
 
+Execution update — 26 September 2026: local checkpoints A/B/C passed with [timed evidence and explicit production gaps](../verification/restore.md) and a [reproducible runbook](../recovery.md). The original prompt/checklist below is retained as scope; local proof does not mark off-host/target requirements achieved. Phase 41 is not executed.
+
 Package revision 3 · D-109–D-111 · Implementation not started at preparation time.
 Copy this entire file as the task prompt in the Tawsel repository.
 

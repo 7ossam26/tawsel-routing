@@ -6,6 +6,6 @@
   "images": { "app": "REPLACE", "web": "REPLACE", "issuer": "REPLACE" },
   "previousImages": { "app": "REPLACE", "web": "REPLACE", "issuer": "REPLACE" },
   "inventory": { "recordedAt": "", "engineMountsReviewed": false, "portsReviewed": false, "resourcesReviewed": false, "privateNetworkReviewed": false },
-  "backup": { "target": "REPLACE_WITH_INVENTORIED_HOST", "completedAt": "", "restoredAt": "", "separateFailureDomain": false, "reportSha256": "", "app": false, "identity": false, "secrets": false },
+  "backup": { "target": "REPLACE_WITH_INVENTORIED_HOST", "completedAt": "", "restoredAt": "", "separateFailureDomain": false, "reportSha256": "", "app": false, "identity": false, "secrets": false, "measuredRpoSeconds": null, "measuredRtoSeconds": null, "archiveHealthy": false, "businessCheckpointVerified": false },
   "oldQueueCheckPassed": false
 }

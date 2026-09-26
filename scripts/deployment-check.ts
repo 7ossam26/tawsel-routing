@@ -11,7 +11,8 @@ export interface ReleaseEvidence {
   images: { app: string; web: string; issuer: string };
   previousImages: { app: string; web: string; issuer: string };
   inventory: { recordedAt: string; engineMountsReviewed: boolean; portsReviewed: boolean; resourcesReviewed: boolean; privateNetworkReviewed: boolean };
-  backup: { target: string; completedAt: string; restoredAt: string; separateFailureDomain: boolean; reportSha256: string; app: boolean; identity: boolean; secrets: boolean };
+  backup: { target: string; completedAt: string; restoredAt: string; separateFailureDomain: boolean; reportSha256: string; app: boolean; identity: boolean; secrets: boolean;
+    measuredRpoSeconds: number; measuredRtoSeconds: number; archiveHealthy: boolean; businessCheckpointVerified: boolean };
   oldQueueCheckPassed: boolean;
   environment: 'staging' | 'live';
 }
@@ -28,7 +29,9 @@ export function validateRelease(e: ReleaseEvidence, compose: string, now = Date.
   const i = e.inventory, b = e.backup;
   if (!i || !recent(i.recordedAt, 86400000) || [i.engineMountsReviewed, i.portsReviewed, i.resourcesReviewed, i.privateNetworkReviewed].some(v => v !== true)) fail();
   if (!b || b.target !== e.target || !recent(b.completedAt, 900000) || !recent(b.restoredAt, 30 * 86400000)
-    || [b.separateFailureDomain, b.app, b.identity, b.secrets, e.oldQueueCheckPassed].some(v => v !== true) || !/^[a-f0-9]{64}$/.test(b.reportSha256)) fail();
+    || [b.separateFailureDomain, b.app, b.identity, b.secrets, b.archiveHealthy, b.businessCheckpointVerified, e.oldQueueCheckPassed].some(v => v !== true) || !/^[a-f0-9]{64}$/.test(b.reportSha256)) fail();
+  if (typeof b.measuredRpoSeconds !== 'number' || !Number.isFinite(b.measuredRpoSeconds) || b.measuredRpoSeconds < 0 || b.measuredRpoSeconds > 900
+    || typeof b.measuredRtoSeconds !== 'number' || !Number.isFinite(b.measuredRtoSeconds) || b.measuredRtoSeconds < 0 || b.measuredRtoSeconds > 14400) fail();
 }
 
 export function validateCompose(source: string): string[] {

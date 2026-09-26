@@ -1,0 +1,95 @@
+{
+  "startedAt": "2026-09-26T04:26:49.453Z",
+  "destinationClass": "same-host-local-filesystem",
+  "separateFailureDomain": false,
+  "node": "v24.19.0",
+  "keycloak": "26.7.4",
+  "targets": {
+    "rpoSeconds": 900,
+    "rtoSeconds": 14400
+  },
+  "liveReadiness": false,
+  "postgres": "postgres (PostgreSQL) 18.3",
+  "java": "openjdk 25.0.4.1 2026-08-18 LTS\r\nOpenJDK Runtime Environment Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS)\r\nOpenJDK 64-Bit Server VM Temurin-25.0.4.1+1 (build 25.0.4.1+1-LTS, mixed mode, sharing)",
+  "archiveFailureObserved": true,
+  "baseCompletedAt": "2026-09-26T04:28:01.144Z",
+  "databaseBytes": [
+    {
+      "datname": "mock_erp_14674183d7d14ebb96dbbe1bb8b745b9",
+      "bytes": "8804031"
+    },
+    {
+      "datname": "recovery_identity",
+      "bytes": "14620351"
+    },
+    {
+      "datname": "tawsel_test_95eb9d701d2f4b988846b27423d3fd7e",
+      "bytes": "14628543"
+    },
+    {
+      "datname": "tawsel_test_control",
+      "bytes": "8206015"
+    }
+  ],
+  "postTargetWalArchived": "000000010000000000000005",
+  "backupObjects": [
+    {
+      "name": "backup_manifest.enc",
+      "bytes": 297289
+    },
+    {
+      "name": "base.tar.enc",
+      "bytes": 48250412
+    },
+    {
+      "name": "configuration.enc",
+      "bytes": 2004
+    },
+    {
+      "name": "issuer-config.tar.enc",
+      "bytes": 38956
+    },
+    {
+      "name": "pg_wal.tar.enc",
+      "bytes": 16778796
+    }
+  ],
+  "baseVerified": true,
+  "checkpoint": {
+    "checkpointAt": "2026-09-26T04:28:08.872Z",
+    "archivedAt": "2026-09-26T04:28:09.163Z",
+    "incidentAt": "2026-09-26T04:28:09.551Z",
+    "lsn": "0/4DCB8D0",
+    "wal": "000000010000000000000004",
+    "actionId": "6f40c679-9fc8-472e-a614-82ef2dde598a",
+    "roundId": "f5628591-ffbb-46fa-919c-371812247480",
+    "eventId": "e846e5cd-3bc6-40ee-9c78-09f5c284ca60",
+    "commandCount": 22
+  },
+  "loginAndCheckpointVerifiedAt": "2026-09-26T04:29:14.540Z",
+  "publicConformance": {
+    "uniqueEvents": 19,
+    "negativeChecks": 10,
+    "deliveredPieces": 2,
+    "reportedMinor": 25000,
+    "receivedPieces": 1,
+    "transport": "real-http",
+    "projection": "separate-durable-receiver"
+  },
+  "replay": {
+    "events": 19,
+    "duplicateEffects": 0,
+    "senderRestart": true,
+    "receiverRestart": true,
+    "expiredSessionRejected": true,
+    "freshLogin": true
+  },
+  "measured": {
+    "checkpointAgeAtIncidentSeconds": 0.679,
+    "archiveLagSeconds": 0.291,
+    "serviceRestoreSeconds": 68.53669380000001,
+    "lostKnownCommittedActions": 0
+  },
+  "completedAt": "2026-09-26T04:29:18.088Z",
+  "status": "passed-local-only"
+}

@@ -1,5 +1,7 @@
 # Field and status mapping — canonical foundation
 
+Phase 40 changes no public fields or statuses. Recovery preserves action/event identity and bytes; sender received and consumer applied remain distinct. A restored server may be behind a real ERP: compare public replay/snapshot/status checkpoints before resuming, and preserve stable IDs instead of resetting inboxes. Fresh login and valid restored/rotated credentials are required. [Recovery evidence and limitations](../verification/restore.md).
+
 Phase 39 changes no field/status mappings or released schema versions. Release recovery preserves original command IDs/bytes and received-versus-applied semantics; deployment readiness and worker-loop observations are not delivery acceptance. Managed mock migrations/readiness remain an operator responsibility with no extra ERP privilege or database coupling. [Runbook](../deployment.md), [verified local limits](../verification/deployment.md).
 
 Phase 35 additions are locally verified through [connected and native-browser checks](../phase-35-evidence.md). Canonical ownership remains in the linked schemas, not this table.

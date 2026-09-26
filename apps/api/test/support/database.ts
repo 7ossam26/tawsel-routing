@@ -28,6 +28,13 @@ export async function createTestDatabase() {
     let closed = false;
     return {
       pool, config, url: testUrl.href,
+      // Physical recovery rehearsals stop their entire disposable cluster and
+      // preserve its databases. Release connections without issuing DROP.
+      async detach() {
+        if (closed) return;
+        closed = true;
+        await pool.end(); await admin.end();
+      },
       async close() {
         if (closed) return;
         closed = true;

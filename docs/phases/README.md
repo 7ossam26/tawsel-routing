@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+Phase 40 local recovery evidence — 26 September 2026: [timed physical base/WAL restore](../verification/restore.md) and [owner runbook](../recovery.md). Actual restored Keycloak/API/receiver checkpoints and replay passed in **68.5367 seconds** on small fixtures; 22 command identities and 19 events preserved. Separate failure-domain storage, target topology, key escrow/alerts and Engine/maps remain pending. Phase 41 is not executed. Earlier entries below retain their historical scope.
+
 Phase 39 local release preparation — 26 September 2026: [separate application deployment and recovery procedure](../deployment.md), [actual local/target evidence](../verification/deployment.md). No authorized server access exists, so container/target rollout and external TLS/email/capacity checks remain pending. Phase 40's independent backup/restore work is not executed. Earlier phase summaries below retain their historical scope.
 
 Phase 38 is implemented and measured locally (26 September 2026): [ordered evidence](../phase-38-evidence.md), [owner runbook](../diagnostics.md), [actual baseline/ramp limits](../verification/performance.md). Higher-load ERP p95 misses its target; no universal capacity or target-host claim. Phase 39's local preparation is recorded above.
