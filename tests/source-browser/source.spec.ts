@@ -60,7 +60,10 @@ test('B: actual Keycloak native administration, preparation/receipt, departed de
   const revised=page.locator('article.native-shipment').filter({hasText:'demo/one'});await revised.locator('summary').click();await revised.getByRole('button',{name:'تعديل بيانات المصدر'}).click();await page.getByLabel('اسم المستلم',{exact:true}).fill('مستلم الدورة الجديدة');await page.getByLabel('راجعت نقطة التسليم وأؤكدها').check();await save(page,'حفظ وإرسال الشحنة','intake.submitSnapshot');
   await page.getByRole('button',{name:'تحديث حالة توصيل'}).click();await revised.getByRole('button',{name:'تعديل بيانات المصدر'}).click();await expect(page.getByLabel('اسم المستلم',{exact:true})).toHaveValue('مستلم الدورة الجديدة');
   await page.getByRole('tab',{name:'حالة التكامل'}).click();await expect(page.getByRole('heading',{name:'حالة المصدر والتنفيذ'})).toBeVisible();await expect.poll(async()=>{const statuses=await page.evaluate(async()=>await(await fetch('/native/projections')).json() as S['ConsumerStatus'][]);return statuses.length>0&&statuses.every(s=>s.checkpoint.appliedThrough===s.checkpoint.receivedThrough&&s.checkpoint.pendingCount===0);},{timeout:20000}).toBe(true);
-  await expect(page.getByText(/^أحداث توصيل الصادرة/)).toBeVisible();await page.screenshot({path:'output/playwright/phase-27-integration-status.png',fullPage:true});
+  await expect(page.getByText('قبول الطلب في توصيل، واستلام الحدث في ERP، وتطبيقه ثلاث حقائق منفصلة.',{exact:true})).toBeVisible();
+  await expect(page.locator('.integration-counts')).toContainText('استلمه ERP دائمًا');
+  await expect(page.locator('.integration-stream').first()).toContainText('بانتظار التطبيق: 0');
+  await page.screenshot({path:'output/playwright/phase-27-integration-status.png',fullPage:true});
   await writeFile('.local/phase-27-browser-evidence.json',JSON.stringify({journey,newCycle:fresh,source:await nativeState(page)},null,2));
  }finally{await driverContext.close();}
 });

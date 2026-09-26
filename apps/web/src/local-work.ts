@@ -235,7 +235,11 @@ function assertContinuation(state: S['CurrentSnapshot'], command: LocalEnvelope)
   if (command.operationId === 'current.recordArrival') { if (stage !== 'heading') throw new Error('سجّل الاتجاه أولًا.'); return; }
   const allowed = { 'outcome.recordFull': 'full', 'outcome.recordPartial': 'partial', 'outcome.recordRefusal': 'refusal', 'outcome.recordNoAnswer': 'no-answer' } as const;
   const outcome = allowed[command.operationId as keyof typeof allowed];
-  if (!target.delivery.allowedActions.includes(outcome) || (outcome === 'no-answer' ? stage !== 'heading' : stage !== 'arrived')) throw new Error('النتيجة غير متاحة في حالة المحطة الحالية.');
+  // Refusal can be reported by phone, without inventing heading/arrival. Match
+  // the existing public outcome authority while protecting another current stop.
+  const otherCurrent = state.currentActivity && state.currentActivity.attemptId !== target.attemptId;
+  const stageUnavailable = outcome === 'refusal' ? Boolean(otherCurrent) : outcome === 'no-answer' ? stage !== 'heading' : stage !== 'arrived';
+  if (!target.delivery.allowedActions.includes(outcome) || stageUnavailable) throw new Error('النتيجة غير متاحة في حالة المحطة الحالية.');
 }
 /** Pure pending projection. Never write this over the last confirmed snapshot,
  * and never use synthetic receipt/commit timestamps for captured work. */

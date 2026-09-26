@@ -41,7 +41,8 @@ export function ClosurePage() {
   useEffect(() => { void refresh().catch(e => { setLoaded(true); setError(e instanceof Error ? e.message : 'تعذر تحميل اليوم.'); }); }, [refresh]);
   async function run(command?: Command) { const accepted = await action.execute(command); if (accepted) setPause(false); try { await refresh(); } catch { setFresh(false); setError('تعذر تحديث الملخص؛ تحقّق من الخادم قبل المتابعة.'); } }
   const anchor = summary?.rounds.at(-1), active = Boolean(current), arrived = current?.currentActivity?.stage === 'arrived', heading = current?.currentActivity?.stage === 'heading';
-  const unresolved = [...(session ? pendingExecutionLinks(session, key) : []), ...local.items.filter(item => item.actionId !== action.pending?.actionId).map(item => ({ id: item.actionId, href: item.href }))];
+  // The journal and compatibility pointer may describe the same pending action.
+  const unresolved = [...new Map([...(session ? pendingExecutionLinks(session, key) : []), ...local.items.filter(item => item.actionId !== action.pending?.actionId).map(item => ({ id: item.actionId, href: item.href }))].map(item => [item.id, item])).values()];
   const branch = current?.branchActivity, blocked = !fresh || owner?.mode !== 'owner' || Boolean(action.pending) || action.busy || unresolved.length > 0 || arrived || Boolean(branch) || (heading && !pause) || (!active && anchor?.activityRevision === undefined);
   function close() {
     if (blocked || !session || !summary || !anchor || !owner || summary.endedAt) return;

@@ -1,5 +1,15 @@
 # Tawsel implementation status
 
+## Phase 41 — 26 September 2026
+
+Local pilot preparation and verification complete; **physical-device, actual elapsed offline and owner acceptance remain outstanding**, as explicitly requested. [Owner-runnable walkthrough](verification/pilot-walkthrough.md), [A–P readiness and exact remaining conditions](verification/pilot-readiness.md), [ordered checks, failures and versions](phase-41-evidence.md). No live pilot approval or Phase 42 execution.
+
+**A:** new isolated B2C harness and continuous UI create/pin/plan/start/deliver/close/report/XLSX run, actual Keycloak/PostgreSQL and Cairo map with explicitly controlled routing. Separate native mock source, exception, subset-return/branch/takeover/day-continuation browser scenarios passed. Live Engine probe failed all nine requests. **B:** production PWA recovery/replay passed four desktop scenarios; neither physical platform nor actual ~24-hour interval was run. **C:** fixed outcome acknowledgement wording, permitted phone refusal without invented arrival, blank coordinates becoming zero, competing ready-plan actions/technical copy and duplicate pending recovery links. Repaired obsolete prerequisite browser expectations without bypassing server state or rate limits.
+
+Final checks: **612 fast tests**, **83 selected real PostgreSQL integration tests**, **29 prerequisite checks**, **10 browser scenarios** across eight configurations; focused C regression **29/29**. Lint, workspace/script types, canonical checks and configured workspace build passed. Final B2C export verifies exact task identities, full outcomes, 12550 minor EGP units and formula-looking text as a literal. Logs, failed attempts and per-run timing are in the phase evidence; the full integration suite was not rerun. Exception/branch automation required 1500/3000ms pacing after actual 429s; shared-IP navigation remains a pilot condition.
+
+Affected paths: web execution/local-capture/preparation/closure modules and regression tests; isolated pilot harness/config/test/npm commands; source/branch/preparation browser maintenance; XLSX inspection helper; review/readiness/walkthrough/evidence and operation-coverage narrative. Public payloads, examples, client and ERP interface versions remain unchanged. No Engine datasets/mounts/config, original Stitch exports, migrations or lockfile changed. Physical Android/Chrome, iPhone/Safari, safe-area/OS-input checks, elapsed offline day, owner review, configured live Engine, target deployment/capacity and independent recovery remain required. No commit, push or deployment.
+
 ## Phase 40 — 26 September 2026
 
 Implemented and verified the local physical backup/WAL restore rehearsal, authenticated encryption and failure checks, protected recovery inventory/runbook, and stricter release evidence. **Off-host/target-host recovery remains pending**: no destination, independent key escrow, server access or external alert channel was provided. [Ordered evidence, exact commands and failed attempts](verification/restore.md), [machine-readable result](verification/restore-local-2026-09-26.json), [operator recovery runbook](recovery.md).

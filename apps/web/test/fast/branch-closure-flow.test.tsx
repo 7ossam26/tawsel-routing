@@ -6,6 +6,8 @@ import { BranchPage } from '../../src/branch-page';
 import { ClosurePage } from '../../src/closure-page';
 import { pendingExecutionLinks } from '../../src/execution-command';
 import type { components } from '@tawsel/api-client';
+import { localWork } from '../../src/local-work';
+import { headingFixture } from './local-work-fixture';
 import { connectedIds as ids, connectedContext, receiptFixture } from './execution-fixture';
 
 beforeEach(() => { window.history.replaceState({}, '', '/execution/branch?kind=company'); localStorage.clear(); sessionStorage.clear(); localStorage.setItem('tawsel:device-id', ids.device); });
@@ -125,4 +127,20 @@ it('C: shared recovery links ignore other account commands and terminal review, 
   const optionLink = pendingExecutionLinks(session, '').find(link => link.href.startsWith('/execution/options'))!;
   expect(new URL(optionLink.href, window.location.origin).searchParams.get('taskId')).toBe(ids.task);
   expect(new URL(optionLink.href, window.location.origin).searchParams.get('roundId')).toBe(ids.round);
+});
+it('shows one recovery link when the journal and legacy pointer describe the same action, and still blocks closure', async () => {
+  const posts = closureFixture({ stage: 'heading' }), user = userEvent.setup();
+  const session = connectedContext as components['schemas']['SessionContext'];
+  const scope = await localWork.select(session, ids.device);
+  const command = headingFixture();
+  command.context = { kind: 'device', tenantId: ids.tenant, accountId: ids.account, deviceId: ids.device, deviceGeneration: 1, deviceSequence: 1 };
+  command.resources = { tripId: ids.round, taskId: ids.task, attemptId: ids.attempt };
+  command.payload.roundId = ids.round;
+  await localWork.capture(scope, command, '/rounds/current?kind=company', false);
+  render(<ClosurePage />);
+  await screen.findByRole('link', { name: 'فتح الإجراء المعلّق' });
+  sessionStorage.setItem(`tawsel:delivery-pending:${ids.tenant}:${ids.account}:${ids.round}:${ids.device}`, JSON.stringify({ command }));
+  await user.click(screen.getByLabelText('أوقف الاتجاه للعميل الحالي وأحتفظ بمهمته'));
+  expect(screen.getAllByRole('link', { name: 'فتح الإجراء المعلّق' })).toHaveLength(1);
+  await user.click(screen.getByRole('button', { name: 'إنهاء الجولة فقط' })); expect(posts).toHaveLength(0);
 });

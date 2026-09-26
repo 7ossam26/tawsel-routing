@@ -1,4 +1,31 @@
-# Phase 04 representative UI review
+# UI review
+
+## Phase 41 — 26 September 2026
+
+Owner requested **local preparation/verification now; physical devices and owner review later**. No owner quote, approval or measured owner tap count exists. [Complete walkthrough/feedback sheet](verification/pilot-walkthrough.md), [A–P readiness](verification/pilot-readiness.md), [commands, failures and ordered evidence](phase-41-evidence.md). The Phase 04 review below is historical fixture evidence.
+
+### Actual interaction and render findings
+
+Local Windows Chromium 153.0.8010.12, Node 24.19.0, actual Keycloak 26.7.4/Fastify/isolated PostgreSQL. New B2C flow creates its own two tasks through the UI, confirms both pins on the actual locally served Cairo map and executes/closes/exports. Routing is controlled HTTP. Screens at 320/360/390 and 1366 CSS pixels are desktop viewports, not physical phones. Representative [pin](../output/playwright/phase-41/pin-0.png), [arrived](../output/playwright/phase-41/arrived-1.png), [report](../output/playwright/phase-41/report-320.png) and [machine result](../output/playwright/phase-41/b2c.json).
+
+- Long RTL recipient/address text wraps in the detail card; isolated phone remains readable. Separate same-address tasks retain identity. Pin confirmation can use the map-center button without a precise drag.
+- The arrived stage exposes one main delivery action with contextual contact/options. Keyboard focus/Enter and at least 44px target height are checked in the actual browser. Reports reflow at 320px, and export has create/ready/download feedback.
+- Preparation originally showed competing save/start actions, an internal revision chip and a lingering “planning is working” message beside a ready plan. Fixed: ready state makes Start primary and Save secondary, removes the revision chip and uses saved-input copy that remains true after planning completes. Blank required coordinates now block the request instead of becoming zero; explicit zero remains valid.
+- The actual exception run exposed two defects: refused/partial outcome acknowledgement used delivery wording; local capture blocked permitted phone refusal unless arrival was recorded. Fixed in `current-activity.tsx`/`local-work.ts`, with connected regression checks. Null arrival is retained; no physical movement is inferred.
+- Unpaced long exception automation exceeded the real session read limit. Production throttling is preserved; optional paced browser rerun is separately recorded. The exception run passed at 1500ms and branch run at 3000ms pacing; the branch run still hit 429 at 1500ms. Shared-IP/rapid-navigation behavior needs target observation.
+
+- Closure could list the same pending action twice when both the journal and compatibility pointer existed. It now shows one recovery link, with the closure guard retained. A regression exercises both sources and verifies no closure POST.
+- Current production-PWA recovery/replay passed all four desktop scenarios; current preparation (including manual Engine fallback) and monitoring each passed. These do not establish physical-device or owner acceptance.
+
+### Reference language and extensions
+
+All nine original images were opened again; their HTML and metadata inspected. Original assets remain unchanged. 01/02 map/list and current/recipient hierarchy, 03 selected-driver monitoring, 04 login grouping, 05 daily readiness, 06 preparation, 07 pin confirmation, 08 closure/report and 09 sync/review remain the visual sources. Cairo/navy/blue/light surfaces and status colors remain shared. Extensions use the same cards/fields/disclosures: B2C intake, manual order, partial/refusal/correction, branch subset, takeover, queued evidence, same-account recovery, safe update and XLSX. [Exact source paths/action/state mapping](ui-spec.md) still defines coverage. No GPS, barcode custody, call-count, settlement or prototype approval authority added.
+
+### Review still required
+
+Each page/state's purpose, next action, missing input and waiting meaning must be checked by the owner without narration. Numeric origin entry needs particular scrutiny: the reviewer may not know coordinates. Full navigation/state coverage, real Android/Chrome and iPhone/Safari installation, OS keyboard, safe areas/landscape, text enlargement, browser zoom, assistive technology and actual 24-hour offline behavior remain unrun. CSS viewport reflow/reduced-motion checks do not close those gaps. No universal storage/background promise.
+
+## Phase 04 representative UI review
 
 Date: 22 September 2026. Status: automated component/browser review complete; **owner review not yet received**. This review covers the developer-only fixture at `/__fixtures/driver-review`, not connected production journeys or server acceptance.
 

@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-26",
+  "status": "local verification complete; pilot acceptance outstanding",
+  "node": "24.19.0",
+  "chromium": "153.0.8010.12",
+  "physicalDevicesTested": false,
+  "elapsedOfflineTestStarted": false,
+  "ownerReviewReceived": false,
+  "liveEngineProbe": {
+    "passed": 0,
+    "failed": 9
+  },
+  "passed": {
+    "fastTests": 612,
+    "selectedPostgresIntegrationTests": 83,
+    "mixedPrerequisiteTests": 29,
+    "finalBrowserScenarios": 10,
+    "lint": true,
+    "types": true,
+    "canonicalChecks": true,
+    "configuredBuild": true
+  },
+  "outstanding": [
+    "physical Android/Chrome",
+    "physical iPhone/Safari",
+    "approximately 24 elapsed offline hours",
+    "owner simplicity review",
+    "configured live Engine",
+    "target deployment/capacity",
+    "independent recovery"
+  ],
+  "evidence": "../../../docs/phase-41-evidence.md",
+  "postgres": "18.4",
+  "servicesStartedForRunStopped": true,
+  "historicalScreenshotsUnchanged": true
+}

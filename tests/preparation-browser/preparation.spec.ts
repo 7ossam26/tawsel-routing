@@ -19,8 +19,11 @@ test('actual B2C stale recovery and mock-B2B Engine failure/manual fallback both
   await personal.goto('/day?kind=personal'); await expect(personal.getByText('عميلة جاهزة')).toBeVisible(); await expect(personal.getByText('عميل يحتاج موقعًا')).toBeVisible(); await expect(personal.getByText(/يمكنك متابعة تجهيز/)).toBeVisible();
   await personal.getByRole('link', { name: 'جهّز الجولة' }).click(); await expect(personal.getByText('خطة جاهزة')).toBeVisible();
   await request.post('http://127.0.0.1:3028/__fixture/personal-stale');
-  await personal.getByRole('button', { name: 'ابدأ الجولة' }).click(); await expect(personal.getByText(/تغيّر العمل/)).toBeVisible();
-  await personal.getByRole('button', { name: 'تحديث', exact: true }).click(); await expect(personal.getByText('نسخة الإدخال 4')).toBeVisible(); await personal.getByRole('button', { name: 'ابدأ الجولة' }).click();
+  await personal.getByRole('button', { name: 'ابدأ الجولة' }).click(); await expect(personal.getByText('تغيّرت الخطة بعد المزامنة؛ حدّث التجهيز قبل البدء.')).toBeVisible();
+  expect((await (await request.get('http://127.0.0.1:3028/__fixture/state')).json()).rounds).toHaveLength(0);
+  const refreshedPlans = personal.waitForResponse(response => response.url().includes('/plans?') && response.ok());
+  await personal.getByRole('button', { name: 'تحديث', exact: true }).click(); expect((await (await refreshedPlans).json()).inputRevision).toBe(4);
+  await expect(personal.getByText('خطة جاهزة', { exact: true })).toBeVisible(); await personal.getByRole('button', { name: 'ابدأ الجولة' }).click();
   await expect(personal.getByRole('heading', { name: 'المحطة الحالية' })).toBeVisible(); await expect(personal.getByRole('button', { name: 'اتجه للعميل' })).toBeVisible(); await personal.screenshot({ path: 'output/playwright/phase-28-b2c-start-mobile.png', fullPage: true }); await personalContext.close();
 
   const companyContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });

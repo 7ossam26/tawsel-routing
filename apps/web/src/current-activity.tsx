@@ -141,7 +141,7 @@ export function CurrentActivityPage() {
       const result = navigator.locks ? await withJournalLock(partition.scope, transmit) : await transmit();
       setPending(null);
       if (result.receipt.businessStatus !== 'accepted') { setError(result.receipt.problem?.detail ?? 'لم يُقبل الإجراء؛ الدليل محفوظ.'); await refresh(); return; }
-      setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.' : 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
+      setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.' : exact.command.operationId === 'outcome.recordFull' ? 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'تم تأكيد النتيجة والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
       await refresh(); headingRef.current?.focus();
     } catch (failure) {
       setError(saved ? 'الإجراء محفوظ على الهاتف؛ تعذر تأكيده أو تحديث الحالة. راجع الإجراءات المحفوظة.' : failure instanceof Error ? 'لم يُحفظ على الهاتف. ' + failure.message : 'لم يُحفظ على الهاتف؛ احتفظ بالمدخلات وحاول مجددًا.');

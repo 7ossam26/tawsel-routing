@@ -152,7 +152,9 @@
     "deployment:smoke": "node --env-file-if-exists=.env.database.local --import tsx scripts/deployment-smoke.ts",
     "test:deployment": "npm run build:foundation && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run apps/api/test/fast/deployment-config.test.ts apps/api/test/integration/deployment-recovery.test.ts apps/api/test/integration/database-lifecycle.test.ts apps/api/test/integration/offline-session-update.test.ts --maxWorkers=1 --testTimeout=30000",
     "test:backup": "vitest run --project fast apps/api/test/fast/recovery-store.test.ts apps/api/test/fast/deployment-config.test.ts",
-    "backup:rehearse": "npm run build:foundation && node --import tsx scripts/recovery-rehearsal.ts"
+    "backup:rehearse": "npm run build:foundation && node --import tsx scripts/recovery-rehearsal.ts",
+    "pilot:serve": "node --env-file=.env.database.local --import tsx scripts/pilot-browser-server.ts",
+    "test:browser:pilot": "npm run build:foundation && playwright test -c playwright.pilot.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

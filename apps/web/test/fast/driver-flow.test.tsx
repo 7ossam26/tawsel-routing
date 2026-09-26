@@ -144,6 +144,17 @@ describe('connected ordinary delivery flow', () => {
     expect(JSON.stringify(posts[0]!.body)).not.toMatch(/arrival|shippingPayment|callCount|reportedCollection/);
   });
 
+  it('acknowledges a refusal without claiming the shipment was delivered', async () => {
+    const posts = installConnectedFetch(); const user = userEvent.setup(); render(<ProductionShell />);
+    await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ });
+    await user.click(screen.getByText('خيارات المهمة'));
+    await user.click(screen.getByRole('button', { name: 'رفض الاستلام', exact: true }));
+    await user.click(screen.getByRole('button', { name: 'تأكيد النتيجة والتحصيل', exact: true }));
+    expect(await screen.findByText(/تم تأكيد النتيجة والتحصيل من الخادم/)).toBeTruthy();
+    expect(screen.queryByText(/تم تأكيد التسليم والتحصيل من الخادم/)).toBeNull();
+    expect(posts[0]!.body).toMatchObject({ operationId: 'outcome.recordRefusal' });
+  });
+
   it('retains the exact action and payload after a lost accepted response', async () => {
     const posts = installConnectedFetch({ loseFirstOutcome: true }); const user = userEvent.setup(); render(<ProductionShell />);
     await user.click(await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ }));

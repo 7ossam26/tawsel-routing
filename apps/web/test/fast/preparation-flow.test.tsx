@@ -66,6 +66,25 @@ beforeEach(() => {
 afterEach(() => { cleanup(); Reflect.deleteProperty(navigator, 'locks'); vi.restoreAllMocks(); });
 
 describe('connected preparation flow', () => {
+  it.each(['origin', 'endpoint'])('rejects blank %s coordinates before sending a planning command', async point => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const capture = installFetch(), user = userEvent.setup(); render(<ProductionShell />);
+    await screen.findByText('خطة جاهزة');
+    if (point === 'endpoint') await user.selectOptions(screen.getByLabelText('نهاية الجولة'), 'fixed');
+    await user.clear(screen.getByLabelText(point === 'origin' ? 'خط عرض نقطة الانطلاق' : 'خط عرض نقطة النهاية'));
+    await user.click(screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }));
+    await screen.findByText('أكمل إحداثيات النقطة المطلوبة قبل تجهيز الخطة.');
+    expect(capture.planningBodies).toHaveLength(0); expect(capture.startBodies).toHaveLength(0);
+  });
+  it('preserves explicitly entered zero coordinates as valid input', async () => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const capture = installFetch(), user = userEvent.setup(); render(<ProductionShell />);
+    await screen.findByText('خطة جاهزة');
+    for (const label of ['خط عرض نقطة الانطلاق', 'خط طول نقطة الانطلاق']) { await user.clear(screen.getByLabelText(label)); await user.type(screen.getByLabelText(label), '0'); }
+    await user.click(screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }));
+    await waitFor(() => expect(capture.planningBodies).toHaveLength(1));
+    expect(capture.planningBodies[0]).toMatchObject({ payload: { settings: { origin: { coordinates: { latitude: 0, longitude: 0 } } } } });
+  });
   it('keeps valid work usable while unresolved, prepared and deferred work remain distinct', async () => {
     installFetch(); render(<ProductionShell />);
     expect(await screen.findByRole('heading', { name: 'عملك اليوم' })).toBeTruthy();

@@ -54,6 +54,29 @@ describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => 
     expect(await db.capture(download.scope, second.envelope, second.href)).toEqual(second);
     await expect(db.capture(download.scope, { ...second.envelope, payload: { ...second.envelope.payload, expectedPinRevision: 2 } }, second.href)).rejects.toThrow('مختلف');
   });
+
+  it('captures a permitted phone refusal without synthesizing arrival and preserves it across reopen', async () => {
+    const download = downloadedFixture(); await db.saveDownload(download);
+    const refusal = headingFixture(); refusal.operationId = 'outcome.recordRefusal';
+    const saved = await db.capture(download.scope, refusal, '/rounds/current');
+    db.close(); await db.open();
+    expect((await db.actions.get([download.scope, saved.actionId]))?.envelope).toMatchObject({ operationId: 'outcome.recordRefusal', payload: { expectedCurrentAttemptId: null } });
+    const projected = await db.preview(download);
+    expect(projected.currentActivity).toBeNull(); expect(projected.physicalOrigin).toBeNull(); expect(projected.targets).toHaveLength(0);
+    expect((await db.downloads.get([download.scope, download.roundId]))?.current.targets).toHaveLength(1);
+  });
+
+  it.each(['another current stop', 'unauthorized outcome'])('refuses phone refusal with %s before any journal write', async reason => {
+    const download = downloadedFixture(), refusal = headingFixture(); refusal.operationId = 'outcome.recordRefusal';
+    if (reason === 'another current stop') {
+      const attemptId = crypto.randomUUID();
+      download.current.currentActivity = { taskId: crypto.randomUUID(), attemptId, revision: 0, stage: 'heading', heading: { actionId: crypto.randomUUID(), observation: refusal.observation, recordedAt: refusal.observation.observedAt! }, arrival: null };
+      refusal.payload.expectedCurrentAttemptId = attemptId;
+    } else download.current.targets[0]!.delivery.allowedActions = ['full'];
+    await db.saveDownload(download);
+    await expect(db.capture(download.scope, refusal, '/rounds/current')).rejects.toThrow('النتيجة غير متاحة');
+    expect(await db.actions.count()).toBe(0); expect(await db.pending.count()).toBe(0);
+  });
   it.each(['quota', 'abort'])('rolls back envelope, pending and counter after a %s fault between writes', async fault => {
     const download = downloadedFixture(); await db.saveDownload(download);
     function fail() { if (fault === 'quota') throw new DOMException('Injected simulated quota failure', 'QuotaExceededError'); Dexie.currentTransaction!.abort(); }

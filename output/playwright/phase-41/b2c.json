@@ -1,0 +1,38 @@
+{
+  "startedAt": "2026-09-26T06:05:16.815Z",
+  "completedAt": "2026-09-26T06:05:52.532Z",
+  "platform": "win32",
+  "node": "v24.19.0",
+  "browser": "153.0.8010.12",
+  "physicalDevice": false,
+  "engine": "fixture",
+  "identity": "actual local Keycloak; preverified synthetic account (registration/email not exercised)",
+  "maps": "actual local Cairo map rendered; center selected without dragging",
+  "taskIds": [
+    "7cdb2011-7163-4892-8704-8ad4f74bdf1c",
+    "09bc7e87-abb7-4151-8a4b-4afe7313a0fd"
+  ],
+  "reportSnapshot": "38c86c165d6ad2490818a32f67533ac9fe187d6a97e3c79bf9e0d6fd1cfb357e",
+  "outcomes": [
+    {
+      "taskId": "09bc7e87-abb7-4151-8a4b-4afe7313a0fd",
+      "recipientName": "=1+1",
+      "recipientCellType": 3,
+      "outcome": "تسليم كامل",
+      "collectionMinor": "12550",
+      "currency": "EGP",
+      "exponent": 2
+    },
+    {
+      "taskId": "7cdb2011-7163-4892-8704-8ad4f74bdf1c",
+      "recipientName": "تجربة ٤١ — منى عبد الرحمن ذات الاسم الطويل عند المدخل الجانبي",
+      "recipientCellType": 3,
+      "outcome": "تسليم كامل",
+      "collectionMinor": "غير مسجّل",
+      "currency": "غير مسجّل",
+      "exponent": "غير مسجّل"
+    }
+  ],
+  "ownerFeedback": null,
+  "elapsedOffline": null
+}

@@ -45,10 +45,20 @@ test('driver offer → native ERP actual subset → same-round resume, second-ph
   await second.getByRole('button', { name: 'استأنف الجولة' }).click(); await expect(second.getByText('ترتيب العملاء المحفوظ (1)')).toHaveCount(0); await second.getByRole('link', { name: 'العودة للجولة', exact: true }).click(); await expect(second.getByRole('button', { name: 'اتجه للعميل' })).toBeVisible(); await second.getByRole('button', { name: 'اتجه للعميل' }).click();
   await second.getByRole('link', { name: 'ملخص العمل وإنهاء الجولة أو اليوم' }).click(); await expect(second.getByText('العمل المحتفظ به (2)', { exact: true })).toBeVisible(); await expect(second.getByRole('button', { name: 'إنهاء الجولة فقط' })).toBeDisabled(); await second.getByLabel('أوقف الاتجاه للعميل الحالي وأحتفظ بمهمته').check();
   await second.setViewportSize({ width: 390, height: 844 }); await capture(second, 'closure-390'); await second.getByRole('button', { name: 'إنهاء الجولة فقط' }).click(); await expect(second.getByText('انتهت الجولة — اليوم مفتوح', { exact: true })).toBeVisible(); await second.reload(); await expect(second.getByRole('button', { name: 'إنهاء يوم العمل' })).toBeEnabled();
+  // Keep replay unavailable until the preparation gate is observed. Otherwise
+  // foreground replay can correctly settle the command during navigation.
+  await second.route('**/api/v1/sync/actions*', route => route.abort('failed'));
   await second.route('**/api/v1/closure/day?*', async route => { const committed = await route.fetch(); expect(committed.ok()).toBe(true); await route.abort('failed'); }, { times: 1 });
   await second.getByRole('button', { name: 'إنهاء يوم العمل' }).click(); await expect(second.getByText('الإنهاء لم يتأكد بعد', { exact: true })).toBeVisible();
   await second.goto('/prepare?kind=company'); await expect(second.getByText('تحقّق من الإجراءات السابقة قبل بدء جولة', { exact: true })).toBeVisible(); await expect(second.getByRole('button', { name: 'ابدأ الجولة' })).toBeDisabled(); await second.getByRole('link', { name: 'فتح الإجراء المعلّق' }).click();
-  await second.reload(); await second.getByRole('button', { name: 'تحقّق من الإنهاء نفسه' }).click(); await expect(second.getByText('الإنهاء لم يتأكد بعد', { exact: true })).toHaveCount(0); await expect(second.getByText('انتهى يوم العمل', { exact: true })).toBeVisible(); await capture(second, 'ended-day-390');
+  await second.unroute('**/api/v1/sync/actions*');
+  await second.reload();
+  // Reconnect replay may settle the original command before manual verification is shown.
+  const verifyEnd = second.getByRole('button', { name: 'تحقّق من الإنهاء نفسه' });
+  const endedDay = second.getByText('انتهى يوم العمل', { exact: true });
+  await expect(verifyEnd.or(endedDay)).toBeVisible();
+  if (await verifyEnd.isVisible()) await verifyEnd.click();
+  await expect(second.getByText('الإنهاء لم يتأكد بعد', { exact: true })).toHaveCount(0); await expect(endedDay).toBeVisible(); await capture(second, 'ended-day-390');
   await second.getByRole('link', { name: 'العودة لعمل اليوم' }).click(); await expect(second.getByRole('heading', { name: 'عميل اليوم التالي', exact: true })).toBeVisible(); await expect(second.getByRole('heading', { name: 'عميل المرتجع', exact: true })).toBeVisible();
   await second.goto('/prepare?kind=company'); await second.getByRole('button', { name: 'احفظ وجهّز المعاينة' }).click(); await expect(second.getByText('خطة جاهزة', { exact: true })).toBeVisible(); await second.getByRole('button', { name: 'ابدأ الجولة' }).click(); await expect(second.getByRole('heading', { name: 'المحطة الحالية' })).toBeVisible();
   const personalContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', reducedMotion: 'reduce' }), personal = await personalContext.newPage(); record(personal); await login(personal, info, 'personal');
