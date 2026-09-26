@@ -13,8 +13,28 @@ export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSe
   const map = useRef<LibreMap | null>(null);
   const markers = useRef<Marker[]>([]);
   const [failure, setFailure] = useState('');
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    if (!failure || offline) return;
+    const timer = setTimeout(() => setRetry(value => value + 1), 10_000);
+    return () => clearTimeout(timer);
+  }, [failure, offline, retry]);
+  // Snapshot objects are replaced on every poll. Only geographic/content changes
+  // rebuild the map; current/selected styling must not recreate WebGL and tiles.
+  const geometryKey = JSON.stringify({ targets, road });
+  const presentation = useRef({ selectedTaskId, currentAttemptId, onSelect, disabled });
+  presentation.current = { selectedTaskId, currentAttemptId, onSelect, disabled };
+  useEffect(() => {
+    for (const marker of markers.current) {
+      const button = marker.getElement() as HTMLButtonElement;
+      button.disabled = disabled;
+      button.classList.toggle('route-marker--selected', button.dataset.taskId === selectedTaskId);
+      button.classList.toggle('route-marker--current', button.dataset.attemptId === currentAttemptId);
+    }
+  }, [selectedTaskId, currentAttemptId, disabled]);
 
   useEffect(() => {
+    const { targets, road } = JSON.parse(geometryKey) as { targets: Target[]; road?: Point[] };
     let disposed = false;
     if (offline) { setFailure('خريطة الأساس غير متاحة دون اتصال؛ التفاصيل ومسار الطريق المنزّل متاحان.'); return; }
     setFailure('');
@@ -42,11 +62,13 @@ export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSe
         instance.addControl(new lib.NavigationControl({ showCompass: false }), 'top-left');
         markers.current = targets.map((target, index) => {
           const button = document.createElement('button');
-          button.type = 'button'; button.disabled = disabled;
-          button.className = `route-marker${target.taskId === selectedTaskId ? ' route-marker--selected' : ''}${target.attemptId === currentAttemptId ? ' route-marker--current' : ''}`;
+          const current = presentation.current;
+          button.type = 'button'; button.disabled = current.disabled;
+          button.dataset.taskId = target.taskId; button.dataset.attemptId = target.attemptId;
+          button.className = `route-marker${target.taskId === current.selectedTaskId ? ' route-marker--selected' : ''}${target.attemptId === current.currentAttemptId ? ' route-marker--current' : ''}`;
           button.textContent = String(index + 1);
           button.setAttribute('aria-label', `اختر ${target.recipientName} من الخريطة`);
-          button.addEventListener('click', () => onSelect(target.taskId));
+          button.addEventListener('click', () => presentation.current.onSelect(target.taskId));
           return new lib.Marker({ element: button }).setLngLat([target.coordinates.longitude, target.coordinates.latitude]).addTo(instance);
         });
         instance.on('load', () => {
@@ -66,7 +88,7 @@ export function ActiveRouteMap({ targets, selectedTaskId, currentAttemptId, onSe
       }
     })();
     return () => { disposed = true; markers.current.forEach(marker => marker.remove()); markers.current = []; map.current?.remove(); map.current = null; };
-  }, [currentAttemptId, onSelect, selectedTaskId, targets, disabled, road, offline]);
+  }, [geometryKey, offline, retry]);
 
   return <section className="active-route" aria-labelledby="route-overview-title">
     <div className="active-route__heading"><div><p className="eyebrow">الجولة النشطة</p><h2 id="route-overview-title">الخريطة والمحطات</h2></div><span>{targets.length} متاحة</span></div>

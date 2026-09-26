@@ -80,3 +80,7 @@ The integration test uses isolated real PostgreSQL and parses generated XLSX byt
 - `apps/api/src/reporting/export.ts` owns formula-free workbook generation, identity/visibility binding, deduplication, limits and expiry. `service.ts` remains the only report aggregation and supplies atomic create authorization plus lightweight current download authorization.
 - `apps/api/test/integration/report-export.test.ts` proves real database scope, snapshot freezing/drift, current revocation, expiry, XLSX parsing and literal formula-looking text. The browser evidence proves connected filtering, creation, download, workbook inspection and post-revocation denial.
 - Phase 38 may instrument generation duration/bytes/count/expiry and exercise load against these bounds. It must not treat the in-memory store as durable/multi-instance storage, loosen reauthorization, add a parallel report query or claim production capacity from the focused Phase 37 fixtures.
+
+## Phase 38 export observations
+
+The private operator metrics include bounded workbook-generation timing/error samples and live export-store records, ready/expired counts, retained bytes and configured limits. They contain no workbook/user data and do not change current authorization, snapshot equivalence or process-local lifetime. The owner can correlate report/export HTTP duration with query/transaction/pool pressure using the [diagnostic runbook](diagnostics.md). Measurements and remaining target-host limits are in [performance evidence](verification/performance.md).

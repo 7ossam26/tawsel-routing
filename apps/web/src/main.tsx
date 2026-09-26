@@ -22,6 +22,10 @@ async function renderApplication() {
   const isFixtureRoute = window.location.pathname.startsWith('/__fixtures/');
 
   if (import.meta.env.DEV && isFixtureRoute) {
+    if(window.location.pathname==='/__fixtures/performance'){
+      const {MonitoringPage}=await import('./monitoring-page');
+      root.render(<><aside role="note">قياس محلي — هوية اختبار وواجهة متابعة حقيقية</aside><MonitoringPage /></>);return;
+    }
     if(window.location.pathname==='/__fixtures/report-export'){
       const {ReportingPage}=await import('./reporting-page'),workdayId=new URLSearchParams(window.location.search).get('workdayId')??'';
       root.render(<StrictMode><ReportingPage initialWorkdayId={workdayId}/></StrictMode>);return;

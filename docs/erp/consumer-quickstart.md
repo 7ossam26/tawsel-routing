@@ -344,3 +344,16 @@ Use [the single report query and snapshot definitions](../reporting.md#exact-pha
 With supported Node 24 and local PostgreSQL, run `npm run test:report-export`, `npm run report-export:demo`, then `npm run test:erp:report-export -- .local/phase-37-browser-evidence.json`. The integration suite uses isolated PostgreSQL and parses real generated XLSX files. The browser run filters the report, creates/downloads through the public handlers, parses the downloaded workbook in a separate process, and verifies current download denial after `reports.export` revocation. Authentication in this focused browser harness is a labelled principal fixture; it does not claim Keycloak, physical-device or commercial ERP proof.
 
 Browser consumers use `ReportingClient.requestExcel(workdayId, visibleSnapshotId, visibleFilters)`, retain the returned status only until `expiresAt`, and call `downloadExcel(exportId)` in the same personal/company session. Refresh the report after `snapshot_changed`; recreate after `export_expired` or a process restart. Never send an integration bearer credential, store `downloadUrl` as public access, or use workbook amounts as settlement/remittance facts. Exact fields and limits are in [the export lifecycle](../reporting.md#authorized-excel-export).
+
+## Phase 38 consumer isolation and owner diagnosis
+
+An ERP connector must keep using its own scoped outbox/checkpoint APIs. Do not request or store the deployment diagnostics token. Optional public-only negative conformance:
+
+```powershell
+# Set these in your protected test environment; never paste real credentials into docs.
+# TAWSEL_CONFORMANCE_URL = Tawsel API origin
+# TAWSEL_CONFORMANCE_AUTHORIZATION = ordinary ERP service Authorization value
+npm run test:erp:diagnostics
+```
+
+The check expects 401 (enabled but unauthorized) or 404 (disabled) on both private operator reads. The local load harness separately verifies enabled-route denial over real HTTP. [Owner diagnostic setup, exact action trace and local benchmark reproduction](../diagnostics.md); [measured conditions and target-host limits](../verification/performance.md). No consumer API gains global host/resource visibility.

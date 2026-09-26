@@ -1,13 +1,15 @@
 import { EngineError } from './models.js';
 import type { EngineConfig } from './config.js';
+import { measure } from '../diagnostics/telemetry.js';
 
 /** Share one instance per worker process. Saturation fails fast; no unbounded queue or retries. */
 export class EngineTransport {
   private active = 0;
   constructor(private readonly config: EngineConfig) {}
   async json(provider: 'osrm' | 'vroom', url: URL, body?: unknown, cancel?: AbortSignal): Promise<unknown> {
+    const started=performance.now();let failed=false;
     if (cancel?.aborted) throw new EngineError('cancelled',provider);
-    if (this.active >= this.config.maxConcurrent) throw new EngineError('busy',provider);
+    if (this.active >= this.config.maxConcurrent) { measure('engine',0,true);throw new EngineError('busy',provider); }
     this.active++;
     const deadline = AbortSignal.timeout(this.config.timeoutMs);
     const signal = cancel ? AbortSignal.any([deadline,cancel]) : deadline;
@@ -42,10 +44,11 @@ export class EngineTransport {
       }
       return parsed;
     } catch (error) {
+      failed=true;
       if (cancel?.aborted) throw new EngineError('cancelled',provider);
       if (deadline.aborted) throw new EngineError('timeout',provider);
       if (error instanceof EngineError) throw error;
       throw new EngineError('unavailable',provider);
-    } finally { this.active--; }
+    } finally { this.active--;measure('engine',performance.now()-started,failed); }
   }
 }

@@ -25,6 +25,8 @@ import {returnDriverRoutes,returnReceiverRoutes} from './returns/routes.js';
 import {monitoringRoutes,monitoringIntegrationRoutes} from './monitoring/routes.js';
 import {outboxRoutes} from './outbox/routes.js';
 import type {OutboxConfig} from './outbox/config.js';
+import { diagnosticsRoutes, type DiagnosticsConfig } from './diagnostics/routes.js';
+import { instrumentHttp, requestId } from './diagnostics/telemetry.js';
 
 const healthResponse: HealthResponse = {
   service: 'tawsel-api',
@@ -33,15 +35,20 @@ const healthResponse: HealthResponse = {
   engine: 'not-checked'
 };
 
-export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: ProvisioningConfig,outbox?:OutboxConfig): FastifyInstance {
+export function buildApp(database?: Pool, auth?: AuthConfig, provisioning?: ProvisioningConfig,outbox?:OutboxConfig,diagnostics?:DiagnosticsConfig): FastifyInstance {
   const app = Fastify({
     logger: false,
+    genReqId: requestId,
+    requestIdHeader: false,
     ajv: {
       customOptions: {
         removeAdditional: false
       }
     }
   });
+
+  instrumentHttp(app, entry => { if (process.env.TAWSEL_STRUCTURED_LOGS === '1') process.stdout.write(`${JSON.stringify(entry)}\n`); });
+  if (database && diagnostics) app.register(scope => diagnosticsRoutes(scope, database, diagnostics));
 
   if (database) app.addHook('onClose', async () => { await database.end(); });
   app.register(async scope => { await mapAssetRoutes(scope); });

@@ -86,7 +86,11 @@ describe('canonical public contract foundation (schema evidence, not business ex
   });
 
   it('does not publish designed operations as available HTTP paths', () => {
-    for (const path of Object.keys(bundle.api.paths)) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|integration\/|consumer\/|source\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|corrections\/|eligibility\/|closure\/|workdays\/|reports\/workdays|devices\/|actions\/|sync\/|evidence\/|returns\/|branches\/|erp\/(?:returns|monitoring)\/|monitoring\/|routing\/profiles$))/);
+    expect(Object.keys(bundle.api.paths).filter(path=>path.startsWith('/internal/'))).toEqual([
+      '/internal/diagnostics/health','/internal/diagnostics/metrics','/internal/diagnostics/actions/{actionId}'
+    ]);
+    for(const [path,item] of Object.entries(bundle.api.paths))if(path.startsWith('/internal/'))expect((item as {get:{security:unknown}}).get.security).toEqual([{DiagnosticsOperator:[]}]);
+    for (const path of Object.keys(bundle.api.paths).filter(path=>!path.startsWith('/internal/diagnostics/'))) expect(path).toMatch(/^\/api\/(session\/|account\/status$|v1\/(?:provisioning\/|integration\/|consumer\/|source\/|independent\/tasks|intake\/|locations|maps\/|planning\/|rounds\/|current\/|outcomes\/|corrections\/|eligibility\/|closure\/|workdays\/|reports\/workdays|report-exports\/|devices\/|actions\/|sync\/|evidence\/|returns\/|branches\/|erp\/(?:returns|monitoring)\/|monitoring\/|routing\/profiles$))/);
     checkCatalog(bundle, ajv);
     expect(bundle.api['x-lifecycle']).toBe('implemented');
     expect(bundle.api.servers).toBeUndefined();
@@ -105,6 +109,8 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 26 && ['integration.getReconciliationSnapshot','integration.reportAppliedCheckpoint','integration.getAppliedCheckpoint','consumer.receiveSignedEvent','consumer.applyInboxEvent','consumer.getStatus'].includes(entry.id))
       || (entry.ownerPhase === 27 && ['source.deliverCommandIntent','source.getCommandStatus'].includes(entry.id))
       || ([29,33,34,35].includes(entry.ownerPhase) && entry.family === 'local-ui')
+      || (entry.ownerPhase === 37 && ['report.requestExcelExport','report.getExportStatus','report.downloadExport'].includes(entry.id))
+      || (entry.ownerPhase === 38 && entry.family === 'diagnostics')
       || (entry.ownerPhase === 36 && ['report.listWorkdays','report.getWorkday','report.getRoundTiming'].includes(entry.id))
       || ['device.takeOver','device.getSnapshot','action.getResult','evidence.receiveFormerDevice','sync.getEvidenceReceipt','sync.submitActions','sync.listConflicts','device.executionTransferred','evidence.received','evidence.adoptionResolved'].includes(entry.id)
       || (entry.ownerPhase === 24 && entry.family === 'monitoring-history') || (entry.ownerPhase === 13 && ['planning.saveDraft','planning.requestPreview','planning.requestReplan','planning.getJob','planning.getPlan','planning.publishRevision','plan.revisionPublished'].includes(entry.id)))).toBe(true);

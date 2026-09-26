@@ -1,0 +1,112 @@
+{
+  "checkedAt": "2026-09-26T02:20:15.988Z",
+  "evidence": "live-attempt",
+  "inventory": {
+    "kind": "live-attempt",
+    "docker": {
+      "status": "unavailable",
+      "detail": "Docker inventory could not be read; no running version or mount compatibility is claimed."
+    },
+    "localDataFiles": [
+      ".gitkeep"
+    ],
+    "mapping": {
+      "car": {
+        "port": 5001,
+        "pathProfile": "driving",
+        "vroomProfile": "car",
+        "service": "osrm-car",
+        "dataset": "egypt-260913.osrm"
+      },
+      "motorcycle": {
+        "port": 5003,
+        "pathProfile": "driving",
+        "vroomProfile": "motorcycle",
+        "service": "osrm-motorcycle",
+        "dataset": "egypt-motorcycle.osrm"
+      },
+      "bicycle": {
+        "port": 5002,
+        "pathProfile": "cycling",
+        "vroomProfile": "bike",
+        "service": "osrm-bicycle",
+        "dataset": "egypt-bicycle.osrm"
+      }
+    },
+    "compatibility": "Requires actual runtime/build manifests; successful HTTP alone does not prove dataset provenance."
+  },
+  "results": [
+    {
+      "mode": "car",
+      "operation": "route",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "car",
+      "operation": "table",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "car",
+      "operation": "optimize",
+      "error": {
+        "code": "unavailable",
+        "provider": "vroom"
+      }
+    },
+    {
+      "mode": "motorcycle",
+      "operation": "route",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "motorcycle",
+      "operation": "table",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "motorcycle",
+      "operation": "optimize",
+      "error": {
+        "code": "unavailable",
+        "provider": "vroom"
+      }
+    },
+    {
+      "mode": "bicycle",
+      "operation": "route",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "bicycle",
+      "operation": "table",
+      "error": {
+        "code": "unavailable",
+        "provider": "osrm"
+      }
+    },
+    {
+      "mode": "bicycle",
+      "operation": "optimize",
+      "error": {
+        "code": "unavailable",
+        "provider": "vroom"
+      }
+    }
+  ]
+}

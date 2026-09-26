@@ -4,6 +4,7 @@ import { parseDatabaseConfig } from '../apps/api/src/db/config.js';
 import { assertMigrationsCurrent } from '../apps/api/src/db/migrate.js';
 import { keycloakAdministration } from '../apps/api/src/provisioning/issuer.js';
 import { reconcileOne } from '../apps/api/src/provisioning/worker.js';
+import { workerObservation } from '../apps/api/src/diagnostics/workers.js';
 
 const issuer = process.env.TAWSEL_COMPANY_ISSUER, clientId = process.env.TAWSEL_ISSUER_WORKER_CLIENT_ID, clientSecret = process.env.TAWSEL_ISSUER_WORKER_CLIENT_SECRET;
 if (!issuer || !clientId || !clientSecret) throw new Error('Configure the company issuer and dedicated issuer worker client');
@@ -14,7 +15,9 @@ process.on('SIGINT', () => { stop = true; }); process.on('SIGTERM', () => { stop
 try {
   await assertMigrationsCurrent(pool);
   do {
+    const started=performance.now();
     const worked = await reconcileOne(pool, issuer, admin);
+    await workerObservation(pool,'provisioning',worked,performance.now()-started);
     if (process.argv.includes('--once')) { console.log(worked ? 'One durable issuer intent processed; query status for its outcome.' : 'No due issuer intent.'); break; }
     if (!worked) await setTimeout(1000);
   } while (!stop);

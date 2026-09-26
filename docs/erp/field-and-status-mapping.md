@@ -580,3 +580,17 @@ The APIs require a current human session with reports.read. ERP command and even
 | workbook missing / uncertain | Same report semantics, not empty zero values or inferred arrival/completion. |
 
 Status and download require current `reports.read` plus `reports.export` and unchanged visibility. The workbook is a report representation, not a finance/settlement worksheet or ERP writeback. [Lifecycle](../reporting.md#authorized-excel-export), [portable evidence check](../../tests/erp-conformance/report-export.ts).
+
+## Phase 38 operator status mapping
+
+| Operator field | Meaning / consumer implication |
+| --- | --- |
+| `action.business_status=accepted` | Durable Tawsel decision; does not assert receiver application |
+| `events.status=received` | Signed sender obtained durable receiver inbox acknowledgement |
+| `events.recipient_sequence` / `applied_through` | Compare within the same recipient/aggregate only; application is the last receiver report |
+| `events.reported_at` / `oldest_report_ms` | Age of receiver evidence, not commit-to-application latency |
+| `unapplied_or_unreported` | Sequence distance includes streams with unknown/missing reports; not a proven loss count |
+| Worker `unknown` / `stale` / `recent-loop` | No observation / loop older than 120s / recent loop from at least one worker instance; queue success is separate |
+| Engine `not-probed` / backup `unverified` | Not evidence of availability or recovery readiness |
+
+This deployment-wide surface requires its separate operator credential. ERP/browser identities cannot read it. Existing consumer queue/status/reconciliation fields retain their P25–27 scope and meaning. [Canonical diagnostic schema](../../contracts/diagnostics.schema.json), [runbook](../diagnostics.md), [local measurements](../verification/performance.md).

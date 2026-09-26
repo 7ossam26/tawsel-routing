@@ -1,4 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
+import {measure} from '../diagnostics/telemetry.js';
 import type {Pool} from 'pg';
 import ExcelJS from 'exceljs';
 import type {components} from '@tawsel/api-client';
@@ -57,7 +58,8 @@ interface Entry extends ExportStatus {ownerKey:string;requestKey:string;visibili
 
 export class ReportExportStore {
  private readonly records=new Map<string,Entry>();
- constructor(private readonly now=()=>Date.now(),private readonly ttlMs=10*60_000,private readonly maxReady=16,private readonly maxBytes=4*1024*1024,private readonly maxRecords=64){}
+ constructor(private readonly now=()=>Date.now(),private readonly ttlMs=10*60_000,private readonly maxReady=16,private readonly maxBytes=4*1024*1024,private readonly maxRecords=64){exportStores.add(new WeakRef(this));}
+ stats(){this.cleanup();const entries=[...this.records.values()],ready=entries.filter(e=>e.status==='ready');return {records:entries.length,ready:ready.length,expired:entries.length-ready.length,bytes:ready.reduce((n,e)=>n+(e.buffer?.byteLength??0),0),maxReady:this.maxReady,maxFileBytes:this.maxBytes,maxRecords:this.maxRecords,ttlMs:this.ttlMs};}
  private cleanup(){const now=this.now();for(const entry of this.records.values()){if(entry.status==='ready'&&Date.parse(entry.expiresAt)<=now){entry.status='expired';entry.buffer=undefined;entry.downloadUrl=null;}if(entry.purgeAt<=now)this.records.delete(entry.exportId);}while(this.records.size>this.maxRecords){const expired=[...this.records.values()].find(entry=>entry.status==='expired')??this.records.values().next().value as Entry|undefined;if(!expired)break;this.records.delete(expired.exportId);}}
  find(requestKey:string,ownerKey:string,visibilityHash:string){this.cleanup();return [...this.records.values()].find(entry=>entry.status==='ready'&&entry.requestKey===requestKey&&entry.ownerKey===ownerKey&&entry.visibilityHash===visibilityHash);}
  put(input:Omit<Entry,'exportId'|'status'|'createdAt'|'expiresAt'|'bytes'|'downloadUrl'|'purgeAt'> & {buffer:Buffer}):Entry{
@@ -69,6 +71,9 @@ export class ReportExportStore {
  owned(exportId:string,ownerKey:string):Entry{this.cleanup();const entry=this.records.get(exportId);if(!entry||entry.ownerKey!==ownerKey)throw new AccessDenied(true);return entry;}
  public(entry:Entry):ExportStatus{const {exportId,status,snapshotId,createdAt,expiresAt,fileName,bytes,downloadUrl}=entry;return {exportId,status,snapshotId,createdAt,expiresAt,fileName,bytes,downloadUrl};}
 }
+
+const exportStores=new Set<WeakRef<ReportExportStore>>();
+export function exportStorageStats(){const stores=[];for(const reference of exportStores){const store=reference.deref();if(store)stores.push(store.stats());else exportStores.delete(reference);}return {stores:stores.slice(0,64),truncated:stores.length>64};}
 
 const ownerKey=(principal:AuthenticatedPrincipal)=>principal.kind==='account'?`account:${principal.issuer}:${principal.subject}`:`integration:${principal.integrationId}`;
 const visibilityHash=(access:components['schemas']['AccessContext'])=>payloadHash({...access,branchIds:[...access.branchIds].sort(),effectiveCapabilities:[...access.effectiveCapabilities].sort()});
@@ -83,7 +88,8 @@ export class ReportExports {
  }
  private async createOnce(principal:AuthenticatedPrincipal,owner:string,key:string,kind:'personal'|'company',workdayId:string,input:ExportRequest):Promise<ExportStatus>{
   const filters=input.filters??{},captured=await this.reporting.exportSnapshot(principal,workdayId,{...filters,snapshotId:input.snapshotId}),accessHash=visibilityHash(captured.access),reused=this.store.find(key,owner,accessHash);if(reused)return this.store.public(reused);
-  const buffer=await buildReportWorkbook(captured.report),fileName=`tawsel-workday-${workdayId.slice(0,8)}-${captured.report.snapshotId.slice(0,8)}.xlsx`;
+  const started=performance.now();
+  const buffer=await buildReportWorkbook(captured.report).then(value=>{measure('export',performance.now()-started);return value;},error=>{measure('export',performance.now()-started,true);throw error;}),fileName=`tawsel-workday-${workdayId.slice(0,8)}-${captured.report.snapshotId.slice(0,8)}.xlsx`;
   return this.store.public(this.store.put({ownerKey:owner,requestKey:key,visibilityHash:accessHash,workdayId,filters,kind,snapshotId:captured.report.snapshotId,fileName,buffer}));
  }
  private async current(principal:AuthenticatedPrincipal,kind:'personal'|'company',exportId:string){const entry=this.store.owned(exportId,ownerKey(principal));if(entry.kind!==kind)throw new AccessDenied(true);const access=await this.reporting.authorizeExport(principal,entry.workdayId,entry.filters);if(visibilityHash(access)!==entry.visibilityHash)throw new AccessDenied();return entry;}

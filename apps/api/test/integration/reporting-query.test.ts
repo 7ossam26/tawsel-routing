@@ -189,7 +189,7 @@ test('B: upgrade preserves real pre-P36 forecast/start data and leaves unavailab
    const arrival=f.make(0,'current.recordArrival',1,String(heading.payload.attemptId));arrival.observation={observedAt:new Date().toISOString(),clock:{quality:'known'}};
    expect((await new CurrentActivity(old.pool).command(principals.personal,arrival)).receipt.businessStatus).toBe('accepted');
    const before=(await old.pool.query('SELECT to_jsonb(r) record FROM tawsel.rounds r')).rows;
-   expect(await migrate(old.pool)).toEqual(['0027_reporting_provenance.sql']);expect((await old.pool.query('SELECT to_jsonb(r) record FROM tawsel.rounds r')).rows).toEqual(before);
+   expect(await migrate(old.pool)).toEqual(['0027_reporting_provenance.sql','0028_worker_observations.sql']);expect((await old.pool.query('SELECT to_jsonb(r) record FROM tawsel.rounds r')).rows).toEqual(before);
    const report=await new Reporting(old.pool).workday(principals.personal,f.round.workdayId);expect(report.timing[0]!.start).toMatchObject({status:'missing',observedAt:null});expect(report.timing[0]!.baseline?.forecastId).toBe(f.plan.forecast.forecastId);
    const stop=report.timing[0]!.stops[0]!;expect(stop.arrival.status).toBe('available');expect(stop.travel.seconds).not.toBeNull();expect(stop.baseline?.identityMatches).toBe(false);expect(stop.baselineArrivalDifference).toEqual({seconds:null,reason:'identity-unavailable'});
    expect((await old.pool.query('SELECT observation FROM tawsel.command_replay_metadata WHERE action_id=$1',[f.start.actionId])).rows[0].observation).toBeNull();

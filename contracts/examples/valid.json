@@ -12757,5 +12757,28 @@
       "lost": 1,
       "damaged": 0
     }
+  },
+  {
+    "id": "diagnostics-health-valid",
+    "schema": "diagnostics.schema.json#/$defs/Health",
+    "valid": true,
+    "data": {
+      "observedAt": "2026-09-26T00:00:00.000Z",
+      "liveness": "alive",
+      "database": {
+        "state": "unavailable"
+      },
+      "workers": null,
+      "planning": null,
+      "sender": null,
+      "projection": null,
+      "engine": {
+        "availability": "unknown"
+      },
+      "backup": {
+        "readiness": "unverified",
+        "lastVerifiedRestoreAt": null
+      }
+    }
   }
 ]

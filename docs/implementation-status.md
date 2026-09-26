@@ -1,5 +1,15 @@
 # Tawsel implementation status
 
+## Phase 38 — 26 September 2026
+
+Implemented an optional deployment-operator diagnostic API/terminal view, sanitized request/action correlation, bounded timing/resource/export metrics, durable worker-loop observations (migration 0028), and exact action-to-sender/receiver-checkpoint tracing. Separate liveness, database readiness, Engine uncertainty, queue/application lag and unverified backup readiness preserve stored execution during Engine outage. Ordinary drivers and ERP credentials cannot read the deployment-wide surface.
+
+Actual local HTTP/PostgreSQL/Chromium/signed-receiver runs start at five drivers/two observers and ramp to ten/five and fifteen/ten, with raw percentiles, failures and clock uncertainty. Baseline visible/application p95 upper bounds are **1095/393 ms**; the fifteen/ten run records **1335/6309 ms**, so the higher-load ERP target is **missed**. Explicit pool exhaustion preserves 15 failed commands and dependent observation failures. Map reuse reduced repeated tile-range requests **866 → 18** in the paired baseline. Receiver outage/recovery, frozen Chromium, unsent dispatch hold and successful idle polling remain separately labelled. [Performance report and raw evidence](verification/performance.md), [owner runbook/demo](diagnostics.md), [ordered checkpoints, exact checks and limits](phase-38-evidence.md).
+
+Actual Engine probes all failed unavailable; target-host capacity, live Engine versions/datasets, external WAN clocks, physical-device/owner acceptance and backup restore remain unrun. Canonical operator schema/examples/OpenAPI/client/coverage and ERP planning/mapping/conformance references are updated. The exact Phase 39 handoff is in the runbook; Phase 39 is not executed. No commit, push or publication.
+
+Final verification passed **457 diagnostics/accounting/contract assertions**, **62 connected regressions**, **5 specifically selected earlier failures**, actual browser fault/recovery smoke, lint, canonical lint/check, all workspace/script typechecks and production builds. The default concurrent full suite was interrupted after failures; every reported failure subsequently passed serially, but no full-suite pass is claimed. Investigation isolated a slow database-size filesystem scan; optional size now returns unknown independently of readiness under the unchanged query deadline. Existing moderate audit findings and large web chunks remain recorded in the evidence.
+
 ## Phase 37 — 26 September 2026
 
 Implemented authorized snapshot-equivalent Excel export with real XLSX generation, Arabic RTL sheets, explicit filters/timezone/units, exact minor-unit text and literal formula-looking user content. Creation atomically requires report/export capability and freezes the existing authorized report object; status/download reauthorize the exact identity, report kind and visibility scope. The private store deduplicates requests, limits count and bytes, expires artifacts and removes expired bytes. The selected report UI now shows genuine create/ready/download/failure/expired states.
@@ -329,7 +339,7 @@ Each row records implementation, verification and owner review separately. None 
 | [35 — Safe offline account recovery and application updates](phases/35-offline-auth-updates-ux.md) | Not started | Not run | No implementation result yet |
 | [36 — Effective workday reports and forecast comparison](phases/36-workday-timing-reports.md) | Not started | Not run | No implementation result yet |
 | [37 — Equivalent authorized Excel exports](phases/37-authorized-excel-export.md) | Implemented | Verified locally | [Phase 37 evidence](phase-37-evidence.md) |
-| [38 — Owner diagnostics and measured freshness/capacity](phases/38-diagnostics-freshness-capacity.md) | Not started | Not run | No implementation result yet |
+| [38 — Owner diagnostics and measured freshness/capacity](phases/38-diagnostics-freshness-capacity.md) | Implemented locally | Local baseline/ramps; higher-load ERP target missed; target unrun | [Evidence](phase-38-evidence.md), [measurements](verification/performance.md), [owner runbook](diagnostics.md) |
 | [39 — Recoverable deployment and migration release procedure](phases/39-deployment-migration-release.md) | Not started | Not run | No implementation result yet |
 | [40 — Backup, isolated restore and recovery proof](phases/40-backup-restore-rehearsal.md) | Not started | Not run | No implementation result yet |
 | [41 — Real-device and owner pilot walkthrough](phases/41-device-owner-pilot-review.md) | Not started | Not run | No implementation result yet |

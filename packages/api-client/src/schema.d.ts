@@ -2188,6 +2188,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/diagnostics/actions/{actionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads. */
+        get: operations["diagnostics.getActionTrace"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/diagnostics/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred. */
+        get: operations["diagnostics.getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/diagnostics/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness. */
+        get: operations["diagnostics.getCapacityAndFreshness"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3456,6 +3507,9 @@ export interface components {
         DeviceTakeoverCommand: components["schemas"]["TakeoverCommand"];
         DeviceTakeoverResult: components["schemas"]["TakeoverResult"];
         DeviceTransferEvent: components["schemas"]["TransferEvent"];
+        DiagnosticsHealth: components["schemas"]["Health"];
+        DiagnosticsMetrics: components["schemas"]["Metrics"];
+        DiagnosticsTrace: components["schemas"]["Trace"];
         DisableBranch: {
             externalId: components["schemas"]["ExternalId"];
             sourceRevision: components["schemas"]["Revision"];
@@ -3883,6 +3937,70 @@ export interface components {
             taskId: components["schemas"]["Uuid"];
             time: components["schemas"]["ActionTime"];
         };
+        Health: {
+            backup: {
+                lastVerifiedRestoreAt: null;
+                /** @constant */
+                readiness: "unverified";
+            };
+            database: {
+                active: number;
+                blocked: number;
+                bytes: number | null;
+                deadlocks: number;
+                /** @constant */
+                state: "ready";
+                version: string;
+            } | {
+                /** @constant */
+                state: "unavailable";
+            };
+            engine: {
+                /** @constant */
+                availability: "not-probed";
+                persistedJobErrors: number;
+            } | {
+                /** @constant */
+                availability: "unknown";
+            };
+            /** @constant */
+            liveness: "alive";
+            /** Format: date-time */
+            observedAt: string;
+            planning: {
+                blocked: number;
+                engine_errors: number;
+                expired_leases: number;
+                failed: number;
+                oldest_ms: number;
+                pending: number;
+                running: number;
+            } | null;
+            projection: {
+                oldest_report_ms: number | null;
+                streams: number;
+                unapplied_or_unreported: number;
+                unknown: number;
+            } | null;
+            sender: {
+                expired_leases: number;
+                failed: number;
+                oldest_ms: number;
+                pending: number;
+                received: number;
+                sending: number;
+            } | null;
+            workers: {
+                ageMs: number | null;
+                elapsedMs: number | null;
+                observedAt: string | null;
+                /** @enum {unknown} */
+                state: "unknown" | "stale" | "recent-loop";
+                worked: boolean | null;
+                /** @enum {unknown} */
+                worker: "planning" | "outbox" | "provisioning";
+            }[] | null;
+        };
         History: {
             freshness: components["schemas"]["Freshness"];
             items: components["schemas"]["HistoryItem"][];
@@ -4184,6 +4302,74 @@ export interface components {
             serviceEstimateSeconds: 600;
             sourceRevision: number;
             taskId: components["schemas"]["Uuid"];
+        };
+        Metric: {
+            count: number;
+            errors: number;
+            p50Ms: number | null;
+            p95Ms: number | null;
+            p99Ms: number | null;
+            retained: number;
+        };
+        Metrics: {
+            disk: {
+                availableBytes: number;
+                /** @constant */
+                scope: "application-working-directory";
+                totalBytes: number;
+            } | null;
+            exports: {
+                stores: {
+                    bytes: number;
+                    expired: number;
+                    maxFileBytes: number;
+                    maxReady: number;
+                    maxRecords: number;
+                    ready: number;
+                    records: number;
+                    ttlMs: number;
+                }[];
+                truncated: boolean;
+            };
+            host: {
+                freeMemoryBytes: number;
+                logicalCpus: number;
+                totalMemoryBytes: number;
+            };
+            interpretation: string;
+            metrics: {
+                commit?: components["schemas"]["Metric"];
+                engine?: components["schemas"]["Metric"];
+                export?: components["schemas"]["Metric"];
+                http?: components["schemas"]["Metric"];
+                poolWait?: components["schemas"]["Metric"];
+                query?: components["schemas"]["Metric"];
+                transaction?: components["schemas"]["Metric"];
+            };
+            /** Format: date-time */
+            observedAt: string;
+            pool: {
+                idle: number;
+                max: number;
+                total: number;
+                waiting: number;
+            };
+            process: {
+                cpuMicroseconds: {
+                    system: number;
+                    user: number;
+                };
+                memory: {
+                    arrayBuffers: number;
+                    external: number;
+                    heapTotal: number;
+                    heapUsed: number;
+                    rss: number;
+                };
+            };
+            /** @constant */
+            scope: "this-api-process";
+            uptimeSeconds: number;
         };
         /** @enum {string} */
         Mode: "car" | "motorcycle" | "bicycle";
@@ -5865,6 +6051,35 @@ export interface components {
             filters: components["schemas"]["Filters"];
             snapshotId: string;
             timing: components["schemas"]["RoundTiming"];
+        };
+        Trace: {
+            action: {
+                accepted_at: string | null;
+                /** Format: uuid */
+                action_id: string;
+                /** @enum {unknown} */
+                business_status: "pending" | "accepted" | "rejected" | "review-required";
+                operation_id: string;
+                /** Format: date-time */
+                received_at: string;
+            };
+            events: {
+                aggregate_id: string | null;
+                aggregate_type: string | null;
+                applied_through: string | null;
+                attempts: number | null;
+                event_id: string;
+                lease_until: string | null;
+                next_attempt_at: string | null;
+                received_at: string | null;
+                receiver_pending: string | null;
+                recipient_id: string;
+                recipient_sequence: string | null;
+                reported_at: string | null;
+                status: ("pending" | "sending" | "failed" | "received") | null;
+            }[];
+            interpretation: string;
+            truncated: boolean;
         };
         /** @description Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25. */
         TransferEvent: {
@@ -15324,6 +15539,113 @@ export interface operations {
             };
             /** @description Lifecycle, revision, ownership or idempotency conflict; business rejection is retained. */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "diagnostics.getActionTrace": {
+        parameters: {
+            query: {
+                sourceId: string;
+                tenantId: string;
+            };
+            header?: never;
+            path: {
+                actionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Operator-only observation with explicit limits */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Trace"];
+                };
+            };
+            /** @description Missing or wrong dedicated operator credential */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Surface disabled or exact action identity unavailable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "diagnostics.getHealth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Operator-only observation with explicit limits */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Health"];
+                };
+            };
+            /** @description Missing or wrong dedicated operator credential */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Surface disabled or exact action identity unavailable */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "diagnostics.getCapacityAndFreshness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Operator-only observation with explicit limits */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Metrics"];
+                };
+            };
+            /** @description Missing or wrong dedicated operator credential */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Surface disabled or exact action identity unavailable */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

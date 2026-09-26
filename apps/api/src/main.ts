@@ -6,13 +6,15 @@ import { createDatabasePool } from './db/pool.js';
 import { assertMigrationsCurrent } from './db/migrate.js';
 import { parseAuthConfig } from './auth/config.js';
 import { loadOutboxConfig } from './outbox/config.js';
+import { diagnosticsConfig } from './diagnostics/routes.js';
 
 async function main(): Promise<void> {
+  process.env.TAWSEL_STRUCTURED_LOGS ??= '1';
   const config = parseApiConfig(process.env);
   const database = createDatabasePool(parseDatabaseConfig(process.env.TAWSEL_DATABASE_URL, 'application'));
   const auth = parseAuthConfig(process.env);
   const app = buildApp(database, auth, { issuer: auth.issuers.company.issuer,
-    ...(process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN ? { operatorToken: process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN } : {}) },loadOutboxConfig());
+    ...(process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN ? { operatorToken: process.env.TAWSEL_PROVISIONING_OPERATOR_TOKEN } : {}) },loadOutboxConfig(),diagnosticsConfig());
 
   try {
     await assertMigrationsCurrent(database);
@@ -29,7 +31,6 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   const prefix = error instanceof ConfigurationError ? 'Configuration error' : 'API startup failed';
-  const message = error instanceof Error ? error.message : 'Unknown error';
-  process.stderr.write(`${prefix}: ${message}\n`);
+  process.stderr.write(`${prefix}; inspect configuration/readiness without logging secret-bearing exceptions.\n`);
   process.exitCode = 1;
 });

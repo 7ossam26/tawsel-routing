@@ -1084,19 +1084,23 @@
       "id": "diagnostics.getHealth",
       "family": "diagnostics",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 38,
-      "capability": "diagnostics.read",
-      "description": "Separate readiness/database/worker/Engine/integration health; scoped operational evidence."
+      "capability": "internal",
+      "description": "Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred.",
+      "method": "GET",
+      "path": "/internal/diagnostics/health"
     },
     {
       "id": "diagnostics.getCapacityAndFreshness",
       "family": "diagnostics",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 38,
-      "capability": "diagnostics.read",
-      "description": "Measured latency/lag/load/queue/lease/resource view with stated conditions."
+      "capability": "internal",
+      "description": "Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness.",
+      "method": "GET",
+      "path": "/internal/diagnostics/metrics"
     },
     {
       "id": "ui.callRecipient",
@@ -1961,6 +1965,17 @@
       "lifecycle": "verified-local",
       "method": "GET",
       "path": "/api/v1/reports/workdays"
+    },
+    {
+      "id": "diagnostics.getActionTrace",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "ownerPhase": 38,
+      "lifecycle": "verified-local",
+      "capability": "internal",
+      "method": "GET",
+      "path": "/internal/diagnostics/actions/{actionId}",
+      "description": "Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads."
     }
   ],
   "authorizationFoundation": {

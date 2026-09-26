@@ -13,6 +13,64 @@ jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 x-lifecycle: implemented
 x-owner-phase: 2
 paths:
+  /internal/diagnostics/health:
+    get:
+      operationId: diagnostics.getHealth
+      summary: "Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred."
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsHealth'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
+  /internal/diagnostics/metrics:
+    get:
+      operationId: diagnostics.getCapacityAndFreshness
+      summary: Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness.
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsMetrics'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
+  /internal/diagnostics/actions/{actionId}:
+    get:
+      operationId: diagnostics.getActionTrace
+      summary: Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads.
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      parameters:
+        - {name: actionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: tenantId, in: query, required: true, schema: {type: string, format: uuid}}
+        - {name: sourceId, in: query, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsTrace'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
   /api/v1/integration/commands/integration.configureWebhook:
     post:
       operationId: integration.configureWebhook
@@ -6438,6 +6496,12 @@ paths:
         "410": {description: Artifact expired and its bytes were removed}
 components:
   schemas:
+    DiagnosticsHealth:
+      $ref: ./diagnostics.schema.json#/$defs/Health
+    DiagnosticsMetrics:
+      $ref: ./diagnostics.schema.json#/$defs/Metrics
+    DiagnosticsTrace:
+      $ref: ./diagnostics.schema.json#/$defs/Trace
     ReportFilters:
       $ref: ./reporting.schema.json#/$defs/Filters
     ReportCounts:
@@ -7147,6 +7211,10 @@ components:
     MonitoringActionSnapshot:
       $ref: ./monitoring.schema.json#/$defs/ActionSnapshot
   securitySchemes:
+    DiagnosticsOperator:
+      type: http
+      scheme: bearer
+      description: Dedicated read-only deployment operator secret. Never issue to drivers or ERP consumers; this is outside tenant capability grants.
     ReceiverStatus:
       type: http
       scheme: bearer
@@ -7175,6 +7243,8 @@ components:
       description: Out-of-band server operator token; bootstrap and recovery rotation only. Never
         distribute to ERP application users.
 tags:
+  - name: Diagnostics
+    description: Optional deployment operator surface; keep private behind operator access.
   - name: Reporting
     description: Workday reports with accepted quantities, reported collection and preserved forecasts.
   - name: Sessions

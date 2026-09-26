@@ -1,0 +1,3310 @@
+{
+  "schemaVersion": 1,
+  "profile": "smoke",
+  "startedAt": "2026-09-26T03:05:49.532Z",
+  "finishedAt": "2026-09-26T03:06:48.214Z",
+  "environment": {
+    "label": "local Windows development harness; fixture identities, live PostgreSQL/HTTP/Chromium",
+    "node": "v24.19.0",
+    "platform": "win32",
+    "release": "10.0.22621",
+    "cpu": "Intel(R) Core(TM) i7-7820HQ CPU @ 2.90GHz",
+    "logicalCpus": 8,
+    "browser": "153.0.8010.12",
+    "database": {
+      "server_version": "18.4"
+    },
+    "targetHost": "unrun",
+    "engine": "real configured adapters attempted; inspect persisted errors, no fixture success substituted"
+  },
+  "workload": {
+    "drivers": 5,
+    "observers": 2,
+    "rounds": 2,
+    "engineJobs": 1,
+    "seed": "deterministic alternating headings over two seeded tasks per driver; UUID identities randomized",
+    "activeViews": 2,
+    "durationMs": 4782.935302734375,
+    "committedActions": 10,
+    "senderConcurrency": 4,
+    "workerPollMs": 50,
+    "monitorPollMs": 1000
+  },
+  "clock": {
+    "method": "same-host monotonic epochs; actual Tawsel COMMIT bracket; receiver completion after real projection COMMIT; browser 7-probe min-RTT offset plus end drift bound; no remote NTP claim",
+    "databaseProbes": [
+      {
+        "offsetMs": -0.17578125,
+        "uncertaintyMs": 1.4378662109375
+      },
+      {
+        "offsetMs": -0.04296875,
+        "uncertaintyMs": 1.177978515625
+      },
+      {
+        "offsetMs": -0.046630859375,
+        "uncertaintyMs": 1.1343994140625
+      },
+      {
+        "offsetMs": -0.03857421875,
+        "uncertaintyMs": 1.13134765625
+      },
+      {
+        "offsetMs": 0.095458984375,
+        "uncertaintyMs": 1.2615966796875
+      },
+      {
+        "offsetMs": -0.0576171875,
+        "uncertaintyMs": 1.162841796875
+      },
+      {
+        "offsetMs": -0.052001953125,
+        "uncertaintyMs": 1.1279296875
+      }
+    ],
+    "browserProbes": [
+      {
+        "offsetMs": 0.2412109375,
+        "uncertaintyMs": 2.795654296875
+      },
+      {
+        "offsetMs": -0.000244140625,
+        "uncertaintyMs": 2.666259765625
+      }
+    ],
+    "endProbes": [
+      {
+        "offsetMs": -0.45361328125,
+        "uncertaintyMs": 2.0263671875,
+        "initial": 0.2412109375
+      },
+      {
+        "offsetMs": -0.535400390625,
+        "uncertaintyMs": 1.849609375,
+        "initial": -0.000244140625
+      }
+    ],
+    "driftBound": 2.72119140625
+  },
+  "ui": {
+    "canvasReused": true,
+    "selectedMarker": true,
+    "keyboardSelection": true,
+    "desktopOverflow": false,
+    "mobileOverflow": false,
+    "fixtureIdentity": true,
+    "api": "real"
+  },
+  "diagnosticsIsolation": [
+    {
+      "path": "/internal/diagnostics/health",
+      "status": 401
+    },
+    {
+      "path": "/internal/diagnostics/metrics",
+      "status": 401
+    }
+  ],
+  "http": {
+    "count": 186,
+    "errors": 2,
+    "timeouts": 0
+  },
+  "httpByRoute": {
+    "200 /api/v1/integration/commands/integration.configureWebhook": 5,
+    "200 /api/v1/integration/commands/integration.rotateSigningKey": 5,
+    "200 /api/session/context": 3,
+    "200 /api/v1/monitoring/drivers/:id": 13,
+    "200 /api/v1/monitoring/tasks/:id/history": 14,
+    "200 /maps/*": 23,
+    "304 /api/v1/monitoring/drivers/:id": 52,
+    "206 /maps/*": 21,
+    "200 /api/v1/current/heading": 25,
+    "200 /internal/diagnostics/metrics": 1,
+    "401 /internal/diagnostics/health": 1,
+    "401 /internal/diagnostics/metrics": 1,
+    "304 /api/v1/monitoring/tasks/:id/history": 1,
+    "200 /api/v1/integration/commands/integration.reportAppliedCheckpoint": 20,
+    "200 /internal/diagnostics/actions/:actionId": 1
+  },
+  "requestLog": [
+    {
+      "kind": "http",
+      "requestId": "46980c08-e67e-4d80-8e88-5af1c93fb7ce",
+      "route": "/api/v1/integration/commands/integration.configureWebhook",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 53.549300000002404,
+      "actionId": "b2e18708-a0e7-4171-bbb5-0b1479c26dfb",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "43ede183-ad48-4192-b6ff-1804155448a7",
+      "route": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 31.12540000000081,
+      "actionId": "6bfd4b7b-6f26-4d91-b6f0-5e29270aa2b6",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "e505e111-18d3-40c1-98dc-8d500a7e5e8c",
+      "route": "/api/v1/integration/commands/integration.configureWebhook",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 21.560600000000704,
+      "actionId": "f5600a8d-ff0f-4c49-8f15-d0e3a04764b8",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "e0c8586e-7dca-401b-bce7-a59ff7245b1a",
+      "route": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 19.445800000001327,
+      "actionId": "986fcf32-a7e1-40a0-b749-9ee5fa789b75",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "38df0120-fc9c-4557-a2d5-1ed686ab8321",
+      "route": "/api/v1/integration/commands/integration.configureWebhook",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 17.959999999999127,
+      "actionId": "b2dd6632-df40-4e00-8218-c67c2b6c6407",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "48d221d8-594e-42db-a650-636d0a960794",
+      "route": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 17.736899999999878,
+      "actionId": "cf1213ca-e629-49ac-b1cd-fa23e3b0bcac",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "a5da0e41-b476-4cd9-9dce-6c63e9468f28",
+      "route": "/api/v1/integration/commands/integration.configureWebhook",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 16.696499999998196,
+      "actionId": "974fd430-3141-4d21-a85c-5542a33f86db",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "767bfda4-0743-4900-b05b-ec98de4995ce",
+      "route": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 19.581600000001345,
+      "actionId": "f431772f-2814-4bab-b71a-a1b8a1dd0151",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "abd97fc5-774b-43e1-a7f3-20037da9c0c1",
+      "route": "/api/v1/integration/commands/integration.configureWebhook",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 15.545399999999063,
+      "actionId": "16928825-eba0-4557-a3a9-cdf4cd9d63fa",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "0f4ec80a-2cb0-4d90-bbbc-4d366a40b186",
+      "route": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 17.183399999998073,
+      "actionId": "3572756d-5556-4273-8fd9-d4479fa71d9e",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "e2536f95-c67f-4ba5-b9fd-4f83270d6ad6",
+      "route": "/api/session/context",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 43.57619999999952,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "697836da-188f-40c1-8401-450f6ca6c845",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 312.86629999999786,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "7b17e30e-c2f9-4aaf-bda9-766e832c362a",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 646.2340000000004,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "2d6cb6b0-0a04-4a3b-9914-0f9703cbb64a",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 7.883700000002136,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "dc6f005b-b570-4c18-8fad-9362d048099c",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 65.70579999999973,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "54f201e6-90b6-4562-bbcc-91604b71f9d2",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 7.741700000002311,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "179bf444-a5b1-419c-b9e6-2e093a224ef1",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 5.4091000000007625,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "646c8cf1-18ce-4e84-a80a-3e2ce4e54e62",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 5.930000000000291,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "6e255a51-d233-4332-a4cc-362a0c43497d",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 7.0723999999972875,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ec8f551d-feb4-4f98-af40-7efb33458dc5",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.4830000000001746,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "dd66c76e-01bb-411b-b85f-8dbbf848da86",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 5.5525999999990745,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "75f49277-4dfc-4895-85e7-1e6a9c014ad8",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 8.73029999999926,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "8d14385d-3e46-4bd0-83c1-ba95deb5a4b2",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 13.68500000000131,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "0383fad1-4f25-4cda-9a1e-487e2096609f",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 4.71820000000298,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "19f55be4-809e-467e-9dd2-0acb2fed6a2a",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 6.721299999997427,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "2dc42720-b2c1-4130-9171-3211c2d7b188",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 9.336100000000442,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "42b27c2d-adba-45ee-b0f1-12433583e924",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 2.351599999998143,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "af731e79-ee43-4681-8b31-4c697bcdc13b",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 5.939800000000105,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "142f2750-bfdc-44f3-9474-596a4b14cc2a",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 6.584200000001147,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "bb2ce56b-bc92-403f-b377-dcbbdb61f005",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 6.816500000000815,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "668896fd-d29c-4046-a1b7-91ff6d35cc01",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 86.85099999999875,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "c681a436-34b1-4112-ae95-a8283f73d4b4",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 5.14429999999993,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "830130b1-7e23-41bd-9eb0-1e00724bfd12",
+      "route": "/api/session/context",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 17.766899999998714,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "8f0c8e15-8dc6-4a2c-81d8-333bc36916ac",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 195.7966000000015,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "dcc65bcc-8f00-4452-b59f-dcf566d29807",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 52.426800000001094,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "41c577ac-df21-418c-b45d-db0df2a57238",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 1.7190000000009604,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ccfd37eb-dbf4-4505-aa97-4a1b49dce4e6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 55.40649999999732,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a23b0de0-592d-4d27-9faf-ecb78c70e367",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 2.642200000002049,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "b2cd6865-0077-476c-a35a-4d593a96d1c0",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.058499999999185,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "523284ac-1843-49d4-87d4-1000c3b11a12",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 5.550300000002608,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "298a5388-7ad0-492b-852f-f71267451c09",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 4.710299999998824,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "79769ee3-2a04-47f4-a729-97ae2188423f",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 65.68310000000201,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "047d29e2-7ce2-4f21-b782-21a103af3819",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 2.287799999998242,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ec5d00ed-972e-4fcf-bfaf-b359d186e3e4",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.437100000002829,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "48e9da0c-93ae-4bab-9f6f-d929718ad6e8",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.844599999996717,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "abc96a0e-85eb-414f-9f57-d030ca51eac9",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 5.01220000000103,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ced9e835-d167-4a6a-b7f9-fbdc9662ffc2",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 6.116500000000087,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9a7a7b41-7559-4f19-9329-e477e3e8181c",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 6.0319000000017695,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "de48f376-a1be-48b0-99c0-ebf4d5d464dc",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 5.983599999999569,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "121d4318-6466-446e-afe2-b3b3cee9bfb2",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.285299999995914,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "8e8b7b29-3d03-4e48-a34b-5f61d806120e",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 4.254999999997381,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "85cb35f8-2540-41c8-a23c-51cdc82a0f14",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 4.311500000003434,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "cfb0bfde-7308-4ddd-94a4-4cf9d74cf343",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 10.797299999998359,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "986200e2-8618-4a7c-85cc-6f899fa155fb",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 75.22439999999915,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "1a5bb030-5cab-4050-8831-745db0e7dbb9",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 1.6148000000030152,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "83b297ca-40c8-44c4-b798-e3cd0db8be46",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 1993.3289000000004,
+      "actionId": "99090383-ad17-402a-85d2-d733d74b0462",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "974d26e4-9133-4930-855d-d16b3326b5cf"
+    },
+    {
+      "kind": "http",
+      "requestId": "9230f2f8-2560-468a-a594-cc0f202c6231",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 222.10420000000158,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "e20d7f94-e002-4861-97be-1fc768d9fc42",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 2247.201299999997,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9ac3de39-59f7-49cf-b537-5e58988d9896",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 2325.767600000003,
+      "actionId": "ac4869b5-f1e4-405f-a3b7-7ffff6e6f604",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "f38c8184-8cdc-49a7-93dc-6a8f8f8c597a"
+    },
+    {
+      "kind": "http",
+      "requestId": "9f38e428-e7ff-43a0-920e-080052858ef5",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 50.29290000000037,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "c1d82e7b-373b-451f-b9a6-a523698dc8e3",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 2840.3336999999956,
+      "actionId": "777f12a1-d103-45fc-89c0-1d75e3a4e2f2",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "9fc89521-5005-42dc-92a1-b4b73f20dcfa"
+    },
+    {
+      "kind": "http",
+      "requestId": "c11b7083-503f-4f10-b707-76a4c8dea877",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 2760.7474,
+      "actionId": "8c8ca889-2672-4808-b1b4-223767572102",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "01761013-2d32-4af3-a3b1-ce3c276b02d2"
+    },
+    {
+      "kind": "http",
+      "requestId": "823b7090-7aaf-4d7b-85a3-90df71bd265d",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 2761.1985999999997,
+      "actionId": "c96e5b19-ac84-461b-878e-949b1da07f14",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "25848b6a-f566-4755-b382-0375baa43e2a"
+    },
+    {
+      "kind": "http",
+      "requestId": "968ad836-c269-468a-a9eb-5c46d65960f2",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 60,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "88aeab17-c9f0-43b7-b7b2-455419072bd8",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 136.98309999999765,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a57ed740-7c2a-4a7a-a003-05f98a446d8c",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 56.02950000000419,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "7845e0a3-ac65-4bd6-abd5-026067de4a11",
+      "route": "/internal/diagnostics/metrics",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 5.69029999999475,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f6143be2-3dab-4ced-80f1-d97fe78951f0",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 140.3724000000002,
+      "actionId": "1ed613d1-b91b-4bed-9c47-5c52e99663c0",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "f38c8184-8cdc-49a7-93dc-6a8f8f8c597a"
+    },
+    {
+      "kind": "http",
+      "requestId": "148c9f42-ed63-4d73-881b-62ab3670152d",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 139.22409999999945,
+      "actionId": "e0eae8d5-e7ab-4fc2-9156-d10338519d2b",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "25848b6a-f566-4755-b382-0375baa43e2a"
+    },
+    {
+      "kind": "http",
+      "requestId": "e2bfb3ed-6372-4772-8100-e815cb33bfbd",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 147.24409999999625,
+      "actionId": "32da3bcd-7071-4fb0-979d-72e0dd321274",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "9fc89521-5005-42dc-92a1-b4b73f20dcfa"
+    },
+    {
+      "kind": "http",
+      "requestId": "e15e3f40-0693-4aa3-9db6-788407da0a7a",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 204.02279999999882,
+      "actionId": "682dd642-76a3-4bf9-b787-448194a898e1",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "01761013-2d32-4af3-a3b1-ce3c276b02d2"
+    },
+    {
+      "kind": "http",
+      "requestId": "43b3eb22-2b4e-438d-a9ba-bb372cba0dd4",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 356.1362999999983,
+      "actionId": "9bc5e100-e990-40f2-8c17-4f2143ef1472",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "974d26e4-9133-4930-855d-d16b3326b5cf"
+    },
+    {
+      "kind": "http",
+      "requestId": "c98ea773-b516-4e1f-b2b2-6616f087c156",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 73.6955999999991,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ec4ee446-d02f-4564-8dbc-cf8b8540d529",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 146.50760000000446,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "7daaec4b-0077-4d53-bf78-4adbbb0afa14",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 105.50660000000062,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a948a389-2499-4edf-b3f8-a512ab3e9604",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 95.42259999999806,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "07207a6a-c155-406b-88d5-ac4f7c0c9b04",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 107.39909999999509,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "4c1e9692-1359-487e-912c-7481722971cc",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 60.883600000001024,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9e1eab3c-5934-4f81-9e0e-7d84b4b53994",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 67.11439999999857,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "1522f904-21e2-462d-a57d-64d020c02c57",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 62.7983000000022,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "6ced21ca-57dd-438e-aa21-8f661ab0724c",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 118.58860000000277,
+      "actionId": "145ebea2-f22a-4c36-9b4f-7da2ea3c39fb",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "f38c8184-8cdc-49a7-93dc-6a8f8f8c597a"
+    },
+    {
+      "kind": "http",
+      "requestId": "99273981-5809-41e8-be57-a2939cc20a65",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 121.03190000000177,
+      "actionId": "ecee63ec-737d-4631-b162-66ab1a1c32e3",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "25848b6a-f566-4755-b382-0375baa43e2a"
+    },
+    {
+      "kind": "http",
+      "requestId": "8dda8a55-e2d6-4935-b859-dcb0e213816a",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 124.36779999999999,
+      "actionId": "4149feb6-b8d6-4530-a010-1457dc8eb12b",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "974d26e4-9133-4930-855d-d16b3326b5cf"
+    },
+    {
+      "kind": "http",
+      "requestId": "ad500737-4152-47b6-91a1-ddb0b62b8294",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 125.96959999999672,
+      "actionId": "daed4e98-fb9a-4bad-92be-1ed7d033d9ac",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "9fc89521-5005-42dc-92a1-b4b73f20dcfa"
+    },
+    {
+      "kind": "http",
+      "requestId": "320f216e-abe2-4257-9153-9077d332d4cf",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 238.04720000000088,
+      "actionId": "2492ee93-d8cf-415f-9af4-df92c55b6a35",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "01761013-2d32-4af3-a3b1-ce3c276b02d2"
+    },
+    {
+      "kind": "http",
+      "requestId": "b11890e3-7f81-427a-bdd8-1ef2749bf8b8",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 62.58550000000105,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "8b9ec941-d430-469e-bcb7-4128b41293cd",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 53.04579999999987,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f93af7e8-de1e-45d2-82e8-a2065f84301d",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 66.04759999999806,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "dccbbb8b-3ef4-4d4a-ba2a-d1dc6ef76c64",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 45.56500000000233,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "42260a88-081c-4e39-9000-8aebba53b406",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 57.86250000000291,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f32efb39-f4ba-41a6-9b3d-883d8e088fb9",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 61.778299999998126,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "48deaf53-6bca-4b94-9b5e-6e94b7c83b10",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 48.11939999999595,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "4694ef40-df99-4bab-b0b6-6579e41a7300",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 49.12999999999738,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "48d4431f-ad79-4480-8f25-3a6149831dd3",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 51.9661000000051,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "3de29270-568a-4048-bc49-7abaaac704a1",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 38.85070000000269,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "e3b1a0bd-7ac6-4a79-ba2c-616d1bfb23d6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 39.9545999999973,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "b9c72e67-8f9b-4d10-ae68-3fa0dea18eac",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 46.36640000000625,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "8f5bc8bb-1959-4435-ab6a-a015e8111e0d",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 68.80429999999615,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a6333dd6-084c-4dbb-a4a9-5cffd0704250",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 92.53269999999611,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f9dd3608-d809-4a06-b68f-8710448ddd02",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 217.24900000000343,
+      "actionId": "6f3d9454-c372-4722-8a28-e9282aa4eb5f",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "9fc89521-5005-42dc-92a1-b4b73f20dcfa"
+    },
+    {
+      "kind": "http",
+      "requestId": "8bb5eb2c-17fc-47a4-a9f0-856997a0a848",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 264.23799999999756,
+      "actionId": "2ceb4ec0-eeb0-4096-8b2b-6080f3c8bced",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "01761013-2d32-4af3-a3b1-ce3c276b02d2"
+    },
+    {
+      "kind": "http",
+      "requestId": "ff22ba59-0701-4342-bc97-abff8c4bea29",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 265.53830000000016,
+      "actionId": "0934d00c-3ced-400c-9ac9-854300e3548c",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "974d26e4-9133-4930-855d-d16b3326b5cf"
+    },
+    {
+      "kind": "http",
+      "requestId": "1b04367a-01ea-4698-b426-9fd0d24ddf5e",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 278.13989999999467,
+      "actionId": "c433194f-2138-4ecb-8aaa-0520f85db158",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "25848b6a-f566-4755-b382-0375baa43e2a"
+    },
+    {
+      "kind": "http",
+      "requestId": "b9002711-9581-4fe2-8063-90a9172781b3",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 324.8860999999961,
+      "actionId": "92a87dd0-3f31-42e7-8e62-e8efebac9653",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "f38c8184-8cdc-49a7-93dc-6a8f8f8c597a"
+    },
+    {
+      "kind": "http",
+      "requestId": "d057f062-276d-4c72-ad59-ef4964bc454d",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 96.12969999999768,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9d8e6d65-5159-4641-87c4-20cbbfd28cbd",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 54.98859999999695,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ecfe33ba-4b8f-4802-a211-705065886956",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 38.23270000000048,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "541066fb-b908-46ce-85e5-f56c11d5b947",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 43.59229999999661,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "1c95564e-f464-435f-a439-a88048b07418",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.504399999997986,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9e7a124f-1f8a-4040-9fe5-db5b20eeedb9",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 46.381200000003446,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "b98ecbfe-c32b-4edf-8b96-407113a73254",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 48.7361000000019,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "523a8f49-eaaf-4990-b146-7fc00d2eec41",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 45.34730000000127,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "5a9966c8-9abb-4d1e-a763-1a603ca49217",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 34.00149999999849,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "64357d74-c474-4356-937f-4166c1c7c6d6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 48.44239999999991,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "3332510c-185e-4fe3-9279-25a4a0123aec",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 110.21929999999702,
+      "actionId": "dadf9a27-2c1b-48cb-9e33-35fc0babf4f6",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "01761013-2d32-4af3-a3b1-ce3c276b02d2"
+    },
+    {
+      "kind": "http",
+      "requestId": "b44f3228-79f7-4071-96c6-bb6c67de17ea",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 113.05339999999705,
+      "actionId": "b117e43b-bfac-4464-9dda-86aea0d99b75",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "9fc89521-5005-42dc-92a1-b4b73f20dcfa"
+    },
+    {
+      "kind": "http",
+      "requestId": "592b7ea5-4d6f-4ccf-aaa9-a939588ac19c",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 115.26259999999456,
+      "actionId": "1f79f44d-8391-4c64-b8ec-a2ce358b770a",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "f38c8184-8cdc-49a7-93dc-6a8f8f8c597a"
+    },
+    {
+      "kind": "http",
+      "requestId": "64f5747f-41cc-4613-9b1e-61d512776967",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 116.73399999999674,
+      "actionId": "b73ea640-681a-493f-8831-61bf50c802b0",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "974d26e4-9133-4930-855d-d16b3326b5cf"
+    },
+    {
+      "kind": "http",
+      "requestId": "59751fd6-d986-409c-b994-b3392a48de20",
+      "route": "/api/v1/current/heading",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 116.44870000000083,
+      "actionId": "777f60bb-7f7f-4eed-8a3e-c17b0ebc65d4",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "25848b6a-f566-4755-b382-0375baa43e2a"
+    },
+    {
+      "kind": "http",
+      "requestId": "7cc05f54-c552-4984-9e1f-27ad2f481d5e",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 59.2332000000024,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "27ded1c5-270d-42e9-86d1-2e7c3fc59100",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 29.129899999999907,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "85708dd6-6077-47ff-8f7e-143b36d18030",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 50.62779999999475,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "b057b2c5-2b7f-49f3-95da-ce57971f37b4",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 29.142800000001444,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "582739f8-cf31-4546-aef9-4c6d2cd84ef9",
+      "route": "/internal/diagnostics/health",
+      "method": "GET",
+      "status": 401,
+      "durationMs": 0.2180000000007567,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9936b058-c229-48d3-9bf1-8cbb9c4e46b7",
+      "route": "/internal/diagnostics/metrics",
+      "method": "GET",
+      "status": 401,
+      "durationMs": 0.19329999999899883,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "544fb321-2b2e-41ea-95da-f63e3ca26c8f",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 31.512300000002142,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "5a4779f0-ddc1-4a55-a30e-19446ec99155",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.02479999999923,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ede47de3-035c-4397-952c-83d3131967ce",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 41.49949999999808,
+      "actionId": "f1a3536c-d73f-4fce-9de3-a20251b36ee8",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "2937a184-e91c-4150-95ab-75cdcb108409",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 10.15690000000177,
+      "actionId": "864b1026-83e3-4bf8-812f-e38364eb62bc",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "8d097a74-ba3e-4e8b-9fbd-9bfd06002e9b",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 21.416099999994913,
+      "actionId": "c5029437-d742-4016-b26d-d2618c6f5f06",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "c93c6c7d-d7ff-4f36-8411-d02550215727",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 10.17949999999837,
+      "actionId": "47dc85e9-602a-4b91-a59a-0536aab6eaee",
+      "tenantId": "5c7c1cf0-e460-4753-a446-884ae6d7154d",
+      "sourceId": "d745372a-3f01-4143-8b8d-4d4783a73c1d"
+    },
+    {
+      "kind": "http",
+      "requestId": "9436b763-fec5-46ce-9e6f-6acab7a2dc5f",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 15.009400000002643,
+      "actionId": "73a563ad-a8d6-4560-8c7a-c579cbe7a6e5",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "62254ee5-4b91-4530-8e7d-32a062ec604a",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 11.96820000000298,
+      "actionId": "f0354b3f-b211-499c-9c1f-37c441873952",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "2ababc31-7a55-40ec-a2f3-be6ab0467e3d",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 15.372900000002119,
+      "actionId": "c5f07516-3805-4ea1-823e-cb06044f5948",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "ddbfc854-28b1-4b7f-8d76-84418c35749c",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 9.398200000003271,
+      "actionId": "fac38204-fb0e-4527-99cf-0d9f65cae5f3",
+      "tenantId": "b72f49c5-4232-428c-afd9-189bd1b6300f",
+      "sourceId": "2dcf4a16-1257-47e6-838e-f5386b9b52b6"
+    },
+    {
+      "kind": "http",
+      "requestId": "9ea32806-4961-46f4-90d7-7650081b0e9f",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 12.601300000002084,
+      "actionId": "d5476f8a-2439-4b66-8107-81c75224f880",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "7b943018-59d7-440c-b56a-86cfe803df56",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 9.21179999999731,
+      "actionId": "baefc5bf-7186-4942-8774-3caf55590ee1",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "c0f5adf3-2a46-4c86-b03e-90fd6bd00b3e",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 8.031100000000151,
+      "actionId": "34e21225-9469-47e8-8896-818570b38c4a",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "99ca8d00-b4f8-4371-a100-39805b1dbd0b",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 15.946300000003248,
+      "actionId": "7937fb37-7388-4d0c-aba6-3e8d08f5a3a5",
+      "tenantId": "90fb2dc0-e51d-4b74-9064-bcd53296770b",
+      "sourceId": "724e873a-d2a5-484a-806c-ca1816701be0"
+    },
+    {
+      "kind": "http",
+      "requestId": "b051cc04-d976-4b47-8e18-a0da58563abb",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 11.111799999998766,
+      "actionId": "166ea2b9-3dc7-458c-a835-0e55d8342b97",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "39892d66-c688-4a42-8d9a-cb6dd0a066f2",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 26.26140000000305,
+      "actionId": "2bfe19da-e56e-4f62-a2b4-97d4e09ad020",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "a5fc6725-6fce-4eeb-bbcc-c32d0e9736ff",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 12.267299999999523,
+      "actionId": "91427f38-349f-4b9a-9b88-6cded1a744e3",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "b2cfc7a3-92b4-461a-be18-a744ef50f752",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 19.097200000003795,
+      "actionId": "eaab95f5-b771-474b-969e-5e3f04dcd50a",
+      "tenantId": "0ad52c04-7a3f-4635-b82a-a0d279cdbbdf",
+      "sourceId": "81acc35e-d2cc-4b44-b8f2-400d36df7563"
+    },
+    {
+      "kind": "http",
+      "requestId": "19594432-1396-4060-a7cc-39675bdfa562",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 13.81699999999546,
+      "actionId": "1e8e401a-2664-4f4a-b109-aad2ab32b86e",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "1fea1fd8-e809-4f9b-94d4-852c03d44bc2",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 13.173899999994319,
+      "actionId": "a6075f13-c89c-41cd-a31a-bd7101d38c3c",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "f628d7f6-c591-4dc7-b7bd-ef03497125d7",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 14.1391999999978,
+      "actionId": "ac056076-ba72-4706-bde7-ed5d1ff6de42",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "02ccc774-7a1c-49a2-9e75-1a382d716aa5",
+      "route": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "method": "POST",
+      "status": 200,
+      "durationMs": 14.815199999997276,
+      "actionId": "bd4f6027-5c97-42da-947a-0490444de1d7",
+      "tenantId": "a813aeba-396e-4c95-94d4-fd943eacdee4",
+      "sourceId": "d09deb22-103d-4954-a0e7-349db4b4c023"
+    },
+    {
+      "kind": "http",
+      "requestId": "71dfe2d6-6a5c-4981-a1e1-df37fdbaafe5",
+      "route": "/internal/diagnostics/actions/:actionId",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 7.109700000000885,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "d4bd7ba5-08e5-4c42-ba96-6d66a860a50c",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 59.87069999999949,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "12197623-071d-475e-9ad4-b03ea08467ac",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 47.60689999999886,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "4c649daa-4015-43cc-8035-73fa4051ffa0",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 54.770000000004075,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "4a9d2b08-0fe1-4f01-8532-06fd7263ab02",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 52.57690000000002,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "bcd315e8-5c43-4c3e-8af1-e86c916faf80",
+      "route": "/api/session/context",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 15.872400000000198,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "d546448f-1e8a-4bff-a8b4-6b257246b6a6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 68.51199999999517,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "c196692f-b5d9-4c4b-9ac3-e16835a7e5a7",
+      "route": "/api/v1/monitoring/tasks/:id/history",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 33.580800000003364,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "7d0709bf-0a24-4e48-bd2e-cb8bbc792d39",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 44.24250000000029,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "912bc10b-ecd3-42bc-bf8b-727f8a12a646",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.63470000000234,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "5b0fa481-bae2-4946-b93b-23ade4a2a0e6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 46.77850000000035,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f3ac06b5-f84c-456f-b28a-f28b96b126a5",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 47.421699999998964,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "3a399916-d8c9-43a6-aeca-618e50049ab6",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 45.641899999995076,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "fe60ccda-2692-45a2-b032-0eebbd1a67ff",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 47.34410000000207,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "ccc8a7ba-6232-4c7e-98e1-33109834a661",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.83599999999569,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f22924a6-9b3e-4fc7-b1c8-b77d6cd4b6c2",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 44.29190000000381,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "cac46189-a08a-400a-a4af-651f37f0b4b8",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 45.983399999997346,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "dc9424c6-5b39-43d3-a1c9-55b2b95cac9d",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.756099999998696,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "6f4731a4-2ce2-4e84-91fb-3351c8eca2c9",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 35.8015000000014,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "cb799d9b-31f5-46f6-8e82-4cfa6f812afd",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 38.06579999999667,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "25954038-68ab-45d7-9139-ec9aa9ca7cc2",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 39.59800000000541,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "2d13c8d3-c3af-489b-8059-7aea63c0b96a",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 41.71249999999418,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "9a5e6fcb-b5eb-4b06-9866-5362a2d2a8e8",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 42.0112999999983,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "e5ef0672-e808-477c-85d1-1d5bd8adea08",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 43.04420000000391,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a6cf0a3b-b2af-487b-8cd4-99f6eaa532ab",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 31.345100000005914,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "70b55932-d847-424e-9ed7-0ea94ea33677",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 36.363400000002,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "b5c4b689-3801-4de9-bf10-57670ffcaf26",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 35.0025999999998,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "87bc309d-efdb-4d31-abe5-0646cbb076f0",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 1.7816000000020722,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "736eebb6-1d14-42bc-b342-1f7b9888acb4",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 41.67420000000129,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "da852c3d-e373-4e32-8ecb-5baf3fd9dc2f",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 1.9927000000025146,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "f3424e0f-bbc4-4f0e-b7a3-a75f0eebe6ff",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 3.411000000000058,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "965b6856-3572-42d4-97aa-432181faaf23",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 3.1696000000010827,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "a3405c76-d642-4108-b649-f8b00c0fa08c",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 4.121500000001106,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "bd69652e-a2ed-4bad-bb48-083b8cf8415e",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 2.2554000000018277,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "76184788-8532-47ae-b12d-23c78690b2c5",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 206,
+      "durationMs": 2.0745000000024447,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "5afd1f47-216f-44e3-a2e1-71bb67e5de9d",
+      "route": "/api/v1/monitoring/drivers/:id",
+      "method": "GET",
+      "status": 304,
+      "durationMs": 37.61699999999837,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "11008add-23b5-4311-9e7a-dc2f0e62a6a7",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 3.0467999999964377,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "44328ff6-ce8d-4c93-8718-bc55461de71b",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 3.2986999999993714,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    },
+    {
+      "kind": "http",
+      "requestId": "820946f9-8347-4595-a42e-e7f08e4991c8",
+      "route": "/maps/*",
+      "method": "GET",
+      "status": 200,
+      "durationMs": 4.31699999999546,
+      "actionId": null,
+      "tenantId": null,
+      "sourceId": null
+    }
+  ],
+  "deliveryAttempts": [
+    {
+      "result": "received",
+      "count": 105
+    },
+    {
+      "result": "failed",
+      "count": 30
+    }
+  ],
+  "workerErrorCount": 0,
+  "metrics": {
+    "poolWait": {
+      "count": 2330,
+      "errors": 0,
+      "retained": 1024,
+      "p50Ms": 0.19339999999647262,
+      "p95Ms": 0.4007999999957974,
+      "p99Ms": 0.7980000000025029
+    },
+    "query": {
+      "count": 9685,
+      "errors": 0,
+      "retained": 1024,
+      "p50Ms": 1.310700000001816,
+      "p95Ms": 4.749900000002526,
+      "p99Ms": 8.879800000002433
+    },
+    "commit": {
+      "count": 2330,
+      "errors": 0,
+      "retained": 1024,
+      "p50Ms": 0.28360000000247965,
+      "p95Ms": 0.8004000000000815,
+      "p99Ms": 2.4434000000037486
+    },
+    "transaction": {
+      "count": 2330,
+      "errors": 0,
+      "retained": 1024,
+      "p50Ms": 3.8351000000038766,
+      "p95Ms": 21.25209999999788,
+      "p99Ms": 59.5454000000027
+    },
+    "http": {
+      "count": 236,
+      "errors": 2,
+      "retained": 236,
+      "p50Ms": 39.9545999999973,
+      "p95Ms": 278.13989999999467,
+      "p99Ms": 2760.7474
+    },
+    "engine": {
+      "count": 5,
+      "errors": 5,
+      "retained": 5,
+      "p50Ms": 2.106899999998859,
+      "p95Ms": 7.436699999998382,
+      "p99Ms": 7.436699999998382
+    }
+  },
+  "idle": {
+    "idleBefore": "المتابعة محدثة\nآخر تحديث ناجح: ٠٦:٠٦:٢٠ ص · نسخة 3\nتحديث",
+    "idleAfter": "المتابعة محدثة\nآخر تحديث ناجح: ٠٦:٠٦:٢٢ ص · نسخة 3\nتحديث",
+    "revisionBefore": "3",
+    "revisionAfter": "3"
+  },
+  "summary": [
+    {
+      "boundary": "view",
+      "condition": "healthy",
+      "attempted": 4,
+      "completed": 4,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 337.0126953125,
+        "p95Ms": 946.18896484375,
+        "p99Ms": 946.18896484375
+      },
+      "lower": {
+        "p50Ms": 324.106201171875,
+        "p95Ms": 931.10400390625,
+        "p99Ms": 931.10400390625
+      },
+      "targetMs": 3000,
+      "verdict": "insufficient-samples",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": 5.516845703125
+    },
+    {
+      "boundary": "erp",
+      "condition": "healthy",
+      "attempted": 10,
+      "completed": 10,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 220.37841796875,
+        "p95Ms": 282.818115234375,
+        "p99Ms": 282.818115234375
+      },
+      "lower": {
+        "p50Ms": 216.37548828125,
+        "p95Ms": 274.92236328125,
+        "p99Ms": 274.92236328125
+      },
+      "targetMs": 5000,
+      "verdict": "insufficient-samples",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": 1
+    },
+    {
+      "boundary": "view",
+      "condition": "receiver-outage",
+      "attempted": 2,
+      "completed": 2,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 3141.345458984375,
+        "p95Ms": 3143.739501953125,
+        "p99Ms": 3143.739501953125
+      },
+      "lower": {
+        "p50Ms": 3128.127197265625,
+        "p95Ms": 3128.463134765625,
+        "p99Ms": 3128.463134765625
+      },
+      "targetMs": 3000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": 32.14453125,
+        "p95Ms": 32.41552734375,
+        "p99Ms": 32.41552734375
+      },
+      "maxClockUncertaintyMs": 5.516845703125
+    },
+    {
+      "boundary": "erp",
+      "condition": "receiver-outage",
+      "attempted": 5,
+      "completed": 5,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 5807.4482421875,
+        "p95Ms": 6336.072021484375,
+        "p99Ms": 6336.072021484375
+      },
+      "lower": {
+        "p50Ms": 5800.86962890625,
+        "p95Ms": 6331.964599609375,
+        "p99Ms": 6331.964599609375
+      },
+      "targetMs": 5000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": 2696.124267578125,
+        "p95Ms": 3226.87109375,
+        "p99Ms": 3226.87109375
+      },
+      "maxClockUncertaintyMs": 1
+    },
+    {
+      "boundary": "view",
+      "condition": "background",
+      "attempted": 2,
+      "completed": 2,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 2996.2333984375,
+        "p95Ms": 3043.997802734375,
+        "p99Ms": 3043.997802734375
+      },
+      "lower": {
+        "p50Ms": 2980.57666015625,
+        "p95Ms": 3030.068115234375,
+        "p99Ms": 3030.068115234375
+      },
+      "targetMs": 3000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": 32.061279296875,
+        "p95Ms": 32.332275390625,
+        "p99Ms": 32.332275390625
+      },
+      "maxClockUncertaintyMs": 5.516845703125
+    },
+    {
+      "boundary": "erp",
+      "condition": "background",
+      "attempted": 5,
+      "completed": 5,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 267.998046875,
+        "p95Ms": 362.1708984375,
+        "p99Ms": 362.1708984375
+      },
+      "lower": {
+        "p50Ms": 260.000244140625,
+        "p95Ms": 355.2890625,
+        "p99Ms": 355.2890625
+      },
+      "targetMs": 5000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": 0,
+        "p95Ms": 0,
+        "p99Ms": 0
+      },
+      "maxClockUncertaintyMs": 1
+    },
+    {
+      "boundary": "view",
+      "condition": "offline-unsent",
+      "attempted": 2,
+      "completed": 2,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 144.8154296875,
+        "p95Ms": 215.511962890625,
+        "p99Ms": 215.511962890625
+      },
+      "lower": {
+        "p50Ms": 131.613037109375,
+        "p95Ms": 203.070556640625,
+        "p99Ms": 203.070556640625
+      },
+      "targetMs": 3000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": 5.516845703125
+    },
+    {
+      "boundary": "erp",
+      "condition": "offline-unsent",
+      "attempted": 5,
+      "completed": 5,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": 204.738525390625,
+        "p95Ms": 282.3173828125,
+        "p99Ms": 282.3173828125
+      },
+      "lower": {
+        "p50Ms": 200.872314453125,
+        "p95Ms": 278.65087890625,
+        "p99Ms": 278.65087890625
+      },
+      "targetMs": 5000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": 1
+    },
+    {
+      "boundary": "view",
+      "condition": "saturation",
+      "attempted": 0,
+      "completed": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "lower": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "targetMs": 3000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": null
+    },
+    {
+      "boundary": "erp",
+      "condition": "saturation",
+      "attempted": 0,
+      "completed": 0,
+      "errors": 0,
+      "timeouts": 0,
+      "upper": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "lower": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "targetMs": 5000,
+      "verdict": "separate-condition",
+      "recovery": {
+        "p50Ms": null,
+        "p95Ms": null,
+        "p99Ms": null
+      },
+      "maxClockUncertaintyMs": null
+    }
+  ],
+  "samples": [
+    {
+      "id": "99090383-ad17-402a-85d2-d733d74b0462",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391977724.1982,
+      "startAfterMs": 1790391977728.5083,
+      "endMs": 1790391977947.5315,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "ac4869b5-f1e4-405f-a3b7-7ffff6e6f604",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391978117.415,
+      "startAfterMs": 1790391978122.7725,
+      "endMs": 1790391978201.7334,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "777f12a1-d103-45fc-89c0-1d75e3a4e2f2",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391978534.0884,
+      "startAfterMs": 1790391978537.3962,
+      "endMs": 1790391978647.1545,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "8c8ca889-2672-4808-b1b4-223767572102",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391978546.193,
+      "startAfterMs": 1790391978549.2275,
+      "endMs": 1790391978647.7144,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "99090383-ad17-402a-85d2-d733d74b0462:1",
+      "condition": "healthy",
+      "boundary": "view",
+      "startBeforeMs": 1790391977724.1982,
+      "startAfterMs": 1790391977728.5083,
+      "endMs": 1790391978664.9998,
+      "clockUncertaintyMs": 5.387451171875,
+      "error": null
+    },
+    {
+      "id": "c96e5b19-ac84-461b-878e-949b1da07f14",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391978555.6519,
+      "startAfterMs": 1790391978559.7886,
+      "endMs": 1790391978739.1736,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "777f12a1-d103-45fc-89c0-1d75e3a4e2f2:0",
+      "condition": "healthy",
+      "boundary": "view",
+      "startBeforeMs": 1790391978534.0884,
+      "startAfterMs": 1790391978537.3962,
+      "endMs": 1790391979265.3413,
+      "clockUncertaintyMs": 5.516845703125,
+      "error": null
+    },
+    {
+      "id": "32da3bcd-7071-4fb0-979d-72e0dd321274",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391980017.7454,
+      "startAfterMs": 1790391980019.6182,
+      "endMs": 1790391980237.1238,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "1ed613d1-b91b-4bed-9c47-5c52e99663c0",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391980013.2502,
+      "startAfterMs": 1790391980016.1458,
+      "endMs": 1790391980237.2358,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "e0eae8d5-e7ab-4fc2-9156-d10338519d2b",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391980014.6582,
+      "startAfterMs": 1790391980017.9956,
+      "endMs": 1790391980237.3447,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "32da3bcd-7071-4fb0-979d-72e0dd321274:0",
+      "condition": "healthy",
+      "boundary": "view",
+      "startBeforeMs": 1790391980017.7454,
+      "startAfterMs": 1790391980019.6182,
+      "endMs": 1790391980349.2412,
+      "clockUncertaintyMs": 5.516845703125,
+      "error": null
+    },
+    {
+      "id": "682dd642-76a3-4bf9-b787-448194a898e1",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391980071.6758,
+      "startAfterMs": 1790391980077.5715,
+      "endMs": 1790391980353.494,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "9bc5e100-e990-40f2-8c17-4f2143ef1472:1",
+      "condition": "healthy",
+      "boundary": "view",
+      "startBeforeMs": 1790391980226.1094,
+      "startAfterMs": 1790391980229.5952,
+      "endMs": 1790391980449.3997,
+      "clockUncertaintyMs": 5.387451171875,
+      "error": null
+    },
+    {
+      "id": "9bc5e100-e990-40f2-8c17-4f2143ef1472",
+      "condition": "healthy",
+      "boundary": "erp",
+      "startBeforeMs": 1790391980226.1094,
+      "startAfterMs": 1790391980229.5952,
+      "endMs": 1790391980446.9707,
+      "clockUncertaintyMs": 1,
+      "error": null
+    },
+    {
+      "id": "daed4e98-fb9a-4bad-92be-1ed7d033d9ac:0",
+      "condition": "receiver-outage",
+      "boundary": "view",
+      "startBeforeMs": 1790391982877.9187,
+      "startAfterMs": 1790391982882.4973,
+      "endMs": 1790391986016.1414,
+      "clockUncertaintyMs": 5.516845703125,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "4149feb6-b8d6-4530-a010-1457dc8eb12b:1",
+      "condition": "receiver-outage",
+      "boundary": "view",
+      "startBeforeMs": 1790391982880.0417,
+      "startAfterMs": 1790391982882.1492,
+      "endMs": 1790391986015.9998,
+      "clockUncertaintyMs": 5.387451171875,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "145ebea2-f22a-4c36-9b4f-7da2ea3c39fb",
+      "condition": "receiver-outage",
+      "boundary": "erp",
+      "startBeforeMs": 1790391982872.0056,
+      "startAfterMs": 1790391982878.1375,
+      "endMs": 1790391987799.5527,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "2492ee93-d8cf-415f-9af4-df92c55b6a35",
+      "condition": "receiver-outage",
+      "boundary": "erp",
+      "startBeforeMs": 1790391982994.2644,
+      "startAfterMs": 1790391982996.5623,
+      "endMs": 1790391988602.033,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "daed4e98-fb9a-4bad-92be-1ed7d033d9ac",
+      "condition": "receiver-outage",
+      "boundary": "erp",
+      "startBeforeMs": 1790391982877.9187,
+      "startAfterMs": 1790391982882.4973,
+      "endMs": 1790391988684.367,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "ecee63ec-737d-4631-b162-66ab1a1c32e3",
+      "condition": "receiver-outage",
+      "boundary": "erp",
+      "startBeforeMs": 1790391982878.0608,
+      "startAfterMs": 1790391982881.522,
+      "endMs": 1790391988684.7449,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "4149feb6-b8d6-4530-a010-1457dc8eb12b",
+      "condition": "receiver-outage",
+      "boundary": "erp",
+      "startBeforeMs": 1790391982880.0417,
+      "startAfterMs": 1790391982882.1492,
+      "endMs": 1790391989215.1138,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391985989.2427
+    },
+    {
+      "id": "6f3d9454-c372-4722-8a28-e9282aa4eb5f",
+      "condition": "background",
+      "boundary": "erp",
+      "startBeforeMs": 1790391989493.1604,
+      "startAfterMs": 1790391989496.0564,
+      "endMs": 1790391989807.4673,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "0934d00c-3ced-400c-9ac9-854300e3548c",
+      "condition": "background",
+      "boundary": "erp",
+      "startBeforeMs": 1790391989540.6538,
+      "startAfterMs": 1790391989545.5356,
+      "endMs": 1790391989901.8247,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "2ceb4ec0-eeb0-4096-8b2b-6080f3c8bced",
+      "condition": "background",
+      "boundary": "erp",
+      "startBeforeMs": 1790391989538.9966,
+      "startAfterMs": 1790391989544.9944,
+      "endMs": 1790391989805.9946,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "92a87dd0-3f31-42e7-8e62-e8efebac9653",
+      "condition": "background",
+      "boundary": "erp",
+      "startBeforeMs": 1790391989603.8044,
+      "startAfterMs": 1790391989606.735,
+      "endMs": 1790391989807.9429,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "c433194f-2138-4ecb-8aaa-0520f85db158",
+      "condition": "background",
+      "boundary": "erp",
+      "startBeforeMs": 1790391989558.4387,
+      "startAfterMs": 1790391989561.9712,
+      "endMs": 1790391989808.2173,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "0934d00c-3ced-400c-9ac9-854300e3548c:1",
+      "condition": "background",
+      "boundary": "view",
+      "startBeforeMs": 1790391989540.6538,
+      "startAfterMs": 1790391989545.5356,
+      "endMs": 1790391992531.4998,
+      "clockUncertaintyMs": 5.387451171875,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "6f3d9454-c372-4722-8a28-e9282aa4eb5f:0",
+      "condition": "background",
+      "boundary": "view",
+      "startBeforeMs": 1790391989493.1604,
+      "startAfterMs": 1790391989496.0564,
+      "endMs": 1790391992531.6414,
+      "clockUncertaintyMs": 5.516845703125,
+      "error": null,
+      "recoveryStartMs": 1790391992504.826
+    },
+    {
+      "id": "b117e43b-bfac-4464-9dda-86aea0d99b75:0",
+      "condition": "offline-unsent",
+      "boundary": "view",
+      "startBeforeMs": 1790391994183.0427,
+      "startAfterMs": 1790391994185.2114,
+      "endMs": 1790391994322.3413,
+      "clockUncertaintyMs": 5.516845703125,
+      "error": null,
+      "unsentMs": 1641.4580078125
+    },
+    {
+      "id": "b117e43b-bfac-4464-9dda-86aea0d99b75",
+      "condition": "offline-unsent",
+      "boundary": "erp",
+      "startBeforeMs": 1790391994183.0427,
+      "startAfterMs": 1790391994185.2114,
+      "endMs": 1790391994385.385,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "unsentMs": 1641.4580078125
+    },
+    {
+      "id": "dadf9a27-2c1b-48cb-9e33-35fc0babf4f6",
+      "condition": "offline-unsent",
+      "boundary": "erp",
+      "startBeforeMs": 1790391994181.7915,
+      "startAfterMs": 1790391994183.6577,
+      "endMs": 1790391994385.53,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "unsentMs": 1640.206787109375
+    },
+    {
+      "id": "1f79f44d-8391-4c64-b8ec-a2ce358b770a",
+      "condition": "offline-unsent",
+      "boundary": "erp",
+      "startBeforeMs": 1790391994187.8906,
+      "startAfterMs": 1790391994189.3235,
+      "endMs": 1790391994385.7412,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "unsentMs": 1646.305908203125
+    },
+    {
+      "id": "b73ea640-681a-493f-8831-61bf50c802b0:1",
+      "condition": "offline-unsent",
+      "boundary": "view",
+      "startBeforeMs": 1790391994188.0752,
+      "startAfterMs": 1790391994189.7417,
+      "endMs": 1790391994398.1997,
+      "clockUncertaintyMs": 5.387451171875,
+      "error": null,
+      "unsentMs": 1646.490478515625
+    },
+    {
+      "id": "b73ea640-681a-493f-8831-61bf50c802b0",
+      "condition": "offline-unsent",
+      "boundary": "erp",
+      "startBeforeMs": 1790391994188.0752,
+      "startAfterMs": 1790391994189.7417,
+      "endMs": 1790391994469.3926,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "unsentMs": 1646.490478515625
+    },
+    {
+      "id": "777f60bb-7f7f-4eed-8a3e-c17b0ebc65d4",
+      "condition": "offline-unsent",
+      "boundary": "erp",
+      "startBeforeMs": 1790391994189.1057,
+      "startAfterMs": 1790391994191.13,
+      "endMs": 1790391994469.8677,
+      "clockUncertaintyMs": 1,
+      "error": null,
+      "unsentMs": 1647.52099609375
+    }
+  ],
+  "resources": [
+    {
+      "condition": "healthy",
+      "wave": 0,
+      "status": {
+        "observedAt": "2026-09-26T03:06:19.267Z",
+        "liveness": "alive",
+        "database": {
+          "state": "ready",
+          "version": "18.4",
+          "active": 1,
+          "blocked": 0,
+          "deadlocks": 0,
+          "bytes": 15038143
+        },
+        "workers": [
+          {
+            "worker": "planning",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:18.664Z",
+            "ageMs": 618.592,
+            "elapsedMs": 101.62480000000505,
+            "worked": true
+          },
+          {
+            "worker": "outbox",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:19.230Z",
+            "ageMs": 52.342,
+            "elapsedMs": 11.064700000002631,
+            "worked": true
+          },
+          {
+            "worker": "provisioning",
+            "state": "unknown",
+            "observedAt": null,
+            "ageMs": null,
+            "elapsedMs": null,
+            "worked": null
+          }
+        ],
+        "planning": {
+          "pending": 5,
+          "running": 0,
+          "failed": 0,
+          "blocked": 0,
+          "expired_leases": 0,
+          "oldest_ms": 1632.039,
+          "engine_errors": 1
+        },
+        "sender": {
+          "pending": 0,
+          "sending": 0,
+          "failed": 0,
+          "received": 65,
+          "expired_leases": 0,
+          "oldest_ms": 0
+        },
+        "projection": {
+          "streams": 20,
+          "unknown": 20,
+          "unapplied_or_unreported": 65,
+          "oldest_report_ms": null
+        },
+        "engine": {
+          "availability": "not-probed",
+          "persistedJobErrors": 1
+        },
+        "backup": {
+          "readiness": "unverified",
+          "lastVerifiedRestoreAt": null
+        }
+      },
+      "metrics": {
+        "observedAt": "2026-09-26T03:06:19.861Z",
+        "scope": "this-api-process",
+        "uptimeSeconds": 36.5779195,
+        "metrics": {
+          "poolWait": {
+            "count": 463,
+            "errors": 0,
+            "retained": 463,
+            "p50Ms": 0.13580000000001746,
+            "p95Ms": 0.7896999999975378,
+            "p99Ms": 1904.3244000000013
+          },
+          "query": {
+            "count": 4179,
+            "errors": 0,
+            "retained": 1024,
+            "p50Ms": 1.8821000000025379,
+            "p95Ms": 14.787000000000262,
+            "p99Ms": 56.51840000000084
+          },
+          "commit": {
+            "count": 463,
+            "errors": 0,
+            "retained": 463,
+            "p50Ms": 0.48980000000301516,
+            "p95Ms": 4.661999999998443,
+            "p99Ms": 7.757299999997485
+          },
+          "transaction": {
+            "count": 463,
+            "errors": 0,
+            "retained": 463,
+            "p50Ms": 9.530099999999948,
+            "p95Ms": 128.35850000000028,
+            "p99Ms": 2246.7463000000025
+          },
+          "http": {
+            "count": 116,
+            "errors": 0,
+            "retained": 116,
+            "p50Ms": 25.975099999999657,
+            "p95Ms": 1993.3289000000004,
+            "p99Ms": 2761.1985999999997
+          },
+          "engine": {
+            "count": 1,
+            "errors": 1,
+            "retained": 1,
+            "p50Ms": 7.436699999998382,
+            "p95Ms": 7.436699999998382,
+            "p99Ms": 7.436699999998382
+          }
+        },
+        "exports": {
+          "stores": [],
+          "truncated": false
+        },
+        "pool": {
+          "total": 10,
+          "idle": 10,
+          "waiting": 0,
+          "max": 10
+        },
+        "process": {
+          "memory": {
+            "rss": 470212608,
+            "heapTotal": 317349888,
+            "heapUsed": 204766464,
+            "external": 64243312,
+            "arrayBuffers": 17415233
+          },
+          "cpuMicroseconds": {
+            "user": 13187000,
+            "system": 1937000
+          }
+        },
+        "host": {
+          "logicalCpus": 8,
+          "totalMemoryBytes": 17033641984,
+          "freeMemoryBytes": 2388951040
+        },
+        "disk": {
+          "scope": "application-working-directory",
+          "availableBytes": 76510781440,
+          "totalBytes": 298652266496
+        },
+        "interpretation": "Nearest-rank percentiles of last 1024 samples per metric, lifetime counts/errors. Not a capacity or freshness target assessment."
+      }
+    },
+    {
+      "condition": "receiver-outage",
+      "at": "during-fault",
+      "status": {
+        "observedAt": "2026-09-26T03:06:25.499Z",
+        "liveness": "alive",
+        "database": {
+          "state": "ready",
+          "version": "18.4",
+          "active": 1,
+          "blocked": 0,
+          "deadlocks": 0,
+          "bytes": 15382207
+        },
+        "workers": [
+          {
+            "worker": "planning",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:20.285Z",
+            "ageMs": 5229.715,
+            "elapsedMs": 54.23999999999796,
+            "worked": true
+          },
+          {
+            "worker": "outbox",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:25.424Z",
+            "ageMs": 90.669,
+            "elapsedMs": 17.118799999996554,
+            "worked": true
+          },
+          {
+            "worker": "provisioning",
+            "state": "unknown",
+            "observedAt": null,
+            "ageMs": null,
+            "elapsedMs": null,
+            "worked": null
+          }
+        ],
+        "planning": {
+          "pending": 5,
+          "running": 0,
+          "failed": 0,
+          "blocked": 0,
+          "expired_leases": 0,
+          "oldest_ms": 2656.023,
+          "engine_errors": 2
+        },
+        "sender": {
+          "pending": 0,
+          "sending": 1,
+          "failed": 9,
+          "received": 75,
+          "expired_leases": 0,
+          "oldest_ms": 2652.617
+        },
+        "projection": {
+          "streams": 20,
+          "unknown": 20,
+          "unapplied_or_unreported": 85,
+          "oldest_report_ms": null
+        },
+        "engine": {
+          "availability": "not-probed",
+          "persistedJobErrors": 2
+        },
+        "backup": {
+          "readiness": "unverified",
+          "lastVerifiedRestoreAt": null
+        }
+      }
+    },
+    {
+      "condition": "background",
+      "at": "during-fault",
+      "status": {
+        "observedAt": "2026-09-26T03:06:32.107Z",
+        "liveness": "alive",
+        "database": {
+          "state": "ready",
+          "version": "18.4",
+          "active": 1,
+          "blocked": 0,
+          "deadlocks": 0,
+          "bytes": 15578815
+        },
+        "workers": [
+          {
+            "worker": "planning",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:26.030Z",
+            "ageMs": 6081.5,
+            "elapsedMs": 41.055200000002515,
+            "worked": true
+          },
+          {
+            "worker": "outbox",
+            "state": "recent-loop",
+            "observedAt": "2026-09-26T03:06:32.060Z",
+            "ageMs": 51.945,
+            "elapsedMs": 3.0192000000024564,
+            "worked": true
+          },
+          {
+            "worker": "provisioning",
+            "state": "unknown",
+            "observedAt": null,
+            "ageMs": null,
+            "elapsedMs": null,
+            "worked": null
+          }
+        ],
+        "planning": {
+          "pending": 5,
+          "running": 0,
+          "failed": 0,
+          "blocked": 0,
+          "expired_leases": 0,
+          "oldest_ms": 2641.458,
+          "engine_errors": 3
+        },
+        "sender": {
+          "pending": 0,
+          "sending": 0,
+          "failed": 0,
+          "received": 95,
+          "expired_leases": 0,
+          "oldest_ms": 0
+        },
+        "projection": {
+          "streams": 20,
+          "unknown": 20,
+          "unapplied_or_unreported": 95,
+          "oldest_report_ms": null
+        },
+        "engine": {
+          "availability": "not-probed",
+          "persistedJobErrors": 3
+        },
+        "backup": {
+          "readiness": "unverified",
+          "lastVerifiedRestoreAt": null
+        }
+      }
+    }
+  ],
+  "trace": {
+    "action": {
+      "action_id": "daed4e98-fb9a-4bad-92be-1ed7d033d9ac",
+      "operation_id": "current.selectHeading",
+      "business_status": "accepted",
+      "received_at": "2026-09-26T03:06:22.770Z",
+      "accepted_at": "2026-09-26T03:06:22.872Z"
+    },
+    "events": [
+      {
+        "event_id": "a3bb9e8d-c50a-47a4-8dd3-3792e2d7bca9",
+        "aggregate_type": "task",
+        "aggregate_id": "c6fcd66e-aad6-5584-a729-7ed462a01287",
+        "recipient_id": "d745372a-3f01-4143-8b8d-4d4783a73c1d",
+        "recipient_sequence": "4",
+        "status": "received",
+        "attempts": 4,
+        "next_attempt_at": "2026-09-26T03:06:33.564Z",
+        "lease_until": null,
+        "received_at": "2026-09-26T03:06:28.678Z",
+        "reported_at": "2026-09-26T03:06:34.765Z",
+        "applied_through": "6",
+        "receiver_pending": "0"
+      },
+      {
+        "event_id": "bdca2614-2f57-4d98-9aca-06e1faa9f065",
+        "aggregate_type": "task",
+        "aggregate_id": "40051091-ff55-5448-aa78-71caa895690d",
+        "recipient_id": "d745372a-3f01-4143-8b8d-4d4783a73c1d",
+        "recipient_sequence": "5",
+        "status": "received",
+        "attempts": 4,
+        "next_attempt_at": "2026-09-26T03:06:33.870Z",
+        "lease_until": null,
+        "received_at": "2026-09-26T03:06:27.882Z",
+        "reported_at": "2026-09-26T03:06:34.704Z",
+        "applied_through": "7",
+        "receiver_pending": "0"
+      }
+    ],
+    "truncated": false,
+    "interpretation": "Receiver application is last reported evidence; sender received is only durable inbox acknowledgement."
+  },
+  "lastActionId": "777f60bb-7f7f-4eed-8a3e-c17b0ebc65d4",
+  "finalStatus": {
+    "observedAt": "2026-09-26T03:06:48.223Z",
+    "liveness": "alive",
+    "database": {
+      "state": "ready",
+      "version": "18.4",
+      "active": 1,
+      "blocked": 0,
+      "deadlocks": 0,
+      "bytes": 15808191
+    },
+    "workers": [
+      {
+        "worker": "planning",
+        "state": "recent-loop",
+        "observedAt": "2026-09-26T03:06:34.223Z",
+        "ageMs": 14004.551,
+        "elapsedMs": 31.342600000003586,
+        "worked": true
+      },
+      {
+        "worker": "outbox",
+        "state": "recent-loop",
+        "observedAt": "2026-09-26T03:06:48.205Z",
+        "ageMs": 22.349,
+        "elapsedMs": 3.77900000000227,
+        "worked": true
+      },
+      {
+        "worker": "provisioning",
+        "state": "unknown",
+        "observedAt": null,
+        "ageMs": null,
+        "elapsedMs": null,
+        "worked": null
+      }
+    ],
+    "planning": {
+      "pending": 5,
+      "running": 0,
+      "failed": 0,
+      "blocked": 0,
+      "expired_leases": 0,
+      "oldest_ms": 14060.59,
+      "engine_errors": 5
+    },
+    "sender": {
+      "pending": 0,
+      "sending": 0,
+      "failed": 0,
+      "received": 105,
+      "expired_leases": 0,
+      "oldest_ms": 0
+    },
+    "projection": {
+      "streams": 20,
+      "unknown": 0,
+      "unapplied_or_unreported": 0,
+      "oldest_report_ms": 13551.693
+    },
+    "engine": {
+      "availability": "not-probed",
+      "persistedJobErrors": 5
+    },
+    "backup": {
+      "readiness": "unverified",
+      "lastVerifiedRestoreAt": null
+    }
+  },
+  "limits": [
+    "Development Vite; cold loading excluded and recorded separately.",
+    "Two observers means two active single-driver views; ERP measures every driver.",
+    "Render endpoint is matching React DOM plus two animation frames, a paint opportunity, not physical display latency.",
+    "Serial waves wait for all measured paths; workload is bounded closed-loop, not an open-loop arrival capacity claim.",
+    "No target-host, live Engine version/dataset, phone, backup restore or universal capacity claim."
+  ]
+}

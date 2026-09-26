@@ -142,7 +142,11 @@
     "test:erp:report-export": "node --import tsx tests/erp-conformance/report-export.ts",
     "test:browser:reporting": "npm run build:foundation && playwright test -c playwright.reporting.config.ts",
     "reporting:demo": "npm run test:browser:reporting",
-    "test:erp:reporting": "node --import tsx tests/erp-conformance/reporting.ts"
+    "test:erp:reporting": "node --import tsx tests/erp-conformance/reporting.ts",
+    "diagnostics": "node --env-file-if-exists=.env.database.local --env-file-if-exists=.env --import tsx scripts/diagnostics.ts",
+    "performance:load": "node --env-file-if-exists=.env.database.local --import tsx scripts/performance-load.ts",
+    "test:diagnostics": "node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs run apps/api/test/integration/diagnostics.test.ts apps/api/test/fast/performance-accounting.test.ts --maxWorkers=1 --testTimeout=30000",
+    "test:erp:diagnostics": "node --import tsx tests/erp-conformance/diagnostics.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

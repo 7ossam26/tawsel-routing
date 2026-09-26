@@ -1,5 +1,7 @@
 # Tawsel — دليل مراحل التنفيذ، الحزمة الحالية
 
+Phase 38 is implemented and measured locally (26 September 2026): [ordered evidence](../phase-38-evidence.md), [owner runbook](../diagnostics.md), [actual baseline/ramp limits](../verification/performance.md). Higher-load ERP p95 misses its target; no universal capacity or target-host claim. Phase 39 remains the next unexecuted phase.
+
 P37 update — 26 September 2026: [authorized snapshot-equivalent Excel export](../reporting.md#authorized-excel-export) now creates a real formula-safe XLSX, bounds/deduplicates/expires private artifacts, and reauthorizes the original identity and visibility scope at status/download. [Ordered database/browser evidence and limits](../phase-37-evidence.md). Phase 38 may rely on the [exact verified handoff](../reporting.md#exact-phase-38-handoff); diagnostics/capacity work was not executed. Earlier updates retain historical scope.
 
 P36 update — 25 September 2026: [authorized workday reporting and forecast comparison](../reporting.md) now provide scoped accepted counts, effective collection/piece state, captured baseline/revised workload and honest physical-time availability. [Ordered evidence and local-service limits](../phase-36-evidence.md). Phase 37 may rely on the [exact snapshot/query handoff](../reporting.md#exact-phase-37-handoff); export was not executed. Earlier updates retain historical scope.

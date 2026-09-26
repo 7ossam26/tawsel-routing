@@ -47,3 +47,7 @@ Tests/demo create and remove their own marked isolated PostgreSQL databases; no 
 ## Exact Phase 25 handoff
 
 Phase 25 may rely on migration **0023**, `monitoring/{routes,service,queries,models}.ts`, canonical schemas/examples/operations, the public MonitoringClient, real snapshot/isolation tests and the loopback demonstration. It may also use the existing immutable source-specific outbox intents and P23 corrected outcomes. It must add its own real sender persistence/transport tests. `integrationDelivery:'unavailable'` must not be relabelled delivered/applied without that evidence. P32 owns one-in-flight polling, stale display, scope-aware nonregression and reconnect full resync; P38 owns measured freshness/load evidence. This phase supplies timing support, not a freshness SLO result.
+
+## Phase 38 measured follow-through
+
+The [owner runbook](diagnostics.md) and [performance evidence](verification/performance.md) now distinguish actual COMMIT intervals, matching rendered views, receiver application, stale reports, successful idle polling, suspended browser and receiver recovery. Raw failed samples and insufficient-sample results are retained. Phase 32's single timing observation remains historical; it is not merged into new percentiles.

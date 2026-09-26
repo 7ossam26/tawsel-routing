@@ -262,8 +262,9 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `diagnostics.getHealth` | http-read | designed | [P38](phases/38-diagnostics-freshness-capacity.md) | diagnostics.read | Separate readiness/database/worker/Engine/integration health; scoped operational evidence. |
-| `diagnostics.getCapacityAndFreshness` | http-read | designed | [P38](phases/38-diagnostics-freshness-capacity.md) | diagnostics.read | Measured latency/lag/load/queue/lease/resource view with stated conditions. |
+| `diagnostics.getHealth` | http-read | verified-local | [P38](phases/38-diagnostics-freshness-capacity.md) | internal | Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred. |
+| `diagnostics.getCapacityAndFreshness` | http-read | verified-local | [P38](phases/38-diagnostics-freshness-capacity.md) | internal | Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness. |
+| `diagnostics.getActionTrace` | http-read | verified-local | [P38](phases/38-diagnostics-freshness-capacity.md) | internal | Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads. |
 
 ### local-ui
 
