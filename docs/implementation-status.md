@@ -1,5 +1,15 @@
 # Tawsel implementation status
 
+## Phase 37 — 26 September 2026
+
+Implemented authorized snapshot-equivalent Excel export with real XLSX generation, Arabic RTL sheets, explicit filters/timezone/units, exact minor-unit text and literal formula-looking user content. Creation atomically requires report/export capability and freezes the existing authorized report object; status/download reauthorize the exact identity, report kind and visibility scope. The private store deduplicates requests, limits count and bytes, expires artifacts and removes expired bytes. The selected report UI now shows genuine create/ready/download/failure/expired states.
+
+Ordered checkpoints passed **A: authorization/snapshot**, **B: 3/3 actual PostgreSQL/workbook integration tests**, **C: 1/1 complete actual Chromium download scenario**. The browser downloads and reparses the exact XLSX, verifies `=1+1` remains a string, then proves post-creation export-capability revocation returns 403. The authenticated browser principal is a labelled fixture, not Keycloak or a physical device. All **14/14 source report tests**, public ERP conformance, lint, contract lint/check and full workspace/script typecheck passed. [Exact commands, repairs, artifact bounds and evidence limits](phase-37-evidence.md).
+
+Updated the canonical schema and three verified-local operations, generated types/reference/coverage, public client, ERP planning/mapping/quickstart and reporting handoff. Inventory is **30 schemas / 267 valid / 166 invalid examples / 186 operations**. ExcelJS **4.4.0** is pinned. Final build verification selected supported Node **24.19.0** and npm **11.6.2**; the host default Node/npm setup was unsuitable and is recorded in the evidence. Audit passes the configured high-severity threshold but reports two moderate transitive `uuid` findings under ExcelJS; the generator does not use the affected UUID modes or conditional formatting.
+
+Reproduce with `npm run test:report-export`, `npm run test:browser:report-export`, then `npm run test:erp:report-export -- .local/phase-37-browser-evidence.json`. [Definitions and exact Phase 38 handoff](reporting.md#exact-phase-38-handoff) preserve the one-query snapshot and current download authorization. Storage is bounded and process-local, with no durability, multi-instance capacity, physical-device, commercial ERP or deployment claim. Phase 38 was not executed. Original Stitch exports and Engine datasets/mounts remain unchanged.
+
 ## Phase 36 — 25 September 2026
 
 Implemented authorized explicit-workday reports, day discovery and matching round-timing reads; focused Arabic RTL personal/staff summary → timing/history navigation; effective corrections, separate shipment/attempt/branch units, exact currency-separated reported collection and once-per-cycle current piece disposition. First/revised forecasts retain workload identities; delayed receipt cannot replace physical observation. Missing/uncertain clocks, changed scope, branch interruption and unfinished closure restrict comparisons. Snapshot assertion uses this one authorized query; export remains Phase 37.
@@ -318,7 +328,7 @@ Each row records implementation, verification and owner review separately. None 
 | [34 — Ordered replay and durable conflict recovery](phases/34-ordered-replay-conflict-recovery.md) | Not started | Not run | No implementation result yet |
 | [35 — Safe offline account recovery and application updates](phases/35-offline-auth-updates-ux.md) | Not started | Not run | No implementation result yet |
 | [36 — Effective workday reports and forecast comparison](phases/36-workday-timing-reports.md) | Not started | Not run | No implementation result yet |
-| [37 — Equivalent authorized Excel exports](phases/37-authorized-excel-export.md) | Not started | Not run | No implementation result yet |
+| [37 — Equivalent authorized Excel exports](phases/37-authorized-excel-export.md) | Implemented | Verified locally | [Phase 37 evidence](phase-37-evidence.md) |
 | [38 — Owner diagnostics and measured freshness/capacity](phases/38-diagnostics-freshness-capacity.md) | Not started | Not run | No implementation result yet |
 | [39 — Recoverable deployment and migration release procedure](phases/39-deployment-migration-release.md) | Not started | Not run | No implementation result yet |
 | [40 — Backup, isolated restore and recovery proof](phases/40-backup-restore-rehearsal.md) | Not started | Not run | No implementation result yet |

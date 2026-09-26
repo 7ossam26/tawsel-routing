@@ -1278,6 +1278,91 @@ P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membe
 }
 ```
 
+### ReportExportRequest
+
+[Canonical definition](../../contracts/report-export.schema.json#/$defs/Request)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "snapshotId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "filters": {
+      "$ref": "#/$defs/Filters"
+    }
+  },
+  "required": [
+    "snapshotId"
+  ]
+}
+```
+
+### ReportExportStatus
+
+[Canonical definition](../../contracts/report-export.schema.json#/$defs/Status)
+
+```json
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "exportId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "expired"
+      ]
+    },
+    "snapshotId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "createdAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "expiresAt": {
+      "$ref": "./common.schema.json#/$defs/UtcInstant"
+    },
+    "fileName": {
+      "type": "string",
+      "pattern": "^tawsel-workday-[0-9a-f]{8}-[0-9a-f]{8}\\.xlsx$"
+    },
+    "bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4194304
+    },
+    "downloadUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^/api/v1/report-exports/[0-9a-f-]{36}/download\\?kind=(personal|company)$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "exportId",
+    "status",
+    "snapshotId",
+    "createdAt",
+    "expiresAt",
+    "fileName",
+    "bytes",
+    "downloadUrl"
+  ]
+}
+```
+
 ### SyncBatch
 
 [Canonical definition](../../contracts/sync.schema.json#/$defs/Batch)

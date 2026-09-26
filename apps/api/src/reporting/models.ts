@@ -9,8 +9,9 @@ export type Counts=components['schemas']['ReportCounts'];
 export type Outcome=components['schemas']['OutcomeRecord'];
 export type Query={roundId?:string;driverId?:string;branchId?:string;outcome?:NonNullable<Report['filters']['outcome']>;snapshotId?:string};
 export const policy:ResourcePolicy=[{capability:'reports.read',ownership:'assigned-branches'}];
+export const exportPolicy:ResourcePolicy=[{capability:'reports.export',ownership:'assigned-branches'}];
 export class ReportingError extends Error {
- constructor(readonly code:'validation_failed'|'snapshot_changed',readonly statusCode:number,message:string){super(message);}
+ constructor(readonly code:'validation_failed'|'snapshot_changed'|'export_expired'|'export_too_large',readonly statusCode:number,message:string){super(message);}
 }
 const ajv=new Ajv2020({strict:true});
 (addFormats as unknown as (a:Ajv2020)=>void)(ajv);

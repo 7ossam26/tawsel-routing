@@ -50,9 +50,33 @@ The React page is /reports?kind=personal|company, with selected workdays at /rep
 
 ## Exact Phase 37 handoff
 
-- contracts/reporting.schema.json, the three report.* HTTP reads in OpenAPI, canonical examples, generated types/reference and packages/api-client/src/reporting.ts define the boundary.
-- apps/api/src/reporting/service.ts owns authorization, a coherent report and snapshot assertion. queries.ts owns accepted counts/money/current piece disposition; timing.ts owns stored forecast/action provenance. An exporter must consume the returned report, including definitionVersion, normalized filters, displayTimeZone, scopeCounts, uncertainty reasons and authorized timing scope.
-- db/migrations/0027_reporting_provenance.sql preserves new accepted command observations/version assertions atomically. Legacy missing observations remain missing; the migration preserves existing rounds and forecasts.
-- apps/api/test/integration/reporting-query.test.ts, the browser demo and public-response checker provide concrete expected behavior and negative authorization cases. The [evidence record](phase-36-evidence.md) distinguishes real services, controlled providers and unavailable external/device checks.
+The Phase 36 handoff remains the single `Reporting.workday` query, normalized filters, snapshot assertion, timing/uncertainty definitions and authorization predicates described above. Phase 37 consumed that exact object; the completed export lifecycle is below.
 
-There is no persisted export job/file, historical snapshot retrieval, download authorization handler or spreadsheet generation. Phase 37 must implement that lifecycle, freeze this authorized object after a matching snapshot read, and check current access again at download. It must not recompute a parallel report or widen scope from a supplied ID.
+## Authorized Excel export
+
+`POST /api/v1/reports/workdays/{workdayId}/exports?kind=personal|company` accepts the visible `snapshotId` and the same optional round/driver/branch/outcome filters. Creation requires both current `reports.read` and `reports.export` in the same repeatable-read transaction. It calls the single `Reporting.workday` implementation with the snapshot assertion and freezes that returned object; there is no second aggregation query. Generation is synchronous for the bounded workday report, so success returns a `ready` status. An identical unexpired request by the same identity and visibility scope reuses its artifact.
+
+`GET /api/v1/report-exports/{exportId}` returns `ready` or `expired`. `GET /api/v1/report-exports/{exportId}/download` reauthorizes the original authenticated identity, both capabilities, the workday/filters and the exact captured visibility fingerprint before returning bytes. Changed branches/capabilities, another identity or another tenant cannot use a guessed ID. Report drift after creation does not rewrite the frozen file. A new creation with an old visible snapshot returns `409 snapshot_changed`.
+
+Artifacts are private in-process buffers: at most 16 ready files, 4 MiB each, with ten-minute expiry and a bounded ten-minute tombstone for the explicit expired state. Expiry and capacity eviction delete workbook bytes; download then returns `410 export_expired`. A process restart drops the in-memory jobs and clients recreate them from a current report. This is deliberately not persistent object storage or a multi-instance job queue; Phase 38 measures resource/capacity behavior and Phase 39 owns deployment topology.
+
+The real `.xlsx` workbook has Arabic RTL sheets for metadata, summary, exact currency/minor-unit collection, attempts, outcome history, timing and returns. Exact minor-unit values and IDs are stored as literal text; counts/quantities stay numeric. Recipient names and any value beginning with `=`, `+`, `-` or `@` are assigned as string cells, never formulas or hyperlinks. Missing and uncertain observations retain the report's explicit Arabic meaning. The workbook declares `Africa/Cairo`, the normalized filters, definition version and snapshot ID.
+
+The report page exposes one creation action, a real preparing state, ready/expiry information, download progress and actionable errors for changed/expired/denied files. It states that unsent phone actions are excluded. Opening a direct report link now forwards only the four closed report filters; the earlier query handling incorrectly included `kind` as an unknown report filter and was repaired as the small prerequisite defect.
+
+Reproduce with supported Node 24 and local PostgreSQL:
+
+```powershell
+npm run test:report-export
+npm run report-export:demo
+npm run test:erp:report-export -- .local/phase-37-browser-evidence.json
+```
+
+The integration test uses isolated real PostgreSQL and parses generated XLSX bytes. The browser demo uses Chromium, Fastify and isolated PostgreSQL with a labelled authenticated principal fixture; it is not Keycloak, a physical device or a commercial ERP claim. [Ordered evidence and exact limits](phase-37-evidence.md).
+
+## Exact Phase 38 handoff
+
+- `contracts/report-export.schema.json`, the three verified-local export operations in OpenAPI, generated types/reference and `ReportingClient` define the public lifecycle.
+- `apps/api/src/reporting/export.ts` owns formula-free workbook generation, identity/visibility binding, deduplication, limits and expiry. `service.ts` remains the only report aggregation and supplies atomic create authorization plus lightweight current download authorization.
+- `apps/api/test/integration/report-export.test.ts` proves real database scope, snapshot freezing/drift, current revocation, expiry, XLSX parsing and literal formula-looking text. The browser evidence proves connected filtering, creation, download, workbook inspection and post-revocation denial.
+- Phase 38 may instrument generation duration/bytes/count/expiry and exercise load against these bounds. It must not treat the in-memory store as durable/multi-instance storage, loosen reauthorization, add a parallel report query or claim production capacity from the focused Phase 37 fixtures.

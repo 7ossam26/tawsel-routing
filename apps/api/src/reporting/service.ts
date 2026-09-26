@@ -3,7 +3,7 @@ import type {components} from '@tawsel/api-client';
 import {AccessDenied,AccessSession,type AuthenticatedPrincipal} from '../access/service.js';
 import {withTransaction,type Transaction} from '../db/transaction.js';
 import {payloadHash} from '../commands/json.js';
-import {policy,uuid,ReportingError,requireReport,type Query,type Report} from './models.js';
+import {policy,exportPolicy,uuid,ReportingError,requireReport,type Query,type Report} from './models.js';
 import {admissions,attempts,counts,collections,pieces,latestShipments} from './queries.js';
 import {roundTimings} from './timing.js';
 export class Reporting {
@@ -30,9 +30,10 @@ export class Reporting {
    const result={items:days.slice(0,50).map(d=>({workdayId:d.workday_id,driverId:d.driver_id,driverLabel:d.driver_label,openedAt:d.opened_at.toISOString(),endedAt:d.ended_at?.toISOString()??null})),branches,nextBefore:days.length>50?days[49]!.opened_at.toISOString():null};requireReport('DayList',result);return result;
   });
  }
- async workday(principal:AuthenticatedPrincipal,id:string,q:Query={}):Promise<Report>{
+ private async authorizedWorkday(principal:AuthenticatedPrincipal,id:string,q:Query={},forExport=false):Promise<{report:Report;access:components['schemas']['AccessContext']}>{
   uuid(id);for(const value of [q.roundId,q.driverId,q.branchId])if(value)uuid(value);
   return this.scoped(principal,async(tx,a)=>{
+   if(forExport)a.requireCapability(exportPolicy);
    if(q.branchId)a.assertScope({branchId:q.branchId});
    const day=(await tx.query<{workday_id:string;driver_id:string;opened_at:Date;ended_at:Date|null}>(`SELECT * FROM tawsel.workdays WHERE tenant_id=$1 AND workday_id=$2 AND ($3::uuid IS NULL OR driver_id=$3)`,[a.context.tenantId,id,q.driverId??null])).rows[0];
    if(!day)throw new AccessDenied(true);
@@ -48,7 +49,20 @@ export class Reporting {
    // Content identity includes authorization. P37 must consume this exact result;
    // if it changed after the view, an expected snapshot fails instead of drifting.
    const snapshotId=payloadHash({access:a.context,...content});if(q.snapshotId&&q.snapshotId!==snapshotId)throw new ReportingError('snapshot_changed',409,'تغيّر التقرير؛ حدّثه لعرض النتائج المقبولة الأخيرة.');
-   const result={...content,snapshotId,asOf};requireReport('Workday',result);return result;
+   const result={...content,snapshotId,asOf};requireReport('Workday',result);return {report:result,access:a.context};
+  });
+ }
+ async workday(principal:AuthenticatedPrincipal,id:string,q:Query={}):Promise<Report>{return (await this.authorizedWorkday(principal,id,q)).report;}
+ async exportSnapshot(principal:AuthenticatedPrincipal,id:string,q:Query):Promise<{report:Report;access:components['schemas']['AccessContext']}>{
+  return this.authorizedWorkday(principal,id,q,true);
+ }
+ async authorizeExport(principal:AuthenticatedPrincipal,id:string,q:Query):Promise<components['schemas']['AccessContext']>{
+  uuid(id);for(const value of [q.roundId,q.driverId,q.branchId])if(value)uuid(value);
+  return this.scoped(principal,async(tx,a)=>{
+   a.requireCapability(exportPolicy);if(q.branchId)a.assertScope({branchId:q.branchId});
+   const day=(await tx.query(`SELECT workday_id FROM tawsel.workdays WHERE tenant_id=$1 AND workday_id=$2 AND ($3::uuid IS NULL OR driver_id=$3)`,[a.context.tenantId,id,q.driverId??null])).rows[0];
+   if(!day||!(await admissions(tx,a,id,q)).length)throw new AccessDenied(true);
+   return a.context;
   });
  }
  async timing(principal:AuthenticatedPrincipal,id:string,roundId:string,q:Query={}):Promise<components['schemas']['ReportTimingSnapshot']>{

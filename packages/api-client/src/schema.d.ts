@@ -1828,6 +1828,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/report-exports/{exportId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reauthorize and read the current ready or expired export state */
+        get: operations["report.getExportStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/report-exports/{exportId}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reauthorize and download the frozen XLSX artifact before expiry */
+        get: operations["report.downloadExport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/workdays": {
         parameters: {
             query?: never;
@@ -1856,6 +1890,23 @@ export interface paths {
         get: operations["report.getWorkday"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/workdays/{workdayId}/exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a bounded Excel file from the exact authorized report snapshot */
+        post: operations["report.requestExcelExport"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2212,6 +2263,13 @@ export interface components {
         };
         "$defs-Event": {
             change: components["schemas"]["$defs-Record"];
+        };
+        "$defs-Filters": {
+            branchId?: components["schemas"]["Uuid"];
+            driverId?: components["schemas"]["Uuid"];
+            /** @enum {unknown} */
+            outcome?: "full" | "partial" | "refused" | "no-answer" | "unfinished" | "deferred";
+            roundId?: components["schemas"]["Uuid"];
         };
         "$defs-Forecast": {
             branchStops: number;
@@ -4757,6 +4815,21 @@ export interface components {
             evidence: "receiver-reported";
             reportedAt: components["schemas"]["UtcInstant"];
         };
+        "report-export.schema_$defs-Request": {
+            filters?: components["schemas"]["$defs-Filters"];
+            snapshotId: string;
+        };
+        "report-export.schema_$defs-Status": {
+            bytes: number;
+            createdAt: components["schemas"]["UtcInstant"];
+            downloadUrl: string | null;
+            expiresAt: components["schemas"]["UtcInstant"];
+            exportId: components["schemas"]["Uuid"];
+            fileName: string;
+            snapshotId: string;
+            /** @enum {unknown} */
+            status: "ready" | "expired";
+        };
         ReportAttempt: components["schemas"]["reporting.schema_$defs-Attempt"];
         ReportBranchVisit: components["schemas"]["BranchVisit"];
         ReportCollection: components["schemas"]["$defs-Collection"];
@@ -4782,6 +4855,8 @@ export interface components {
         };
         ReportCounts: components["schemas"]["Counts"];
         ReportDayList: components["schemas"]["DayList"];
+        ReportExportRequest: components["schemas"]["report-export.schema_$defs-Request"];
+        ReportExportStatus: components["schemas"]["report-export.schema_$defs-Status"];
         ReportFilters: components["schemas"]["Filters"];
         ReportForecast: components["schemas"]["$defs-Forecast"];
         ReportForecastStop: components["schemas"]["ForecastStop"];
@@ -14052,6 +14127,104 @@ export interface operations {
             };
         };
     };
+    "report.getExportStatus": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                exportId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current scoped export status */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["report-export.schema_$defs-Status"];
+                };
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Current export capability or original visibility denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Export unavailable to this authenticated identity */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "report.downloadExport": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                exportId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Formula-free real Excel workbook frozen from the requested snapshot */
+            200: {
+                headers: {
+                    "Content-Disposition"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                };
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Current export capability or original visibility denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Export unavailable to this authenticated identity */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Artifact expired and its bytes were removed */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     "report.listWorkdays": {
         parameters: {
             query: {
@@ -14169,6 +14342,76 @@ export interface operations {
             };
             /** @description Requested snapshot changed; refresh before exporting */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "report.requestExcelExport": {
+        parameters: {
+            query: {
+                kind: "personal" | "company";
+            };
+            header?: never;
+            path: {
+                workdayId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["report-export.schema_$defs-Request"];
+            };
+        };
+        responses: {
+            /** @description XLSX is ready; an identical unexpired request reuses its artifact */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["report-export.schema_$defs-Status"];
+                };
+            };
+            /** @description Invalid filter or snapshot identity */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session required */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Report read or export capability denied */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Workday unavailable in current scope */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Visible report snapshot changed; refresh before exporting */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Generated workbook exceeded the bounded artifact size */
+            413: {
                 headers: {
                     [name: string]: unknown;
                 };

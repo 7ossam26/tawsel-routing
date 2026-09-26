@@ -1051,28 +1051,34 @@
       "id": "report.requestExcelExport",
       "family": "reporting",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Create authorized export bound to same filter/snapshot/timezone as report."
+      "description": "Create authorized export bound to same filter/snapshot/timezone as report.",
+      "method": "POST",
+      "path": "/api/v1/reports/workdays/{workdayId}/exports"
     },
     {
       "id": "report.getExportStatus",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Read pending/ready/failed/expired export status."
+      "description": "Reauthorize and read ready/expired synchronous export status.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}"
     },
     {
       "id": "report.downloadExport",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Reauthorize and download text-safe Excel artifact before expiry."
+      "description": "Reauthorize and download text-safe Excel artifact before expiry.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}/download"
     },
     {
       "id": "diagnostics.getHealth",

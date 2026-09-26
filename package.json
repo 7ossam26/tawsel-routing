@@ -136,6 +136,10 @@
     "recovery:demo": "npm run test:browser:recovery",
     "test:erp:recovery": "node --import tsx tests/erp-conformance/offline-recovery.ts",
     "test:reporting": "npm run test:integration -- apps/api/test/integration/reporting-query.test.ts --maxWorkers=1 --testTimeout=30000",
+    "test:report-export": "npm run test:integration -- apps/api/test/integration/report-export.test.ts --maxWorkers=1 --testTimeout=30000",
+    "test:browser:report-export": "npm run build:foundation && playwright test -c playwright.report-export.config.ts",
+    "report-export:demo": "npm run test:browser:report-export",
+    "test:erp:report-export": "node --import tsx tests/erp-conformance/report-export.ts",
     "test:browser:reporting": "npm run build:foundation && playwright test -c playwright.reporting.config.ts",
     "reporting:demo": "npm run test:browser:reporting",
     "test:erp:reporting": "node --import tsx tests/erp-conformance/reporting.ts"

@@ -565,3 +565,18 @@ Retries retain event and business identities. They must never transform a reject
 | acceptedOnly / pendingLocalActions | Accepted server state only; unsent phone evidence remains unknown to server totals. |
 
 The APIs require a current human session with reports.read. ERP command and event authority is unchanged. [Definitions](../reporting.md), [public-response checker](../../tests/erp-conformance/reporting.ts).
+
+## Phase 37 export fields — 26 September 2026
+
+| Public field/state | Meaning and consumer rule |
+| --- | --- |
+| snapshotId + filters at creation | Must match the currently authorized report exactly; `snapshot_changed` requires a report refresh. |
+| exportId | Opaque job identity only. It grants no authority and is bound to the creating authenticated identity and visibility fingerprint. |
+| status: ready | Synchronous generation completed and bounded XLSX bytes remain available. Identical unexpired creation requests reuse the artifact. |
+| status: expired / downloadUrl: null | Workbook bytes were deleted by time/capacity cleanup; create again from a current report. |
+| createdAt / expiresAt / bytes | UTC lifecycle and actual bounded artifact size; no durability or multi-instance claim. |
+| fileName / downloadUrl | Safe server-created name and same-origin authenticated route. Never expose a filesystem/object-store path. |
+| workbook minor-unit columns | Exact text digits paired with explicit currency/exponent; do not coerce long values through floating-point arithmetic. |
+| workbook missing / uncertain | Same report semantics, not empty zero values or inferred arrival/completion. |
+
+Status and download require current `reports.read` plus `reports.export` and unchanged visibility. The workbook is a report representation, not a finance/settlement worksheet or ERP writeback. [Lifecycle](../reporting.md#authorized-excel-export), [portable evidence check](../../tests/erp-conformance/report-export.ts).

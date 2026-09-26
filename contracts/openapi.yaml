@@ -6343,6 +6343,99 @@ paths:
           description: Workday or round unavailable in current scope
         "409":
           description: Requested snapshot changed; refresh before exporting
+  /api/v1/reports/workdays/{workdayId}/exports:
+    post:
+      operationId: report.requestExcelExport
+      summary: Create a bounded Excel file from the exact authorized report snapshot
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: workdayId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportExportRequest"
+      responses:
+        "201":
+          description: XLSX is ready; an identical unexpired request reuses its artifact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportExportStatus"
+        "400": {description: Invalid filter or snapshot identity}
+        "401": {description: Session required}
+        "403": {description: Report read or export capability denied}
+        "404": {description: Workday unavailable in current scope}
+        "409": {description: Visible report snapshot changed; refresh before exporting}
+        "413": {description: Generated workbook exceeded the bounded artifact size}
+  /api/v1/report-exports/{exportId}:
+    get:
+      operationId: report.getExportStatus
+      summary: Reauthorize and read the current ready or expired export state
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: exportId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      responses:
+        "200":
+          description: Current scoped export status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportExportStatus"
+        "401": {description: Session required}
+        "403": {description: Current export capability or original visibility denied}
+        "404": {description: Export unavailable to this authenticated identity}
+  /api/v1/report-exports/{exportId}/download:
+    get:
+      operationId: report.downloadExport
+      summary: Reauthorize and download the frozen XLSX artifact before expiry
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: exportId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      responses:
+        "200":
+          description: Formula-free real Excel workbook frozen from the requested snapshot
+          headers:
+            Content-Disposition:
+              schema: {"type":"string"}
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema: {"type":"string","format":"binary"}
+        "401": {description: Session required}
+        "403": {description: Current export capability or original visibility denied}
+        "404": {description: Export unavailable to this authenticated identity}
+        "410": {description: Artifact expired and its bytes were removed}
 components:
   schemas:
     ReportFilters:
@@ -6379,6 +6472,10 @@ components:
       $ref: ./reporting.schema.json#/$defs/DayList
     ReportTimingSnapshot:
       $ref: ./reporting.schema.json#/$defs/TimingSnapshot
+    ReportExportRequest:
+      $ref: ./report-export.schema.json#/$defs/Request
+    ReportExportStatus:
+      $ref: ./report-export.schema.json#/$defs/Status
     SyncBatch:
       $ref: ./sync.schema.json#/$defs/Batch
     SyncEntry:
