@@ -1,0 +1,7 @@
+{
+  "appOrigin": "https://REPLACE_APP_DOMAIN",
+  "companySecret": "REPLACE_WITH_64_LOWERCASE_HEX",
+  "personalSecret": "REPLACE_WITH_DIFFERENT_64_LOWERCASE_HEX",
+  "workerSecret": "REPLACE_WITH_DIFFERENT_64_LOWERCASE_HEX",
+  "smtp": { "host": "REPLACE", "port": "587", "from": "REPLACE", "user": "REPLACE", "password": "REPLACE", "starttls": "true", "auth": "true" }
+}

@@ -1,0 +1,132 @@
+# Application only. NEVER combine with the root Engine compose file.
+name: ${RELEASE_PROJECT:?unique application project required}
+x-runtime: &runtime
+  image: ${APP_IMAGE:?immutable application image required}
+  init: true
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  secrets:
+    - source: runtime
+      target: runtime.env
+    - source: ca
+      target: ca.pem
+    - source: outbox
+      target: outbox.json
+  environment:
+    NODE_EXTRA_CA_CERTS: /run/secrets/ca.pem
+  networks: [application]
+  stop_grace_period: 45s
+  cpus: ${RUNTIME_CPUS:?inventory-based per-runtime CPU limit required}
+  mem_limit: ${RUNTIME_MEMORY:?inventory-based per-runtime memory limit required}
+services:
+  migrate:
+    <<: *runtime
+    profiles: [release]
+    restart: "no"
+    command: [node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/db-migrate.ts]
+  assets:
+    <<: *runtime
+    profiles: [release]
+    restart: "no"
+    secrets: []
+    environment: {}
+    command: [node, --import, tsx, scripts/deployment-assets.ts, apps/web/dist, /retained]
+    volumes: [retained:/retained]
+  api:
+    <<: *runtime
+    environment:
+      NODE_EXTRA_CA_CERTS: /run/secrets/ca.pem
+      TAWSEL_API_HOST: 0.0.0.0
+      TAWSEL_API_PORT: "3001"
+      TAWSEL_MAP_ASSET_DIR: /maps
+    networks: [application, engine]
+    volumes:
+      - type: bind
+        source: ${MAP_ASSET_DIR:?existing verified map assets required}
+        target: /maps
+        read_only: true
+        bind: {create_host_path: false}
+    healthcheck:
+      test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, api]
+      interval: 30s
+      timeout: 15s
+      start_period: 30s
+  planning:
+    <<: *runtime
+    command: [node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/planning-worker.ts]
+    networks: [application, engine]
+    healthcheck:
+      test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, planning]
+      interval: 30s
+      timeout: 15s
+      start_period: 60s
+  outbox:
+    <<: *runtime
+    command: [node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/outbox-worker.ts]
+    healthcheck:
+      test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, outbox]
+      interval: 30s
+      timeout: 15s
+      start_period: 60s
+  provisioning:
+    <<: *runtime
+    command: [node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/provisioning-worker.ts]
+    healthcheck:
+      test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, provisioning]
+      interval: 30s
+      timeout: 15s
+      start_period: 60s
+  web:
+    image: ${WEB_IMAGE:?immutable web image required}
+    cpus: ${WEB_CPUS:?inventory-based web CPU limit required}
+    mem_limit: ${WEB_MEMORY:?inventory-based web memory limit required}
+    restart: unless-stopped
+    depends_on:
+      api: {condition: service_healthy}
+    networks: [application, ingress]
+    volumes:
+      - retained:/retained:ro
+      - type: bind
+        source: ${MAP_ASSET_DIR:?existing verified map assets required}
+        target: /maps
+        read_only: true
+        bind: {create_host_path: false}
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/health]
+      interval: 30s
+      timeout: 5s
+  issuer:
+    image: ${ISSUER_IMAGE:?immutable custom issuer image required}
+    cpus: ${ISSUER_CPUS:?inventory-based issuer CPU limit required}
+    mem_limit: ${ISSUER_MEMORY:?inventory-based issuer memory limit required}
+    restart: unless-stopped
+    command: [start, --optimized]
+    env_file: ${ISSUER_ENV_FILE:?external issuer environment required}
+    secrets:
+      - source: ca
+        target: ca.pem
+    networks: [application, ingress]
+    healthcheck:
+      test: [CMD, bash, -ec, "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'GET /health/ready HTTP/1.0\r\n\r\n' >&3; grep -q '200 OK' <&3"]
+      interval: 30s
+      timeout: 5s
+      start_period: 90s
+networks:
+  application: {}
+  ingress:
+    external: true
+    name: ${INGRESS_NETWORK:?inventoried Dokploy network required}
+  engine:
+    external: true
+    name: ${ENGINE_NETWORK:?inventoried private Engine network required}
+volumes:
+  retained:
+    external: true
+    name: ${RETAINED_ASSETS_VOLUME:?pre-created node-owned asset volume required}
+secrets:
+  runtime: {file: '${RUNTIME_ENV_FILE:?external runtime environment required}'}
+  ca: {file: '${DATABASE_CA_FILE:?database CA PEM required}'}
+  outbox: {file: '${OUTBOX_CONFIG_FILE:?external outbox configuration required}'}

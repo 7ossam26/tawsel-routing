@@ -40,3 +40,17 @@ export async function migrateReceiver(pool:Pool,c:Pick<ReceiverConfig,'tenantId'
  });
 }
 export async function lockReceiver(tx:PoolClient){await tx.query('SELECT singleton FROM mock_erp.scope FOR UPDATE');}
+
+/** Managed releases use one explicit runner; serving/worker startup only reads. */
+export async function assertReceiverMigrationsCurrent(pool:Pool,c:Pick<ReceiverConfig,'tenantId'|'integrationId'>){
+ await assertRole(pool);
+ const directory=new URL('../migrations/',import.meta.url),names=(await readdir(directory)).filter(n=>n.endsWith('.sql')).sort();
+ const applied=(await pool.query<{name:string;hash:string}>('SELECT * FROM mock_erp.migrations ORDER BY name')).rows;
+ if(applied.length!==names.length)throw new Error('Receiver migrations are not current');
+ for(const [i,name] of names.entries()){
+  const sql=(await readFile(new URL(name,directory),'utf8')).replaceAll('\r\n','\n');
+  if(applied[i]?.name!==name||applied[i]?.hash!==createHash('sha256').update(sql).digest('hex'))throw new Error('Receiver migration changed');
+ }
+ const scope=(await pool.query('SELECT tenant_id,integration_id FROM mock_erp.scope WHERE singleton=true')).rows[0];
+ if(scope?.tenant_id!==c.tenantId||scope?.integration_id!==c.integrationId)throw new Error('Receiver database belongs to another recipient');
+}

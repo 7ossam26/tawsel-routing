@@ -6,7 +6,7 @@ import {createTestDatabase} from '../../../api/test/support/database.js';
 import {senderFixture} from '../../../api/test/support/outbox-fixture.js';
 import {envelope,type Intent} from '../../../api/src/outbox/envelope.js';
 import {signWebhook} from '@tawsel/api-client/webhook-signature';
-import {migrateReceiver} from '../../src/database.js';
+import {migrateReceiver,assertReceiverMigrationsCurrent} from '../../src/database.js';
 import {receiverApp} from '../../src/app.js';
 import {receiverProcess} from '../support/process.js';
 import type {ReceiverConfig} from '../../src/config.js';
@@ -21,6 +21,18 @@ async function fixture(){
  const event=envelope(row);await migrateReceiver(db.pool,c);
  return {sender,f,s,db,c,event,async close(){await f.close();await sender.close();await db.close();}};
 }
+test('managed release readiness never migrates implicitly, checks history and scope',async()=>{
+ const db=await createReceiverDatabase(),scope={tenantId:randomUUID(),integrationId:randomUUID()};
+ try{
+  await expect(assertReceiverMigrationsCurrent(db.pool,scope)).rejects.toThrow();
+  expect((await db.pool.query("SELECT to_regnamespace('mock_erp') AS schema")).rows[0].schema).toBeNull();
+  await migrateReceiver(db.pool,scope);
+  await expect(assertReceiverMigrationsCurrent(db.pool,scope)).resolves.toBeUndefined();
+  await expect(assertReceiverMigrationsCurrent(db.pool,{...scope,tenantId:randomUUID()})).rejects.toThrow('another recipient');
+  await db.pool.query("UPDATE mock_erp.migrations SET hash='changed' WHERE name=(SELECT min(name) FROM mock_erp.migrations)");
+  await expect(assertReceiverMigrationsCurrent(db.pool,scope)).rejects.toThrow('changed');
+ }finally{await db.close();}
+});
 function deliver(url:string,c:ReceiverConfig,event:unknown,bytes=Buffer.from(JSON.stringify(event))){return fetch(`${url}/api/v1/consumer/events`,{method:'POST',headers:{'content-type':'application/json',...signWebhook(bytes,c,c.keys[0]!,String(Date.now()))},body:bytes,signal:AbortSignal.timeout(5000)});}
 test('A: real HTTP durable receipt, concurrent duplicates, exact-byte mismatch and recipient/schema/identity validation',async()=>{
  const f=await fixture(),app=receiverApp(f.db.pool,f.c),url=await app.listen({host:'127.0.0.1',port:0});

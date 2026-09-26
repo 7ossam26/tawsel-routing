@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/ui-dist
+.git
+.local
+.env*
+data
+stitch-export
+output
+coverage
+**/*.log
+**/*.tsbuildinfo

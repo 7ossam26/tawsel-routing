@@ -1,0 +1,44 @@
+# OPTIONAL Linux-only private staging mock. Never attach a Dokploy domain.
+# Host networking is intentional ONLY here: native mock validates loopback bind,
+# and isolated local Tawsel fixtures deliver to this loopback callback.
+name: ${MOCK_PROJECT:?unique private staging project required}
+x-mock: &mock
+  image: ${APP_IMAGE:?immutable application image required}
+  init: true
+  network_mode: host
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  environment:
+    NODE_ENV: development
+    MOCK_ERP_MANAGED_MIGRATIONS: "true"
+    MOCK_ERP_CONFIG: /run/secrets/mock.json
+  secrets:
+    - source: mock-env
+      target: mock.env
+    - source: mock-config
+      target: mock.json
+services:
+  mock-migrate:
+    <<: *mock
+    profiles: [release]
+    restart: "no"
+    command: [node, --env-file=/run/secrets/mock.env, --import, tsx, scripts/deployment-mock.ts, migrate]
+  mock:
+    <<: *mock
+    command: [node, --env-file=/run/secrets/mock.env, --import, tsx, scripts/deployment-mock.ts]
+    healthcheck:
+      test: [CMD, node, --env-file=/run/secrets/mock.env, --import, tsx, scripts/deployment-mock-health.ts]
+      interval: 30s
+      timeout: 10s
+  mock-projection:
+    <<: *mock
+    command: [node, --env-file=/run/secrets/mock.env, --import, tsx, scripts/deployment-mock.ts, worker]
+  mock-source:
+    <<: *mock
+    command: [node, --env-file=/run/secrets/mock.env, --import, tsx, scripts/deployment-mock.ts, source-worker]
+secrets:
+  mock-env: {file: '${MOCK_ENV_FILE:?external mock env required}'}
+  mock-config: {file: '${MOCK_CONFIG_FILE:?external mock config required}'}

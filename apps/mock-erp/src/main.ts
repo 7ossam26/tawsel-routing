@@ -1,5 +1,5 @@
 import {readConfig} from './config.js';
-import {receiverPool,migrateReceiver} from './database.js';
+import {receiverPool,migrateReceiver,assertReceiverMigrationsCurrent} from './database.js';
 import {receiverApp} from './app.js';
 import {runReceiverWorkerOnce,reconcileStream,reportCheckpoint} from './recovery.js';
 import {conforms} from './inbox.js';
@@ -7,7 +7,8 @@ import type {components} from '@tawsel/api-client';
 import {readFile} from 'node:fs/promises';
 import {saveSource,sourceStatus,runSourceOnce,type SourceSubmission} from './source.js';
 const config=readConfig(),pool=receiverPool();
-await migrateReceiver(pool,config);
+if(process.env.MOCK_ERP_MANAGED_MIGRATIONS==='true'&&process.argv[2]!=='migrate')await assertReceiverMigrationsCurrent(pool,config);
+else await migrateReceiver(pool,config);
 if(process.argv[2]==='migrate'){await pool.end();console.log('External mock ERP migrations current');}
 else if(process.argv[2]==='source-submit'){
  const file=process.argv[3];if(!file)throw new Error('Usage: main.js source-submit <submission.json>');
