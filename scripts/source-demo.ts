@@ -1,7 +1,7 @@
 /** Operator orchestration only. The installed consumer/checkers below have their
  * own process, role and allowlisted environment, with no Tawsel internals. */
 import {readFile,writeFile,mkdir,mkdtemp,cp,unlink} from 'node:fs/promises';
-import {randomBytes,randomUUID} from 'node:crypto';
+import {randomBytes,randomUUID,createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join,resolve} from 'node:path';
 import {spawn,execFile} from 'node:child_process';
@@ -29,9 +29,15 @@ const bootstrap=buildApp(createDatabasePool(db.config),undefined,{issuer,operato
 const source=await bindSource(bootstrap,[subject]),grant=structuredClone(source.bootstrapCommand);grant.actionId=randomUUID();grant.payload.sourceRevision=2;grant.payload.intakeCapabilities=['intake.prepare','assignment.manage'];grant.payload.returnCapabilities=['return.receive','return.dispose'];
 if((await send(bootstrap,operatorToken,grant)).statusCode!==200)throw new Error('Operator grant failed');await bootstrap.close();
 const scope={tenantId:source.tenantId,integrationId:source.integrationId},key={keyId:'p27-standalone',secret:randomBytes(32).toString('hex')};
-const directory=await mkdtemp(join(tmpdir(),'tawsel-p27-consumer-'));await cp('dist/erp-reference',directory,{recursive:true});
+const release=JSON.parse(await readFile('docs/erp/release-manifest.json','utf8')) as {release:{sourceSha256:string};consumerRuntimeSha256:string;artifacts:{path:string;sha256:string;bytes:number;source?:string}[]};
+const startedAt=new Date().toISOString();
+const npmCli=resolve(process.env.npm_execpath??'.local/runtime/node_modules/npm/bin/npm-cli.js');
+const npmVersion=(await promisify(execFile)(process.execPath,[npmCli,'--version'],{windowsHide:true})).stdout.trim();
+const postgresVersion=String((await db.pool.query('SHOW server_version')).rows[0].server_version);
+const directory=await mkdtemp(join(tmpdir(),'tawsel-p42-consumer-'));await cp('dist/erp-handoff/dist/erp-reference',directory,{recursive:true});
+for(const artifact of release.artifacts.filter(a=>a.path.startsWith('dist/erp-reference/'))){const bytes=await readFile(join(directory,artifact.path.slice('dist/erp-reference/'.length)));if(createHash('sha256').update(bytes).digest('hex')!==artifact.sha256)throw new Error('Copied consumer artifact drift');}
 const runtimeEnv:NodeJS.ProcessEnv={};for(const k of ['PATH','Path','SystemRoot','WINDIR','TEMP','TMP','USERPROFILE','APPDATA','LOCALAPPDATA'])if(process.env[k])runtimeEnv[k]=process.env[k];
-const installed=await promisify(execFile)(process.execPath,['C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js','install','--ignore-scripts'],{cwd:directory,env:runtimeEnv,windowsHide:true,maxBuffer:2*1024*1024});await mkdir('.local',{recursive:true});await writeFile('.local/phase-27-standalone-install.log',installed.stdout+installed.stderr);
+const installed=await promisify(execFile)(process.execPath,[npmCli,'ci','--ignore-scripts'],{cwd:directory,env:runtimeEnv,windowsHide:true,maxBuffer:2*1024*1024});await mkdir('.local',{recursive:true});await writeFile('.local/phase-42-standalone-install.log',installed.stdout+installed.stderr);
 const probe=await promisify(execFile)(process.execPath,['--input-type=module','-e',"for(const name of ['@tawsel/api','@tawsel/shared']){try{await import(name);throw new Error('Internal package leaked')}catch(e){if(e.code!=='ERR_MODULE_NOT_FOUND')throw e}}console.log('Internal imports unavailable')"],{cwd:directory,env:runtimeEnv,windowsHide:true});
 const config:ReceiverConfig={...scope,host:'127.0.0.1',port:3012,testLoopback:true,statusToken:randomBytes(32).toString('hex'),keys:[key],tawselBaseUrl:'http://127.0.0.1:3011',tawselAuthorization:`Bearer ${source.token}`};
 const consumerConfig=join(directory,'receiver.json');await writeFile(consumerConfig,JSON.stringify(config));
@@ -75,7 +81,9 @@ try{
  const receiverCheck=join(directory,'receiver-conformance.json');await writeFile(receiverCheck,JSON.stringify({apiUrl:cc.apiUrl,callbackUrl:`${cc.receiverUrl}/api/v1/consumer/events`,statusUrl:`${cc.receiverUrl}/api/v1/consumer/status`,authorization:config.tawselAuthorization,statusAuthorization:`Bearer ${config.statusToken}`,...scope,signingKey:key,aggregates,expected:{deliveredPieces:1,reportedMinor:15000,receivedPieces:1}}));
  const checked=await promisify(execFile)(process.execPath,[join(directory,'conformance/receiver.mjs'),receiverCheck],{cwd:directory,env:runtimeEnv,windowsHide:true,maxBuffer:4*1024*1024}),result=JSON.parse(checked.stdout) as Record<string,unknown>;
  const reports=[];for(const a of aggregates)reports.push(await publicOutbox.applied(a.type,a.id));
- const evidence={directory,probe:probe.stdout.trim(),prepared,pending,resumed,executed,result,apiProcessRestarts:2,receiverProcessRestarts:2,reports};await writeFile('.local/phase-27-standalone-evidence.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify({directory,...result,apiProcessRestarts:2,receiverProcessRestarts:2,stableActionId:pending.actionId},null,2));
+ const evidence={directory,probe:probe.stdout.trim(),prepared,pending,resumed,executed,result,apiProcessRestarts:2,receiverProcessRestarts:2,reports};
+ const proof={status:'passed',startedAt,completedAt:new Date().toISOString(),sourceSha256:release.release.sourceSha256,consumerRuntimeSha256:release.consumerRuntimeSha256,runtime:{node:process.version,npm:npmVersion,postgres:postgresVersion,configuredKeycloak:'26.7.4'},installation:'clean copied public bundle; npm ci --ignore-scripts',internalImports:probe.stdout.trim(),consumerEnvironment:'allowlisted OS variables plus own MOCK_ERP_DATABASE_URL; config holds scoped public service/status/signing credentials',apiProcessRestarts:2,receiverProcessRestarts:2,stableSourceActionId:pending.actionId,originalIdRecovered:pending.actionId===resumed.recoveredActionId,reporting:executed.reporting,result,appliedReports:reports,classification:'Actual local PostgreSQL, Keycloak, HTTP and separate processes. Operator bootstrap uses isolated server fixtures; consumer uses only public artifacts. Explicit manual planning; no live Engine, physical-device, target-host or vendor ERP claim.'};
+ await writeFile('docs/verification/integration-local-2026-09-26.json',JSON.stringify(proof,null,2)+'\n');await writeFile('.local/phase-42-standalone-evidence.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify({directory,...result,apiProcessRestarts:2,receiverProcessRestarts:2,stableActionId:pending.actionId},null,2));
 }finally{
  await worker?.close();await receiver?.close();await api?.close();await erp.close();await db.close();await admin(`/${subject}`,{method:'DELETE'});
  for(const path of [apiConfig,consumerConfig,conformancePath,join(directory,'receiver-conformance.json')])await unlink(path).catch(e=>{if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;});

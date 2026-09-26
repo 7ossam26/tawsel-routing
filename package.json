@@ -119,7 +119,7 @@
     "test:browser:source": "npm run build -w @tawsel/mock-erp && playwright test -c playwright.source.config.ts",
     "test:browser:preparation": "npm run build:foundation && playwright test -c playwright.preparation.config.ts",
     "test:browser:delivery": "npm run build:foundation && playwright test -c playwright.delivery.config.ts",
-    "source:demo": "npm run receiver:package && node --env-file=.env.database.local --import tsx scripts/source-demo.ts",
+    "source:demo": "npm run erp:package && node --env-file=.env.database.local --import tsx scripts/source-demo.ts",
     "mock-erp:source-worker": "node --env-file-if-exists=.local/mock-erp.database.env apps/mock-erp/dist/main.js source-worker",
     "test:erp:source": "node --import tsx tests/erp-conformance/source.ts",
     "test:browser:exceptions": "npm run build:foundation && playwright test -c playwright.exceptions.config.ts",
@@ -154,7 +154,10 @@
     "test:backup": "vitest run --project fast apps/api/test/fast/recovery-store.test.ts apps/api/test/fast/deployment-config.test.ts",
     "backup:rehearse": "npm run build:foundation && node --import tsx scripts/recovery-rehearsal.ts",
     "pilot:serve": "node --env-file=.env.database.local --import tsx scripts/pilot-browser-server.ts",
-    "test:browser:pilot": "npm run build:foundation && playwright test -c playwright.pilot.config.ts"
+    "test:browser:pilot": "npm run build:foundation && playwright test -c playwright.pilot.config.ts",
+    "erp:audit": "node scripts/handoff-audit.mjs --check",
+    "erp:package": "npm run contracts:check && npm run erp:audit && npm run receiver:package && node scripts/erp-release.mjs build",
+    "erp:verify": "node scripts/erp-release.mjs check"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

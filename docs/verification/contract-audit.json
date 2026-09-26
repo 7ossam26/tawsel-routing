@@ -1,0 +1,4299 @@
+{
+  "schemaVersion": 1,
+  "classification": "Traceability and canonical checks; runtime route/transaction/browser proof is recorded separately in phase-42-evidence.md.",
+  "requirements": 65,
+  "decisions": 112,
+  "schemas": 31,
+  "examples": {
+    "valid": 268,
+    "invalid": 167
+  },
+  "httpOperations": 133,
+  "operations": [
+    {
+      "id": "session.bootstrap",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Issue browser-bound CSRF token; grants no account access.",
+      "method": "GET",
+      "path": "/api/session/bootstrap",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "session.resolveCompany",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Resolve company code to safe login context; company selection grants no authority.",
+      "method": "POST",
+      "path": "/api/session/company",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "account.registerIndependent",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Register a separate B2C phone/password identity with recovery email.",
+      "method": "POST",
+      "path": "/api/session/register",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "account.verifyRecoveryEmail",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Complete recovery-email verification; no SMS claim. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint.",
+      "delivery": "issuer-hosted",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "session.beginLogin",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Begin OIDC authorization code / PKCE login.",
+      "method": "POST",
+      "path": "/api/session/login",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "session.completeLogin",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Validate OIDC callback and establish independent Tawsel session.",
+      "method": "GET",
+      "path": "/api/session/callback",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "session.getContext",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Read current issuer-validated session and P06 access context. Display fields are never request authority.",
+      "method": "GET",
+      "path": "/api/session/context",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "session.refresh",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Refresh authenticated backend session; no tokens in URLs.",
+      "method": "POST",
+      "path": "/api/session/refresh",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "account.getStatus",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "Read own activation/recovery state.",
+      "method": "GET",
+      "path": "/api/account/status",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "account.beginRecovery",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Initiate email recovery without account enumeration.",
+      "method": "POST",
+      "path": "/api/session/recover",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "account.completeRecovery",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "public",
+      "description": "Consume verified recovery proof through the issuer. Implemented by configured Keycloak single-use action links; no Tawsel proof/password endpoint.",
+      "delivery": "issuer-hosted",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "session.logout",
+      "family": "session-context",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 7,
+      "capability": "authenticated",
+      "description": "End session; P35 adds durable pending-action/account-switch guards.",
+      "method": "POST",
+      "path": "/api/session/logout",
+      "implementationOwner": [
+        "apps/api/src/auth",
+        "apps/web/src/account-shell.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/session-auth.test.ts",
+        "tests/identity-browser/journeys.spec.ts"
+      ],
+      "evidence": "docs/phase-07-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "device.getContext",
+      "family": "session-context",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Scoped view/owner state; no execution token is disclosed.",
+      "method": "GET",
+      "path": "/api/v1/devices/rounds/{roundId}",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.bindSource",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Bootstrap authorized tenant/integration binding and supported protocol versions.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/integration.bindSource",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/schema.ts",
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.rotateCredential",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Rotate scoped command credential with explicit overlap/recovery.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/integration.rotateCredential",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/schema.ts",
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.disableSource",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Disable source credentials without erasing audit or queued evidence.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/integration.disableSource",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/schema.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getConfiguration",
+      "family": "integration-provisioning",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "integration.manage",
+      "description": "Read authorized source configuration without secret disclosure.",
+      "method": "GET",
+      "path": "/api/v1/provisioning/configuration",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.provision",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply versioned branch identity/location reference.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/branch.provision",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.disable",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply explicit versioned branch disable without deleting custody history.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/branch.disable",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "role.defineCapabilities",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply versioned ERP role capability definition.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/role.defineCapabilities",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "user.provision",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Bind ERP user reference to trusted issuer subject; no copied passwords.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/user.provision",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "user.setRole",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Assign exactly one role per company user.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/user.setRole",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "user.setCapabilityExceptions",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply inherit/allow/deny overrides without bypassing resource scope.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/user.setCapabilityExceptions",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "user.setBranchMemberships",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Version branch membership; common effective capabilities across branches.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/user.setBranchMemberships",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "user.disable",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Revoke access without resurrecting via stale source revision.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/user.disable",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "driver.provisionReference",
+      "family": "integration-provisioning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Apply minimal execution driver/vehicle profile reference.",
+      "method": "POST",
+      "path": "/api/v1/provisioning/commands/driver.provisionReference",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/domain.ts",
+        "apps/api/src/provisioning/schema.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "provisioning.getStatus",
+      "family": "integration-provisioning",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "identity.provision",
+      "description": "Read application acceptance and separate issuer reconciliation state.",
+      "method": "GET",
+      "path": "/api/v1/provisioning/status",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.createIndependent",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Create own simple B2C name/phone/destination/optional collection.",
+      "method": "POST",
+      "path": "/api/v1/independent/tasks",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2c-intake/service.ts",
+        "apps/web/src/independent-tasks.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.reviseIndependent",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Correct own eligible B2C task with revision guards.",
+      "method": "PUT",
+      "path": "/api/v1/independent/tasks/{taskId}",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2c-intake/service.ts",
+        "apps/web/src/independent-tasks.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.getIndependent",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "Inspect own persisted B2C task.",
+      "method": "GET",
+      "path": "/api/v1/independent/tasks/{taskId}",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.listIndependent",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "execution.own",
+      "description": "List own intake/preparation work with bounded pagination.",
+      "method": "GET",
+      "path": "/api/v1/independent/tasks",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "intake.submitSnapshot",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Accept generic source task/order/contact/location/content/policy revision.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.submitSnapshot",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/native.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "intake.prepare",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Prepare upcoming work without driver receipt/custody.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.prepare",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.receiveBatch",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Definitive ERP receipt assertion with all-or-none 50-stop admission.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.receiveBatch",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.withdraw",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Ordinary predeparture withdrawal with history; no mandatory reason. Departure field guard exists; full start-race proof belongs to P15.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.withdraw",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.reassignBeforeDeparture",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Change predeparture driver and assignment generation; no live transfer.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/assignment.reassignBeforeDeparture",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "intake.setUrgencyBeforeDeparture",
+      "family": "intake",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "ERP priority update only before execution lock.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/intake.setUrgencyBeforeDeparture",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "intake.getBatchResult",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "assignment.manage",
+      "description": "Recover durable accepted/rejected source results; 202 pending means no committed result is visible, not proof of receipt.",
+      "method": "GET",
+      "path": "/api/v1/intake/results/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "location.searchCandidates",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Scoped Nominatim candidates with provenance; never GPS/accuracy percentage.",
+      "method": "POST",
+      "path": "/api/v1/locations/{taskId}/candidates",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "location.getSnapshot",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "monitor.read",
+      "description": "Read original address and separate confirmed execution pin/revision.",
+      "method": "GET",
+      "path": "/api/v1/locations/{taskId}",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "location.confirmPin",
+      "family": "locations",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Authorized predeparture confirmation or assigned-driver execution correction.",
+      "method": "PUT",
+      "path": "/api/v1/locations/{taskId}",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/web/src/location-review.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "map.getAssetConfiguration",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "authenticated",
+      "description": "Read configured self-hosted style/archive/attribution; no invented map coverage.",
+      "method": "GET",
+      "path": "/api/v1/maps/configuration",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "routing.getVehicleProfiles",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 12,
+      "capability": "planning.manage",
+      "description": "Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim.",
+      "method": "GET",
+      "path": "/api/v1/routing/profiles",
+      "implementationOwner": [
+        "apps/api/src/engine"
+      ],
+      "tests": [
+        "apps/api/test/fast/engine-adapters.test.ts"
+      ],
+      "evidence": "docs/phase-12-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "routing.computeRoadRoute",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "verified-local",
+      "ownerPhase": 12,
+      "capability": "internal",
+      "description": "Private OSRM route/table conversion, seconds/metres and explicit unreachable cells; controlled HTTP verified, actual Engine unavailable.",
+      "implementationOwner": [
+        "apps/api/src/engine"
+      ],
+      "tests": [
+        "apps/api/test/fast/engine-adapters.test.ts"
+      ],
+      "evidence": "docs/phase-12-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "routing.optimize",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "verified-local",
+      "ownerPhase": 12,
+      "capability": "internal",
+      "description": "Private VROOM candidate validates exhaustive IDs, unassigned work, coordinates, relative timing and separate service estimates; controlled HTTP verified, live Engine unavailable. P14 validates route policy.",
+      "implementationOwner": [
+        "apps/api/src/engine"
+      ],
+      "tests": [
+        "apps/api/test/fast/engine-adapters.test.ts"
+      ],
+      "evidence": "docs/phase-12-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "planning.saveDraft",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Save preview inputs: origin, vehicle, endpoint, service/time requirements; no start.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.saveDraft",
+      "payloadSchema": "./planning.schema.json#/$defs/SaveDraft",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/planning/routes.ts",
+        "apps/api/src/planning/service.ts",
+        "apps/web/src/preparation-flow.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.requestPreview",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Queue durable asynchronous planning from coherent input revisions.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.requestPreview",
+      "payloadSchema": "./planning.schema.json#/$defs/Request",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/planning/routes.ts",
+        "apps/api/src/planning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.getJob",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Read queued/running/complete/partial/failed/obsolete result.",
+      "method": "GET",
+      "path": "/api/v1/planning/jobs/{jobId}",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.getPlan",
+      "family": "planning",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Read plan ID, route revision, order, pending/manual status and forecasts.",
+      "method": "GET",
+      "path": "/api/v1/planning/drivers/{driverId}/plans",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.requestReplan",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "planning.manage",
+      "description": "Request optimization without clearing current or undoing accepted facts.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.requestReplan",
+      "payloadSchema": "./planning.schema.json#/$defs/Request",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/planning/routes.ts",
+        "apps/api/src/planning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.setManualOrder",
+      "family": "planning",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 14,
+      "capability": "planning.manage",
+      "description": "Revision-checked complete eligible order or first suggestion; current/urgent/capacity constraints, unknown road metrics, immutable manual forecast membership and stale-optimizer fence. No heading or round start.",
+      "method": "POST",
+      "path": "/api/v1/planning/commands/planning.setManualOrder",
+      "payloadSchema": "./planning.schema.json#/$defs/ManualOrder",
+      "implementationOwner": [
+        "apps/api/src/planning/policy.ts",
+        "apps/api/src/planning/manual.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-14-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/planning/routes.ts",
+        "apps/api/src/planning/service.ts",
+        "apps/web/src/preparation-flow.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "planning.publishRevision",
+      "family": "planning",
+      "kind": "internal-work",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "internal",
+      "description": "Fence lease/current input, validate complete grouped route and atomically append ready/partial plan, forecast and source-scoped intent. Manual publication uses the same driver fence; no round start.",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "round.start",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20.",
+      "method": "POST",
+      "path": "/api/v1/rounds/start",
+      "implementationOwner": [
+        "apps/api/src/rounds"
+      ],
+      "tests": [
+        "apps/api/test/integration/start-assignment-race.test.ts",
+        "apps/api/test/integration/round-start-http.test.ts"
+      ],
+      "evidence": "docs/phase-15-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/rounds/service.ts",
+        "apps/web/src/preparation-flow.tsx",
+        "apps/web/src/reporting-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.selectHeading",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicitly select/change eligible target; protect arrived work until resolved.",
+      "method": "POST",
+      "path": "/api/v1/current/heading",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/evidence-dependencies.ts",
+        "apps/api/src/current/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.recordArrival",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicit arrival and physical-origin evidence; never inferred from outcome.",
+      "method": "POST",
+      "path": "/api/v1/current/arrival",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/evidence-dependencies.ts",
+        "apps/api/src/current/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.recordFull",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Full result with exact permitted collection and coherent progress/outbox.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/full",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/outcomes/arithmetic.ts",
+        "apps/api/src/outcomes/models.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/conflicts-page.tsx",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.recordPartial",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "B2B whole pieces only; rejected remainder is held return-required.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/partial",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/outcomes/arithmetic.ts",
+        "apps/api/src/outcomes/models.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/conflicts-page.tsx",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.recordRefusal",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Refusal with shipping collection or explicit unpaid-shipping exception.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/refusal",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/outcomes/arithmetic.ts",
+        "apps/api/src/outcomes/models.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/conflicts-page.tsx",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.recordNoAnswer",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Simple no-answer; no call counters or implied fee refusal/arrival.",
+      "method": "POST",
+      "path": "/api/v1/outcomes/no-answer",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/dependencies.ts",
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/outcomes/models.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/conflicts-page.tsx",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/local-status.tsx",
+        "apps/web/src/local-work.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.deferWhole",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Defer untouched whole work to earliest time; no narrow appointment guarantee.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/defer",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/eligibility/models.ts",
+        "apps/api/src/eligibility/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/execution-options.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.retryWhole",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Same-driver eligible untouched whole held return work, new attempt, before receipt.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/retry",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/eligibility/models.ts",
+        "apps/api/src/eligibility/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/execution-options.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.setDriverUrgency",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Assigned-driver urgency after departure; protect current/earliest eligibility.",
+      "method": "POST",
+      "path": "/api/v1/eligibility/urgency",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/eligibility/models.ts",
+        "apps/api/src/eligibility/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/execution-options.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.end",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "End round explicitly with held unfinished work preserved.",
+      "method": "POST",
+      "path": "/api/v1/closure/round",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "apps/api/src/closure/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/closure-page.tsx",
+        "apps/web/src/reporting-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "workday.end",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Close open workday/active round after resolving or pausing current; carry held work.",
+      "method": "POST",
+      "path": "/api/v1/closure/day",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "apps/api/src/closure/service.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/closure-page.tsx",
+        "packages/api-client/src/schema.d.ts",
+        "packages/api-client/src/validation.ts"
+      ]
+    },
+    {
+      "id": "device.takeOver",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Explicit online transfer to a different installation of the same authenticated driver; expected generation CAS; stable retry. Fetch snapshot before commands.",
+      "method": "POST",
+      "path": "/api/v1/devices/takeover",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/current-activity.tsx",
+        "apps/web/src/preparation-flow.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.correct",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "correction.own",
+      "description": "Driver appends correction in open day before dependent receipt/redispatch.",
+      "method": "POST",
+      "path": "/api/v1/corrections/outcomes",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/fence.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/correction-page.tsx",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "evidence.adoptCompatible",
+      "family": "execution",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "correction.own",
+      "description": "Current owner adopts eligible former-device evidence under correction bounds.",
+      "method": "POST",
+      "path": "/api/v1/corrections/adopt",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/fence.ts",
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/conflicts-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.listSourceBranchGroups",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Group held return-required portions by originating branch, with display labels and authorized unresolved requests for cross-phone recovery (P31).",
+      "method": "GET",
+      "path": "/api/v1/returns/groups",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.requestHandover",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Driver offers source-branch pieces; request is not receipt/stock.",
+      "method": "POST",
+      "path": "/api/v1/returns/request",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/returns/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/branch-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.getRequest",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Scoped request, offered/received/unresolved subsets and revisions.",
+      "method": "GET",
+      "path": "/api/v1/returns/requests/{requestId}",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.confirmSubsetReceipt",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native ERP trusted actor confirms actually received requested subset.",
+      "method": "POST",
+      "path": "/api/v1/erp/returns/commands/return.confirmSubsetReceipt",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "apps/api/src/returns/receiver.ts",
+        "apps/api/src/returns/routes.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.recordDisposition",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.dispose",
+      "description": "ERP loss/damage disposition distinct from physical receipt and inventory.",
+      "method": "POST",
+      "path": "/api/v1/erp/returns/commands/return.recordDisposition",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "apps/api/src/returns/receiver.ts",
+        "apps/api/src/returns/routes.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.interruptRound",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "execution.own",
+      "description": "Pause heading sequence and enter source-branch service within same round/capacity.",
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.interruptRound",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "apps/api/src/returns/routes.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/branch-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.resumeRound",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "execution.own",
+      "description": "Resume retained sequence after authoritative claimed-subset receipt; no whole-batch gate.",
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.resumeRound",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "apps/api/src/returns/routes.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/branch-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "dispatch.createFromReceipt",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "assignment.manage",
+      "description": "Redispatch only confirmed branch-received goods in new cycle/assignment.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/dispatch.createFromReceipt",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/mock-erp/src/source.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "monitoring.getDriverSnapshot",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/drivers/{id}",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "monitoring.getTripSnapshot",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/trips/{id}",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "monitoring.getTaskHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/tasks/{id}/history",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "monitoring.getWorkdayHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/monitoring/workdays/{id}/history",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getExecutionProjection",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "description": "Coherent authorized driver read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/drivers/{id}",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "action.getResult",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 5,
+      "capability": "authenticated",
+      "description": "P20 scoped execution/takeover action result. Other operation families keep their feature adapters; unknown action IDs return pending without leaking another account.",
+      "method": "GET",
+      "path": "/api/v1/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/commands",
+        "apps/api/src/db"
+      ],
+      "tests": [
+        "apps/api/test/integration/command-transaction.test.ts",
+        "apps/api/test/integration/database-lifecycle.test.ts"
+      ],
+      "evidence": "docs/phase-05-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "evidence.receiveFormerDevice",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Durably receive an original former-device envelope, without applying business state. Exact repeat is duplicate and returns its established result.",
+      "method": "POST",
+      "path": "/api/v1/evidence/former-device",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "sync.submitActions",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Dependency-ordered replay batch with per-action result, original identity/version.",
+      "method": "POST",
+      "path": "/api/v1/sync/actions",
+      "implementationOwner": [
+        "apps/api/src/sync",
+        "packages/api-client/src/sync.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-device-takeover.test.ts",
+        "tests/replay-browser/replay.spec.ts"
+      ],
+      "evidence": "docs/phase-34-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "sync.getEvidenceReceipt",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Own driver evidence with durable original receipt, current recovery constraints and adopted outcome linkage. Outcome adoption is implemented under P23 correction bounds.",
+      "method": "GET",
+      "path": "/api/v1/evidence/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/sync",
+        "packages/api-client/src/sync.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-device-takeover.test.ts",
+        "tests/replay-browser/replay.spec.ts"
+      ],
+      "evidence": "docs/phase-34-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "sync.listConflicts",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 34,
+      "capability": "execution.own",
+      "description": "Read preserved conflicts and currently permitted resolution choices.",
+      "method": "GET",
+      "path": "/api/v1/sync/conflicts",
+      "implementationOwner": [
+        "apps/api/src/sync",
+        "packages/api-client/src/sync.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-device-takeover.test.ts",
+        "tests/replay-browser/replay.spec.ts"
+      ],
+      "evidence": "docs/phase-34-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.configureWebhook",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Authorize callback destination and recipient network restrictions.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.configureWebhook",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "apps/api/src/outbox/routes.ts",
+        "apps/api/src/outbox/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.rotateSigningKey",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Rotate integration-scoped webhook secret/key ID with overlap.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.rotateSigningKey",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "apps/api/src/outbox/routes.ts",
+        "apps/api/src/outbox/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getDeliveryStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Read outbound pending/sending/received/failed independently of application.",
+      "method": "GET",
+      "path": "/api/v1/integration/deliveries",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.retryDelivery",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Controlled retry retaining committed event identity.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.retryDelivery",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "apps/api/src/outbox/routes.ts",
+        "apps/api/src/outbox/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.replayEvents",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Scoped aggregate sequence replay with explicit retained-window/expired status.",
+      "method": "GET",
+      "path": "/api/v1/integration/replay",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getReconciliationSnapshot",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Scoped authoritative checkpoint/snapshot recovery after gaps/expired replay.",
+      "method": "GET",
+      "path": "/api/v1/integration/reconciliation",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.reportAppliedCheckpoint",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Authenticated receiver reports separately durable applied/failed state.",
+      "method": "POST",
+      "path": "/api/v1/integration/commands/integration.reportAppliedCheckpoint",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": [
+        "apps/api/src/outbox/routes.ts",
+        "apps/api/src/outbox/service.ts",
+        "apps/mock-erp/src/recovery.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getAppliedCheckpoint",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "integration.manage",
+      "description": "Read receiver processing checkpoint without inferring it from HTTP receipt.",
+      "method": "GET",
+      "path": "/api/v1/integration/applied-checkpoint",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "consumer.receiveSignedEvent",
+      "family": "sync-recovery",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "External ERP callback: verify, durable inbox, then acknowledge receipt.",
+      "method": "POST",
+      "path": "/api/v1/consumer/events",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "consumer.applyInboxEvent",
+      "family": "sync-recovery",
+      "kind": "internal-work",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "ERP-local atomic projection plus processed marker, deduplication and gap recovery.",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "source.deliverCommandIntent",
+      "family": "sync-recovery",
+      "kind": "internal-work",
+      "lifecycle": "verified-local",
+      "ownerPhase": 27,
+      "capability": "external-consumer",
+      "description": "ERP-local native change plus command outbox, durable pending/accepted/rejected status.",
+      "implementationOwner": [
+        "apps/mock-erp/src/source.ts",
+        "apps/mock-erp/src/native.ts",
+        "apps/mock-erp/src/native-auth.ts",
+        "apps/mock-erp/ui"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/mock-source-outbox.test.ts",
+        "apps/mock-erp/test/integration/native-session.test.ts",
+        "tests/erp-conformance/source.ts",
+        "tests/source-browser/source.spec.ts"
+      ],
+      "evidence": "docs/phase-27-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "source.getCommandStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 27,
+      "capability": "external-consumer",
+      "description": "Consumer-owned authenticated read of durable source command and local record status; acceptance remains separate from receiver application.",
+      "method": "GET",
+      "path": "/api/v1/source/status",
+      "implementationOwner": [
+        "apps/mock-erp/src/source.ts",
+        "apps/mock-erp/src/native.ts",
+        "apps/mock-erp/src/native-auth.ts",
+        "apps/mock-erp/ui"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/mock-source-outbox.test.ts",
+        "apps/mock-erp/test/integration/native-session.test.ts",
+        "tests/erp-conformance/source.ts",
+        "tests/source-browser/source.spec.ts"
+      ],
+      "evidence": "docs/phase-27-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.getWorkday",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "Authorized workday results/quantities/collection with explicit denominators/currency.",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays/{workdayId}",
+      "implementationOwner": [
+        "apps/api/src/reporting"
+      ],
+      "tests": [
+        "apps/api/test/integration/reporting-query.test.ts",
+        "tests/reporting-browser/reporting.spec.ts"
+      ],
+      "evidence": "docs/phase-36-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.getRoundTiming",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "Initial/revised forecast versus matching actual observations and uncertainty.",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays/{workdayId}/rounds/{roundId}/timing",
+      "implementationOwner": [
+        "apps/api/src/reporting"
+      ],
+      "tests": [
+        "apps/api/test/integration/reporting-query.test.ts",
+        "tests/reporting-browser/reporting.spec.ts"
+      ],
+      "evidence": "docs/phase-36-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.requestExcelExport",
+      "family": "reporting",
+      "kind": "http-command",
+      "lifecycle": "verified-local",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Create authorized export bound to same filter/snapshot/timezone as report.",
+      "method": "POST",
+      "path": "/api/v1/reports/workdays/{workdayId}/exports",
+      "implementationOwner": [
+        "apps/api/src/reporting/export.ts",
+        "packages/api-client/src/reporting.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/report-export.test.ts",
+        "tests/report-export-browser/report-export.spec.ts"
+      ],
+      "evidence": "docs/phase-37-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.getExportStatus",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Reauthorize and read ready/expired synchronous export status.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}",
+      "implementationOwner": [
+        "apps/api/src/reporting/export.ts",
+        "packages/api-client/src/reporting.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/report-export.test.ts",
+        "tests/report-export-browser/report-export.spec.ts"
+      ],
+      "evidence": "docs/phase-37-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.downloadExport",
+      "family": "reporting",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 37,
+      "capability": "reports.export",
+      "description": "Reauthorize and download text-safe Excel artifact before expiry.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}/download",
+      "implementationOwner": [
+        "apps/api/src/reporting/export.ts",
+        "packages/api-client/src/reporting.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/report-export.test.ts",
+        "tests/report-export-browser/report-export.spec.ts"
+      ],
+      "evidence": "docs/phase-37-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "diagnostics.getHealth",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 38,
+      "capability": "internal",
+      "description": "Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred.",
+      "method": "GET",
+      "path": "/internal/diagnostics/health",
+      "implementationOwner": [
+        "apps/api/src/diagnostics",
+        "scripts/performance-load.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/diagnostics.test.ts",
+        "apps/api/test/fast/performance-accounting.test.ts"
+      ],
+      "evidence": "docs/phase-38-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "diagnostics.getCapacityAndFreshness",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 38,
+      "capability": "internal",
+      "description": "Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness.",
+      "method": "GET",
+      "path": "/internal/diagnostics/metrics",
+      "implementationOwner": [
+        "apps/api/src/diagnostics",
+        "scripts/performance-load.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/diagnostics.test.ts",
+        "apps/api/test/fast/performance-accounting.test.ts"
+      ],
+      "evidence": "docs/phase-38-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "ui.callRecipient",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open dialer; no call count, contact outcome or movement event.",
+      "implementationOwner": [
+        "apps/web/src/current-activity.tsx"
+      ],
+      "tests": [
+        "apps/web/test/fast/driver-flow.test.tsx",
+        "tests/delivery-browser/delivery.spec.ts"
+      ],
+      "evidence": "docs/phase-29-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.messageRecipient",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open WhatsApp; no execution transition.",
+      "implementationOwner": [
+        "apps/web/src/current-activity.tsx"
+      ],
+      "tests": [
+        "apps/web/test/fast/driver-flow.test.tsx",
+        "tests/delivery-browser/delivery.spec.ts"
+      ],
+      "evidence": "docs/phase-29-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.openNavigation",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 29,
+      "capability": "local",
+      "description": "Open external navigation; does not set heading/arrival.",
+      "implementationOwner": [
+        "apps/web/src/current-activity.tsx"
+      ],
+      "tests": [
+        "apps/web/test/fast/driver-flow.test.tsx",
+        "tests/delivery-browser/delivery.spec.ts"
+      ],
+      "evidence": "docs/phase-29-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.filterAndInspect",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 32,
+      "capability": "local",
+      "description": "Inspect/filter authorized monitoring and report details with connected APIs; P32/P36/P41 local browser evidence, owner/device review pending.",
+      "implementationOwner": [
+        "apps/web/src/monitoring-page.tsx",
+        "apps/mock-erp/ui/integration-status.ts"
+      ],
+      "tests": [
+        "tests/monitoring-browser/monitoring.spec.ts"
+      ],
+      "evidence": "docs/phase-32-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.prepareDraft",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 28,
+      "capability": "local",
+      "description": "Retain unsaved preparation/pin/route input; explicit saves use canonical operations. P28/P33/P41 local browser and storage evidence; no draft implies acceptance.",
+      "implementationOwner": [
+        "apps/web/src/preparation-flow.tsx"
+      ],
+      "tests": [
+        "apps/web/test/fast/preparation-flow.test.tsx",
+        "tests/preparation-browser/preparation.spec.ts"
+      ],
+      "evidence": "docs/phase-28-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.captureOfflineAction",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Atomic local journal and pending projection for allowed downloaded started work.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/web/src/download-work.ts"
+      ],
+      "tests": [
+        "apps/web/test/fast/local-action-capture.test.ts",
+        "tests/offline-browser/offline.spec.ts"
+      ],
+      "evidence": "docs/phase-33-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.requestPersistentStorage",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Request browser storage persistence and report actual availability.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/web/src/download-work.ts"
+      ],
+      "tests": [
+        "apps/web/test/fast/local-action-capture.test.ts",
+        "tests/offline-browser/offline.spec.ts"
+      ],
+      "evidence": "docs/phase-33-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.retrySynchronization",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 34,
+      "capability": "local",
+      "description": "Trigger authenticated replay using original action identities.",
+      "implementationOwner": [
+        "apps/api/src/sync",
+        "packages/api-client/src/sync.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-device-takeover.test.ts",
+        "tests/replay-browser/replay.spec.ts"
+      ],
+      "evidence": "docs/phase-34-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.reauthenticateSameAccount",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Preserve queue and invoke session login for its owning account.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/api/src/auth"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-session-update.test.ts",
+        "tests/recovery-browser/recovery.spec.ts"
+      ],
+      "evidence": "docs/phase-35-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.switchAccount",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Block unsynchronized exit; otherwise use safe logout/login, no identity merge.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/api/src/auth"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-session-update.test.ts",
+        "tests/recovery-browser/recovery.spec.ts"
+      ],
+      "evidence": "docs/phase-35-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.applySafeUpdate",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 35,
+      "capability": "local",
+      "description": "Apply versioned shell/storage update only at safe pending-work boundary.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/api/src/auth"
+      ],
+      "tests": [
+        "apps/api/test/integration/offline-session-update.test.ts",
+        "tests/recovery-browser/recovery.spec.ts"
+      ],
+      "evidence": "docs/phase-35-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "ui.downloadStartedWork",
+      "family": "local-ui",
+      "kind": "local-ui",
+      "lifecycle": "verified-local",
+      "ownerPhase": 33,
+      "capability": "local",
+      "description": "Store authorized snapshots/geometry for confirmed round; not offline new-round start.",
+      "implementationOwner": [
+        "apps/web/src/local-work.ts",
+        "apps/web/src/download-work.ts"
+      ],
+      "tests": [
+        "apps/web/test/fast/local-action-capture.test.ts",
+        "tests/offline-browser/offline.spec.ts"
+      ],
+      "evidence": "docs/phase-33-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "provisioning.changed",
+      "family": "integration-provisioning",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 8,
+      "capability": "recipient-scope",
+      "description": "Versioned branch/user/role/membership/driver-reference acceptance.",
+      "payloadSchema": "./provisioning.schema.json#/$defs/ProvisioningChanged",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/provisioning"
+      ],
+      "tests": [
+        "apps/api/test/integration/provisioning-actor.test.ts",
+        "tests/provisioning-browser/provisioning.spec.ts"
+      ],
+      "evidence": "docs/phase-08-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.snapshotAccepted",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Stable generic source task snapshot revision accepted. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.independentCreated",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "recipient-scope",
+      "description": "Own B2C task recorded; no ERP recipient unless separately authorized.",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2c-intake/service.ts"
+      ]
+    },
+    {
+      "id": "task.independentRevised",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 9,
+      "capability": "recipient-scope",
+      "description": "Own B2C task revision; preserve prior audit.",
+      "implementationOwner": [
+        "apps/api/src/b2c-intake",
+        "apps/web/src/independent-tasks.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2c-intake.test.ts",
+        "tests/b2c-browser/intake.spec.ts"
+      ],
+      "evidence": "docs/phase-09-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2c-intake/service.ts"
+      ]
+    },
+    {
+      "id": "assignment.prepared",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Upcoming preparation, no possession. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.received",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Definitive batch received/admitted; not prepared. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.withdrawn",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture removal. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "assignment.reassigned",
+      "family": "intake",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture generation change. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.urgencyChanged",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "recipient-scope",
+      "description": "Predeparture ERP urgency acceptance in P10; assigned-driver producer extends this contract in P18. P10 durable own-source event intent; transport remains P25.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "location.pinConfirmed",
+      "family": "locations",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "recipient-scope",
+      "description": "Durable source-scoped execution pin/provenance intent; source retained. Signed delivery is P25.",
+      "payloadSchema": "./location.schema.json#/$defs/ConfirmedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "apps/api/src/locations/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "plan.revisionPublished",
+      "family": "planning",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 13,
+      "capability": "recipient-scope",
+      "description": "Source-scoped immutable plan/forecast/workload identity notice: historical draft or validated ready/partial/manual. Pending outbox intent; signed delivery remains P25.",
+      "payloadSchema": "./planning.schema.json#/$defs/PublishedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/planning"
+      ],
+      "tests": [
+        "apps/api/test/integration/planning-jobs.test.ts",
+        "apps/api/test/integration/planning-publication.test.ts"
+      ],
+      "evidence": "docs/phase-13-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/publication.ts",
+        "apps/api/src/planning/manual.ts",
+        "apps/api/src/planning/worker.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.started",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 15,
+      "capability": "recipient-scope",
+      "description": "Accepted start/departure/owner and baseline forecast.",
+      "payloadSchema": "./round-start.schema.json#/$defs/StartedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/rounds"
+      ],
+      "tests": [
+        "apps/api/test/integration/start-assignment-race.test.ts",
+        "apps/api/test/integration/round-start-http.test.ts"
+      ],
+      "evidence": "docs/phase-15-evidence.md",
+      "literalReferences": [
+        "apps/api/src/rounds/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.headingSelected",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 16,
+      "capability": "recipient-scope",
+      "description": "Explicit selection/change, not a next suggestion.",
+      "payloadSchema": "./current-activity.schema.json#/$defs/HeadingEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "apps/api/src/current/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.arrivalRecorded",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 16,
+      "capability": "recipient-scope",
+      "description": "Explicit observed arrival; time provenance retained.",
+      "payloadSchema": "./current-activity.schema.json#/$defs/ArrivalEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "apps/api/src/current/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.recorded",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "recipient-scope",
+      "description": "Full/partial/refused/no-answer with quantity/collection transition.",
+      "payloadSchema": "./outcomes.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/outcomes/service.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.deferred",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Untouched whole work earliest-time change.",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/eligibility/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.retryAdmitted",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "New attempt on eligible whole held work; preserve prior outcome.",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/eligibility/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.ended",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 19,
+      "capability": "recipient-scope",
+      "description": "Ended round, held work unchanged unless explicitly transitioned.",
+      "payloadSchema": "./workday-closure.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "apps/api/src/closure/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "workday.ended",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 19,
+      "capability": "recipient-scope",
+      "description": "Explicit day closure/carryover; not automatic midnight.",
+      "payloadSchema": "./workday-closure.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "apps/api/src/closure/service.ts",
+        "packages/api-client/src/schema.d.ts",
+        "packages/api-client/src/validation.ts"
+      ]
+    },
+    {
+      "id": "device.executionTransferred",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "recipient-scope",
+      "description": "Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25.",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts"
+      ]
+    },
+    {
+      "id": "evidence.received",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "recipient-scope",
+      "description": "Durable submitting-account notification after rejected domain writes roll back. Query the scoped original action receipt; never imply business acceptance. No envelope/contact/money data in the notification.",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "apps/api/src/commands/kernel.ts",
+        "apps/api/src/corrections/service.ts",
+        "apps/api/src/devices/state.ts"
+      ]
+    },
+    {
+      "id": "return.requested",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Offered pieces only, never stock/received.",
+      "payloadSchema": "./returns.schema.json#/$defs/RequestedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/returns/service.ts",
+        "apps/mock-erp/src/projection.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.subsetReceived",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Actual confirmed source-branch subset transition.",
+      "payloadSchema": "./returns.schema.json#/$defs/ReceivedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/returns/receiver.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.dispositionRecorded",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "recipient-scope",
+      "description": "Loss/damage separate from receipt.",
+      "payloadSchema": "./returns.schema.json#/$defs/DispositionEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/returns/receiver.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.roundInterrupted",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Visible branch segment with retained customer sequence.",
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.roundResumed",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Confirmed claimed subsets and retained work resume.",
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "dispatch.createdFromReceipt",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "New dispatch cycle linked to prior confirmed receipt.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.corrected",
+      "family": "execution",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "recipient-scope",
+      "description": "Append-only correction; consumers keep original transition identity.",
+      "payloadSchema": "./corrections.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "apps/api/src/corrections/service.ts",
+        "packages/api-client/src/projection.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "evidence.adoptionResolved",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "recipient-scope",
+      "description": "Own-account notification of an accepted explicit adoption, linked to preserved evidence and effective outcome; blocked proposals emit evidence.received.",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "apps/api/src/corrections/service.ts"
+      ]
+    },
+    {
+      "id": "progress.snapshot",
+      "family": "monitoring-history",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 24,
+      "capability": "recipient-scope",
+      "description": "Replacement scoped snapshot; never erases missing business events.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "integration.applicationReported",
+      "family": "sync-recovery",
+      "kind": "event",
+      "lifecycle": "designed",
+      "ownerPhase": 26,
+      "capability": "recipient-scope",
+      "description": "Reserved future application notification; P26 implements separately authenticated checkpoint HTTP reporting without recursive outbound events.",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "workspace.getHealth",
+      "family": "workspace",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 1,
+      "capability": "public",
+      "description": "Existing GET /health: scope=workspace, engine=not-checked; not the public integration API.",
+      "path": "/health",
+      "method": "GET",
+      "implementationOwner": [
+        "package.json",
+        "vitest.config.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/health.test.ts"
+      ],
+      "evidence": "docs/phase-01-evidence.md",
+      "literalReferences": []
+    },
+    {
+      "id": "intake.getTask",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "Read current source snapshot, holder, readiness and dispatch identifiers.",
+      "method": "GET",
+      "path": "/api/v1/intake/task",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "intake.listTasks",
+      "family": "intake",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 10,
+      "capability": "intake.prepare",
+      "description": "List source-scoped held/prepared and unassigned/withdrawn work, filtered before pagination.",
+      "method": "GET",
+      "path": "/api/v1/intake/tasks",
+      "implementationOwner": [
+        "apps/api/src/b2b-intake"
+      ],
+      "tests": [
+        "apps/api/test/integration/b2b-intake-admission.test.ts"
+      ],
+      "evidence": "docs/phase-10-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "location.list",
+      "family": "locations",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 11,
+      "capability": "location.review",
+      "description": "Scoped focused location review list.",
+      "method": "GET",
+      "path": "/api/v1/locations",
+      "implementationOwner": [
+        "apps/api/src/locations",
+        "apps/web/src/location-review.tsx"
+      ],
+      "tests": [
+        "apps/api/test/integration/location-provenance.test.ts",
+        "tests/location-browser/locations.spec.ts"
+      ],
+      "evidence": "docs/phase-11-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.prepareStart",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/rounds/readiness",
+      "description": "Server-issued evidence expires after 60 seconds and is bound to account/device/plan/input. Start rechecks authority, accepted dependencies and the locked fingerprint. It does not activate work.",
+      "implementationOwner": [
+        "apps/api/src/rounds"
+      ],
+      "tests": [
+        "apps/api/test/integration/start-assignment-race.test.ts",
+        "apps/api/test/integration/round-start-http.test.ts"
+      ],
+      "evidence": "docs/phase-15-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.getCurrent",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/rounds/current",
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20.",
+      "implementationOwner": [
+        "apps/api/src/rounds"
+      ],
+      "tests": [
+        "apps/api/test/integration/start-assignment-race.test.ts",
+        "apps/api/test/integration/round-start-http.test.ts"
+      ],
+      "evidence": "docs/phase-15-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "round.getStartResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 15,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/rounds/actions/{actionId}",
+      "description": "Authoritative server round only. The immutable selected forecast retains its original planning time origin; startedAt is separate. No heading or arrival is implied. Takeover belongs to P20.",
+      "implementationOwner": [
+        "apps/api/src/rounds"
+      ],
+      "tests": [
+        "apps/api/test/integration/start-assignment-race.test.ts",
+        "apps/api/test/integration/round-start-http.test.ts"
+      ],
+      "evidence": "docs/phase-15-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.correctOrigin",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "description": "Explicit owner-fenced manual physical-origin correction; no current activity or arrival is inferred.",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/current/origin",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "apps/api/src/current/service.ts",
+        "apps/api/src/sync/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.getActivity",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "description": "Read explicit current activity, separate next suggestion and physical-origin evidence for the assigned driver. P30 includes frozen source piece quantities/unit due and simple personal refusal in delivery choices; command-time checks remain authoritative.",
+      "method": "GET",
+      "path": "/api/v1/current/rounds/{roundId}",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "current.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 16,
+      "capability": "execution.own",
+      "lifecycle": "verified-local",
+      "description": "Recover only own current activity action results with current scope reauthorization.",
+      "method": "GET",
+      "path": "/api/v1/current/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/current"
+      ],
+      "tests": [
+        "apps/api/test/integration/current-activity.test.ts"
+      ],
+      "evidence": "docs/phase-16-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.getRound",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Effective own-round outcomes and exact reported progress",
+      "method": "GET",
+      "path": "/api/v1/outcomes/rounds/{roundId}",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 17,
+      "capability": "execution.own",
+      "description": "Recover retained outcome command by stable action ID",
+      "method": "GET",
+      "path": "/api/v1/outcomes/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/outcomes"
+      ],
+      "tests": [
+        "apps/api/test/integration/outcome-progress-outbox.test.ts"
+      ],
+      "evidence": "docs/phase-17-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.activateDeferred",
+      "family": "execution",
+      "kind": "http-command",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Explicit eligibility transition; retained history and driver authority.",
+      "lifecycle": "verified-local",
+      "method": "POST",
+      "path": "/api/v1/eligibility/activate",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/devices/service.ts",
+        "apps/api/src/eligibility/models.ts",
+        "apps/api/src/eligibility/service.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/execution-options.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.getEligibility",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Server-derived permissions/history or stable action recovery.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/eligibility/rounds/{roundId}",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.getEligibilityAction",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 18,
+      "capability": "execution.own",
+      "description": "Server-derived permissions/history or stable action recovery.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/eligibility/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.deferredActivated",
+      "family": "execution",
+      "kind": "event",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
+      "lifecycle": "verified-local",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/eligibility/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "task.driverUrgencyChanged",
+      "family": "execution",
+      "kind": "event",
+      "ownerPhase": 18,
+      "capability": "recipient-scope",
+      "description": "Committed assigned-driver eligibility change; source-scoped durable intent.",
+      "lifecycle": "verified-local",
+      "payloadSchema": "./eligibility.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/eligibility"
+      ],
+      "tests": [
+        "apps/api/test/integration/retry-deferral-urgency.test.ts"
+      ],
+      "evidence": "docs/phase-18-evidence.md",
+      "literalReferences": [
+        "apps/api/src/eligibility/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "workday.getSummary",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Basic explicit-workday outcome/collection summary, held carry-forward and retained per-round activity revisions for between-round closure (P31).",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/workdays/{workdayId}/summary",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "workday.getCarryForward",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Current held work for the workday holder; no per-day cloning or implicit retry.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/workdays/{workdayId}/carry-forward",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "closure.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "ownerPhase": 19,
+      "capability": "execution.own",
+      "description": "Recover a retained closure result; unknown action remains pending.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/closure/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/closure"
+      ],
+      "tests": [
+        "apps/api/test/integration/workday-carryover.test.ts"
+      ],
+      "evidence": "docs/phase-19-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "device.getSnapshot",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 20,
+      "capability": "execution.own",
+      "description": "Download current confirmed activity/targets under the owner lock. Only the matching logical owner receives the generation snapshot token. P33 brackets authorized download reads with this locked owner/activity snapshot; local durability is a separate client transaction.",
+      "method": "GET",
+      "path": "/api/v1/devices/rounds/{roundId}/snapshot",
+      "implementationOwner": [
+        "apps/api/src/devices"
+      ],
+      "tests": [
+        "apps/api/test/integration/device-ownership.test.ts"
+      ],
+      "evidence": "docs/phase-20-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.getResult",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Recover own driver offer command; pending is not physical receipt.",
+      "method": "GET",
+      "path": "/api/v1/returns/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.checkConfirmation",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "execution.own",
+      "description": "Read server confirmation for an explicit cumulative claimed subset. Waiting never grants resume; P22 rechecks under lock.",
+      "method": "POST",
+      "path": "/api/v1/returns/requests/{requestId}/confirmation",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.listPending",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native source-scoped pending requests for one driver and originating branch, paginated in pages of 100 without a returns quota.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/pending",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.getNativeRequest",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Native source-scoped accurate requested/received/unresolved/lost/damaged state per item.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/requests/{requestId}",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "return.getNativeResult",
+      "family": "returns",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 21,
+      "capability": "return.receive",
+      "description": "Recover durable native source receipt/disposition command results; 202 means unknown pending.",
+      "method": "GET",
+      "path": "/api/v1/erp/returns/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/returns"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-21-evidence.md",
+      "literalReferences": [
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.recordArrival",
+      "kind": "http-command",
+      "capability": "execution.own",
+      "description": "Explicit arrival at the source-bound branch; records physical origin without inferring receipt.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "method": "POST",
+      "path": "/api/v1/branches/commands/branch.recordArrival",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "apps/api/src/returns/routes.ts",
+        "apps/api/src/sync/service.ts",
+        "apps/web/src/branch-page.tsx",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "branch.arrivalRecorded",
+      "kind": "event",
+      "capability": "recipient-scope",
+      "description": "Confirmed branch arrival; no physical receipt or stock implication.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "payloadSchema": "./branch-activity.schema.json#/$defs/Event",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/branch/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "dispatch.listCycles",
+      "kind": "http-read",
+      "capability": "assignment.manage",
+      "description": "Source-scoped preserved dispatch snapshots, holders and predecessor identities.",
+      "family": "returns",
+      "lifecycle": "verified-local",
+      "ownerPhase": 22,
+      "method": "GET",
+      "path": "/api/v1/intake/cycles",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "outcome.getCorrectionAvailability",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "execution.own",
+      "description": "Read original/effective correction eligibility and permitted next steps. P30 includes original outcome and replacement delivery inputs excluding the replaced attempt from prior shipping; allowed/constraints remain the authority.",
+      "method": "GET",
+      "path": "/api/v1/corrections/attempts/{attemptId}",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "correction.getResult",
+      "family": "execution",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 23,
+      "capability": "execution.own",
+      "description": "Recover the same driver correction result by action ID.",
+      "method": "GET",
+      "path": "/api/v1/corrections/actions/{actionId}",
+      "implementationOwner": [
+        "apps/api/src/corrections"
+      ],
+      "tests": [
+        "apps/api/test/integration/partial-return-correction.test.ts"
+      ],
+      "evidence": "docs/phase-23-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "monitoring.getAction",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/monitoring/actions/{id}",
+      "description": "Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getTripProjection",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/trips/{id}",
+      "description": "Coherent authorized trip read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getTaskHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/tasks/{id}/history",
+      "description": "Coherent authorized task read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getWorkdayHistory",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/workdays/{id}/history",
+      "description": "Coherent authorized workday read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getMonitoringAction",
+      "family": "monitoring-history",
+      "kind": "http-read",
+      "ownerPhase": 24,
+      "capability": "monitor.read",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/erp/monitoring/actions/{id}",
+      "description": "Coherent authorized action read; source-safe counters/history, conditional revision and refresh timing. No sender/application claim.",
+      "implementationOwner": [
+        "apps/api/src/monitoring"
+      ],
+      "tests": [
+        "apps/api/test/integration/monitoring-snapshot.test.ts"
+      ],
+      "evidence": "docs/phase-24-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "integration.getDeliveryDetail",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 25,
+      "capability": "integration.manage",
+      "description": "Inspect one scoped delivery and bounded retained attempts.",
+      "method": "GET",
+      "path": "/api/v1/integration/deliveries/{eventId}",
+      "implementationOwner": [
+        "apps/api/src/outbox"
+      ],
+      "tests": [
+        "apps/api/test/integration/outbox-sender.test.ts",
+        "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+      ],
+      "evidence": "docs/phase-25-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "consumer.getStatus",
+      "family": "sync-recovery",
+      "kind": "http-read",
+      "lifecycle": "verified-local",
+      "ownerPhase": 26,
+      "capability": "external-consumer",
+      "description": "Authenticated external receiver status with separate durable received/applied watermarks and historical limitations.",
+      "method": "GET",
+      "path": "/api/v1/consumer/status",
+      "implementationOwner": [
+        "apps/mock-erp/src/inbox.ts",
+        "apps/mock-erp/src/projection.ts",
+        "apps/mock-erp/src/recovery.ts"
+      ],
+      "tests": [
+        "apps/mock-erp/test/integration/receiver.test.ts",
+        "apps/mock-erp/test/integration/recovery.test.ts",
+        "tests/erp-conformance/receiver.ts"
+      ],
+      "evidence": "docs/phase-26-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "report.listWorkdays",
+      "family": "reporting",
+      "kind": "http-read",
+      "ownerPhase": 36,
+      "capability": "reports.read",
+      "description": "List explicit authorized workdays; never a calendar-day aggregate.",
+      "lifecycle": "verified-local",
+      "method": "GET",
+      "path": "/api/v1/reports/workdays",
+      "implementationOwner": [
+        "apps/api/src/reporting"
+      ],
+      "tests": [
+        "apps/api/test/integration/reporting-query.test.ts",
+        "tests/reporting-browser/reporting.spec.ts"
+      ],
+      "evidence": "docs/phase-36-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "diagnostics.getActionTrace",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "ownerPhase": 38,
+      "lifecycle": "verified-local",
+      "capability": "internal",
+      "method": "GET",
+      "path": "/internal/diagnostics/actions/{actionId}",
+      "description": "Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads.",
+      "implementationOwner": [
+        "apps/api/src/diagnostics",
+        "scripts/performance-load.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/diagnostics.test.ts",
+        "apps/api/test/fast/performance-accounting.test.ts"
+      ],
+      "evidence": "docs/phase-38-evidence.md",
+      "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    }
+  ]
+}

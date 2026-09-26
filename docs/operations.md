@@ -1,40 +1,31 @@
 # Tawsel application operations
 
-Use [backup and isolated recovery](recovery.md) for the Phase 40 executable rehearsal, protected inventory, archive-failure observations, retention dependencies and operator recovery order. [Actual measured results](verification/restore.md) preserve the unverified off-host/Engine/email/device limits.
+Phase 42 current runbook. [As-built handoff](ERP-INTEGRATION-HANDOFF.md), [exact final checks](phase-42-evidence.md), [readiness conditions](verification/pilot-readiness.md). Local runtime proof and configured target procedures remain distinct.
 
-P39 adds a separate application deployment configuration, immutable build inputs, explicit migration and asset-retention jobs, production issuer preparation, and optional private local mock supervision. [Release/recovery procedure](deployment.md) and [actual local evidence/pending target checks](verification/deployment.md) distinguish configuration, process/database proof and unrun container/target work. The application SQL boundary remains 0028; no Engine Compose/data/mount change is part of a release. Live rollout remains pending until authorized inventory, external setup and verified backup prerequisites are available.
+## Processes and responsibilities
 
-P38 adds additive migration 0028, optional private operator diagnostics, safe correlation/timing, persistent worker loop observations, export/resource gauges and isolated local freshness/load runs. [Owner terminal view, credentials, trace/recovery procedure and reproduction](diagnostics.md); [actual measurements and limits](verification/performance.md); [ordered evidence](phase-38-evidence.md). Database/worker/Engine/integration/backup states remain separate. Historical foundation sections below describe their original scope, not the complete current application. No Engine import, host deployment or backup restore is implied.
-
-P35 advances local Dexie to version 2 with an atomic additive draft-table migration and retained v1 queue readers. There is no PostgreSQL migration or dependency upgrade. [Account/update runbook](offline-account-updates.md) documents explicit waiting-worker activation, native queue/tab checks, rollback refusal for newer local storage, server-first reader rollout and retained old hashed assets. Do not use site-data clearing as recovery. `npm run recovery:demo` reproduces real-service browser flows; [evidence](phase-35-evidence.md) records faults and physical-device/elapsed-time limits. P39 owns production rollout verification.
-
-P33 builds a Workbox production service worker with shell/fonts only and no API/map runtime cache. Authorized started-round downloads, immutable action bytes, pending effects and acknowledgements live in scoped Dexie version 1. The existing planning worker optionally retains validated OSRM road geometry; provider failure leaves a valid plan usable. No database migration, new worker or map import is required. [Storage/version boundaries, reproducible demo and P34–35 recovery handoff](offline-local-capture.md), [verification and limits](phase-33-evidence.md). A successful persistence request/write cannot guarantee protection against browser eviction, phone loss or clearing storage.
-
-P26 adds Tawsel migration 0025 (current projection cache and authenticated consumer checkpoints) plus separately owned mock-ERP migrations 0001–0002. Deploy Tawsel migrations before the updated integration APIs; this task verifies them in disposable databases and does not migrate the existing local application database. Supervise receiver callback and projection worker separately, with only the receiver's restricted PostgreSQL URL and public integration configuration. [Build/install/start/reconcile/conformance commands](erp/consumer-quickstart.md), [limits/recovery semantics](erp/receiver-protocol.md), [actual integration checks](verification/integration.md). No purge/retention scheduler is installed; snapshot recovery cannot restore missing history. Native ERP source outbox remains P27.
-
-P25 adds migration 0024 and the separately supervised `outbox:worker` / `outbox:worker:once` process. [Setup, secret provisioning, destination policy, status/retry/replay and recovery](outbox-delivery.md). Delivery is at least once with 30-second recoverable leases and bounded retries; no purge or applied-state claim. Keep the operator configuration secret and outside Git. `outbox:demo` uses isolated PostgreSQL and controlled HTTP only.
-
-P13 adds migration `0009_planning.sql`, [durable planning APIs/worker and forecast runbook](planning-jobs.md). Deploy the migration before updated API/worker processes; old P10/P11 intents and retained B2C work materialize recoverably. Run `npm run planning:worker` under supervision separately from Fastify. It claims one job, releases its DB transaction for bounded HTTP, then fences lease/input before atomic draft/forecast/intent storage. Abrupt worker death is recovered after a 90-second lease; provider failures persist safe errors/backoff and terminate after three automatic attempts. Blocked missing-origin/no-eligible/capacity jobs remain inspectable. `planning:worker:once` inspects/processes one due item; `planning:demo` uses only a disposable database and controlled provider. No Engine setup/map import is performed. See [actual tests and gaps](phase-13-evidence.md).
-
-P08 adds additive migrations 0004/0005, [source bootstrap/rotation/recovery](provisioning.md) and a separately supervised issuer worker. Follow the [local/public consumer quickstart](erp/consumer-quickstart.md). Run provisioning:worker continuously or provisioning:worker:once for one due item; no Engine setup/import is involved. Keep operator and worker secrets separate from consumer credentials, configure HTTPS outside loopback, and retain failed reconciliation work. Production issuer permissions/supervision/TLS remain deployment verification.
-
-P07 adds the [identity/session runbook](identity.md): isolated Keycloak/Mailpit installation, random ignored secrets, exact localhost origin, seed/demo/browser commands and production limits. The API now requires identity environment configuration. `npm run dev` loads `.env.identity.local`; the issuer and sink run separately. Use `http://localhost:5173` for real login, while retained UI-fixture URLs remain usable. No Engine process/setup changes are required.
-
-This runbook covers the web/API workspace, Phase 04 development fixture and Phase 05 application PostgreSQL kernel. It does not operate the retained Nominatim/OSRM/VROOM Engine. Engine setup remains in the root `README.md` and `setup.ps1`.
-
-## What exists now
-
-| Process | Local address | Responsibility |
+| Process | Local setup | Responsibility |
 | --- | --- | --- |
-| Web | `http://127.0.0.1:5173` | Arabic RTL workspace shell; developer fixture under `/__fixtures/driver-review` |
-| API | `http://127.0.0.1:3001` | Workspace liveness at `GET /health` only |
-| Application PostgreSQL 18 | `127.0.0.1:55432` | Separate local cluster under `.local/postgres-18`; application and disposable test databases |
+| Web/PWA | Registered origin `http://localhost:5173` | Arabic driver/company UI, own-account downloaded work and durable capture/replay; development fixture excluded from production |
+| API | `http://127.0.0.1:3001` | Authenticated sessions and public execution/integration/reporting handlers; `/health` is liveness only |
+| Application PostgreSQL 18 | Existing managed cluster `127.0.0.1:55432` | Dedicated marked application database plus disposable isolated test databases |
+| Keycloak / local mail sink | `localhost:8085` / `127.0.0.1:8025` | Separate trusted company/personal realms and local-only recovery email evidence |
+| Provisioning worker | `npm run provisioning:worker` | Durable issuer reconciliation; acceptance and issuer readiness remain separate |
+| Planning worker | `npm run planning:worker` | Durable jobs with bounded private Engine calls outside transactions; lease/input fencing |
+| Outgoing sender | `npm run outbox:worker` | Signed exact-byte events, recipient leases/retries/replay; acknowledgement is received only |
+| Reference ERP | Separately installed artifact, own DB, configured loopback port | Native source forms/source outbox, signed inbox, independent projection/application reporting |
 
-The API health payload reports `scope=workspace` and `engine=not-checked`. It is not routing readiness and does not imply a delivery, database, identity, worker, ERP, or Engine capability.
+Supervise workers separately from the API; `--once` processes one due item. The reference consumer uses `source-worker` and `worker` for source delivery and incoming application respectively. Follow its [quickstart](erp/consumer-quickstart.md) for credentials, migration and exact commands. A service token never substitutes for a driver's session.
 
-The web bundle self-hosts Cairo `400`, `600`, `700`, and `800` through `@fontsource/cairo`; it makes no runtime request to Google Fonts. The source license is retained at `docs/licenses/Cairo-OFL-1.1.txt`. Paragraphs use 400, secondary/status text 600, labels 700, and primary headings 800, with `font-synthesis: none` to prevent faux bold. Locally packaged Lucide icons and Radix Dialog retain their ISC/MIT notices under `docs/licenses/`.
+## Release, diagnostics and recovery
 
-The PostgreSQL command kernel is locally verified; no delivery endpoint, user account or background worker exists yet. Keycloak/OIDC, the mock ERP, MapLibre/PMTiles and routing adapters remain future phases. The database contains only tenant/source keys, command result/audit/evidence and outbox intent. These keys are not a tenant administration or authentication implementation.
+- Use [deployment](deployment.md) for pinned build/configuration, explicit migrations, immutable assets, reader compatibility and rollback. Application migrations are 0001–0028; receiver migrations 0001–0004. Startup checks schema and does not migrate implicitly. The target container/Dokploy/TLS/email/private mock topology has not been verified.
+- Use [diagnostics](diagnostics.md) for operator-only token/terminal checks, worker freshness and action tracing. Keep liveness, database, issuer, Engine, source, received and applied states distinct. The [local measurements](verification/performance.md) include a higher-load ERP freshness failure.
+- Follow [recovery](recovery.md) and [actual restore evidence](verification/restore.md). Small same-host restore is verified; independent backup storage/key escrow/alerts and target RPO/RTO remain pending. A server backup cannot restore an unsent action from a lost phone.
+- Follow [offline account/update recovery](offline-account-updates.md). Dexie is version 2 with retained v1 action readers. Keep old hashed assets and require explicit safe activation; clearing site data is not recovery.
+- Run `npm run erp:package`, the [clean consumer proof](erp/consumer-quickstart.md), rebuild the package to include results, then `npm run erp:verify`. The final verifier refuses stale source/artifact/proof hashes. The bundle contains no credentials and is not a production deployment.
+
+The Cairo font is self-hosted at weights 400/600/700/800. [Font license](licenses/Cairo-OFL-1.1.txt), [UI review](ui-review.md) and original reference hashes are retained. Map assets and Engine datasets stay separately managed; ordinary application setup never imports them.
 
 ## Supported local toolchain
 
@@ -92,7 +83,7 @@ CREATE DATABASE tawsel_app_dev OWNER tawsel_app;
 COMMENT ON DATABASE tawsel_app_dev IS 'tawsel:application:v1';
 ```
 
-Set `TAWSEL_DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/tawsel_app_dev?sslmode=verify-full` with correctly URL-encoded credentials. `sslmode=disable` is allowed only on loopback. The current local foundation uses one database-owner role for migration/runtime; production role separation, credential distribution and deploy packaging belong to P39. No Nominatim database, shared Engine credential or map volume is used.
+Set `TAWSEL_DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/tawsel_app_dev?sslmode=verify-full` with correctly URL-encoded credentials. `sslmode=disable` is allowed only on loopback. The current local foundation uses one database-owner role for migration/runtime; production role separation, credential distribution and deploy packaging are documented in the deployment runbook and require target verification. No Nominatim database, shared Engine credential or map volume is used.
 
 The migration runner accepts application names `tawsel_app_[a-z0-9_]+`, an explicit port, a matching database owner, PostgreSQL 18 and the correct database comment. It rejects URL option overrides, missing/wrong markers, Engine names, non-application extensions and nonempty uninitialized schemas. It uses one transaction/advisory migration lock, contiguous SQL filenames and stored SHA-256 checksums (CRLF normalized to LF). Changed/applied, missing or out-of-order SQL fails closed. Startup only **checks** migrations; it never creates tables implicitly. Run `npm run db:migrate` explicitly. Keep repository `db/migrations/` and `contracts/` alongside compiled `apps/api/dist/`; their paths are runtime inputs.
 
@@ -161,7 +152,7 @@ HTTP integration tests listen on ephemeral loopback ports; database tests requir
 
 ## CI
 
-P06 adds `npm run test:authorization` (real tenant/branch/driver/source isolation), `npm run access:demo` (labelled principals and synthetic records in a disposable DB), and `0002_tenant_access.sql`. `npm run db:migrate` upgrades existing P05 data without inventing metadata/authority for old keys; real provisioning remains P07/P08. Run database and authorization suites before depending on the schema. [Permission contract](authorization.md) documents transaction ordering, revocation and required handler/query/job/export guards. No production header or HTTP endpoint accepts fixture identities.
+P06 adds `npm run test:authorization` (real tenant/branch/driver/source isolation), `npm run access:demo` (labelled principals and synthetic records in a disposable DB), and `0002_tenant_access.sql`. `npm run db:migrate` upgrades existing P05 data without inventing metadata/authority for old keys; real provisioning is implemented by P07/P08. Run database and authorization suites before depending on the schema. [Permission contract](authorization.md) documents transaction ordering, revocation and required handler/query/job/export guards. No production header or HTTP endpoint accepts fixture identities.
 
 `.github/workflows/application-checks.yml` runs on application/database/contract changes with read-only repository permissions. It uses Node 24.19.0, `npm ci`, `npm run check` and a dedicated `postgres:18.4` service on 55432. It marks the disposable control database explicitly. No Engine, issuer or map data are started. The workflow is configured/locally reviewed; no remote CI run is claimed by P05.
 

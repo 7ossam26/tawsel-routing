@@ -1133,19 +1133,19 @@
       "id": "ui.filterAndInspect",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
-      "ownerPhase": 3,
+      "lifecycle": "verified-local",
+      "ownerPhase": 32,
       "capability": "local",
-      "description": "Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs."
+      "description": "Inspect/filter authorized monitoring and report details with connected APIs; P32/P36/P41 local browser evidence, owner/device review pending."
     },
     {
       "id": "ui.prepareDraft",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 28,
       "capability": "local",
-      "description": "Enter unsaved forms/pin/route input; saving uses intake/location/planning operations."
+      "description": "Retain unsaved preparation/pin/route input; explicit saves use canonical operations. P28/P33/P41 local browser and storage evidence; no draft implies acceptance."
     },
     {
       "id": "ui.captureOfflineAction",

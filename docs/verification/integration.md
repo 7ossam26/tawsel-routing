@@ -1,4 +1,45 @@
-# External receiver integration evidence — 24 September 2026
+# ERP integration evidence — final local handoff, 26 September 2026
+
+## Phase 42 final public consumer — 26 September 2026
+
+**Passed locally.** [Redacted machine-readable result](integration-local-2026-09-26.json), [ordered A/B/C evidence](../phase-42-evidence.md), [released artifact manifest](../erp/release-manifest.json), [exact external setup](../erp/consumer-quickstart.md). Earlier P26/P27 entries below preserve their historical code and runtime scope.
+
+Operator commands in the checkout, with supported Node on PATH:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-local.ps1 start
+# Existing identity install/config; run in a separate terminal and await discovery:
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/identity-local.ps1 start
+node .local/runtime/node_modules/npm/bin/npm-cli.js run erp:package
+node --env-file=.env.database.local --import tsx scripts/source-demo.ts
+# Refresh final docs/proof into the bundle, then compare final source/artifacts/proof:
+node .local/runtime/node_modules/npm/bin/npm-cli.js run erp:package
+node .local/runtime/node_modules/npm/bin/npm-cli.js run erp:verify
+```
+
+The actual independent installation ran `node <npm-11.1.0-cli> ci --ignore-scripts` in `C:\Users\jo\AppData\Local\Temp\tawsel-p42-consumer-cDIh8B`. It contained copied release runtime artifacts, its own `node_modules`, consumer config and own database URL. Each copied input digest matched the manifest. The environment allowlist contained OS/runtime variables plus `MOCK_ERP_DATABASE_URL`; no Tawsel database variable was passed. Both Tawsel internal-package imports failed as required. Operator fixture setup separately created isolated application/consumer databases and reserved an actual local issuer subject; those are not imports or credentials in the consumer.
+
+The portable checker ran `node conformance/source.mjs source-conformance.json prepare`, `offline-save`, `resume`, `execute` and `node conformance/receiver.mjs receiver-conformance.json`, using each process's absolute copied paths. The operator stopped/restarted only the isolated services and logged the driver into the real local Keycloak through a separate browser session. The driver's private session cookie is an explicit scoped input; it cannot be replaced by the ERP credential. Consumer configs/issuer user/disposable databases were removed after the run; private raw logs are ignored.
+
+Observed Node **v24.19.0**, npm **11.1.0**, PostgreSQL **18.4**; Keycloak startup identifies **26.7.4**. Public API/client/reference **0.1.0**, OpenAPI **3.1.1**, JSON Schema **2020-12**, envelope/payload/event/report definitions **1.0.0**. Proof timestamps: **2026-09-26T07:07:14.079Z–2026-09-26T07:09:04.971Z**. The proof records source and consumer runtime SHA-256 identities; documentation refresh does not alter the tested executable identity.
+
+| Observation | Actual result |
+| --- | --- |
+| Preparation and receipt | Two independent three-piece same-address tasks; preparation created no custody; accepted receipt created assigned goods |
+| Source outage/recovery | HTTP failure retained pending local action; restart recovered the same original action ID; accepted/rejected source status remained distinct |
+| Driver execution | Separate authenticated session; explicit manual route/start; one-piece partial delivery and one no-answer |
+| Report/XLSX | 2 shipments/2 processed attempts, 1 partial/1 no-answer/0 full; delivered 1/held 5; exact 15000 EGP minor units, exponent 2; actual 14338-byte workbook with matching snapshot/task IDs and no formulas |
+| Native source changes | Departed withdrawal rejected; one offered piece actually received, a different piece recorded lost, fresh one-piece cycle from confirmed receipt |
+| Signed receiver | 24 unique events; 10 changed-byte/expired-signature negative checks; duplicates/replay did not double-count |
+| Application after restarts | 2 API and 2 consumer restarts; public receiver projection/replay comparison passed; application reports recorded separately from transport receipt |
+| Final totals | Delivered pieces 1; reportedMinor 15000; actually received pieces 1 |
+
+The final integrated selection covers wrong actor/scope, stale revisions, atomic admission, transaction rollback/locking, lost responses, sender/receiver/source process recovery, gaps/current-state reconciliation with unavailable history, offline ownership, reports and export reauthorization. Exact test names/counts and failures are retained in the [final acceptance record](acceptance-local-2026-09-26.json) and phase evidence; the portable receiver's 10 negatives alone do not claim all those invariants.
+
+The clean install retained two moderate dependency advisories; final audit details are recorded in phase evidence. Manual planning and desktop OIDC are local evidence. Physical devices, real elapsed offline day, live Engine, target deployment/capacity/recovery, owner approval and commercial ERP integration remain unrun. No publication or credential distribution occurred.
+
+## Historical integration evidence
+
 
 Phase 27 extends this proof with a complete source→execution→signed-projection loop. `npm run source:demo` builds and independently installs the public bundle, provisions two tasks via its own transactional source CLI, runs a genuine Keycloak driver session, receives a subset and allocates a fresh cycle. API outage and two restarts of each side recover the same source identity without SQL repair. Result: **24 unique events, 10 negative checks, delivered 1 / reported 15000 minor / received 1**. Native staff forms separately pass actual Keycloak/Chromium at 390×844 and 1366×768. Source transaction/process and session tests use separate real databases. [Exact commands, captures and limitations](../phase-27-evidence.md), [portable source setup](../erp/consumer-quickstart.md), [source protocol](../erp/source-protocol.md). Historical P26 proof follows.
 

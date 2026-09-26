@@ -108,7 +108,7 @@ describe('canonical public contract foundation (schema evidence, not business ex
       || (entry.ownerPhase === 25 && ['integration.configureWebhook','integration.rotateSigningKey','integration.getDeliveryStatus','integration.getDeliveryDetail','integration.retryDelivery','integration.replayEvents'].includes(entry.id))
       || (entry.ownerPhase === 26 && ['integration.getReconciliationSnapshot','integration.reportAppliedCheckpoint','integration.getAppliedCheckpoint','consumer.receiveSignedEvent','consumer.applyInboxEvent','consumer.getStatus'].includes(entry.id))
       || (entry.ownerPhase === 27 && ['source.deliverCommandIntent','source.getCommandStatus'].includes(entry.id))
-      || ([29,33,34,35].includes(entry.ownerPhase) && entry.family === 'local-ui')
+      || ([28,29,32,33,34,35].includes(entry.ownerPhase) && entry.family === 'local-ui')
       || (entry.ownerPhase === 37 && ['report.requestExcelExport','report.getExportStatus','report.downloadExport'].includes(entry.id))
       || (entry.ownerPhase === 38 && entry.family === 'diagnostics')
       || (entry.ownerPhase === 36 && ['report.listWorkdays','report.getWorkday','report.getRoundTiming'].includes(entry.id))

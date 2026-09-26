@@ -1,48 +1,44 @@
-# tawsel-routing
+# Tawsel routing and delivery
 
-Phase 33 now provides a production PWA shell, account-scoped downloaded started work and atomic local driver capture. See [behavior, schema boundaries and reproducible offline demonstration](docs/offline-local-capture.md) and [verification evidence](docs/phase-33-evidence.md). Automatic replay and complete account/update recovery remain Phases 34–35; older phase summaries below retain their historical scope.
+Phase 42 · 26 September 2026 · **local handoff candidate; live pilot not approved**.
 
-Tawsel contains a new web/API application foundation alongside the retained offline routing and fleet-optimization Engine for Egypt.
+Tawsel is an Arabic RTL delivery PWA around the retained Nominatim/OSRM/VROOM Engine. It supports independent-driver work and company work supplied through public ERP contracts. Execution, offline capture/replay, branch returns, monitoring and reports/XLSX have local implementation evidence. The reference ERP has separate storage, native source forms, durable source/outgoing/incoming flows and scoped public integration. A commercial ERP connector remains a separate project.
 
-## Application workspace, identity, intake and planning (through Phase 16)
+## Read and reproduce the handoff
 
-The application provides Arabic RTL React/Vite account and independent-task intake screens, Fastify session/provisioning/personal and ERP intake APIs, and PostgreSQL persistence. The shell self-hosts Cairo weights 400/600/700/800 (SIL OFL 1.1). A clearly labelled development-only driver-review fixture remains excluded from production output. P09 task intake and P10 source snapshot/receipt/admission are real; P11 adds scoped location confirmation, a private Nominatim adapter and real self-hosted Cairo maps ([demo and limits](docs/locations-and-maps.md)). P12 adds typed OSRM/VROOM adapters and authenticated profile metadata ([boundary and demo](docs/engine-boundary.md)). P13 adds [durable planning jobs and immutable forecast revisions](docs/planning-jobs.md), with PostgreSQL restart/stale-result proof. P14 adds [urgent-first validation and honest manual fallback](docs/route-policy.md), with current-target protection and immutable manual revisions. P15 adds [online round start/departure authority](docs/round-start.md), one authoritative owner and immutable first forecast references. P16 adds [explicit current/heading/arrival and physical origin](docs/current-activity.md), including a real API-connected browser demo (`npm run current:demo`). Live Engine services remain unavailable locally; outcomes, offline workers and signed ERP delivery remain later phases. See [ERP intake demo](docs/b2b-intake.md), [B2C intake demo](docs/b2c-intake.md) and [implementation status](docs/implementation-status.md).
+1. [As-built handoff](docs/ERP-INTEGRATION-HANDOFF.md), [ERP reading order](docs/erp/README.md) and [external quickstart](docs/erp/consumer-quickstart.md).
+2. [Exact Phase 42 results](docs/phase-42-evidence.md), [65-requirement ledger](docs/verification/requirement-ledger.md), [A–P readiness and outstanding conditions](docs/verification/pilot-readiness.md).
+3. [Operations](docs/operations.md), [identity](docs/identity.md), [deployment](docs/deployment.md), [diagnostics](docs/diagnostics.md) and [recovery](docs/recovery.md).
 
-The production account shell now supports real local company login, independent phone registration, verified-email recovery and separate sessions through Keycloak and PostgreSQL. Follow [identity setup and demo](docs/identity.md) before starting the API; it requires the dedicated database, generated issuer configuration and local email sink. See [Phase 07 evidence](docs/phase-07-evidence.md) for actual checks and remaining limits.
+Use Node `>=24.11.0 <25` and npm `>=11.1.0 <12` (verified 24.19.0 / 11.1.0). From the checkout:
 
-Prerequisites are Node.js 24 LTS (`>=24.11.0 <25`) and npm 11. From PowerShell:
+```powershell
+npm ci
+npm run erp:package
+# Existing local PostgreSQL and Keycloak must be configured/running for the demo:
+npm run source:demo
+npm run erp:package
+npm run erp:verify
+```
+
+The second package build includes the newly recorded proof. Output is `dist/erp-handoff/`, with canonical contracts/examples, generated public client, reference source/runtime/migrations, pinned consumer lockfile, guides and evidence. The manifest records actual candidate source identity and SHA-256 digests. `source:demo` installs the consumer outside this checkout and gives it only its own database plus scoped public inputs. No publication runs.
+
+## Application development
+
+Follow [operations setup](docs/operations.md) and [identity setup](docs/identity.md), then:
 
 ```powershell
 .\scripts\setup-app.ps1 -Check
 npm run dev
 ```
 
-Open `http://localhost:5173` for the exact identity callback origin, the fixture at `http://localhost:5173/__fixtures/driver-review`, and check `http://127.0.0.1:3001/health`. Stop both with `Ctrl+C` in the same terminal. Application setup never starts, resets, or imports the Engine. See [application operations](docs/operations.md) for configuration, preview routes, individual checks, CI behavior, and troubleshooting; [the UI review](docs/ui-review.md) records actual findings and limits.
+Use the registered origin `http://localhost:5173` for login. API liveness is `http://127.0.0.1:3001/health`; it does not establish Engine/database/worker readiness. The development-only `/__fixtures/driver-review` is excluded from production. Stop owned foreground processes with Ctrl+C. Application setup does not import maps or start the Engine.
 
-## Contract foundation (Phase 02)
+`npm run contracts:generate` updates public types/reference/coverage after canonical changes; `npm run contracts:check` rejects drift. `npm run erp:audit` checks the complete requirement/operation ledger. `npm run check` runs audit, lint, contracts, types, Vitest and builds; connected tests require the dedicated PostgreSQL cluster. Browser and target tests have separately recorded conditions. Original Stitch hashes and UI/action coverage can be checked with `python -X utf8 scripts/check-ui-spec.py check`.
 
-The [state model](docs/tracking-and-consistency.md), [operation catalog](docs/contract-coverage.md), [generated public reference](docs/reference/public-contract.md) and [ERP planning index](docs/erp/README.md) define the shared vocabulary. Common JSON Schemas, versioned envelopes and portable client types are verified locally. P07 session/account, P08 provisioning and P09/P10 independent/source intake paths are available locally. P13 planning/status/forecast reads are also available locally; P14 validated/manual planning is available; later execution/returns and signed event delivery remain designed; no real ERP connector is implemented.
+Required pilot gaps include live Engine/dataset checks, physical Android and iPhone, an actual approximately 24-hour offline interval, owner review, target deployment/capacity and independent recovery. P38's higher-load ERP freshness target was missed. See the readiness report for owners and practical effects.
 
-```powershell
-npm ci
-npm run contracts:demo
-npm run test:contracts
-npm run contracts:generate  # after changing canonical schemas/catalog/examples
-npm run check
-```
-
-Generation updates `packages/api-client/src/schema.d.ts`, `docs/reference/public-contract.md` and `docs/contract-coverage.md`; CI rejects drift. See [Phase 02 evidence](docs/phase-02-evidence.md) for limits and the Phase 03 handoff. The retained Engine tutorial below is a provider-level example: Tawsel's application contract uses 600-second default customer service and complete route validation; an empty VROOM violations array alone does not prove it satisfies Tawsel's rules.
-
-## Visual and action specification (Phase 03)
-
-The Phase 03 [visual system](DESIGN.md), [UI/action specification](docs/ui-spec.md), [reference/control audit](docs/ui-reference-audit.md) and [evidence](docs/phase-03-evidence.md) are now specified and document-checked, with owner review pending. They add no runtime screens or business endpoints. Reproduce the source/operation/state coverage check and paper walkthrough with Python 3.12:
-
-```powershell
-python -X utf8 scripts/check-ui-spec.py check
-python -X utf8 scripts/check-ui-spec.py demo
-```
-
-Phase 04 implements the representative fixture UI from those artifacts; it has not started.
+The retained Engine tutorial below describes provider setup independently. Its VROOM examples are not Tawsel's application contract; Tawsel uses a 600-second default customer service duration and complete route validation.
 
 ## Retained Engine
 

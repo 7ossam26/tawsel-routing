@@ -1,5 +1,7 @@
 # Canonical operation ownership and coverage
 
+Phase 42: [final requirement ledger](verification/requirement-ledger.md), [per-operation implementation/test references](verification/contract-audit.json), [as-built handoff](ERP-INTEGRATION-HANDOFF.md) and [actual checks](phase-42-evidence.md). All statuses are local; physical/target/owner acceptance remains separate.
+
 Generated from [contracts/operations.json](../contracts/operations.json) by `npm run contracts:generate`.
 
 P40 [physical recovery evidence](verification/restore.md) exercises existing session, outcome/action, signed delivery, replay/snapshot and independent receiver operations after isolated base/WAL restore. Public interfaces and lifecycle rows are unchanged. Local recovery does not establish off-host durability or live readiness; see the [recovery runbook](recovery.md).
@@ -18,7 +20,7 @@ P13 now verifies durable planning/status/history APIs, atomic intake/pin trigger
 
 Operation IDs are stable protocol identifiers, not live URLs. Paths/methods are intentionally unassigned until their owner defines a complete operation. Local UI actions invoke no business mutation by themselves; internal-work rows are not public endpoints. The external consumer/source rows belong to the separate ERP process.
 
-[UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. These are designed surfaces, not working endpoints or browser evidence; [Phase 03 evidence](phase-03-evidence.md) records the document checks.
+[UI action coverage](ui-actions.md) maps every catalog entry to role/state, page or focused overlay, feedback and connected UI phase. [UI specification](ui-spec.md) and [reference audit](ui-reference-audit.md) define requirement-driven additions/removals and Arabic state acceptance. The table preserves the original design inventory; connected P28–P41 evidence and the final requirement ledger distinguish implemented UI from owner/device acceptance.
 
 The Capability column names the scoped capability family. For own-driver reads, planning and locations, `execution.own` is an explicit server-policy alternative to staff `monitor.read`, `planning.manage` or `location.review`, constrained to that driver’s authorized work. Predeparture staff authority never implies postdeparture execution authority. `authenticated`, `public`, `local`, `internal`, `external-consumer` and `recipient-scope` denote boundary contexts, not configurable role grants. P06 implements reusable enforcement; P07 establishes real authentication; P08 implements explicitly permitted provisioning service operations; P09 applies personal-tenant and predeparture predicates; P10 composes service credentials and current source/branch guards in the same transaction. Each later feature supplies its locked lifecycle predicates. The [permission table](authorization.md) and [authority tables](tracking-and-consistency.md) remain binding.
 
@@ -277,8 +279,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `ui.callRecipient` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open dialer; no call count, contact outcome or movement event. |
 | `ui.messageRecipient` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open WhatsApp; no execution transition. |
 | `ui.openNavigation` | local-ui | verified-local | [P29](phases/29-ordinary-driver-delivery-ui.md) | local | Open external navigation; does not set heading/arrival. |
-| `ui.filterAndInspect` | local-ui | designed | [P03](phases/03-design-action-specification.md) | local | Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs. |
-| `ui.prepareDraft` | local-ui | designed | [P28](phases/28-online-preparation-journeys.md) | local | Enter unsaved forms/pin/route input; saving uses intake/location/planning operations. |
+| `ui.filterAndInspect` | local-ui | verified-local | [P32](phases/32-monitoring-sync-online-ui.md) | local | Inspect/filter authorized monitoring and report details with connected APIs; P32/P36/P41 local browser evidence, owner/device review pending. |
+| `ui.prepareDraft` | local-ui | verified-local | [P28](phases/28-online-preparation-journeys.md) | local | Retain unsaved preparation/pin/route input; explicit saves use canonical operations. P28/P33/P41 local browser and storage evidence; no draft implies acceptance. |
 | `ui.captureOfflineAction` | local-ui | verified-local | [P33](phases/33-offline-local-capture.md) | local | Atomic local journal and pending projection for allowed downloaded started work. |
 | `ui.requestPersistentStorage` | local-ui | verified-local | [P33](phases/33-offline-local-capture.md) | local | Request browser storage persistence and report actual availability. |
 | `ui.retrySynchronization` | local-ui | verified-local | [P34](phases/34-ordered-replay-conflict-recovery.md) | local | Trigger authenticated replay using original action identities. |

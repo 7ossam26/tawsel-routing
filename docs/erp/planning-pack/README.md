@@ -1,45 +1,5 @@
-# طريقة استخدام حزمة تخطيط الـERP
+# Archived ERP planning snapshot
 
-الـprompt مكتوب على أساس إنك **انتهيت من Tawsel بالفعل**، وإن الشات الجديد دوره يسألك ويخطط للـERP. لا يطلب منه مراجعة مراحل Tawsel أو الانتظار لاستكمالها.
+This pre-Phase-42 planning pack and its ZIP are superseded for the current candidate. They are retained as historical planning material and must not be sent as the final release.
 
-## هتبعت إيه؟
-
-1. افتح `00-START-ERP-PLANNING-PROMPT.md` وانسخ النص بين START وEND في شات ChatGPT جديد.
-2. ارفق **الملفات السبعة 01–07** الموجودة في هذا المجلد، بالأسماء والترتيب التاليين:
-
-| الملف | محتواه |
-| --- | --- |
-| 01-TAWSEL-CURRENT-BASELINE.md | سياق Tawsel وحدود مسؤولية النظامين |
-| 02-BUSINESS-BOUNDARY-AND-MAPPING.md | قواعد العمل والحالات والـIDs والكميات والأموال |
-| 03-CONNECTOR-AND-RECOVERY.md | طرق الربط والصلاحيات والإرسال والاستقبال والتعافي |
-| 04-CANONICAL-HTTP.md | OpenAPI كامل وكتالوج العمليات وفهرس الصلاحيات والـendpoints |
-| 05-CANONICAL-SCHEMAS.md | ملفات JSON Schema الأصلية كاملة |
-| 06-CANONICAL-EXAMPLES.md | كل أمثلة القبول والرفض ومثال توقيع الـwebhook |
-| 07-ERP-DISCOVERY-AND-CHANGE-CONTROL.md | تغطية الأسئلة وطريقة تسجيل القرارات وتحديث الخطة |
-
-3. اكتب أفكارك للـERP أسفل الـprompt أو في الرسالة التالية. تقدر تكتبها بعشوائية؛ الشات مطلوب منه تنظيمها بالأسئلة.
-4. أول نتيجة مطلوبة منه فهم السياق ثم الأسئلة، وليس master plan أو phases جاهزة فورًا.
-
-لا تحتاج ترسل HTML الشات القديم، ولا خطة مراحل Tawsel، ولا ملفات الريبو كلها. ولا ترسل README ده أو ملف تحديث الحزمة للشات الجديد. النسخة ZIP وسيلة لتجميع الملفات والاحتفاظ بالأصول؛ الأفضل تفكها وترفق ملفات Markdown السبعة نفسها. لا تعتمد على أن أي واجهة شات ستفتح ZIP أو تقرأ المرفقات الكبيرة تلقائيًا. الـprompt يطلب من الشات التصريح بأي جزء غير متاح.
-
-04–06 كبيرين لأنهم يحتفظوا بالعقود والأمثلة كاملة، من غير إعادة كتابة أو حذف قيود. القراءة الأولية تركز على شرح 01–03 و07؛ التفاصيل التقنية تُراجع من المراجع الأصلية أثناء اتخاذ قرارات الربط، مع استكمال كل العقود المختارة قبل اعتماد تصميم التكامل.
-
-## تحديث المرفقات عند الانتهاء من Tawsel
-
-الـprompt نفسه جاهز بصيغة «Tawsel مكتمل». ملفات العقود الموجودة هنا تم استخراجها من الريبو وقت تجهيز الحزمة؛ لو المشروع اتغير قبل إرسالها، لازم تستخدم العقود الأحدث بالفعل، مش مجرد تغيير وصفها إلى نهائية.
-
-بعد انتهاء شغلك على Tawsel، انسخ `REFRESH-BEFORE-SENDING.md` إلى Codex داخل نفس الريبو. هيطلب منه مراجعة أي فرق مؤثر وتحديث الحزمة ومراجعة تطابقها. ده تحديث للمرفقات محليًا، وليس نصًا يذهب لشات تخطيط الـERP.
-
-أداة التجهيز:
-
-```powershell
-node scripts/build-erp-planning-pack.mjs
-```
-
-هي تعيد استخراج 04–06 وفهارسها، وتكتب `planning-manifest.json` و`TAWSEL-ERP-PLANNING-PACK.zip`. لا تراجع أو تعدل تفسير قواعد العمل تلقائيًا؛ لذلك استخدم prompt التحديث عند تغير المشروع. ملفات 01–03 و07 تحتاج مراجعة بشرية/agent للعقود المتغيرة.
-
-الحزمة لا تحتوي مفاتيح تشغيل أو `.env` أو قواعد بيانات. مفتاح المثال الموجود في signature vector مفتاح اختبار عام منشور في العقود.
-
-## مرجع صياغة الـprompt
-
-التعليمات تحدد الهدف والمراحل والمخرجات وتفصل المرفقات المرجعية عن الطلب. استعنت بمبادئ [OpenAI الرسمية لصياغة تعليمات واضحة](https://developers.openai.com/api/docs/guides/reasoning-best-practices)، بينما طريقة جولات الأسئلة والمراحل والتجربة اليدوية مأخوذة من تفضيلاتك أنت.
+Use the [current ERP index](../README.md), [as-built handoff](../../ERP-INTEGRATION-HANDOFF.md), [release manifest](../release-manifest.json) and `npm run erp:package`. Copy the resulting complete `dist/erp-handoff/` directory. Its final evidence, supported versions, reference consumer and unknown real-ERP decisions replace the archived planning assumptions.

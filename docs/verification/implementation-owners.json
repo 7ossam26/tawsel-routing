@@ -1,0 +1,411 @@
+{
+  "1": {
+    "code": [
+      "package.json",
+      "vitest.config.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/health.test.ts"
+    ]
+  },
+  "2": {
+    "code": [
+      "contracts",
+      "scripts/contracts.mjs"
+    ],
+    "tests": [
+      "packages/shared/test/fast/contract-foundation.test.ts"
+    ]
+  },
+  "3": {
+    "code": [
+      "DESIGN.md",
+      "docs/ui-spec.md",
+      "docs/ui-actions.md"
+    ],
+    "tests": [
+      "scripts/check-ui-spec.py"
+    ],
+    "limit": "Specification verified; owner comprehension remains unreviewed."
+  },
+  "4": {
+    "code": [
+      "apps/web/src/components"
+    ],
+    "tests": [
+      "tests/browser/driver-review.spec.ts"
+    ],
+    "limit": "Representative fixtures; connected follow-through P28–41. Physical devices and owner review unrun."
+  },
+  "5": {
+    "code": [
+      "apps/api/src/commands",
+      "apps/api/src/db"
+    ],
+    "tests": [
+      "apps/api/test/integration/command-transaction.test.ts",
+      "apps/api/test/integration/database-lifecycle.test.ts"
+    ]
+  },
+  "6": {
+    "code": [
+      "apps/api/src/access"
+    ],
+    "tests": [
+      "apps/api/test/integration/authorization-isolation.test.ts",
+      "apps/api/test/integration/effective-access.test.ts"
+    ]
+  },
+  "7": {
+    "code": [
+      "apps/api/src/auth",
+      "apps/web/src/account-shell.tsx"
+    ],
+    "tests": [
+      "apps/api/test/integration/session-auth.test.ts",
+      "tests/identity-browser/journeys.spec.ts"
+    ],
+    "limit": "Local Keycloak/Mailpit proof; external recovery email and target identity unrun."
+  },
+  "8": {
+    "code": [
+      "apps/api/src/provisioning"
+    ],
+    "tests": [
+      "apps/api/test/integration/provisioning-actor.test.ts",
+      "tests/provisioning-browser/provisioning.spec.ts"
+    ]
+  },
+  "9": {
+    "code": [
+      "apps/api/src/b2c-intake",
+      "apps/web/src/independent-tasks.tsx"
+    ],
+    "tests": [
+      "apps/api/test/integration/b2c-intake.test.ts",
+      "tests/b2c-browser/intake.spec.ts"
+    ]
+  },
+  "10": {
+    "code": [
+      "apps/api/src/b2b-intake"
+    ],
+    "tests": [
+      "apps/api/test/integration/b2b-intake-admission.test.ts"
+    ]
+  },
+  "11": {
+    "code": [
+      "apps/api/src/locations",
+      "apps/web/src/location-review.tsx"
+    ],
+    "tests": [
+      "apps/api/test/integration/location-provenance.test.ts",
+      "tests/location-browser/locations.spec.ts"
+    ],
+    "limit": "Actual Cairo basemap only; private Nominatim and target coverage unverified."
+  },
+  "12": {
+    "code": [
+      "apps/api/src/engine"
+    ],
+    "tests": [
+      "apps/api/test/fast/engine-adapters.test.ts"
+    ],
+    "limit": "Three adapters verified with controlled HTTP; live Engine/profile/dataset probes unavailable."
+  },
+  "13": {
+    "code": [
+      "apps/api/src/planning"
+    ],
+    "tests": [
+      "apps/api/test/integration/planning-jobs.test.ts",
+      "apps/api/test/integration/planning-publication.test.ts"
+    ]
+  },
+  "14": {
+    "code": [
+      "apps/api/src/planning/policy.ts",
+      "apps/api/src/planning/manual.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/planning-publication.test.ts"
+    ],
+    "limit": "Controlled routing/manual fallback; live Engine suitability unverified."
+  },
+  "15": {
+    "code": [
+      "apps/api/src/rounds"
+    ],
+    "tests": [
+      "apps/api/test/integration/start-assignment-race.test.ts",
+      "apps/api/test/integration/round-start-http.test.ts"
+    ]
+  },
+  "16": {
+    "code": [
+      "apps/api/src/current"
+    ],
+    "tests": [
+      "apps/api/test/integration/current-activity.test.ts"
+    ]
+  },
+  "17": {
+    "code": [
+      "apps/api/src/outcomes"
+    ],
+    "tests": [
+      "apps/api/test/integration/outcome-progress-outbox.test.ts"
+    ]
+  },
+  "18": {
+    "code": [
+      "apps/api/src/eligibility"
+    ],
+    "tests": [
+      "apps/api/test/integration/retry-deferral-urgency.test.ts"
+    ]
+  },
+  "19": {
+    "code": [
+      "apps/api/src/closure"
+    ],
+    "tests": [
+      "apps/api/test/integration/workday-carryover.test.ts"
+    ]
+  },
+  "20": {
+    "code": [
+      "apps/api/src/devices"
+    ],
+    "tests": [
+      "apps/api/test/integration/device-ownership.test.ts"
+    ]
+  },
+  "21": {
+    "code": [
+      "apps/api/src/returns"
+    ],
+    "tests": [
+      "apps/api/test/integration/partial-return-correction.test.ts"
+    ]
+  },
+  "22": {
+    "code": [
+      "apps/api/src/branch",
+      "apps/api/src/returns/receiver.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/branch-interruption.test.ts",
+      "apps/api/test/integration/dispatch-cycle.test.ts"
+    ]
+  },
+  "23": {
+    "code": [
+      "apps/api/src/corrections"
+    ],
+    "tests": [
+      "apps/api/test/integration/partial-return-correction.test.ts"
+    ]
+  },
+  "24": {
+    "code": [
+      "apps/api/src/monitoring"
+    ],
+    "tests": [
+      "apps/api/test/integration/monitoring-snapshot.test.ts"
+    ]
+  },
+  "25": {
+    "code": [
+      "apps/api/src/outbox"
+    ],
+    "tests": [
+      "apps/api/test/integration/outbox-sender.test.ts",
+      "apps/api/test/integration/outbox-inbox-recovery.test.ts"
+    ]
+  },
+  "26": {
+    "code": [
+      "apps/mock-erp/src/inbox.ts",
+      "apps/mock-erp/src/projection.ts",
+      "apps/mock-erp/src/recovery.ts"
+    ],
+    "tests": [
+      "apps/mock-erp/test/integration/receiver.test.ts",
+      "apps/mock-erp/test/integration/recovery.test.ts",
+      "tests/erp-conformance/receiver.ts"
+    ]
+  },
+  "27": {
+    "code": [
+      "apps/mock-erp/src/source.ts",
+      "apps/mock-erp/src/native.ts",
+      "apps/mock-erp/src/native-auth.ts",
+      "apps/mock-erp/ui"
+    ],
+    "tests": [
+      "apps/mock-erp/test/integration/mock-source-outbox.test.ts",
+      "apps/mock-erp/test/integration/native-session.test.ts",
+      "tests/erp-conformance/source.ts",
+      "tests/source-browser/source.spec.ts"
+    ],
+    "limit": "Private reference ERP; real vendor connector and identity migration remain separate."
+  },
+  "28": {
+    "code": [
+      "apps/web/src/preparation-flow.tsx"
+    ],
+    "tests": [
+      "apps/web/test/fast/preparation-flow.test.tsx",
+      "tests/preparation-browser/preparation.spec.ts"
+    ]
+  },
+  "29": {
+    "code": [
+      "apps/web/src/current-activity.tsx"
+    ],
+    "tests": [
+      "apps/web/test/fast/driver-flow.test.tsx",
+      "tests/delivery-browser/delivery.spec.ts"
+    ]
+  },
+  "30": {
+    "code": [
+      "apps/web/src/execution-options.tsx",
+      "apps/web/src/correction-page.tsx"
+    ],
+    "tests": [
+      "tests/exceptions-browser/exceptions.spec.ts"
+    ]
+  },
+  "31": {
+    "code": [
+      "apps/web/src/branch-page.tsx",
+      "apps/web/src/closure-page.tsx"
+    ],
+    "tests": [
+      "tests/branch-closure-browser/branch-closure.spec.ts"
+    ]
+  },
+  "32": {
+    "code": [
+      "apps/web/src/monitoring-page.tsx",
+      "apps/mock-erp/ui/integration-status.ts"
+    ],
+    "tests": [
+      "tests/monitoring-browser/monitoring.spec.ts"
+    ],
+    "limit": "Local coherent refresh verified; target-host freshness unverified."
+  },
+  "33": {
+    "code": [
+      "apps/web/src/local-work.ts",
+      "apps/web/src/download-work.ts"
+    ],
+    "tests": [
+      "apps/web/test/fast/local-action-capture.test.ts",
+      "tests/offline-browser/offline.spec.ts"
+    ],
+    "limit": "Native desktop storage/reopen verified; physical platforms and actual elapsed ~24 hours unrun."
+  },
+  "34": {
+    "code": [
+      "apps/api/src/sync",
+      "packages/api-client/src/sync.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/offline-device-takeover.test.ts",
+      "tests/replay-browser/replay.spec.ts"
+    ],
+    "limit": "Logical devices/desktop Chromium; physical-device follow-up unrun."
+  },
+  "35": {
+    "code": [
+      "apps/web/src/local-work.ts",
+      "apps/api/src/auth"
+    ],
+    "tests": [
+      "apps/api/test/integration/offline-session-update.test.ts",
+      "tests/recovery-browser/recovery.spec.ts"
+    ],
+    "limit": "Physical installation/storage pressure and elapsed offline day unrun."
+  },
+  "36": {
+    "code": [
+      "apps/api/src/reporting"
+    ],
+    "tests": [
+      "apps/api/test/integration/reporting-query.test.ts",
+      "tests/reporting-browser/reporting.spec.ts"
+    ]
+  },
+  "37": {
+    "code": [
+      "apps/api/src/reporting/export.ts",
+      "packages/api-client/src/reporting.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/report-export.test.ts",
+      "tests/report-export-browser/report-export.spec.ts"
+    ],
+    "limit": "Process-local bounded exports; physical download UX and owner interpretation unreviewed."
+  },
+  "38": {
+    "code": [
+      "apps/api/src/diagnostics",
+      "scripts/performance-load.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/diagnostics.test.ts",
+      "apps/api/test/fast/performance-accounting.test.ts"
+    ],
+    "limit": "15-driver/10-observer local ERP p95 upper bound 6309ms missed 5000ms; target capacity unknown."
+  },
+  "39": {
+    "code": [
+      "deploy",
+      "scripts/deployment-check.ts"
+    ],
+    "tests": [
+      "apps/api/test/integration/deployment-recovery.test.ts",
+      "apps/api/test/fast/deployment-config.test.ts"
+    ],
+    "limit": "Container/target rollout, TLS/DNS/email and private mock network design unrun."
+  },
+  "40": {
+    "code": [
+      "scripts/recovery-rehearsal.ts",
+      "scripts/recovery-store.ts"
+    ],
+    "tests": [
+      "apps/api/test/fast/recovery-store.test.ts"
+    ],
+    "limit": "Small same-host physical restore only; independent failure-domain RPO/RTO, key escrow and external alerts unverified."
+  },
+  "41": {
+    "code": [
+      "scripts/pilot-browser-server.ts",
+      "docs/verification/pilot-walkthrough.md"
+    ],
+    "tests": [
+      "tests/pilot-browser/pilot.spec.ts"
+    ],
+    "limit": "Physical Android/iPhone, elapsed offline day and owner simplicity review explicitly deferred."
+  },
+  "42": {
+    "code": [
+      "scripts/handoff-audit.mjs",
+      "scripts/erp-release.mjs",
+      "scripts/verify-erp-release.mjs",
+      "docs/ERP-INTEGRATION-HANDOFF.md"
+    ],
+    "tests": [
+      "apps/api/test/fast/release-contract.test.ts",
+      "apps/api/test/fast/release-artifacts.test.ts",
+      "tests/erp-conformance/source-report.ts",
+      "scripts/source-demo.ts"
+    ],
+    "limit": "See final checkpoint results; package verification does not approve pilot or real ERP compatibility."
+  }
+}

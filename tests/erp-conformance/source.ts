@@ -12,6 +12,7 @@ import {returnReceiverClient} from '@tawsel/api-client/returns';
 import {sourceStatusClient} from '@tawsel/api-client/source';
 import {publicValidator} from '@tawsel/api-client/validation';
 import {driveSourceTasks} from './source-driver.js';
+import {verifySourceReport} from './source-report.js';
 type S=components['schemas'];
 export interface SourceConformanceConfig {apiUrl:string;receiverUrl:string;tenantId:string;integrationId:string;credential:string;statusToken:string;driverSubject:string;entry:string;consumerConfig:string;driverCookie?:string;driverOrigin?:string}
 /** Runs from the copied public bundle. Only the consumer's own database variable
@@ -36,7 +37,7 @@ export async function sourceConformance(c:SourceConformanceConfig,stage:string){
  try{
   if(stage==='prepare'){
    await send('branch.provision',{externalId:'cairo',sourceRevision:1,name:'القاهرة',enabled:true,location:null},'branch',['cairo']);
-   await send('role.defineCapabilities',{externalId:'driver-role',sourceRevision:1,name:'مندوب',capabilities:['execution.own']},'role',['driver-role']);
+   await send('role.defineCapabilities',{externalId:'driver-role',sourceRevision:1,name:'مندوب',capabilities:['execution.own','reports.read','reports.export']},'role',['driver-role']);
    await send('user.provision',{externalId:'driver',sourceRevision:1,subject:c.driverSubject,roleExternalId:'driver-role',branchExternalIds:['cairo'],enabled:true},'user',['driver']);
    await send('driver.provisionReference',{externalId:'driver',sourceRevision:1,userExternalId:'driver',enabled:true,profile:'car',vehicleReference:null},'driver',['driver']);
    for(const id of ['external-one','external-two'])await send('intake.submitSnapshot',snapshot(id),'shipment',[id]);
@@ -65,6 +66,7 @@ export async function sourceConformance(c:SourceConformanceConfig,stage:string){
    if(!c.driverCookie||!c.driverOrigin)throw new Error('Separate real Tawsel driver cookie/origin required');let cookie=c.driverCookie;
    const fetcher:typeof fetch=async(input,init)=>{const r=await fetch(new URL(String(input),c.apiUrl),{...init,redirect:'error',headers:{...Object.fromEntries(new Headers(init?.headers)),cookie,origin:c.driverOrigin!}});const added=r.headers.getSetCookie().map(x=>x.split(';')[0]!);if(added.length){const values=new Map(cookie.split('; ').map(x=>{const i=x.indexOf('=');return [x.slice(0,i),x.slice(i+1)];}));for(const a of added){const i=a.indexOf('=');values.set(a.slice(0,i),a.slice(i+1));}cookie=[...values].map(([k,v])=>`${k}=${v}`).join('; ');}return r;};
    const old=await tasks(),journey=await driveSourceTasks(fetcher,old.map(t=>t.taskId));
+   const reporting=await verifySourceReport(fetcher,journey.roundId,old.map(t=>t.taskId));
    // A departed edit is actually submitted; the durable source shows denial.
    const id=await send('assignment.withdraw',reference(old[0]!),'shipment',['external-one'],false);await promisify(execFile)(process.execPath,[c.entry,'source-worker','--once'],{env,windowsHide:true});
    const denied=(await state()).commands.find(x=>x.actionId===id)!;if(denied.status!=='rejected'||denied.lastError!=='departed_edit_forbidden')throw new Error('Departed staff edit not rejected');
@@ -78,7 +80,7 @@ export async function sourceConformance(c:SourceConformanceConfig,stage:string){
    const next=(await tasks())[0]!;if(next.dispatchCycleId===old[0]!.dispatchCycleId||next.state!=='unassigned')throw new Error('Old cycle reopened');
    await send('intake.prepare',{driverExternalId:'driver',items:[reference(next)]},'shipment',['external-one']);
    const prepared=(await tasks())[0]!;await send('assignment.receiveBatch',{driverExternalId:'driver',receiptAsserted:true,items:[reference(prepared)]},'shipment',['external-one']);
-   return {stage,journey,deniedActionId:id,returnState:(await returns.read(received.requestId)).body,newCycle:(await tasks())[0],source:await state()};
+   return {stage,journey,reporting,deniedActionId:id,returnState:(await returns.read(received.requestId)).body,newCycle:(await tasks())[0],source:await state()};
   }
   if(stage==='status')return {stage,source:await state(),tasks:await tasks()};
   throw new Error('Use prepare, offline-save, resume, execute or status');

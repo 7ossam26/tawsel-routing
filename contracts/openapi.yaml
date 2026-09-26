@@ -1,12 +1,12 @@
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — identity, intake, planning and execution
+  title: Tawsel public contract — application and reference ERP handoff
   version: 0.1.0
-  description: P07–P26 locally implemented identity, intake, planning, execution, closure, device
-    takeover, source returns, branch resume/redispatch and bounded driver correction/adoption.
-    Evidence distinguishes PostgreSQL and HTTP from provider fixtures. Coherent monitoring and
-    history, signed durable sender and independent receiver projection are implemented. Full offline
-    capture and native ERP source UI remain later phases.
+  description: Phase 42 local handoff candidate. Identity, intake, planning, execution, source
+    returns, bounded corrections, coherent monitoring, ordered replay, reporting and authorized
+    Excel exports are implemented. Signed delivery, separate receiver application and native
+    reference ERP source commands are locally verified. Target deployment, physical devices,
+    live Engine and owner review remain outstanding. See the release manifest and phase evidence.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema

@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "recordedAt": "2026-09-26T07:14:44.614Z",
+  "sourceSha256": "27f8f3d523296485d54a88c51c5544024aabf2202fbafd0703175d61276df60a",
+  "consumerRuntimeSha256": "947e939c5573f8e99fabe75393f65ea2fb62a40bb2837fdd4c62c048789f6f5b",
+  "classification": "Actual copied package, standalone verifier imports only Node built-ins; six deliberate metadata/generated-copy corruptions rejected; original files restored and reverified.",
+  "checks": [
+    {
+      "name": "declared API version drift",
+      "status": "passed",
+      "observedRejection": "Declared versions differ from canonical artifacts"
+    },
+    {
+      "name": "unsupported publication claim",
+      "status": "passed",
+      "observedRejection": "Unsupported release declaration"
+    },
+    {
+      "name": "source identity mismatch",
+      "status": "passed",
+      "observedRejection": "Source identity mismatch"
+    },
+    {
+      "name": "runtime identity mismatch",
+      "status": "passed",
+      "observedRejection": "Consumer runtime identity mismatch"
+    },
+    {
+      "name": "migration inventory mismatch",
+      "status": "passed",
+      "observedRejection": "Migration declaration mismatch: application"
+    },
+    {
+      "name": "generated schema differs despite its valid new digest",
+      "status": "passed",
+      "observedRejection": "Generated schema copy drift: packages/api-client/dist/contracts/common.schema.json"
+    }
+  ]
+}
