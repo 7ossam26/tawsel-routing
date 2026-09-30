@@ -1,5 +1,7 @@
 name: Build pilot images
 on:
+  push:
+    branches: [codex/dokploy-pilot]
   workflow_dispatch:
     inputs:
       app_origin:
@@ -18,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate release input and load pinned base images
         env:
-          APP_ORIGIN_INPUT: ${{ inputs.app_origin }}
+          APP_ORIGIN_INPUT: ${{ inputs.app_origin || 'https://app.switch2tech.cloud' }}
         run: |
           node -e "const u=new URL(process.env.APP_ORIGIN_INPUT);if(u.protocol!=='https:'||u.origin!==process.env.APP_ORIGIN_INPUT||u.username||u.password)process.exit(1)"
           for name in node nginx keycloak jdk postgres; do echo "${name^^}_BASE=$(jq -r ".$name" deploy/base-images.json)" >> "$GITHUB_ENV"; done
