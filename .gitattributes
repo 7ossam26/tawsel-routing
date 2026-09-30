@@ -2,3 +2,7 @@
 packages/api-client/src/schema.d.ts text eol=lf
 docs/reference/public-contract.md text eol=lf
 docs/contract-coverage.md text eol=lf
+docs/verification/contract-audit.json text eol=lf
+docs/verification/requirement-ledger.md text eol=lf
+docs/verification/integration-local-2026-09-26.json text eol=lf
+docs/erp/release-manifest.json text eol=lf

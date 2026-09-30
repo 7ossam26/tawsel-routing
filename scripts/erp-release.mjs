@@ -28,7 +28,9 @@ if(process.argv[2]==='check'){
  await rm(target,{recursive:true,force:true});await mkdir(target,{recursive:true});
  const paths=new Set();
  for(const directory of ['contracts','packages/api-client/src','packages/api-client/dist','packages/api-client/examples','apps/mock-erp/src','apps/mock-erp/dist','apps/mock-erp/ui','apps/mock-erp/ui-dist','apps/mock-erp/migrations','tests/erp-conformance','db/migrations','deploy'])for(const path of await walk(directory))paths.add(path);
- for(const path of await walk('docs'))if(/\.(md|json|txt)$/.test(path)&&path!==manifestPath&&!path.startsWith('docs/erp/planning-pack/'))paths.add(path);
+ // Package checked-in documentation with its current working-tree content;
+ // local untracked drafts are not release inputs.
+ for(const path of git('ls-files','--cached','--','docs').split('\n'))if(/\.(md|json|txt)$/.test(path)&&path!==manifestPath&&!path.startsWith('docs/erp/planning-pack/'))paths.add(path);
  paths.add('docs/erp/planning-pack/README.md');
  for(const path of await walk('dist/erp-reference'))if(!path.includes('/node_modules/'))paths.add(path);
  for(const path of ['master-plan.md','TAWSEL-DISCOVERY-LOG.md','DESIGN.md','STACK-CONTEXT.md','TAWSEL-ENGINE-CONTEXT.md','.env.example','packages/api-client/package.json','packages/api-client/README.md','apps/mock-erp/package.json','apps/mock-erp/README.md','apps/mock-erp/config.example.json','scripts/verify-erp-release.mjs','scripts/erp-release.mjs','scripts/build-receiver-bundle.mjs','scripts/handoff-audit.mjs'])paths.add(path);

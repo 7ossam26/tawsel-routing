@@ -1,6 +1,6 @@
 {
   "archive": {
-    "source": "https://build.protomaps.com/20260922.pmtiles",
+    "source": "https://build.protomaps.com/20260930.pmtiles",
     "bbox": [
       31,
       29.8,
@@ -9,8 +9,8 @@
     ],
     "minzoom": 0,
     "maxzoom": 15,
-    "bytes": 45260921,
-    "sha256": "e3b0dde005597c52421088f2bb5aa4c13e8eca4a3756b714848935bc4985f10c"
+    "bytes": 45275070,
+    "sha256": "e2fe414df186dd9cb93633f9ef545b13604fce3eeda27e59d003d6ef9ab4cf0e"
   },
   "assetsRevision": "028c18f713baecad011301ff7a69acc39bcc2ae7",
   "hashes": {
@@ -277,7 +277,7 @@
     "sprites/v4/light.png": "b6a34640917bdc57d0bd080836db33376371a3312ebe7b849045268015de3481",
     "sprites/v4/light@2x.json": "1fb5b123fbe35d2e1f6ac171513ce01df89e671273a417ee89c44886a4c132f0",
     "sprites/v4/light@2x.png": "23f6e9df27c2e9a14385763980a24e3608966bfc8192a106058bc2ca959ab563",
-    "style.json": "5a177147bc739c6a7ca97e114171004cf82118dbe1166aeba4625028b2d4a487"
+    "style.json": "0378e26f983129d10b0dc73c1527548b16321760c72c5b41e3123dd3b156c93e"
   },
   "licenses": {
     "tiles": "ODbL produced work; OpenStreetMap attribution; ESA WorldCover landcover CC BY 4.0; Natural Earth public domain",

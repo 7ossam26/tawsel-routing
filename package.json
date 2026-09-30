@@ -16,7 +16,7 @@
   "scripts": {
     "audit": "npm audit --audit-level=high",
     "build": "npm run build:foundation && npm run build -w @tawsel/api && npm run build -w @tawsel/web && npm run build -w @tawsel/mock-erp",
-    "check": "npm run audit && npm run lint && npm run contracts:lint && npm run contracts:check && npm run typecheck && npm run test:ci && npm run build",
+    "check": "npm run audit && npm run lint && npm run contracts:lint && npm run contracts:check && npm run typecheck && npm run build && npm run test:ci",
     "contracts:lint": "redocly lint contracts/openapi.yaml",
     "contracts:generate": "node scripts/contracts.mjs generate",
     "contracts:check": "node scripts/contracts.mjs check",

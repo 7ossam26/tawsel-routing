@@ -13,8 +13,8 @@ await copyFile('node_modules/@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.
 await copyFile('node_modules/@mapbox/mapbox-gl-rtl-text/LICENSE.md',resolve(root,'RTL-LICENSE.md'));
 await mkdir(resolve(root,'licenses'),{recursive:true});
 for(const name of ['MapLibre-BSD.txt','Protomaps-BSD.txt','Protomaps-Data.md','Noto-OFL.txt','Tangram-Icons-MIT.md','RTL-ICU-LICENSE.md'])await copyFile(`docs/licenses/${name}`,resolve(root,'licenses',name));
-const style={version:8,name:'Tawsel Cairo — Protomaps 2026-09-22',center:[31.2357,30.0444],zoom:13,
- metadata:{coverage:'Greater Cairo: 31.0,29.8,31.65,30.3; z0–15, overzoom to 18',source:'https://build.protomaps.com/20260922.pmtiles'},
+const style={version:8,name:'Tawsel Cairo — Protomaps 2026-09-30',center:[31.2357,30.0444],zoom:13,
+ metadata:{coverage:'Greater Cairo: 31.0,29.8,31.65,30.3; z0–15, overzoom to 18',source:'https://build.protomaps.com/20260930.pmtiles'},
  sources:{protomaps:{type:'vector',url:'pmtiles:///maps/cairo.pmtiles',attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · <a href="https://protomaps.com">Protomaps</a> · <a href="https://esa-worldcover.org/en">ESA WorldCover</a>',bounds:[31,29.8,31.65,30.3],maxzoom:15}},
  glyphs:'/maps/fonts/{fontstack}/{range}.pbf',sprite:'/maps/sprites/v4/light',layers:layers('protomaps',namedFlavor('light'),{lang:'ar'})};
 // One locally supplied Noto fontstack covers Arabic, Latin and Arabic presentation forms.

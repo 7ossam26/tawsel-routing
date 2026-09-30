@@ -146,7 +146,7 @@ Stop both processes with `Ctrl+C` in the terminal that runs `npm run dev`. Do no
 | `npm run lint` | ESLint source checks |
 | `npm run typecheck` | Strict TypeScript checks across all workspaces |
 | `npm run build` | Shared/API compilation and web production bundle |
-| `npm run check` | CI order: audit, lint, typecheck, all tests, build |
+| `npm run check` | CI order: audit, lint, contract lint/drift, typecheck, build, all tests |
 
 HTTP integration tests listen on ephemeral loopback ports; database tests require the dedicated PostgreSQL described above. Neither requires the Engine. For a browser port conflict set `$env:TAWSEL_BROWSER_PORT='5185'` before `npm run test:browser:ui`; the test origin follows that port and still rejects external font requests. Browser fixture evidence is separate from database guarantees.
 

@@ -1,4 +1,4 @@
-param([string]$ArchiveSource = 'https://build.protomaps.com/20260922.pmtiles')
+param([string]$ArchiveSource = 'https://build.protomaps.com/20260930.pmtiles')
 $ErrorActionPreference = 'Stop'
 # Explicit provisioning command, intentionally absent from ordinary app setup.
 $repo = Split-Path $PSScriptRoot -Parent
@@ -17,7 +17,7 @@ if (-not (Test-Path -LiteralPath $archive)) {
   & $cli extract $ArchiveSource $archive '--bbox=31.0,29.8,31.65,30.3' '--maxzoom=15' '--download-threads=4'
   if ($LASTEXITCODE -ne 0) { throw 'Archive extraction failed; retain the partial file for diagnosis' }
 }
-if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne 'E3B0DDE005597C52421088F2BB5AA4C13E8ECA4A3756B714848935BC4985F10C') { throw 'Cairo archive checksum mismatch; use the documented retained release' }
+if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne 'E2FE414DF186DD9CB93633F9EF545B13604FCE3EEDA27E59D003D6EF9AB4CF0E') { throw 'Cairo archive checksum mismatch; use the documented retained release' }
 & $cli verify $archive
 if ($LASTEXITCODE -ne 0) { throw 'Archive verification failed' }
 Push-Location $repo

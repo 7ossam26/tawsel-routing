@@ -49,7 +49,7 @@ test('B: real company denial, field preservation, RTL/focus and logout', async (
   await expect(page).toHaveURL(/\/login\?kind=company/);
   expect((await page.request.get(`${origin}/api/session/context?kind=company`)).status()).toBe(401);
 });
-test('B: real registration, local verified email, separate sessions, recovery and phone-only login', async ({ page, context }) => {
+test('B: real registration, guarded account switch, recovery and phone-only login', async ({ page, context }) => {
   test.setTimeout(120_000);
   const stamp = String(Date.now()); const phone = `+201${stamp.slice(-9)}`; const email = `p07-${stamp}@example.test`;
   const password = `Register-${stamp}!`, recovered = `Recovered-${stamp}!`;
@@ -67,16 +67,24 @@ test('B: real registration, local verified email, separate sessions, recovery an
   const personal = await (await page.request.get(`${origin}/api/session/context?kind=personal`)).json();
   expect(personal.recoveryEmailVerified).toBe(true); expect(personal.phoneOwnershipVerified).toBe(false);
   await page.evaluate(id => localStorage.setItem(`evidence:${id}`, 'future-pending-evidence'), personal.access.sourceId);
+  await page.goto('/login/company'); await page.getByLabel('كود الشركة (مطلوب)').fill('LOCAL');
+  await page.getByRole('button', { name: 'متابعة', exact: true }).click();
+  await expect(page.getByText('استكمل الحساب المحفوظ أولًا')).toBeVisible();
+  await page.getByRole('button', { name: 'متابعة تسجيل الدخول' }).click();
+  await expect(page.getByRole('alert')).toContainText('عُد للحساب المحفوظ وسجّل الخروج قبل تغييره.');
+  expect((await page.request.get(`${origin}/api/session/context?kind=company`)).status()).toBe(401);
+  await page.goto('/account?kind=personal'); await expect(page.getByText('أنت مسجّل الدخول')).toBeVisible();
+  await page.getByRole('button', { name: 'تسجيل الخروج', exact: true }).click();
+  await expect(page).toHaveURL(/\/login\?kind=personal/);
+  expect((await page.request.get(`${origin}/api/session/context?kind=personal`)).status()).toBe(401);
   await companyLogin(page);
   await expect(page.getByText('أنت مسجّل الدخول')).toBeVisible();
   const company = await (await page.request.get(`${origin}/api/session/context?kind=company`)).json();
   expect(company.access.sourceId).not.toBe(personal.access.sourceId); expect(company.access.tenantId).not.toBe(personal.access.tenantId);
-  expect((await context.cookies()).filter(c => ['__Host-tawsel-company','__Host-tawsel-personal'].includes(c.name))).toHaveLength(2);
+  expect((await context.cookies()).filter(c => ['__Host-tawsel-company','__Host-tawsel-personal'].includes(c.name)).map(c => c.name)).toEqual(['__Host-tawsel-company']);
   await page.getByRole('button', { name: 'تسجيل الخروج', exact: true }).click();
   await expect(page).toHaveURL(/\/login\?kind=company/);
-  expect((await page.request.get(`${origin}/api/session/context?kind=personal`)).status()).toBe(200);
-  await page.goto('/account?kind=personal'); await page.getByRole('button', { name: 'تسجيل الخروج', exact: true }).click();
-  await expect(page).toHaveURL(/\/login\?kind=personal/);
+  expect((await page.request.get(`${origin}/api/session/context?kind=company`)).status()).toBe(401);
   await page.goto('/recover?kind=personal'); await page.getByRole('button', { name: 'استعادة كلمة المرور', exact: true }).click();
   await expect(page.locator('#kc-reset-password-form')).toBeVisible();
   await page.locator('#username').fill(email); await page.locator('input[type="submit"]').click();

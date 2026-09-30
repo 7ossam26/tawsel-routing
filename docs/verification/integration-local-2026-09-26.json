@@ -1,13 +1,13 @@
 {
   "status": "passed",
-  "startedAt": "2026-09-26T07:07:14.079Z",
-  "completedAt": "2026-09-26T07:09:04.971Z",
-  "sourceSha256": "27f8f3d523296485d54a88c51c5544024aabf2202fbafd0703175d61276df60a",
-  "consumerRuntimeSha256": "947e939c5573f8e99fabe75393f65ea2fb62a40bb2837fdd4c62c048789f6f5b",
+  "startedAt": "2026-09-30T14:28:48.334Z",
+  "completedAt": "2026-09-30T14:29:15.898Z",
+  "sourceSha256": "ce622c6c21d49da235099d15068917918e67b50dd7102a8a630f1e97abdab4ac",
+  "consumerRuntimeSha256": "5fb60736379645bbd64be32f0fe9df15773137ceebf81905cd02a39a20b46d3f",
   "runtime": {
     "node": "v24.19.0",
     "npm": "11.1.0",
-    "postgres": "18.4",
+    "postgres": "18.6",
     "configuredKeycloak": "26.7.4"
   },
   "installation": "clean copied public bundle; npm ci --ignore-scripts",
@@ -15,7 +15,7 @@
   "consumerEnvironment": "allowlisted OS variables plus own MOCK_ERP_DATABASE_URL; config holds scoped public service/status/signing credentials",
   "apiProcessRestarts": 2,
   "receiverProcessRestarts": 2,
-  "stableSourceActionId": "ead92776-44ea-48c6-b4f8-cb217df7e08c",
+  "stableSourceActionId": "1431287b-f821-4d91-8edb-a96eac093310",
   "originalIdRecovered": true,
   "reporting": {
     "report": {
@@ -24,14 +24,14 @@
       "acceptedOnly": true,
       "pendingLocalActions": "not-known-to-server",
       "filters": {
-        "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
+        "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
         "driverId": null,
         "branchId": null,
         "outcome": null
       },
-      "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
-      "driverId": "cfcf1152-4c2e-4e8a-ad67-24595849e640",
-      "openedAt": "2026-09-26T07:08:36.089Z",
+      "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
+      "driverId": "e613817d-a84c-4215-a291-5ccec684c146",
+      "openedAt": "2026-09-30T14:29:06.781Z",
       "endedAt": null,
       "scopeCounts": {
         "shipments": 2,
@@ -85,28 +85,28 @@
       },
       "rounds": [
         {
-          "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-          "startedAt": "2026-09-26T07:08:36.092Z",
+          "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+          "startedAt": "2026-09-30T14:29:06.784Z",
           "endedAt": null
         }
       ],
       "attempts": [
         {
-          "taskId": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
-          "attemptId": "8f1d404d-50c9-465d-ab9e-ff8677ece62f",
-          "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-          "dispatchCycleId": "4f4fb63a-3916-4351-a4d8-0c25b93b8baf",
-          "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
+          "taskId": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
+          "attemptId": "5cf62452-4add-48c6-b57f-84c1956b830e",
+          "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+          "dispatchCycleId": "5d272427-6df0-419e-94fd-d3156afc1a12",
+          "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
           "recipientName": "عميل مرجعي",
           "sourceRevision": 1,
           "assignmentRevision": 2,
           "pinRevision": 0,
-          "admittedAt": "2026-09-26T07:08:36.117Z",
+          "admittedAt": "2026-09-30T14:29:06.799Z",
           "outcome": {
             "kind": "company",
             "time": {
-              "actionId": "0624e79b-a0fe-4243-88f3-34aaf961837e",
-              "recordedAt": "2026-09-26T07:08:36.624Z",
+              "actionId": "b0e41667-edf7-4716-9a02-9811eb5a28f1",
+              "recordedAt": "2026-09-30T14:29:06.983Z",
               "observation": {
                 "clock": {
                   "quality": "unknown"
@@ -127,17 +127,17 @@
                 "heldReturnRequired": 2
               }
             ],
-            "taskId": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
+            "taskId": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
             "arrival": null,
             "heading": null,
             "outcome": "partial",
-            "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-            "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
-            "driverId": "cfcf1152-4c2e-4e8a-ad67-24595849e640",
+            "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+            "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
+            "driverId": "e613817d-a84c-4215-a291-5ccec684c146",
             "revision": 1,
-            "attemptId": "8f1d404d-50c9-465d-ab9e-ff8677ece62f",
-            "outcomeId": "9ab1e992-f664-4a87-a8f9-4d38ee37ad03",
-            "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
+            "attemptId": "5cf62452-4add-48c6-b57f-84c1956b830e",
+            "outcomeId": "32b53f4d-80f0-4d63-8c06-a60b68916cb0",
+            "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
             "collection": {
               "goods": {
                 "currency": "EGP",
@@ -163,11 +163,11 @@
             },
             "returnRequired": true,
             "sourceRevision": 1,
-            "dispatchCycleId": "4f4fb63a-3916-4351-a4d8-0c25b93b8baf",
+            "dispatchCycleId": "5d272427-6df0-419e-94fd-d3156afc1a12",
             "sourceReference": {
-              "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+              "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
               "externalId": "external-one",
-              "integrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+              "integrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
             },
             "assignmentRevision": 2,
             "sourceDispatchCycleId": "cycle-1"
@@ -176,8 +176,8 @@
             {
               "kind": "company",
               "time": {
-                "actionId": "0624e79b-a0fe-4243-88f3-34aaf961837e",
-                "recordedAt": "2026-09-26T07:08:36.624Z",
+                "actionId": "b0e41667-edf7-4716-9a02-9811eb5a28f1",
+                "recordedAt": "2026-09-30T14:29:06.983Z",
                 "observation": {
                   "clock": {
                     "quality": "unknown"
@@ -198,17 +198,17 @@
                   "heldReturnRequired": 2
                 }
               ],
-              "taskId": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
+              "taskId": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
               "arrival": null,
               "heading": null,
               "outcome": "partial",
-              "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-              "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
-              "driverId": "cfcf1152-4c2e-4e8a-ad67-24595849e640",
+              "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+              "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
+              "driverId": "e613817d-a84c-4215-a291-5ccec684c146",
               "revision": 1,
-              "attemptId": "8f1d404d-50c9-465d-ab9e-ff8677ece62f",
-              "outcomeId": "9ab1e992-f664-4a87-a8f9-4d38ee37ad03",
-              "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
+              "attemptId": "5cf62452-4add-48c6-b57f-84c1956b830e",
+              "outcomeId": "32b53f4d-80f0-4d63-8c06-a60b68916cb0",
+              "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
               "collection": {
                 "goods": {
                   "currency": "EGP",
@@ -234,11 +234,11 @@
               },
               "returnRequired": true,
               "sourceRevision": 1,
-              "dispatchCycleId": "4f4fb63a-3916-4351-a4d8-0c25b93b8baf",
+              "dispatchCycleId": "5d272427-6df0-419e-94fd-d3156afc1a12",
               "sourceReference": {
-                "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+                "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
                 "externalId": "external-one",
-                "integrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+                "integrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
               },
               "assignmentRevision": 2,
               "sourceDispatchCycleId": "cycle-1"
@@ -249,21 +249,21 @@
           "returns": []
         },
         {
-          "taskId": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
-          "attemptId": "de6c7804-e956-4f33-a702-cc918b8b78a7",
-          "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-          "dispatchCycleId": "5c38dc3d-2e86-44ad-b445-f76b82853252",
-          "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
+          "taskId": "e2e21e94-052e-56d6-a648-104a75934b20",
+          "attemptId": "f79822d3-2777-48e8-add2-3ea6b3a29ba7",
+          "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+          "dispatchCycleId": "75f642be-760d-4d33-8654-9bd2b49fa451",
+          "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
           "recipientName": "عميل مرجعي",
           "sourceRevision": 1,
           "assignmentRevision": 4,
           "pinRevision": 0,
-          "admittedAt": "2026-09-26T07:08:36.123Z",
+          "admittedAt": "2026-09-30T14:29:06.803Z",
           "outcome": {
             "kind": "company",
             "time": {
-              "actionId": "a0618972-4419-4fca-9f60-fa718c7ad6a1",
-              "recordedAt": "2026-09-26T07:08:37.116Z",
+              "actionId": "a871a58c-6e27-4a26-8026-311c202b441d",
+              "recordedAt": "2026-09-30T14:29:07.149Z",
               "observation": {
                 "clock": {
                   "quality": "unknown"
@@ -284,17 +284,17 @@
                 "heldReturnRequired": 3
               }
             ],
-            "taskId": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
+            "taskId": "e2e21e94-052e-56d6-a648-104a75934b20",
             "arrival": null,
             "heading": null,
             "outcome": "no-answer",
-            "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-            "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
-            "driverId": "cfcf1152-4c2e-4e8a-ad67-24595849e640",
+            "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+            "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
+            "driverId": "e613817d-a84c-4215-a291-5ccec684c146",
             "revision": 1,
-            "attemptId": "de6c7804-e956-4f33-a702-cc918b8b78a7",
-            "outcomeId": "e786e4dc-f763-438a-a498-e32494f66b3d",
-            "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
+            "attemptId": "f79822d3-2777-48e8-add2-3ea6b3a29ba7",
+            "outcomeId": "3bee4fc8-28f5-4eab-92d9-e72743904bd3",
+            "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
             "collection": {
               "goods": {
                 "currency": "EGP",
@@ -316,11 +316,11 @@
             },
             "returnRequired": true,
             "sourceRevision": 1,
-            "dispatchCycleId": "5c38dc3d-2e86-44ad-b445-f76b82853252",
+            "dispatchCycleId": "75f642be-760d-4d33-8654-9bd2b49fa451",
             "sourceReference": {
-              "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+              "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
               "externalId": "external-two",
-              "integrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+              "integrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
             },
             "assignmentRevision": 4,
             "sourceDispatchCycleId": "cycle-1"
@@ -329,8 +329,8 @@
             {
               "kind": "company",
               "time": {
-                "actionId": "a0618972-4419-4fca-9f60-fa718c7ad6a1",
-                "recordedAt": "2026-09-26T07:08:37.116Z",
+                "actionId": "a871a58c-6e27-4a26-8026-311c202b441d",
+                "recordedAt": "2026-09-30T14:29:07.149Z",
                 "observation": {
                   "clock": {
                     "quality": "unknown"
@@ -351,17 +351,17 @@
                   "heldReturnRequired": 3
                 }
               ],
-              "taskId": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
+              "taskId": "e2e21e94-052e-56d6-a648-104a75934b20",
               "arrival": null,
               "heading": null,
               "outcome": "no-answer",
-              "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-              "branchId": "e1c1a6b4-1740-45d0-9177-c5ee5b92088c",
-              "driverId": "cfcf1152-4c2e-4e8a-ad67-24595849e640",
+              "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+              "branchId": "a6734c10-505b-426f-a66e-d01d01e03c9e",
+              "driverId": "e613817d-a84c-4215-a291-5ccec684c146",
               "revision": 1,
-              "attemptId": "de6c7804-e956-4f33-a702-cc918b8b78a7",
-              "outcomeId": "e786e4dc-f763-438a-a498-e32494f66b3d",
-              "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
+              "attemptId": "f79822d3-2777-48e8-add2-3ea6b3a29ba7",
+              "outcomeId": "3bee4fc8-28f5-4eab-92d9-e72743904bd3",
+              "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
               "collection": {
                 "goods": {
                   "currency": "EGP",
@@ -383,11 +383,11 @@
               },
               "returnRequired": true,
               "sourceRevision": 1,
-              "dispatchCycleId": "5c38dc3d-2e86-44ad-b445-f76b82853252",
+              "dispatchCycleId": "75f642be-760d-4d33-8654-9bd2b49fa451",
               "sourceReference": {
-                "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+                "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
                 "externalId": "external-two",
-                "integrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+                "integrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
               },
               "assignmentRevision": 4,
               "sourceDispatchCycleId": "cycle-1"
@@ -400,16 +400,16 @@
       ],
       "timing": [
         {
-          "roundId": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
-          "workdayId": "be17f3ea-2f0d-4ce0-ab2a-0af410f21fdd",
+          "roundId": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
+          "workdayId": "a80ec09e-a875-48b9-a979-b700e8ce37b4",
           "visibility": "whole-round",
-          "acceptedStartAt": "2026-09-26T07:08:36.092Z",
+          "acceptedStartAt": "2026-09-30T14:29:06.784Z",
           "acceptedEndAt": null,
           "start": {
             "status": "missing",
             "observedAt": null,
-            "recordedAt": "2026-09-26T07:08:36.092Z",
-            "actionId": "b27ab846-533b-44f2-b77b-abdf214a3895",
+            "recordedAt": "2026-09-30T14:29:06.784Z",
+            "actionId": "5b33f0ba-f399-4371-9187-4118f0a416d9",
             "clock": {
               "quality": "unknown"
             }
@@ -422,12 +422,12 @@
             "clock": null
           },
           "baseline": {
-            "planId": "b416b2cc-0e0d-4c9c-9895-f9b8bcfbb3ff",
-            "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-            "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+            "planId": "d98753d1-cb22-4721-a6f8-26b3bda6ad8e",
+            "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+            "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
             "planRevision": 1,
-            "capturedAt": "2026-09-26T07:08:35.798Z",
-            "timeOrigin": "2026-09-26T07:08:35.320Z",
+            "capturedAt": "2026-09-30T14:29:06.591Z",
+            "timeOrigin": "2026-09-30T14:29:06.386Z",
             "expectedFinishAt": null,
             "customerAttempts": 2,
             "branchStops": 0,
@@ -435,12 +435,12 @@
             "kind": "manual"
           },
           "latest": {
-            "planId": "b416b2cc-0e0d-4c9c-9895-f9b8bcfbb3ff",
-            "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-            "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+            "planId": "d98753d1-cb22-4721-a6f8-26b3bda6ad8e",
+            "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+            "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
             "planRevision": 1,
-            "capturedAt": "2026-09-26T07:08:35.798Z",
-            "timeOrigin": "2026-09-26T07:08:35.320Z",
+            "capturedAt": "2026-09-30T14:29:06.591Z",
+            "timeOrigin": "2026-09-30T14:29:06.386Z",
             "expectedFinishAt": null,
             "customerAttempts": 2,
             "branchStops": 0,
@@ -449,12 +449,12 @@
           },
           "revisions": [
             {
-              "planId": "b416b2cc-0e0d-4c9c-9895-f9b8bcfbb3ff",
-              "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-              "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+              "planId": "d98753d1-cb22-4721-a6f8-26b3bda6ad8e",
+              "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+              "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
               "planRevision": 1,
-              "capturedAt": "2026-09-26T07:08:35.798Z",
-              "timeOrigin": "2026-09-26T07:08:35.320Z",
+              "capturedAt": "2026-09-30T14:29:06.591Z",
+              "timeOrigin": "2026-09-30T14:29:06.386Z",
               "expectedFinishAt": null,
               "customerAttempts": 2,
               "branchStops": 0,
@@ -480,13 +480,13 @@
           },
           "stops": [
             {
-              "taskId": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
-              "attemptId": "8f1d404d-50c9-465d-ab9e-ff8677ece62f",
+              "taskId": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
+              "attemptId": "5cf62452-4add-48c6-b57f-84c1956b830e",
               "baseline": {
-                "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                 "planRevision": 1,
-                "capturedAt": "2026-09-26T07:08:35.798Z",
+                "capturedAt": "2026-09-30T14:29:06.591Z",
                 "membership": "manual",
                 "sourceRevision": 1,
                 "assignmentRevision": 2,
@@ -496,10 +496,10 @@
                 "identityMatches": true
               },
               "latest": {
-                "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                 "planRevision": 1,
-                "capturedAt": "2026-09-26T07:08:35.798Z",
+                "capturedAt": "2026-09-30T14:29:06.591Z",
                 "membership": "manual",
                 "sourceRevision": 1,
                 "assignmentRevision": 2,
@@ -510,10 +510,10 @@
               },
               "revisions": [
                 {
-                  "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                  "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                  "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                  "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                   "planRevision": 1,
-                  "capturedAt": "2026-09-26T07:08:35.798Z",
+                  "capturedAt": "2026-09-30T14:29:06.591Z",
                   "membership": "manual",
                   "sourceRevision": 1,
                   "assignmentRevision": 2,
@@ -540,8 +540,8 @@
               "completion": {
                 "status": "missing",
                 "observedAt": null,
-                "recordedAt": "2026-09-26T07:08:36.624Z",
-                "actionId": "0624e79b-a0fe-4243-88f3-34aaf961837e",
+                "recordedAt": "2026-09-30T14:29:06.983Z",
+                "actionId": "b0e41667-edf7-4716-9a02-9811eb5a28f1",
                 "clock": {
                   "quality": "unknown"
                 }
@@ -572,13 +572,13 @@
               }
             },
             {
-              "taskId": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
-              "attemptId": "de6c7804-e956-4f33-a702-cc918b8b78a7",
+              "taskId": "e2e21e94-052e-56d6-a648-104a75934b20",
+              "attemptId": "f79822d3-2777-48e8-add2-3ea6b3a29ba7",
               "baseline": {
-                "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                 "planRevision": 1,
-                "capturedAt": "2026-09-26T07:08:35.798Z",
+                "capturedAt": "2026-09-30T14:29:06.591Z",
                 "membership": "manual",
                 "sourceRevision": 1,
                 "assignmentRevision": 4,
@@ -588,10 +588,10 @@
                 "identityMatches": true
               },
               "latest": {
-                "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                 "planRevision": 1,
-                "capturedAt": "2026-09-26T07:08:35.798Z",
+                "capturedAt": "2026-09-30T14:29:06.591Z",
                 "membership": "manual",
                 "sourceRevision": 1,
                 "assignmentRevision": 4,
@@ -602,10 +602,10 @@
               },
               "revisions": [
                 {
-                  "forecastId": "8ec78b1d-28f2-4137-ad1b-a33cfae26f39",
-                  "workloadId": "a53af4c1-046c-4287-9f7d-d4725162b889",
+                  "forecastId": "3fff9d67-f024-4f4b-b6a4-df2c3a835d78",
+                  "workloadId": "fd1a833a-b1e7-4b1c-9d3a-ba0b623e7c40",
                   "planRevision": 1,
-                  "capturedAt": "2026-09-26T07:08:35.798Z",
+                  "capturedAt": "2026-09-30T14:29:06.591Z",
                   "membership": "manual",
                   "sourceRevision": 1,
                   "assignmentRevision": 4,
@@ -632,8 +632,8 @@
               "completion": {
                 "status": "missing",
                 "observedAt": null,
-                "recordedAt": "2026-09-26T07:08:37.116Z",
-                "actionId": "a0618972-4419-4fca-9f60-fa718c7ad6a1",
+                "recordedAt": "2026-09-30T14:29:07.149Z",
+                "actionId": "a871a58c-6e27-4a26-8026-311c202b441d",
                 "clock": {
                   "quality": "unknown"
                 }
@@ -667,23 +667,23 @@
           "branchVisits": []
         }
       ],
-      "snapshotId": "54594d9398b036713cdb7a0562efdca518f0c9944d05f0a2e7c307b7f67995b8",
-      "asOf": "2026-09-26T07:08:37.792Z"
+      "snapshotId": "83b2549a4b089ec2d11d245ed2e13c4c1505be609b7251d41569709e5d65bb36",
+      "asOf": "2026-09-30T14:29:07.427Z"
     },
     "export": {
-      "snapshotId": "54594d9398b036713cdb7a0562efdca518f0c9944d05f0a2e7c307b7f67995b8",
-      "bytes": 14338,
-      "sha256": "c661d348b4146bfdd7a1cfeab597dd70f160547f253e99357c2db32a53e73f50",
+      "snapshotId": "83b2549a4b089ec2d11d245ed2e13c4c1505be609b7251d41569709e5d65bb36",
+      "bytes": 14337,
+      "sha256": "195ee7ae2051355d76a921edfd9ab5cc8705b60b86b46dec09fe8ae944dcddbb",
       "rows": [
         {
-          "taskId": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
+          "taskId": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
           "outcome": "تسليم جزئي",
           "reportedMinor": "15000",
           "currency": "EGP",
           "exponent": 2
         },
         {
-          "taskId": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
+          "taskId": "e2e21e94-052e-56d6-a648-104a75934b20",
           "outcome": "لم يرد",
           "reportedMinor": "غير مسجّل",
           "currency": "غير مسجّل",
@@ -707,14 +707,40 @@
       "report": {
         "checkpoint": {
           "revision": 49,
-          "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+          "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
           "aggregate": {
-            "id": "7958cf65-e53e-4d97-815c-d5587d281c75",
+            "id": "c5f1a61c-1196-595b-a620-f2b51427ba6d",
+            "type": "task"
+          },
+          "appliedAt": "2026-09-30T14:29:14.647Z",
+          "lastError": null,
+          "receivedAt": "2026-09-30T14:29:12.374Z",
+          "pendingCount": 0,
+          "receivedHigh": 7,
+          "schemaVersion": "1.0.0",
+          "appliedThrough": 7,
+          "historyComplete": true,
+          "receivedThrough": 7,
+          "snapshotThrough": 0,
+          "projectedThrough": 7,
+          "recipientIntegrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
+        },
+        "reportedAt": "2026-09-30T14:29:14.829Z",
+        "evidence": "receiver-reported"
+      }
+    },
+    {
+      "report": {
+        "checkpoint": {
+          "revision": 49,
+          "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
+          "aggregate": {
+            "id": "906dc862-c0e1-44b5-9942-c2ef2a24da69",
             "type": "integration"
           },
-          "appliedAt": "2026-09-26T07:09:03.081Z",
+          "appliedAt": "2026-09-30T14:29:14.617Z",
           "lastError": null,
-          "receivedAt": "2026-09-26T07:08:36.079Z",
+          "receivedAt": "2026-09-30T14:29:06.839Z",
           "pendingCount": 0,
           "receivedHigh": 7,
           "schemaVersion": "1.0.0",
@@ -723,9 +749,9 @@
           "receivedThrough": 7,
           "snapshotThrough": 0,
           "projectedThrough": 7,
-          "recipientIntegrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+          "recipientIntegrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
         },
-        "reportedAt": "2026-09-26T07:09:03.290Z",
+        "reportedAt": "2026-09-30T14:29:14.704Z",
         "evidence": "receiver-reported"
       }
     },
@@ -733,92 +759,14 @@
       "report": {
         "checkpoint": {
           "revision": 49,
-          "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
+          "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
           "aggregate": {
-            "id": "8ba8386f-b738-5fc2-a01f-67d8c097b067",
-            "type": "task"
-          },
-          "appliedAt": "2026-09-26T07:09:03.105Z",
-          "lastError": null,
-          "receivedAt": "2026-09-26T07:08:37.390Z",
-          "pendingCount": 0,
-          "receivedHigh": 6,
-          "schemaVersion": "1.0.0",
-          "appliedThrough": 6,
-          "historyComplete": true,
-          "receivedThrough": 6,
-          "snapshotThrough": 0,
-          "projectedThrough": 6,
-          "recipientIntegrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
-        },
-        "reportedAt": "2026-09-26T07:09:03.415Z",
-        "evidence": "receiver-reported"
-      }
-    },
-    {
-      "report": {
-        "checkpoint": {
-          "revision": 49,
-          "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
-          "aggregate": {
-            "id": "2a0f95e3-ffaa-549e-a181-45ba147ca896",
-            "type": "task"
-          },
-          "appliedAt": "2026-09-26T07:09:03.144Z",
-          "lastError": null,
-          "receivedAt": "2026-09-26T07:08:55.649Z",
-          "pendingCount": 0,
-          "receivedHigh": 7,
-          "schemaVersion": "1.0.0",
-          "appliedThrough": 7,
-          "historyComplete": true,
-          "receivedThrough": 7,
-          "snapshotThrough": 0,
-          "projectedThrough": 7,
-          "recipientIntegrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
-        },
-        "reportedAt": "2026-09-26T07:09:03.478Z",
-        "evidence": "receiver-reported"
-      }
-    },
-    {
-      "report": {
-        "checkpoint": {
-          "revision": 49,
-          "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
-          "aggregate": {
-            "id": "c37e3deb-20f9-4aeb-9e2a-9172c2fad87d",
-            "type": "return-request"
-          },
-          "appliedAt": "2026-09-26T07:09:03.128Z",
-          "lastError": null,
-          "receivedAt": "2026-09-26T07:08:46.797Z",
-          "pendingCount": 0,
-          "receivedHigh": 3,
-          "schemaVersion": "1.0.0",
-          "appliedThrough": 3,
-          "historyComplete": true,
-          "receivedThrough": 3,
-          "snapshotThrough": 0,
-          "projectedThrough": 3,
-          "recipientIntegrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
-        },
-        "reportedAt": "2026-09-26T07:09:03.446Z",
-        "evidence": "receiver-reported"
-      }
-    },
-    {
-      "report": {
-        "checkpoint": {
-          "revision": 49,
-          "tenantId": "0d874788-62c2-4855-b27b-bb487e726dc3",
-          "aggregate": {
-            "id": "7f398e4e-caa0-46ee-ba91-19c2bc08a5d8",
+            "id": "0bfa96f5-1686-479d-9f0b-af6a88ea126e",
             "type": "trip"
           },
-          "appliedAt": "2026-09-26T07:09:03.087Z",
+          "appliedAt": "2026-09-30T14:29:14.620Z",
           "lastError": null,
-          "receivedAt": "2026-09-26T07:08:36.404Z",
+          "receivedAt": "2026-09-30T14:29:06.852Z",
           "pendingCount": 0,
           "receivedHigh": 1,
           "schemaVersion": "1.0.0",
@@ -827,9 +775,61 @@
           "receivedThrough": 1,
           "snapshotThrough": 0,
           "projectedThrough": 1,
-          "recipientIntegrationId": "7958cf65-e53e-4d97-815c-d5587d281c75"
+          "recipientIntegrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
         },
-        "reportedAt": "2026-09-26T07:09:03.375Z",
+        "reportedAt": "2026-09-30T14:29:14.752Z",
+        "evidence": "receiver-reported"
+      }
+    },
+    {
+      "report": {
+        "checkpoint": {
+          "revision": 49,
+          "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
+          "aggregate": {
+            "id": "8e6c0aa1-eb34-4ac0-a33c-67db62322341",
+            "type": "return-request"
+          },
+          "appliedAt": "2026-09-30T14:29:14.638Z",
+          "lastError": null,
+          "receivedAt": "2026-09-30T14:29:10.039Z",
+          "pendingCount": 0,
+          "receivedHigh": 3,
+          "schemaVersion": "1.0.0",
+          "appliedThrough": 3,
+          "historyComplete": true,
+          "receivedThrough": 3,
+          "snapshotThrough": 0,
+          "projectedThrough": 3,
+          "recipientIntegrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
+        },
+        "reportedAt": "2026-09-30T14:29:14.800Z",
+        "evidence": "receiver-reported"
+      }
+    },
+    {
+      "report": {
+        "checkpoint": {
+          "revision": 49,
+          "tenantId": "2c078d35-3aa5-412f-a210-53ca9b399281",
+          "aggregate": {
+            "id": "e2e21e94-052e-56d6-a648-104a75934b20",
+            "type": "task"
+          },
+          "appliedAt": "2026-09-30T14:29:14.628Z",
+          "lastError": null,
+          "receivedAt": "2026-09-30T14:29:07.308Z",
+          "pendingCount": 0,
+          "receivedHigh": 6,
+          "schemaVersion": "1.0.0",
+          "appliedThrough": 6,
+          "historyComplete": true,
+          "receivedThrough": 6,
+          "snapshotThrough": 0,
+          "projectedThrough": 6,
+          "recipientIntegrationId": "906dc862-c0e1-44b5-9942-c2ef2a24da69"
+        },
+        "reportedAt": "2026-09-30T14:29:14.785Z",
         "evidence": "receiver-reported"
       }
     }
