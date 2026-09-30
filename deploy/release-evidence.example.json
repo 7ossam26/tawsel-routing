@@ -1,4 +1,5 @@
 {
+  "kind": "upgrade",
   "environment": "live",
   "project": "tawsel-pilot",
   "target": "REPLACE_WITH_INVENTORIED_HOST",

@@ -1,16 +1,26 @@
 import {readFileSync} from 'node:fs';
+import {isIP} from 'node:net';
 import type {WebhookKey} from '@tawsel/api-client/webhook-signature';
 export interface ReceiverConfig {
  tenantId:string; integrationId:string; statusToken:string; keys:WebhookKey[];
  host:string; port:number; tawselBaseUrl?:string; tawselAuthorization?:string; testLoopback?:boolean;
  native?:NativeConfig;
 }
-export interface NativeConfig {privateTestOnly:true;origin:string;issuer:string;clientId:string;clientSecret:string;sessionKey:string;adminSubjects:string[]}
+export interface NativeConfig {
+ mode?:'loopback'|'public-test';privateTestOnly?:true;origin:string;issuer:string;clientId:string;clientSecret:string;sessionKey:string;adminSubjects:string[];
+ trustedProxyCidrs?:string[];
+}
 export function validateNative(c:ReceiverConfig){
  if(!c.native)return;
  const n=c.native;
- if(n.privateTestOnly!==true||process.env.NODE_ENV==='production'||!['127.0.0.1','::1','localhost'].includes(c.host))throw new Error('Native mock ERP is private/test-only and loopback-bound');
+ const mode=n.mode??(n.privateTestOnly?'loopback':undefined);
+ if(mode==='loopback'){
+  if(n.privateTestOnly!==true||process.env.NODE_ENV==='production'||!['127.0.0.1','::1','localhost'].includes(c.host))throw new Error('Native mock ERP is private/test-only and loopback-bound');
+ }else if(mode==='public-test'){
+  if(n.privateTestOnly||process.env.NODE_ENV!=='production'||c.host!=='0.0.0.0'||c.port<1||c.testLoopback||!Array.isArray(n.trustedProxyCidrs)||!n.trustedProxyCidrs.length||n.trustedProxyCidrs.some(s=>{if(typeof s!=='string')return true;const [ip,prefix,...rest]=s.split('/');return !!rest.length||isIP(ip??'')!==4||!/^(?:[0-9]|[12][0-9]|3[0-2])$/.test(prefix??'')||s==='0.0.0.0/0';}))throw new Error('Public mock requires production mode, fixed container listener and explicit trusted proxies');
+ }else throw new Error('Native mock mode required');
  for(const value of [n.origin,n.issuer]){const u=new URL(value);if(u.username||u.password||u.search||u.hash||(u.protocol!=='https:'&&!(c.testLoopback&&u.protocol==='http:'&&['localhost','127.0.0.1'].includes(u.hostname))))throw new Error('Invalid native OIDC origin/issuer');}
+ if(mode==='public-test'&&[n.origin,n.issuer,c.tawselBaseUrl].some(value=>!value||new URL(value).protocol!=='https:'||['localhost','127.0.0.1'].includes(new URL(value).hostname)))throw new Error('Public mock requires exact remote HTTPS origins');
  if(new URL(n.origin).origin!==n.origin||!n.clientId||!n.clientSecret||!(/^[a-f0-9]{64}$/).test(n.sessionKey)||!Array.isArray(n.adminSubjects)||!n.adminSubjects.length||n.adminSubjects.some(s=>typeof s!=='string'||!s))throw new Error('Native session configuration missing');
  if(!c.tawselBaseUrl||!c.tawselAuthorization)throw new Error('Native mock requires scoped public Tawsel configuration');
 }

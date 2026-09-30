@@ -6,9 +6,10 @@ import { keycloakAdministration } from '../apps/api/src/provisioning/issuer.js';
 import { reconcileOne } from '../apps/api/src/provisioning/worker.js';
 import { workerObservation } from '../apps/api/src/diagnostics/workers.js';
 
-const issuer = process.env.TAWSEL_COMPANY_ISSUER, clientId = process.env.TAWSEL_ISSUER_WORKER_CLIENT_ID, clientSecret = process.env.TAWSEL_ISSUER_WORKER_CLIENT_SECRET;
+const issuer = process.env.TAWSEL_COMPANY_ISSUER, adminOrigin = process.env.TAWSEL_ISSUER_ADMIN_ORIGIN, clientId = process.env.TAWSEL_ISSUER_WORKER_CLIENT_ID, clientSecret = process.env.TAWSEL_ISSUER_WORKER_CLIENT_SECRET;
 if (!issuer || !clientId || !clientSecret) throw new Error('Configure the company issuer and dedicated issuer worker client');
-const admin = keycloakAdministration({ issuer, clientId, clientSecret });
+if (process.env.NODE_ENV === 'production' && !adminOrigin) throw new Error('Private issuer administration origin required in production');
+const admin = keycloakAdministration({ issuer, ...(adminOrigin ? { adminOrigin } : {}), clientId, clientSecret });
 const pool = createDatabasePool(parseDatabaseConfig(process.env.TAWSEL_DATABASE_URL, 'application'));
 let stop = false;
 process.on('SIGINT', () => { stop = true; }); process.on('SIGTERM', () => { stop = true; });

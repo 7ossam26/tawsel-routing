@@ -11,7 +11,7 @@ test('rejects exposed ports, writable Engine mounts and mutable images in applic
   const source = (await readFile('deploy/compose.yaml', 'utf8')).replaceAll('\r\n', '\n');
   expect(validateCompose(source)).toContain('migrate');
   expect(() => validateCompose(source.replace('  api:\n', '  api:\n    ports: ["3000:3001"]\n'))).toThrow();
-  expect(() => validateCompose(source.replace('read_only: true\n        bind:', 'read_only: false\n        bind:'))).toThrow();
+  expect(() => validateCompose(source.replace('maps:/maps:ro', 'maps:/maps:rw'))).toThrow();
   expect(() => validateCompose(source.replace('${WEB_IMAGE:?immutable web image required}', 'nginx:latest'))).toThrow();
 });
 
@@ -35,6 +35,16 @@ test('requires current target-bound inventory, restore evidence and exact releas
     { ...e, backup: { ...e.backup, restoredAt: '' } },
     { ...e, images: { ...e.images, app: 'example/app:latest' } }
   ]) expect(() => validateRelease(modified, compose, now)).toThrow();
+});
+
+test('fresh install and go-live have separate honest evidence gates',()=>{
+ const now=Date.now(),date=new Date(now-1000).toISOString(),image='example/app@sha256:'+'a'.repeat(64),compose='fixture';
+ const initial:ReleaseEvidence={kind:'initial',environment:'live',project:'tawsel-pilot',target:'pilot-host',composeSha256:createHash('sha256').update(compose).digest('hex'),images:{app:image,web:image,issuer:image},inventory:{recordedAt:date,engineMountsReviewed:true,portsReviewed:true,resourcesReviewed:true,privateNetworkReviewed:true},initial:{freshDatabasesVerified:true,engineAssetsVerified:true,domainsClosed:true}};
+ expect(()=>validateRelease(initial,compose,now)).not.toThrow();
+ expect(()=>validateRelease({...initial,initial:{...initial.initial,domainsClosed:false}},compose,now)).toThrow();
+ const goLive:ReleaseEvidence={...initial,kind:'go-live',backup:{target:'pilot-host',completedAt:date,restoredAt:date,separateFailureDomain:true,reportSha256:'b'.repeat(64),app:true,identity:true,secrets:true,measuredRpoSeconds:60,measuredRtoSeconds:90,archiveHealthy:true,businessCheckpointVerified:true},goLive:{onlineSmokePassed:true,adminPathsBlocked:true,emailVerified:true,resourceHeadroomPassed:true}};
+ expect(()=>validateRelease(goLive,compose,now)).not.toThrow();
+ expect(()=>validateRelease({...goLive,goLive:{...goLive.goLive,onlineSmokePassed:false}},compose,now)).toThrow();
 });
 
 test('web update and rollback preserve old hashed bytes and refuse immutable collisions', async () => {
@@ -61,6 +71,11 @@ test('production identity prepares exact redirects, separate secrets, phone poli
   expect(company.clients[0]!.secret).not.toBe(personal.clients[0]!.secret);
   expect(personal.loginWithEmailAllowed).toBe(false); expect(personal.verifyEmail).toBe(true);
   expect(personal.users).toEqual([]); expect(personal.resetCredentialsFlow).toBe('tawsel-email-recovery');
+  const pilot=await realmConfiguration({...input,teamPilot:true,mockOrigin:'https://mock.example.test',mockSecret:'d'.repeat(64)});
+  expect(pilot[0]!.clients.find(client=>client.clientId==='tawsel-mock-erp')?.redirectUris).toEqual(['https://mock.example.test/callback']);
+  expect(pilot[0]!.registrationAllowed).toBe(false);
+  expect(pilot[1]!.registrationAllowed).toBe(false);
+  await expect(realmConfiguration({...input,mockOrigin:'https://mock.example.test',mockSecret:'d'.repeat(64)})).rejects.toThrow();
   await expect(realmConfiguration({ ...input, appOrigin: 'http://tawsel.example.test' })).rejects.toThrow();
   await expect(realmConfiguration({ ...input, personalSecret: input.companySecret })).rejects.toThrow();
   const root = await mkdtemp(join(tmpdir(), 'tawsel-theme-'));

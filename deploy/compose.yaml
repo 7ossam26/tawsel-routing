@@ -17,7 +17,7 @@ x-runtime: &runtime
       target: outbox.json
   environment:
     NODE_EXTRA_CA_CERTS: /run/secrets/ca.pem
-  networks: [application]
+  networks: [application, database]
   stop_grace_period: 45s
   cpus: ${RUNTIME_CPUS:?inventory-based per-runtime CPU limit required}
   mem_limit: ${RUNTIME_MEMORY:?inventory-based per-runtime memory limit required}
@@ -42,13 +42,8 @@ services:
       TAWSEL_API_HOST: 0.0.0.0
       TAWSEL_API_PORT: "3001"
       TAWSEL_MAP_ASSET_DIR: /maps
-    networks: [application, engine]
-    volumes:
-      - type: bind
-        source: ${MAP_ASSET_DIR:?existing verified map assets required}
-        target: /maps
-        read_only: true
-        bind: {create_host_path: false}
+    networks: [application, database, engine]
+    volumes: [maps:/maps:ro]
     healthcheck:
       test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, api]
       interval: 30s
@@ -57,7 +52,7 @@ services:
   planning:
     <<: *runtime
     command: [node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/planning-worker.ts]
-    networks: [application, engine]
+    networks: [application, database, engine]
     healthcheck:
       test: [CMD, node, --env-file=/run/secrets/runtime.env, --import, tsx, scripts/deployment-health.ts, planning]
       interval: 30s
@@ -89,11 +84,7 @@ services:
     networks: [application, ingress]
     volumes:
       - retained:/retained:ro
-      - type: bind
-        source: ${MAP_ASSET_DIR:?existing verified map assets required}
-        target: /maps
-        read_only: true
-        bind: {create_host_path: false}
+      - maps:/maps:ro
     healthcheck:
       test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8080/health]
       interval: 30s
@@ -103,17 +94,37 @@ services:
     cpus: ${ISSUER_CPUS:?inventory-based issuer CPU limit required}
     mem_limit: ${ISSUER_MEMORY:?inventory-based issuer memory limit required}
     restart: unless-stopped
-    command: [start, --optimized]
+    command: [start, --optimized, --import-realm]
     env_file: ${ISSUER_ENV_FILE:?external issuer environment required}
     secrets:
       - source: ca
         target: ca.pem
-    networks: [application, ingress]
+      - source: company-realm
+        target: /opt/keycloak/data/import/tawsel-company-realm.json
+      - source: personal-realm
+        target: /opt/keycloak/data/import/tawsel-personal-realm.json
+    networks: [application, database]
     healthcheck:
       test: [CMD, bash, -ec, "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'GET /health/ready HTTP/1.0\r\n\r\n' >&3; grep -q '200 OK' <&3"]
       interval: 30s
       timeout: 5s
       start_period: 90s
+  issuer-gateway:
+    image: ${ISSUER_GATEWAY_IMAGE:?immutable public issuer gateway image required}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp, /var/cache/nginx, /var/run]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on:
+      issuer: {condition: service_healthy}
+    networks: [application, ingress]
+    cpus: ${ISSUER_GATEWAY_CPUS:?inventory-based gateway CPU limit required}
+    mem_limit: ${ISSUER_GATEWAY_MEMORY:?inventory-based gateway memory limit required}
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8080/health']
+      interval: 30s
+      timeout: 5s
 networks:
   application: {}
   ingress:
@@ -122,11 +133,19 @@ networks:
   engine:
     external: true
     name: ${ENGINE_NETWORK:?inventoried private Engine network required}
+  database:
+    external: true
+    name: ${DATABASE_NETWORK:?inventoried private database network required}
 volumes:
   retained:
     external: true
     name: ${RETAINED_ASSETS_VOLUME:?pre-created node-owned asset volume required}
+  maps:
+    external: true
+    name: ${MAP_ASSET_VOLUME:?pre-created verified map volume required}
 secrets:
   runtime: {file: '${RUNTIME_ENV_FILE:?external runtime environment required}'}
   ca: {file: '${DATABASE_CA_FILE:?database CA PEM required}'}
   outbox: {file: '${OUTBOX_CONFIG_FILE:?external outbox configuration required}'}
+  company-realm: {file: '${ISSUER_COMPANY_REALM_FILE:?protected company realm import required}'}
+  personal-realm: {file: '${ISSUER_PERSONAL_REALM_FILE:?protected personal realm import required}'}

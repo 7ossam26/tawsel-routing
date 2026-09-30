@@ -4,7 +4,7 @@ cliArgs:
   threads: 4
   explore: 5
   limit: '10mb'
-  logdir: '/conf'
+  logdir: '/tmp'
   logsize: '100M'
   maxlocations: 1000
   maxvehicles: 200

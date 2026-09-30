@@ -13,7 +13,7 @@ export function statusAuthorization(actual:string|undefined,c:ReceiverConfig){
  if(value.length!==expected.length||!timingSafeEqual(value,expected))throw new ReceiverError(401,'unauthenticated');
 }
 export function receiverApp(pool:Pool,c:ReceiverConfig,faults:ReceiptFaults={}){
- const app=Fastify({logger:false,bodyLimit:1_048_576});
+ const app=Fastify({logger:false,bodyLimit:1_048_576,trustProxy:c.native?.mode==='public-test'?c.native.trustedProxyCidrs!:false});
  app.removeAllContentTypeParsers();app.addContentTypeParser('application/json',{parseAs:'buffer'},(_r,b,done)=>done(null,b));
  app.addHook('onRequest',async(_r,reply)=>{reply.header('cache-control','no-store');});
  app.setErrorHandler((error,_r,reply)=>{const known=error instanceof ReceiverError,status=known?error.statusCode:503;return reply.status(status).type('application/problem+json').send({type:'https://schemas.tawsel.invalid/problems/receiver',title:'Mock ERP receiver request failed',status,code:known?error.code:'receiver_unavailable',correlationId:randomUUID(),retryable:status===503});});

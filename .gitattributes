@@ -6,3 +6,5 @@ docs/verification/contract-audit.json text eol=lf
 docs/verification/requirement-ledger.md text eol=lf
 docs/verification/integration-local-2026-09-26.json text eol=lf
 docs/erp/release-manifest.json text eol=lf
+deploy/*.sh text eol=lf
+scripts/*.sh text eol=lf

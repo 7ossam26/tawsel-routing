@@ -1,11 +1,18 @@
 import {createHash} from 'node:crypto';
 import {readFile,readdir} from 'node:fs/promises';
+import {readFileSync} from 'node:fs';
 import {Pool,type PoolClient} from 'pg';
 import type {ReceiverConfig} from './config.js';
 export function receiverPool(url=process.env.MOCK_ERP_DATABASE_URL){
  if(!url)throw new Error('MOCK_ERP_DATABASE_URL required; Tawsel database configuration is never used');
  const u=new URL(url);if(!/^\/mock_erp_[a-z0-9_]+$/.test(u.pathname))throw new Error('Dedicated mock_erp_ database required');
- return new Pool({connectionString:url,max:4,connectionTimeoutMillis:5000,application_name:'external-mock-erp'});
+ const local=['127.0.0.1','localhost','[::1]'].includes(u.hostname),mode=u.searchParams.get('sslmode');
+ if(!local&&mode!=='verify-full')throw new Error('Remote mock database requires verified TLS');
+ if(mode&& !['verify-full','disable'].includes(mode) || mode==='disable'&&!local)throw new Error('Invalid mock database TLS mode');
+ const caPath=process.env.MOCK_ERP_DATABASE_CA_FILE;
+ if(!local&&!caPath)throw new Error('Remote mock database CA file required');
+ u.searchParams.delete('sslmode');
+ return new Pool({connectionString:u.href,ssl:mode==='verify-full'||!local?{rejectUnauthorized:true,...(caPath?{ca:readFileSync(caPath,'utf8')}:{})}:false,max:4,connectionTimeoutMillis:5000,application_name:'external-mock-erp'});
 }
 export async function transaction<T>(pool:Pool,work:(tx:PoolClient)=>Promise<T>){
  const tx=await pool.connect();let broken=false;

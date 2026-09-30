@@ -1,0 +1,72 @@
+name: ${DATABASE_PROJECT:?database project required}
+services:
+  database:
+    image: ${DATABASE_IMAGE:?pinned PostgreSQL 18 plus pgBackRest image required}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-admin-password
+      TAWSEL_APP_DB_PASSWORD_FILE: /run/secrets/app-password
+      TAWSEL_IDENTITY_DB_PASSWORD_FILE: /run/secrets/identity-password
+      TAWSEL_MOCK_DB_PASSWORD_FILE: /run/secrets/mock-password
+    secrets:
+      - source: postgres-admin-password
+        target: postgres-admin-password
+      - source: app-password
+        target: app-password
+      - source: identity-password
+        target: identity-password
+      - source: mock-password
+        target: mock-password
+      - source: server-cert
+        target: server.crt
+      - source: server-key
+        target: server.key
+      - source: pgbackrest-config
+        target: pgbackrest.conf
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/var/lib/postgresql/tls/server.crt
+      - -c
+      - ssl_key_file=/var/lib/postgresql/tls/server.key
+      - -c
+      - ssl_min_protocol_version=TLSv1.2
+      - -c
+      - password_encryption=scram-sha-256
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=pgbackrest --stanza=tawsel archive-push %p
+      - -c
+      - archive_timeout=60s
+      - -c
+      - wal_level=replica
+    volumes: [database:/var/lib/postgresql]
+    networks: [database]
+    shm_size: ${DATABASE_SHM_SIZE:?measured shared memory required}
+    cpus: ${DATABASE_CPUS:?measured limit required}
+    mem_limit: ${DATABASE_MEMORY:?measured limit required}
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres -d postgres']
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+networks:
+  database:
+    external: true
+    name: ${DATABASE_NETWORK:?private database network required}
+volumes:
+  database:
+    external: true
+    name: ${DATABASE_VOLUME:?protected named database volume required}
+secrets:
+  postgres-admin-password: {file: '${POSTGRES_ADMIN_PASSWORD_FILE:?persistent administrator password file required}'}
+  app-password: {file: '${TAWSEL_APP_DB_PASSWORD_FILE:?persistent application role password file required}'}
+  identity-password: {file: '${TAWSEL_IDENTITY_DB_PASSWORD_FILE:?persistent identity role password file required}'}
+  mock-password: {file: '${TAWSEL_MOCK_DB_PASSWORD_FILE:?persistent mock role password file required}'}
+  server-cert: {file: '${DATABASE_SERVER_CERT_FILE:?persistent server certificate file required}'}
+  server-key: {file: '${DATABASE_SERVER_KEY_FILE:?persistent server key file required}'}
+  pgbackrest-config: {file: '${PGBACKREST_CONFIG_FILE:?persistent backup configuration file required}'}

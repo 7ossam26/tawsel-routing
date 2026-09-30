@@ -1,0 +1,10 @@
+[Unit]
+Description=Tawsel PostgreSQL off-host pgBackRest full backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/tawsel/database-backup.env
+ExecStart=/usr/local/sbin/tawsel-pgbackrest-backup
+TimeoutStartSec=14400

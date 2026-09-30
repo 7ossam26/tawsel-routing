@@ -1,0 +1,21 @@
+{
+  "tenantId": "REPLACE_WITH_SEEDED_TEAM_TENANT_UUID",
+  "integrationId": "REPLACE_WITH_MOCK_INTEGRATION_UUID",
+  "statusToken": "REPLACE_WITH_RANDOM_TOKEN_AT_LEAST_32_CHARACTERS",
+  "keys": [{"keyId":"pilot_v1","secret":"REPLACE_WITH_64_LOWERCASE_HEX"}],
+  "host": "0.0.0.0",
+  "port": 3010,
+  "tawselBaseUrl": "https://REPLACE_APP_DOMAIN",
+  "tawselAuthorization": "Bearer REPLACE_WITH_SCOPED_SERVICE_CREDENTIAL",
+  "testLoopback": false,
+  "native": {
+    "mode": "public-test",
+    "origin": "https://REPLACE_MOCK_DOMAIN",
+    "issuer": "https://REPLACE_AUTH_DOMAIN/realms/tawsel-company",
+    "clientId": "tawsel-mock-erp",
+    "clientSecret": "REPLACE_WITH_CONFIDENTIAL_CLIENT_SECRET",
+    "sessionKey": "REPLACE_WITH_64_LOWERCASE_HEX",
+    "adminSubjects": ["REPLACE_WITH_SEEDED_TEAM_SUBJECT_UUID"],
+    "trustedProxyCidrs": ["REPLACE_WITH_DOKPLOY_INGRESS_CIDR"]
+  }
+}

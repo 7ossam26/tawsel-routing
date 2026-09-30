@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Tawsel PostgreSQL full backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+RandomizedDelaySec=15m
+Unit=tawsel-pgbackrest-backup.service
+
+[Install]
+WantedBy=timers.target

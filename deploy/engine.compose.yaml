@@ -1,0 +1,102 @@
+# Processed Egypt assets are imported into the external named volumes before start.
+# Never run the root development/preprocessing Compose on the Dokploy host.
+name: ${ENGINE_PROJECT:?engine project required}
+services:
+  osrm-car:
+    image: ${OSRM_IMAGE:?pinned OSRM digest required}
+    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-260913.osrm]
+    volumes: [engine-data:/data:ro]
+    networks: [engine]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cpus: ${OSRM_CAR_CPUS:?measured limit required}
+    mem_limit: ${OSRM_CAR_MEMORY:?measured limit required}
+  osrm-bicycle:
+    image: ${OSRM_IMAGE:?pinned OSRM digest required}
+    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-bicycle.osrm]
+    volumes: [engine-data:/data:ro]
+    networks: [engine]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cpus: ${OSRM_BICYCLE_CPUS:?measured limit required}
+    mem_limit: ${OSRM_BICYCLE_MEMORY:?measured limit required}
+  osrm-motorcycle:
+    image: ${OSRM_IMAGE:?pinned OSRM digest required}
+    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-motorcycle.osrm]
+    volumes: [engine-data:/data:ro]
+    networks: [engine]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cpus: ${OSRM_MOTORCYCLE_CPUS:?measured limit required}
+    mem_limit: ${OSRM_MOTORCYCLE_MEMORY:?measured limit required}
+  vroom:
+    image: ${VROOM_IMAGE:?pinned configured VROOM digest required}
+    networks: [engine]
+    depends_on: [osrm-car, osrm-bicycle, osrm-motorcycle]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cpus: ${VROOM_CPUS:?measured limit required}
+    mem_limit: ${VROOM_MEMORY:?measured limit required}
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS http://127.0.0.1:3000/health >/dev/null']
+      interval: 30s
+      timeout: 5s
+  nominatim-import-check:
+    image: ${NOMINATIM_IMAGE:?pinned imported Nominatim image required}
+    entrypoint: [/bin/sh, -ec]
+    command: 'test -f /var/lib/postgresql/16/main/import-finished'
+    volumes: [nominatim-db:/var/lib/postgresql/16/main:ro]
+    restart: 'no'
+  nominatim:
+    image: ${NOMINATIM_IMAGE:?pinned imported Nominatim image required}
+    secrets:
+      - source: nominatim-password
+        target: nominatim-password
+    volumes:
+      - nominatim-db:/var/lib/postgresql/16/main
+      - nominatim-pbf:/nominatim/data
+    environment:
+      PBF_PATH: /nominatim/data/egypt-260913.osm.pbf
+      NOMINATIM_PASSWORD_FILE: /run/secrets/nominatim-password
+      IMPORT_WIKIPEDIA: 'false'
+      IMPORT_TIGER_ADDRESSES: 'false'
+      FREEZE: 'false'
+      WARMUP_ON_STARTUP: 'false'
+      POSTGRES_SHARED_BUFFERS: ${NOMINATIM_SHARED_BUFFERS:?measured tuning required}
+      POSTGRES_MAINTENANCE_WORK_MEM: ${NOMINATIM_MAINTENANCE_WORK_MEM:?measured tuning required}
+      POSTGRES_AUTOVACUUM_WORK_MEM: ${NOMINATIM_AUTOVACUUM_WORK_MEM:?measured tuning required}
+      POSTGRES_EFFECTIVE_CACHE_SIZE: ${NOMINATIM_EFFECTIVE_CACHE_SIZE:?measured tuning required}
+      POSTGRES_WORK_MEM: ${NOMINATIM_WORK_MEM:?measured tuning required}
+      THREADS: ${NOMINATIM_THREADS:?measured tuning required}
+    shm_size: ${NOMINATIM_SHM_SIZE:?measured shared memory required}
+    networks: [engine]
+    depends_on:
+      nominatim-import-check: {condition: service_completed_successfully}
+    restart: unless-stopped
+    cpus: ${NOMINATIM_CPUS:?measured limit required}
+    mem_limit: ${NOMINATIM_MEMORY:?measured limit required}
+    healthcheck:
+      test: [CMD, curl, -fsS, 'http://127.0.0.1:8080/status']
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+networks:
+  engine:
+    external: true
+    name: ${ENGINE_NETWORK:?private Engine network required}
+volumes:
+  engine-data:
+    external: true
+    name: ${ENGINE_DATA_VOLUME:?verified OSRM data volume required}
+  nominatim-db:
+    external: true
+    name: ${NOMINATIM_DB_VOLUME:?cold restored Nominatim database volume required}
+  nominatim-pbf:
+    external: true
+    name: ${NOMINATIM_PBF_VOLUME:?verified Nominatim PBF volume required}
+secrets:
+  nominatim-password: {file: '${NOMINATIM_PASSWORD_FILE:?persistent restored Nominatim password file required}'}

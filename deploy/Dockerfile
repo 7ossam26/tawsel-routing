@@ -3,7 +3,7 @@ ARG NODE_IMAGE
 ARG NGINX_IMAGE
 FROM ${NODE_IMAGE} AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 COPY apps/api/package.json apps/api/package.json
 COPY apps/web/package.json apps/web/package.json
 COPY apps/mock-erp/package.json apps/mock-erp/package.json

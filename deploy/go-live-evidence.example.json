@@ -1,0 +1,12 @@
+{
+  "kind": "go-live",
+  "environment": "live",
+  "project": "tawsel-pilot",
+  "target": "REPLACE_WITH_INVENTORIED_HOST",
+  "composeSha256": "REPLACE_WITH_CONFIG_HASH",
+  "images": {"app":"REPLACE_WITH_DIGEST","web":"REPLACE_WITH_DIGEST","issuer":"REPLACE_WITH_DIGEST"},
+  "inventory": {"recordedAt":"","engineMountsReviewed":false,"portsReviewed":false,"resourcesReviewed":false,"privateNetworkReviewed":false},
+  "initial": {"freshDatabasesVerified":false,"engineAssetsVerified":false,"domainsClosed":false},
+  "backup": {"target":"REPLACE_WITH_INVENTORIED_HOST","completedAt":"","restoredAt":"","separateFailureDomain":false,"reportSha256":"","app":false,"identity":false,"secrets":false,"measuredRpoSeconds":null,"measuredRtoSeconds":null,"archiveHealthy":false,"businessCheckpointVerified":false},
+  "goLive": {"onlineSmokePassed":false,"adminPathsBlocked":false,"emailVerified":false,"resourceHeadroomPassed":false}
+}
