@@ -11,6 +11,7 @@ import { authorizeDriver } from '../planning/service.js';
 import type { Input, Plan } from '../planning/models.js';
 import { validateCompleteRoute, validateOrder } from '../planning/policy.js';
 import { EngineError } from '../engine/index.js';
+import { isSupportedMode } from '../engine/models.js';
 import { admitMembers } from './departure.js';
 import { activity } from '../current/state.js';
 import { requireRound, RoundError, roundView, type Readiness, type ReadinessRequest, type RoundRow, type Start, type Workday } from './models.js';
@@ -38,6 +39,7 @@ async function acceptedDependencies(tx:Transaction,a:AccessSession,ids:readonly 
 interface Selected {plan_id:string;revision:string;state:Plan['state'];fingerprint:string;route_policy:Plan['routePolicy']|null;candidate:Plan['candidate'];forecast_id:string;workload_id:string}
 async function selectedPlan(tx:Transaction,a:AccessSession,p:{driverId:string;planId:string;expectedPlanRevision:number}){
  const state=await planningState(tx,a.context.tenantId,p.driverId),input=await snapshot(tx,state);inputAccess(a,input);
+ if(input.settings && !isSupportedMode(input.settings.mode))throw new RoundError('plan_not_startable',409,'اختر سيارة أو موتوسيكل وأعد تجهيز الخطة قبل بدء الجولة.');
  const plan=(await tx.query<Selected>(`SELECT p.*,f.forecast_id,f.workload_id FROM tawsel.plan_revisions p JOIN tawsel.forecast_revisions f USING(tenant_id,plan_id)
   WHERE p.tenant_id=$1 AND p.driver_id=$2 AND p.plan_id=$3`,[input.tenantId,p.driverId,p.planId])).rows[0];
  if(!plan||state.current_plan_id!==p.planId||Number(plan.revision)!==p.expectedPlanRevision||plan.fingerprint!==fingerprint(input))throw new RoundError('stale_revision',409,'تغيّر العمل؛ أعد تحميل الخطة.');

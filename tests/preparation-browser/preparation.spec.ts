@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { browserFixtureConfig } from '../../scripts/browser-fixture-config.js';
+const browserOrigin = browserFixtureConfig().origin;
 
 type Info = { personalUser: string; companyUser: string; password: string; companyCode: string };
 async function keycloakLogin(page: Page, username: string, password: string) {
@@ -12,7 +14,7 @@ test('actual B2C stale recovery and mock-B2B Engine failure/manual fallback both
   const info = await (await request.get('http://127.0.0.1:3028/__fixture/info')).json() as Info;
   const evidence: Record<string, unknown> = { class: 'Actual local Keycloak 26.7.4, Chromium, real HTTP/PostgreSQL; controlled Engine HTTP; mock B2B public boundary' };
 
-  const personalContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
+  const personalContext = await browser.newContext({ baseURL: browserOrigin, viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
   const personal = await personalContext.newPage();
   await personal.goto('/login/independent'); await personal.getByLabel('رقم الهاتف').fill(info.personalUser); await personal.getByRole('button', { name: 'متابعة تسجيل الدخول' }).click(); await keycloakLogin(personal, info.personalUser, info.password);
   await expect(personal.getByRole('heading', { name: 'حسابي' })).toBeVisible();
@@ -23,10 +25,11 @@ test('actual B2C stale recovery and mock-B2B Engine failure/manual fallback both
   expect((await (await request.get('http://127.0.0.1:3028/__fixture/state')).json()).rounds).toHaveLength(0);
   const refreshedPlans = personal.waitForResponse(response => response.url().includes('/plans?') && response.ok());
   await personal.getByRole('button', { name: 'تحديث', exact: true }).click(); expect((await (await refreshedPlans).json()).inputRevision).toBe(4);
+  await expect(personal.getByText('2 وقفات', { exact: true })).toBeVisible();
   await expect(personal.getByText('خطة جاهزة', { exact: true })).toBeVisible(); await personal.getByRole('button', { name: 'ابدأ الجولة' }).click();
   await expect(personal.getByRole('heading', { name: 'المحطة الحالية' })).toBeVisible(); await expect(personal.getByRole('button', { name: 'اتجه للعميل' })).toBeVisible(); await personal.screenshot({ path: 'output/playwright/phase-28-b2c-start-mobile.png', fullPage: true }); await personalContext.close();
 
-  const companyContext = await browser.newContext({ baseURL: 'http://localhost:5173', viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
+  const companyContext = await browser.newContext({ baseURL: browserOrigin, viewport: { width: 390, height: 844 }, locale: 'ar-EG', timezoneId: 'Africa/Cairo', reducedMotion: 'reduce' });
   const companyPage = await companyContext.newPage(); await companyPage.goto('/login/company'); await companyPage.getByLabel('كود الشركة (مطلوب)').fill(info.companyCode); await companyPage.getByRole('button', { name: 'متابعة', exact: true }).click(); await companyPage.getByRole('button', { name: 'متابعة تسجيل الدخول' }).click(); await keycloakLogin(companyPage, info.companyUser, info.password);
   await expect(companyPage.getByRole('heading', { name: 'حسابي' })).toBeVisible(); await request.post('http://127.0.0.1:3028/__fixture/company-engine-failure');
   await companyPage.goto('/day?kind=company'); await expect(companyPage.getByText(/عمل الشركة قادم وليس على عهدتك/)).toBeVisible(); await companyPage.goto('/prepare?kind=company');

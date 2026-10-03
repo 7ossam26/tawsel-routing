@@ -112,7 +112,7 @@
     "tests": [
       "apps/api/test/fast/engine-adapters.test.ts"
     ],
-    "limit": "Three adapters verified with controlled HTTP; live Engine/profile/dataset probes unavailable."
+    "limit": "Historical P12 verified three modes with controlled HTTP. D-113 retains car/motorcycle only; new two-mode checks and six live route/table/optimization results must be recorded independently."
   },
   "13": {
     "code": [

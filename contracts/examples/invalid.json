@@ -1685,7 +1685,7 @@
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": false,
     "data": {
-      "mode": "bicycle",
+      "mode": "car",
       "accountKind": "personal",
       "origin": {
         "kind": "gps",
@@ -1743,7 +1743,7 @@
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": false,
     "data": {
-      "mode": "bicycle",
+      "mode": "car",
       "accountKind": "personal",
       "origin": {
         "kind": "manual-pin",
@@ -7154,5 +7154,131 @@
       "secret": "must-never-appear"
     },
     "keyword": "additionalProperties"
+  },
+  {
+    "id": "routing-unsupported-bicycle",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "bicycle",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "routing-unsupported-unknown",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "unknown",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "provisioning-unsupported-bicycle",
+    "schema": "provisioning.schema.json#/$defs/DriverCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "driver.provisionReference",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "userExternalId": "driver-1",
+        "enabled": true,
+        "vehicleReference": "vehicle-01",
+        "profile": "bicycle"
+      }
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "provisioning-unsupported-unknown",
+    "schema": "provisioning.schema.json#/$defs/DriverCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "driver.provisionReference",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "userExternalId": "driver-1",
+        "enabled": true,
+        "vehicleReference": "vehicle-01",
+        "profile": "unknown"
+      }
+    },
+    "keyword": "enum"
   }
 ]

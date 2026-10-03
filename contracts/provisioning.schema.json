@@ -381,8 +381,7 @@
         "profile": {
           "enum": [
             "car",
-            "motorcycle",
-            "bicycle"
+            "motorcycle"
           ]
         }
       },

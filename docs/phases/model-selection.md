@@ -21,7 +21,7 @@ OpenAI تصف **GPT-6 Astra** بأنه الأنسب لأصعب الأعمال ا
 | [09 — Independent-driver task intake](09-b2c-task-intake.md) | `gpt-5.6-sol` | `high` | A focused B2C intake flow with established persistence, validation and access primitives. |
 | [10 — ERP task snapshots, receipt and atomic admission](10-b2b-intake-admission.md) | `gpt-6-astra` | `xhigh` | ERP revisions, receipt semantics and concurrent atomic capacity admission interact. |
 | [11 — Confirmed locations and real map assets](11-locations-map-assets.md) | `gpt-6-astra` | `high` | Location provenance, explicit pin confirmation and real map assets span providers and UI. |
-| [12 — Routing Engine adapters and vehicle profiles](12-engine-profile-adapters.md) | `gpt-6-astra` | `high` | Three Engine profiles need precise adapter units, coordinates and honest failure behavior. |
+| [12 — Routing Engine adapters and vehicle profiles](12-engine-profile-adapters.md) | `gpt-6-astra` | `high` | Two Engine profiles need precise adapter units, coordinates and honest failure behavior. |
 | [13 — Durable planning jobs and forecast revisions](13-planning-jobs-forecast-storage.md) | `gpt-6-astra` | `xhigh` | Durable jobs, stale result rejection and forecast revisions must survive concurrency and restart. |
 | [14 — Urgent-first route policy and manual fallback](14-route-policy-manual-fallback.md) | `gpt-6-astra` | `xhigh` | Urgent ordering, current-stop protection and manual fallback must preserve all route constraints. |
 | [15 — Online round start and departure authority](15-round-start-departure-lock.md) | `gpt-6-astra` | `xhigh` | Round start races with assignment changes and another device at the authority boundary. |

@@ -95,7 +95,7 @@ P24 update — 24 September 2026: coherent conditional monitoring and scoped dri
 | المرحلة / ملف الـprompt | النتيجة المقصودة |
 | --- | --- |
 | [11 — Confirmed locations and real map assets](11-locations-map-assets.md) | Provide real address candidates, explicit pin confirmation and usable self-hosted maps for B2C and authorized B2B location review. |
-| [12 — Routing Engine adapters and vehicle profiles](12-engine-profile-adapters.md) | Implement and verify the OSRM/VROOM routing boundary for all three vehicle modes, with correct units, coordinates and provider failure semantics. |
+| [12 — Routing Engine adapters and vehicle profiles](12-engine-profile-adapters.md) | Implement and verify the OSRM/VROOM routing boundary for both vehicle modes under D-113, with correct units, coordinates and provider failure semantics. |
 | [13 — Durable planning jobs and forecast revisions](13-planning-jobs-forecast-storage.md) | Turn accepted planning inputs into durable asynchronous jobs and stored plan/forecast revisions, with restart and stale-result protection. |
 | [14 — Urgent-first route policy and manual fallback](14-route-policy-manual-fallback.md) | Validate complete routes against product rules and provide honest manual operation when optimization is unavailable or incomplete. |
 
@@ -165,7 +165,7 @@ P24 update — 24 September 2026: coherent conditional monitoring and scoped dri
 ## تتبع المتطلبات والقرارات
 
 - [خريطة التغطية](coverage-matrix.md): 65 مجموعة متطلبات حالية، لكل منها مرحلة تنفيذ ومراحل استكمال/تحقق، ثم توزيع العقود والشاشات والاختبارات ومعايير A–P.
-- [خريطة القرارات](decision-map.md): تربط جميع القرارات D-01 إلى D-112 بالمتطلبات الحالية، وتوضح التعديلات التي تمنع تطبيق اقتراح قديم.
+- [خريطة القرارات](decision-map.md): تربط جميع القرارات D-01 إلى D-113 بالمتطلبات الحالية، وتوضح التعديلات التي تمنع تطبيق اقتراح قديم.
 - [قائمة مراجعة انتهاء المرحلة](review-checklist.md): أسئلة عملية لفحص الناتج، لا طلب موافقة جديدة على كل خطوة.
 - [سجل التنفيذ](../implementation-status.md): الحالة الحقيقية والأدلة والفجوات، ويبدأ بدون أي مرحلة منفذة.
 

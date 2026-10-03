@@ -1,10 +1,10 @@
-# Processed Egypt assets are imported into the external named volumes before start.
+# Egypt assets are prepared in the external named volumes before runtime start.
 # Never run the root development/preprocessing Compose on the Dokploy host.
 name: ${ENGINE_PROJECT:?engine project required}
 services:
   osrm-car:
     image: ${OSRM_IMAGE:?pinned OSRM digest required}
-    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-260913.osrm]
+    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', '/data/${OSRM_CAR_DATASET:-egypt-260913.osrm}']
     volumes: [engine-data:/data:ro]
     networks: [engine]
     restart: unless-stopped
@@ -12,16 +12,6 @@ services:
     tmpfs: [/tmp]
     cpus: ${OSRM_CAR_CPUS:?measured limit required}
     mem_limit: ${OSRM_CAR_MEMORY:?measured limit required}
-  osrm-bicycle:
-    image: ${OSRM_IMAGE:?pinned OSRM digest required}
-    command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-bicycle.osrm]
-    volumes: [engine-data:/data:ro]
-    networks: [engine]
-    restart: unless-stopped
-    read_only: true
-    tmpfs: [/tmp]
-    cpus: ${OSRM_BICYCLE_CPUS:?measured limit required}
-    mem_limit: ${OSRM_BICYCLE_MEMORY:?measured limit required}
   osrm-motorcycle:
     image: ${OSRM_IMAGE:?pinned OSRM digest required}
     command: [osrm-routed, --algorithm, mld, --max-table-size, '10000', --max-matching-size, '1000', /data/egypt-motorcycle.osrm]
@@ -35,7 +25,7 @@ services:
   vroom:
     image: ${VROOM_IMAGE:?pinned configured VROOM digest required}
     networks: [engine]
-    depends_on: [osrm-car, osrm-bicycle, osrm-motorcycle]
+    depends_on: [osrm-car, osrm-motorcycle]
     restart: unless-stopped
     read_only: true
     tmpfs: [/tmp]
@@ -60,7 +50,7 @@ services:
       - nominatim-db:/var/lib/postgresql/16/main
       - nominatim-pbf:/nominatim/data
     environment:
-      PBF_PATH: /nominatim/data/egypt-260913.osm.pbf
+      PBF_PATH: /nominatim/data/${EGYPT_PBF_FILE:-egypt-260913.osm.pbf}
       NOMINATIM_PASSWORD_FILE: /run/secrets/nominatim-password
       IMPORT_WIKIPEDIA: 'false'
       IMPORT_TIGER_ADDRESSES: 'false'
@@ -94,9 +84,9 @@ volumes:
     name: ${ENGINE_DATA_VOLUME:?verified OSRM data volume required}
   nominatim-db:
     external: true
-    name: ${NOMINATIM_DB_VOLUME:?cold restored Nominatim database volume required}
+    name: ${NOMINATIM_DB_VOLUME:?completed Nominatim database volume required}
   nominatim-pbf:
     external: true
     name: ${NOMINATIM_PBF_VOLUME:?verified Nominatim PBF volume required}
 secrets:
-  nominatim-password: {file: '${NOMINATIM_PASSWORD_FILE:?persistent restored Nominatim password file required}'}
+  nominatim-password: {file: '${NOMINATIM_PASSWORD_FILE:?persistent Nominatim password file required}'}

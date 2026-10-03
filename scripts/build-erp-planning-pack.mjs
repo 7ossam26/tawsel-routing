@@ -38,7 +38,7 @@ const valid = JSON.parse(await sourceText('contracts/examples/valid.json'));
 const invalid = JSON.parse(await sourceText('contracts/examples/invalid.json'));
 const client = JSON.parse(await sourceText('packages/api-client/package.json'));
 const escape = (s) => String(s ?? '').replaceAll('|', '\\|').replaceAll('\n', ' ');
-const header = (title) => `# ${title}\n\nSource commit: \`${commit}\`. Extracted: ${generatedAt}.\n\nOriginal blocks below are verbatim source text, not rewritten contracts. Their SHA-256 hashes refer to original bytes. Resolve relative schema references using the original path above the block and the companion schema attachment. No repo/network access is needed to read those blocks. Descriptions/fixtures do not override operation authentication or lifecycle.\n\n`;
+const header = (title) => `# ${title}\n\nSource checkout base commit: \`${commit}\`. Extracted: ${generatedAt}. Consult sourceWorkingTreeChanges and source-file hashes in planning-manifest.json for uncommitted inputs; the base commit alone does not identify those bytes.\n\nOriginal blocks below are verbatim source text, not rewritten contracts. Their SHA-256 hashes refer to original bytes. Resolve relative schema references using the original path above the block and the companion schema attachment. No repo/network access is needed to read those blocks. Descriptions/fixtures do not override operation authentication or lifecycle.\n\n`;
 const block = async (path, language) => {
   const bytes = await remember(path);
   const content = bytes.toString('utf8');
@@ -58,6 +58,7 @@ for (const [path, item] of Object.entries(api.paths)) {
     const category = reference ? 'External ERP/reference consumer server'
       : names.includes('ProvisioningService') ? 'Tawsel ERP service'
       : names.includes('ProvisioningOperator') ? 'Tawsel operator bootstrap'
+      : names.includes('DiagnosticsOperator') ? 'Tawsel read-only deployment operator'
       : names.some((n) => /Session$/.test(n)) ? 'Tawsel human session'
       : names.length === 0 ? 'Tawsel public/account entry' : 'Review authentication';
     if (category === 'Review authentication') throw new Error(`Unclassified authentication: ${operation.operationId}`);

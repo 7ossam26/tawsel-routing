@@ -63,7 +63,7 @@ const worker = await receiverWorker(erp.url, config, { mode: 'source-worker' });
 // Public source commands populate native selectors; no receipt/custody row seeding.
 for (const [kind, operationId, payload] of [
   ['branch', 'branch.provision', { externalId: 'branch', sourceRevision: 2, name: 'فرع المصدر', enabled: true, location: { latitude: 30.1, longitude: 31.3 } }],
-  ['driver', 'driver.provisionReference', { externalId: 'policy-driver', sourceRevision: 2, userExternalId: 'policy-driver', enabled: true, profile: 'bicycle', vehicleReference: null }]
+  ['driver', 'driver.provisionReference', { externalId: 'policy-driver', sourceRevision: 2, userExternalId: 'policy-driver', enabled: true, profile: 'car', vehicleReference: null }]
 ] as const) {
   const command = sourceEnvelope(config, operationId, payload); await saveSource(erp.pool, config, staffUser.subject, { command, records: [{ kind, externalId: payload.externalId, expectedRevision: 0, desired: { ...payload } }] });
 }

@@ -25,7 +25,7 @@ type TakeoverCommand = components['schemas']['DeviceTakeoverCommand'];
 type Mode = components['schemas']['Mode'];
 
 type Draft = {
-  mode: Mode;
+  mode: Mode | '';
   originLatitude: string;
   originLongitude: string;
   endpointKind: 'last-customer' | 'fixed' | 'branch';
@@ -37,6 +37,15 @@ type Draft = {
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const terminalJobs = new Set(['complete', 'partial', 'failed', 'superseded']);
+const modeReviewMessage = 'وسيلة الحركة المحفوظة غير متاحة. اختر سيارة أو دراجة نارية ثم احفظ التجهيز.';
+
+function supportedMode(value: unknown): value is Mode {
+  return value === 'car' || value === 'motorcycle';
+}
+
+function unsupportedPlanningMode(command: PlanningCommand | null) {
+  return command?.operationId === 'planning.saveDraft' && !supportedMode(command.payload.settings.mode);
+}
 
 function localDateTime(value = new Date(Date.now() + 5 * 60_000)) {
   const local = new Date(value.getTime() - value.getTimezoneOffset() * 60_000);
@@ -52,7 +61,7 @@ function draftFromPlan(plan: Plan | undefined, kind: 'personal' | 'company', bra
   if (!settings) return emptyDraft(kind, branchId);
   const endpoint = settings.endpoint;
   return {
-    mode: settings.mode,
+    mode: supportedMode(settings.mode) ? settings.mode : '',
     originLatitude: String(settings.origin.coordinates.latitude),
     originLongitude: String(settings.origin.coordinates.longitude),
     endpointKind: endpoint.kind,
@@ -126,6 +135,9 @@ export function PreparationFlow() {
       ]);
       if (monitoring.status !== 200 || !monitoring.data) throw new Error('تعذر تحميل العمل اليومي كاملًا.');
       setSession(context); setCurrent(roundState); setDaily(monitoring.data); setPlans(planningState); setJob(planningState.latestJob);
+      const planKey = `tawsel:planning-pending:${context.access.tenantId}:${driverId}`;
+      const storedPlanning = sessionStorage.getItem(planKey);
+      const restoredPlanning = storedPlanning ? JSON.parse(storedPlanning) as PlanningCommand : null;
       const latest = planningState.items.find(item => item.current) ?? planningState.items[0];
       const authoritativeDraft = draftFromPlan(latest, kind, context.access.branchIds[0] ?? '');
       if (!initialized.current) {
@@ -135,19 +147,19 @@ export function PreparationFlow() {
         const touched = sessionStorage.getItem(touchedKey) === '1';
         setServerDraft(authoritativeDraft);
         setChoicesTouched(touched);
-        setDraft(touched && saved ? JSON.parse(saved) as Draft : authoritativeDraft);
+        const restoredDraft = touched && saved ? JSON.parse(saved) as Draft : authoritativeDraft;
+        setDraft({ ...restoredDraft, mode: !unsupportedPlanningMode(restoredPlanning) && supportedMode(restoredDraft.mode) ? restoredDraft.mode : '' });
         const eligibleIds = monitoring.data.items.filter(item => item.eligible && item.coordinates).map(item => item.taskId);
         const retained = planningState.continuation?.orderedTaskIds ?? latest?.routePolicy?.orderedTaskIds ?? [];
         const order = [...retained.filter(id => eligibleIds.includes(id)), ...eligibleIds.filter(id => !retained.includes(id))];
         setManualOrder(order); initialized.current = true;
       } else setServerDraft(() => {
-        setChoicesTouched(touched => { if (!touched) setDraft(authoritativeDraft); return touched; });
+        setChoicesTouched(touched => { if (!touched) setDraft({ ...authoritativeDraft, mode: unsupportedPlanningMode(restoredPlanning) ? '' : authoritativeDraft.mode }); return touched; });
         return authoritativeDraft;
       });
-      const planKey = `tawsel:planning-pending:${context.access.tenantId}:${driverId}`;
       const startKey = `tawsel:start-pending:${context.access.tenantId}:${driverId}:${deviceId()}`;
       const takeoverKey = `tawsel:takeover-pending:${context.access.tenantId}:${driverId}:${deviceId()}`;
-      setPendingPlanning(sessionStorage.getItem(planKey) ? JSON.parse(sessionStorage.getItem(planKey)!) as PlanningCommand : null);
+      setPendingPlanning(restoredPlanning);
       const storedStart = sessionStorage.getItem(startKey);
       if (storedStart && !roundState.round) {
         const command = JSON.parse(storedStart) as StartCommand; setPendingStart(command);
@@ -184,11 +196,12 @@ export function PreparationFlow() {
   const deferred = daily?.items.filter(item => item.deferred || Boolean(item.earliestAt && Date.parse(item.earliestAt) > now)) ?? [];
   const ready = daily?.items.filter(item => item.eligible && item.coordinates && !item.deferred && (!item.earliestAt || Date.parse(item.earliestAt) <= now)) ?? [];
   const held = daily?.items.filter(item => item.state === 'held' && !deferred.some(value => value.taskId === item.taskId)) ?? [];
-  const startable = plans?.items.find(plan => plan.current && plan.inputCurrent && ['ready', 'manual'].includes(plan.state));
+  const startable = plans?.items.find(plan => plan.current && plan.inputCurrent && supportedMode(plan.input.settings?.mode) && ['ready', 'manual'].includes(plan.state));
   const partial = plans?.items.find(plan => plan.current && plan.inputCurrent && plan.state === 'partial') ?? plans?.items.find(plan => plan.state === 'partial');
   const activeOtherPhone = Boolean(current?.round && current.round.owner.deviceId !== deviceId());
   const acceptedActionsKey = session ? `tawsel:prepare-actions:${session.access.tenantId}:${session.access.driverId}` : '';
   const dirty = choicesTouched && JSON.stringify(draft) !== JSON.stringify(serverDraft);
+  const modeNeedsReview = !supportedMode(draft.mode) || unsupportedPlanningMode(pendingPlanning);
 
   function updateDraft(change: Partial<Draft>) {
     setDraft(value => {
@@ -199,7 +212,7 @@ export function PreparationFlow() {
       }
       return next;
     }); setChoicesTouched(true); setNotice('تغيّرت اختيارات التجهيز. احفظها لتحديث الخطة قبل البدء.');
-    if (session) { sessionStorage.removeItem(`tawsel:planning-pending:${session.access.tenantId}:${session.access.driverId}`); setPendingPlanning(null); }
+    if (session && (!unsupportedPlanningMode(pendingPlanning) || supportedMode(change.mode))) { sessionStorage.removeItem(`tawsel:planning-pending:${session.access.tenantId}:${session.access.driverId}`); setPendingPlanning(null); }
   }
   function accepted(actionId: string) {
     if (!acceptedActionsKey) return;
@@ -214,6 +227,7 @@ export function PreparationFlow() {
   }
   async function submitPlanning(command: PlanningCommand) {
     if (!session) return;
+    if (unsupportedPlanningMode(command) || !supportedMode(draft.mode) || (command.operationId === 'planning.setManualOrder' && !supportedMode(serverDraft.mode))) { setError(modeReviewMessage); return; }
     const key = `tawsel:planning-pending:${session.access.tenantId}:${session.access.driverId}`;
     setBusy(true); setError(''); setNotice(''); sessionStorage.setItem(key, JSON.stringify(command)); setPendingPlanning(command);
     try {
@@ -232,6 +246,7 @@ export function PreparationFlow() {
   function preparePlan() {
     if (!session || !plans || !session.access.driverId) return;
     try {
+      if (modeNeedsReview) throw new Error(modeReviewMessage);
       const origin = coordinates(draft.originLatitude, draft.originLongitude);
       let endpoint: components['schemas']['Endpoint'];
       if (draft.endpointKind === 'last-customer') endpoint = { kind: 'last-customer' };
@@ -246,12 +261,13 @@ export function PreparationFlow() {
   }
   function publishManual() {
     if (!session || !plans || !session.access.driverId || manualOrder.length === 0) return;
+    if (modeNeedsReview || !supportedMode(serverDraft.mode)) { setError(modeReviewMessage); return; }
     const pending = pendingPlanning?.operationId === 'planning.setManualOrder' ? pendingPlanning : commandEnvelope(session, 'planning.setManualOrder', { driverId: session.access.driverId, expectedSettingsRevision: plans.settingsRevision, expectedInputRevision: plans.inputRevision, expectedManualRevision: plans.manualRevision, selection: { kind: 'order', taskIds: manualOrder } }) as unknown as PlanningCommand;
     void submitPlanning(pending);
   }
   function move(taskId: string, offset: -1 | 1) {
     setManualOrder(values => { const index = values.indexOf(taskId), next = index + offset; if (index < 0 || next < 0 || next >= values.length) return values; const copy = [...values]; [copy[index], copy[next]] = [copy[next]!, copy[index]!]; return copy; });
-    if (session) { sessionStorage.removeItem(`tawsel:planning-pending:${session.access.tenantId}:${session.access.driverId}`); setPendingPlanning(null); }
+    if (session && !unsupportedPlanningMode(pendingPlanning)) { sessionStorage.removeItem(`tawsel:planning-pending:${session.access.tenantId}:${session.access.driverId}`); setPendingPlanning(null); }
   }
   async function sendStart(command: StartCommand) {
     if (!session) return;
@@ -265,13 +281,13 @@ export function PreparationFlow() {
     finally { setBusy(false); }
   }
   async function startRound() {
-    if (!session || !session.access.driverId || !startable || dirty || pendingExecutionLinks(session, '').length) return;
+    if (!session || !session.access.driverId || !startable || dirty || modeNeedsReview || pendingExecutionLinks(session, '').length) return;
     setBusy(true); setError('');
     try {
       await synchronizedStart(kind, async journalIds => {
         const fresh = await planning.plans(session.access.driverId!);
         const selected = fresh.items.find(p => p.planId === startable.planId && p.revision === startable.revision);
-        if (!selected?.current || !selected.inputCurrent) throw new Error('تغيّرت الخطة بعد المزامنة؛ حدّث التجهيز قبل البدء.');
+        if (!selected?.current || !selected.inputCurrent || !supportedMode(selected.input.settings?.mode)) throw new Error('تغيّرت الخطة بعد المزامنة؛ حدّث التجهيز قبل البدء.');
         const actionIds = acceptedActionsKey ? JSON.parse(sessionStorage.getItem(acceptedActionsKey) ?? '[]') as string[] : [];
         const readiness = await rounds.readiness({ driverId: session.access.driverId!, deviceId: deviceId(), planId: selected.planId, expectedPlanRevision: selected.revision, relevantActionIds: [...new Set([...journalIds, ...actionIds])] });
         const command = commandEnvelope(session, 'round.start', { driverId: session.access.driverId, readinessId: readiness.readinessId, planId: startable.planId, expectedPlanRevision: startable.revision }, { planId: startable.planId }) as unknown as StartCommand;
@@ -319,11 +335,12 @@ export function PreparationFlow() {
     {notice ? <StatusNotice tone="info" title="الحالة الحالية" live>{notice}</StatusNotice> : null}
     {current?.round ? <section className="preparation-stage preparation-stage--active"><p className="eyebrow">جولة نشطة</p><h2>{activeOtherPhone ? 'الجولة تعمل على هاتف آخر' : 'جولتك بدأت بالفعل'}</h2><p>{activeOtherPhone ? 'لن ننشئ بداية ثانية. يمكنك عرض الجولة أو نقل التنفيذ صراحةً لهذا الهاتف.' : 'افتح الجولة الحالية واستكمل من الحالة المؤكدة على الخادم.'}</p><div className="preparation-actions"><a className="action-link action-link--primary" href={`/rounds/current?kind=${kind}`}>متابعة الجولة</a>{activeOtherPhone ? <ActionButton variant="secondary" busy={busy} onClick={() => void takeover()}>انقل التنفيذ لهذا الهاتف</ActionButton> : null}</div></section> : preparation ? <>
       <section className="preparation-stage" aria-labelledby="choices-title"><div className="preparation-heading"><div><p className="eyebrow">١ · اختيارات التجهيز</p><h2 id="choices-title">الانطلاق ونهاية الجولة</h2></div></div>
-        <div className="preparation-grid"><div className="field"><label htmlFor="vehicle-mode">وسيلة الحركة</label><select id="vehicle-mode" value={draft.mode} onChange={event => updateDraft({ mode: event.target.value as Mode })}><option value="car">سيارة</option><option value="motorcycle">دراجة نارية</option><option value="bicycle">دراجة</option></select></div><Field id="origin-latitude" label="خط عرض نقطة الانطلاق" inputMode="decimal" dir="ltr" value={draft.originLatitude} onChange={event => updateDraft({ originLatitude: event.target.value })} /><Field id="origin-longitude" label="خط طول نقطة الانطلاق" inputMode="decimal" dir="ltr" value={draft.originLongitude} onChange={event => updateDraft({ originLongitude: event.target.value })} />
+        {modeNeedsReview ? <StatusNotice tone="waiting" title="اختر وسيلة الحركة من جديد"><p id="vehicle-mode-review">{modeReviewMessage}</p></StatusNotice> : null}
+        <div className="preparation-grid"><div className="field"><label htmlFor="vehicle-mode">وسيلة الحركة</label><select id="vehicle-mode" value={draft.mode} aria-invalid={!supportedMode(draft.mode)} aria-describedby={modeNeedsReview ? 'vehicle-mode-review' : undefined} onChange={event => updateDraft({ mode: supportedMode(event.target.value) ? event.target.value : '' })}>{!supportedMode(draft.mode) ? <option value="" disabled>اختر وسيلة الحركة</option> : null}<option value="car">سيارة</option><option value="motorcycle">دراجة نارية</option></select></div><Field id="origin-latitude" label="خط عرض نقطة الانطلاق" inputMode="decimal" dir="ltr" value={draft.originLatitude} onChange={event => updateDraft({ originLatitude: event.target.value })} /><Field id="origin-longitude" label="خط طول نقطة الانطلاق" inputMode="decimal" dir="ltr" value={draft.originLongitude} onChange={event => updateDraft({ originLongitude: event.target.value })} />
           <div className="field"><label htmlFor="endpoint-kind">نهاية الجولة</label><select id="endpoint-kind" value={draft.endpointKind} onChange={event => updateDraft({ endpointKind: event.target.value as Draft['endpointKind'] })}><option value="last-customer">آخر عميل</option>{kind === 'personal' ? <option value="fixed">نقطة أحددها</option> : null}{kind === 'company' ? <option value="branch">فرع الشركة</option> : null}</select></div>
           {draft.endpointKind !== 'last-customer' ? <><Field id="endpoint-latitude" label="خط عرض نقطة النهاية" inputMode="decimal" dir="ltr" value={draft.endpointLatitude} onChange={event => updateDraft({ endpointLatitude: event.target.value })} /><Field id="endpoint-longitude" label="خط طول نقطة النهاية" inputMode="decimal" dir="ltr" value={draft.endpointLongitude} onChange={event => updateDraft({ endpointLongitude: event.target.value })} />{draft.endpointKind === 'branch' ? <div className="field"><label htmlFor="branch-id">فرع النهاية</label><select id="branch-id" value={draft.branchId} onChange={event => updateDraft({ branchId: event.target.value })}>{session?.access.branchIds.map(id => <option key={id} value={id}>{id.slice(0, 8)}</option>)}</select></div> : null}</> : null}
           <Field id="planned-start" label="وقت التخطيط المتوقع" type="datetime-local" value={draft.plannedStartAt} onChange={event => updateDraft({ plannedStartAt: event.target.value })} hint="للتوقع والأهلية فقط؛ لا يبدأ الجولة تلقائيًا." /></div>
-        <ActionButton variant={pendingStart || (startable && !dirty) ? 'secondary' : 'primary'} busy={busy} onClick={preparePlan}>{pendingPlanning?.operationId === 'planning.saveDraft' ? 'أعد إرسال طلب التجهيز نفسه' : 'احفظ وجهّز المعاينة'}</ActionButton>
+        <ActionButton variant={pendingStart || (startable && !dirty) ? 'secondary' : 'primary'} busy={busy} disabled={modeNeedsReview} onClick={preparePlan}>{pendingPlanning?.operationId === 'planning.saveDraft' ? 'أعد إرسال طلب التجهيز نفسه' : 'احفظ وجهّز المعاينة'}</ActionButton>
       </section>
       <section className="preparation-stage" aria-labelledby="plan-title"><div className="preparation-heading"><div><p className="eyebrow">٢ · الخطة</p><h2 id="plan-title">راجع الترتيب قبل البدء</h2></div><button className="icon-text-button" onClick={() => void load()} disabled={busy}><RefreshCw aria-hidden="true" />تحديث</button></div>
         {job && ['pending', 'running'].includes(job.status) ? <StatusNotice tone="waiting" title="التخطيط قيد المعالجة">هذه حالة الخادم الفعلية. لن نعرض نجاحًا قبل اكتمال المهمة.</StatusNotice> : null}
@@ -331,10 +348,10 @@ export function PreparationFlow() {
         {partial ? <StatusNotice tone="waiting" title="الخطة جزئية">تعذّر إدراج {partial.forecast.members.filter(member => member.membership === 'unassigned').length} من العمل. لم نعتبر الخطة جاهزة للبدء.</StatusNotice> : null}
         {unresolved.length ? <StatusNotice tone="waiting" title="مواقع تحتاج تحديد">{unresolved.length} مهمة مستبعدة من الخطة حتى تأكيد موقعها. {ready.length ? 'العمل الصالح ما زال متاحًا.' : ''}</StatusNotice> : null}
         {startable ? <div className="plan-summary"><span className={`readiness readiness--ready`}>{startable.state === 'manual' ? 'ترتيب يدوي صالح' : 'خطة جاهزة'}</span><strong>{startable.routePolicy?.orderedTaskIds.length ?? 0} وقفات</strong>{startable.forecast.expectedFinishAt ? <span>انتهاء متوقع: <bdi>{new Date(startable.forecast.expectedFinishAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}</bdi></span> : <span>لا يوجد تقدير طريق للترتيب اليدوي</span>}</div> : null}
-        {(job?.status === 'failed' || partial || plans?.continuation) && manualOrder.length ? <div className="manual-order"><h3>ترتيب يدوي واضح</h3><p>غيّر الترتيب ثم اعتمده. لا توجد أزمنة طريق محسوبة في هذا الوضع.</p><ol>{manualOrder.map((taskId, index) => <li key={taskId}><span>{taskName(daily, taskId)}</span><span><button aria-label={`حرّك ${taskName(daily, taskId)} لأعلى`} disabled={index === 0 || busy} onClick={() => move(taskId, -1)}><ArrowUp aria-hidden="true" /></button><button aria-label={`حرّك ${taskName(daily, taskId)} لأسفل`} disabled={index === manualOrder.length - 1 || busy} onClick={() => move(taskId, 1)}><ArrowDown aria-hidden="true" /></button></span></li>)}</ol><ActionButton variant="secondary" busy={busy} disabled={dirty} onClick={publishManual}>{pendingPlanning?.operationId === 'planning.setManualOrder' ? 'أعد إرسال الترتيب نفسه' : 'اعتماد الترتيب اليدوي'}</ActionButton></div> : null}
+        {(job?.status === 'failed' || partial || plans?.continuation) && manualOrder.length ? <div className="manual-order"><h3>ترتيب يدوي واضح</h3><p>غيّر الترتيب ثم اعتمده. لا توجد أزمنة طريق محسوبة في هذا الوضع.</p><ol>{manualOrder.map((taskId, index) => <li key={taskId}><span>{taskName(daily, taskId)}</span><span><button aria-label={`حرّك ${taskName(daily, taskId)} لأعلى`} disabled={index === 0 || busy} onClick={() => move(taskId, -1)}><ArrowUp aria-hidden="true" /></button><button aria-label={`حرّك ${taskName(daily, taskId)} لأسفل`} disabled={index === manualOrder.length - 1 || busy} onClick={() => move(taskId, 1)}><ArrowDown aria-hidden="true" /></button></span></li>)}</ol><ActionButton variant="secondary" busy={busy} disabled={dirty || modeNeedsReview || !supportedMode(serverDraft.mode)} onClick={publishManual}>{pendingPlanning?.operationId === 'planning.setManualOrder' ? 'أعد إرسال الترتيب نفسه' : 'اعتماد الترتيب اليدوي'}</ActionButton></div> : null}
       </section>
       <section className="preparation-stage preparation-start" aria-labelledby="start-title"><p className="eyebrow">٣ · بدء الجولة</p><h2 id="start-title">ابدأ بعد التحقق المتصل</h2>{dirty ? <StatusNotice tone="waiting" title="الاختيارات أحدث من الخطة">احفظ اختيارات التجهيز وانتظر تحديث الخطة.</StatusNotice> : null}{pendingStart ? <StatusNotice tone="waiting" title="بدء الجولة غير محسوم">اضغط «تحقق من بدء الجولة» لمعرفة نتيجة طلبك المحفوظ.</StatusNotice> : null}
-        {pendingStart ? <div className="preparation-actions"><ActionButton busy={busy} onClick={() => void checkStart()}>تحقق من بدء الجولة</ActionButton><ActionButton variant="secondary" busy={busy} onClick={() => void sendStart(pendingStart)}>أعد إرسال طلب البدء نفسه</ActionButton></div> : <ActionButton busy={busy} disabled={!startable || dirty || Boolean(session && pendingExecutionLinks(session, '').length)} onClick={() => void startRound()}>ابدأ الجولة</ActionButton>}
+        {pendingStart ? <div className="preparation-actions"><ActionButton busy={busy} onClick={() => void checkStart()}>تحقق من بدء الجولة</ActionButton><ActionButton variant="secondary" busy={busy} onClick={() => void sendStart(pendingStart)}>أعد إرسال طلب البدء نفسه</ActionButton></div> : <ActionButton busy={busy} disabled={!startable || dirty || modeNeedsReview || Boolean(session && pendingExecutionLinks(session, '').length)} onClick={() => void startRound()}>ابدأ الجولة</ActionButton>}
         {!startable && !pendingStart ? <p className="field-hint">يلزم خطة كاملة أو ترتيب يدوي صالح للنسخة الحالية. لا توجد موافقة إضافية من المرسل.</p> : null}
       </section>
     </> : <DailyWork kind={kind} ready={ready} unresolved={unresolved} prepared={prepared} held={held} deferred={deferred} onRefresh={() => void load()} />}

@@ -12,7 +12,9 @@ import { IndependentIntakeService } from '../apps/api/src/b2c-intake/service.js'
 import { runPlanningOnce } from '../apps/api/src/planning/worker.js';
 import { buildApp } from '../apps/api/src/app.js';
 import { createDatabasePool } from '../apps/api/src/db/pool.js';
+import { browserFixtureConfig } from './browser-fixture-config.js';
 
+const browser = browserFixtureConfig();
 const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; company: string; personal: string; password: string };
 const companyIssuer = 'http://localhost:8085/realms/tawsel-company';
 const personalIssuer = 'http://localhost:8085/realms/tawsel-personal';
@@ -50,7 +52,7 @@ await company.task('held-one', 'ordinary', 'held');
 await company.task('prepared-one', 'ordinary', 'prepared');
 await company.save(); await runPlanningOnce(db.pool, engine.engine);
 
-const auth = { origin: 'http://localhost:5173', encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer: companyIssuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: personalIssuer, clientId: 'tawsel-web', clientSecret: secrets.personal } } };
+const auth = { origin: browser.origin, encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer: companyIssuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: personalIssuer, clientId: 'tawsel-web', clientSecret: secrets.personal } } };
 const app = buildApp(createDatabasePool(db.config), auth);
 app.get('/__fixture/info', async () => ({ personalUser: personalUser.username, companyUser: companyUser.username, password: secrets.password, companyCode: company.source.code, personalDriverId: ids.personalDriver, companyDriverId: company.driverId }));
 app.post('/__fixture/personal-stale', async () => {

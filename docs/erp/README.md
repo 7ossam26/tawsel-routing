@@ -1,5 +1,9 @@
 # ERP handoff — start here
 
+Current scope under [D-113](../phases/decision-map.md): car/motorcycle only. The old dated manifest/proof remains a historical local candidate until a new package is built and verified for the final source/runtime SHA. Preserve the September proof; the current consumer run writes `docs/verification/integration-local-2026-10-03.json`.
+
+For an exact final pushed commit, build the package in a separate checkout at that SHA: `npm run erp:package`, `npm run source:demo`, stage only the new proof, `npm run erp:package`, then `npm run erp:verify`. Keep its generated manifest/proof uncommitted so HEAD remains stable, and use the clean source checkout for the Dokploy handoff.
+
 **Phase 42 local candidate, 26 September 2026. Live pilot and real ERP connector are not approved or implemented by this package.** See [as-built handoff](../ERP-INTEGRATION-HANDOFF.md), [exact verification](../verification/integration.md) and [remaining readiness conditions](../verification/pilot-readiness.md).
 
 ## Reading order

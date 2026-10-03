@@ -2,13 +2,23 @@ import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { readdir, mkdir, writeFile } from 'node:fs/promises';
+import { readdir, readFile, mkdir, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { RoutingEngine, EngineError } from '../apps/api/src/engine/index.js';
 import { loadEngineConfig, profiles } from '../apps/api/src/engine/config.js';
 import type { Mode } from '../apps/api/src/engine/models.js';
 import { engineInput, optimizationFixture, routeFixture, tableFixture } from '../apps/api/test/support/engine-fixtures.js';
 
 const live=process.argv.includes('--live');
+function option(name:string) {
+  const index=process.argv.indexOf(name);
+  if(index<0)return undefined;
+  const value=process.argv[index+1];
+  if(!value||value.startsWith('--'))throw new Error(`Missing value for ${name}`);
+  return value;
+}
+const dataDirectory=option('--data-directory');
+const provenancePath=option('--provenance');
 const results:unknown[]=[];
 async function exercise(engine:RoutingEngine,mode:Mode) {
   const road={mode,coordinates:[engineInput.origin.coordinates,engineInput.tasks[0]!.coordinates]};
@@ -42,7 +52,9 @@ if(live) {
     }
     docker={listing:listing.stdout.trim(),versions};
   } catch {docker={status:'unavailable',detail:'Docker inventory could not be read; no running version or mount compatibility is claimed.'};}
-  inventory={kind:'live-attempt',docker,localDataFiles:await readdir(new URL('../data/',import.meta.url)),mapping:profiles,compatibility:'Requires actual runtime/build manifests; successful HTTP alone does not prove dataset provenance.'};
+  const dataFiles=dataDirectory?await readdir(resolve(dataDirectory)):null;
+  const provenance=provenancePath?JSON.parse(await readFile(resolve(provenancePath),'utf8')):null;
+  inventory={kind:'live-attempt',docker,dataDirectory:dataDirectory?resolve(dataDirectory):null,dataFiles,provenance,mapping:profiles,compatibility:'Dataset identity comes from the supplied target provenance and inspected runtime mounts; successful HTTP alone does not establish it. No local data directory is substituted for a remote target.'};
   for(const mode of Object.keys(profiles) as Mode[])await exercise(new RoutingEngine(config),mode);
 } else {
   for(const mode of Object.keys(profiles) as Mode[]) {

@@ -3,7 +3,7 @@ import type { Pool } from 'pg';
 import { withTransaction, type Transaction } from '../db/transaction.js';
 import { lockInvariants } from '../commands/locks.js';
 import { EngineError, type OptimizationInput, type OptimizationResult, type RouteResult } from '../engine/index.js';
-import { validateModel } from '../engine/models.js';
+import { isSupportedMode, validateModel } from '../engine/models.js';
 import { enqueuePlanning, fingerprint, planningState, snapshot } from './queue.js';
 import type { JobRow, Job } from './models.js';
 import { instant, planRoute, validateCompleteRoute, type Planner } from './policy.js';
@@ -125,6 +125,7 @@ export async function runPlanningOnce(pool:Pool,planner:Planner,options:{leaseMs
  // transaction or checked-out connection. Deadline leaves time for completion.
  let outcome:Parameters<typeof persistPlanningResult>[2];
  try {
+  if(job.input.settings && !isSupportedMode(job.input.settings.mode))throw new EngineError('invalid_input');
   const timeout=AbortSignal.timeout(Math.max(1,leaseMs-100));
   const signal=options.signal?AbortSignal.any([timeout,options.signal]):timeout;
   const candidate=await planRoute(job.input,planner,signal);

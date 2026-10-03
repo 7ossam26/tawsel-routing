@@ -48,7 +48,7 @@ P15 evidence, 23 September 2026: [ordered PostgreSQL/HTTP checkpoints](../phase-
 P10 evidence, 22 September 2026: [ordered checks](../phase-10-evidence.md) cover R-02 source authority, R-08 atomic receipt/rejection and durable intent, R-09 exact immutable snapshots/lines, R-10 upcoming versus held, R-11 predeparture edits/removal/reassignment, R-13 per-driver remaining capacity including branch slots, R-14 same-address independence, R-18 exact outstanding allocations and explicit prepaid zero, R-50 source pending/result recovery (actual ERP outbox remains P27), R-58 real PostgreSQL races/faults, R-64 portable public client/mapping/demo and R-65 ordered handoff. P15 start races, P17 outcomes, P25 event transport and P27 native source remain future work.
 
 
-Package revision 3, D-109–D-111, amended by D-112 without changing phase count or ownership. This maps current behavior to bounded implementation phases. It does not replace the [master plan](../../master-plan.md) or claim runtime completion.
+Package revision 3, D-109–D-111, amended by D-112 and D-113 without changing phase count or ownership. This maps current behavior to bounded implementation phases. It does not replace the [master plan](../../master-plan.md) or claim runtime completion.
 
 Execution note, 22 September 2026: [Phase 01 evidence](../phase-01-evidence.md) verifies the workspace shell, local-only workspace health boundary, fast/integration Vitest selections, build/check commands, and non-destructive setup. The shell also establishes a locally packaged Cairo 400/600/700/800 typography baseline with synthetic weights disabled; P03 still owns the final shared typography/theme tokens and P04 still owns representative component/accessibility review. Phase 01 does not implement a delivery/ERP operation or the P38 owner-diagnostics health contract; Phases 02–42 retain their assignments below.
 Read [decision-map.md](decision-map.md) when an older answer differs. All phases start unimplemented; [the ledger](../implementation-status.md) records actual evidence.
@@ -231,9 +231,9 @@ P08 evidence, 22 September 2026: [ordered checkpoints and verification](../phase
 
 ### R-21
 
-**Three transport modes.** Car, motorcycle and bicycle map to verified actual Engine services/profiles; config text alone is not live proof.
+**Two transport modes.** Car and motorcycle map to verified actual Engine services/profiles under D-113. Bicycle and bike are rejected; config text alone is not live proof.
 
-- Source: D-70.
+- Source: D-70, superseded for the mode set by D-113.
 - Owner phases: [P12](12-engine-profile-adapters.md).
 - Follow-through: [P14](14-route-policy-manual-fallback.md), [P28](28-online-preparation-journeys.md), [P41](41-device-owner-pilot-review.md).
 

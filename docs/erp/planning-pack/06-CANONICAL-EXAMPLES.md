@@ -1,12 +1,12 @@
 # Complete canonical examples and webhook signature vector
 
-Source commit: `32aad03e8a1a04ac36b95a5a77ab7bf8f7623ada`. Extracted: 2026-09-25T08:22:32.982Z.
+Source checkout base commit: `ecd709cd96fef0e08440506905cfc7650c025824`. Extracted: 2026-10-03T16:12:54.516Z. Consult sourceWorkingTreeChanges and source-file hashes in planning-manifest.json for uncommitted inputs; the base commit alone does not identify those bytes.
 
 Original blocks below are verbatim source text, not rewritten contracts. Their SHA-256 hashes refer to original bytes. Resolve relative schema references using the original path above the block and the companion schema attachment. No repo/network access is needed to read those blocks. Descriptions/fixtures do not override operation authentication or lifecycle.
 
 ## Fixture index
 
-267 acceptance examples and 166 rejection examples. These are schema fixtures, not proof that every shown operation/event is emitted or callable by an ERP service. Read the authentication and sender index in 04 first. The signature vector contains an explicitly public test key, not a production secret.
+268 acceptance examples and 171 rejection examples. These are schema fixtures, not proof that every shown operation/event is emitted or callable by an ERP service. Read the authentication and sender index in 04 first. The signature vector contains an explicitly public test key, not a production secret.
 
 | Set | Example ID | Original schema reference | Expected invalid keyword |
 | --- | --- | --- | --- |
@@ -115,7 +115,7 @@ Original blocks below are verbatim source text, not rewritten contracts. Their S
 | valid | p10-error-stale_revision | common.schema.json#/$defs/Problem |  |
 | valid | p10-received-event-intent | b2b-intake.schema.json#/$defs/ChangedEvent |  |
 | valid | location-valid-confirmation | location.schema.json#/$defs/Confirm |  |
-| valid | routing-bicycle-input | routing.schema.json#/$defs/OptimizationInput |  |
+| valid | routing-motorcycle-input | routing.schema.json#/$defs/OptimizationInput |  |
 | valid | routing-unreachable-table | routing.schema.json#/$defs/TableResult |  |
 | valid | routing-profile-metadata | routing.schema.json#/$defs/Profiles |  |
 | valid | p13-settings | planning.schema.json#/$defs/Settings |  |
@@ -277,6 +277,7 @@ Original blocks below are verbatim source text, not rewritten contracts. Their S
 | valid | report-Measurement | reporting.schema.json#/$defs/Measurement |  |
 | valid | report-Filters | reporting.schema.json#/$defs/Filters |  |
 | valid | report-Pieces | reporting.schema.json#/$defs/Pieces |  |
+| valid | diagnostics-health-valid | diagnostics.schema.json#/$defs/Health |  |
 | invalid | piece--1 | common.schema.json#/$defs/PieceCount | minimum |
 | invalid | piece-1.5 | common.schema.json#/$defs/PieceCount | type |
 | invalid | piece-2 | common.schema.json#/$defs/PieceCount | type |
@@ -443,10 +444,15 @@ Original blocks below are verbatim source text, not rewritten contracts. Their S
 | invalid | report-null-needs-reason | reporting.schema.json#/$defs/Measurement | oneOf |
 | invalid | report-money-is-exact | reporting.schema.json#/$defs/Collection | type |
 | invalid | report-no-cross-tenant-filter | reporting.schema.json#/$defs/Filters | additionalProperties |
+| invalid | diagnostics-health-invalid | diagnostics.schema.json#/$defs/Health | additionalProperties |
+| invalid | routing-unsupported-bicycle | routing.schema.json#/$defs/OptimizationInput | enum |
+| invalid | routing-unsupported-unknown | routing.schema.json#/$defs/OptimizationInput | enum |
+| invalid | provisioning-unsupported-bicycle | provisioning.schema.json#/$defs/DriverCommand | enum |
+| invalid | provisioning-unsupported-unknown | provisioning.schema.json#/$defs/DriverCommand | enum |
 
 ## Original file: contracts/examples/invalid.json
 
-SHA-256: `3234326d04ff99b777232ac833bed319ad08158e18653016d34243ce6c2b8827` · Bytes: 225344.
+SHA-256: `067935a718060759d92b2612a80c4ab7ee24b1bd9908491cf915143b902a3aa1` · Bytes: 221985.
 
 <!-- SOURCE-BEGIN contracts/examples/invalid.json -->
 ````json
@@ -2137,7 +2143,7 @@ SHA-256: `3234326d04ff99b777232ac833bed319ad08158e18653016d34243ce6c2b8827` · B
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": false,
     "data": {
-      "mode": "bicycle",
+      "mode": "car",
       "accountKind": "personal",
       "origin": {
         "kind": "gps",
@@ -2195,7 +2201,7 @@ SHA-256: `3234326d04ff99b777232ac833bed319ad08158e18653016d34243ce6c2b8827` · B
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": false,
     "data": {
-      "mode": "bicycle",
+      "mode": "car",
       "accountKind": "personal",
       "origin": {
         "kind": "manual-pin",
@@ -7581,6 +7587,157 @@ SHA-256: `3234326d04ff99b777232ac833bed319ad08158e18653016d34243ce6c2b8827` · B
       "outcome": "partial",
       "tenantId": "60000000-0000-4000-8000-000000000001"
     }
+  },
+  {
+    "id": "diagnostics-health-invalid",
+    "schema": "diagnostics.schema.json#/$defs/Health",
+    "valid": false,
+    "data": {
+      "observedAt": "2026-09-26T00:00:00.000Z",
+      "liveness": "alive",
+      "database": {
+        "state": "unavailable"
+      },
+      "workers": null,
+      "planning": null,
+      "sender": null,
+      "projection": null,
+      "engine": {
+        "availability": "unknown"
+      },
+      "backup": {
+        "readiness": "unverified",
+        "lastVerifiedRestoreAt": null
+      },
+      "secret": "must-never-appear"
+    },
+    "keyword": "additionalProperties"
+  },
+  {
+    "id": "routing-unsupported-bicycle",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "bicycle",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "routing-unsupported-unknown",
+    "schema": "routing.schema.json#/$defs/OptimizationInput",
+    "valid": false,
+    "data": {
+      "mode": "unknown",
+      "accountKind": "personal",
+      "origin": {
+        "kind": "manual-pin",
+        "coordinates": {
+          "latitude": 30.0444,
+          "longitude": 31.2357
+        }
+      },
+      "endpoint": {
+        "kind": "last-customer"
+      },
+      "tasks": [
+        {
+          "taskId": "task-a",
+          "coordinates": {
+            "latitude": 30.05,
+            "longitude": 31.24
+          }
+        }
+      ]
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "provisioning-unsupported-bicycle",
+    "schema": "provisioning.schema.json#/$defs/DriverCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "driver.provisionReference",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "userExternalId": "driver-1",
+        "enabled": true,
+        "vehicleReference": "vehicle-01",
+        "profile": "bicycle"
+      }
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "provisioning-unsupported-unknown",
+    "schema": "provisioning.schema.json#/$defs/DriverCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "actionId": "81000000-0000-4000-8000-000000000003",
+      "operationId": "driver.provisionReference",
+      "context": {
+        "kind": "integration",
+        "tenantId": "81000000-0000-4000-8000-000000000001",
+        "integrationId": "81000000-0000-4000-8000-000000000002"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "driver-1",
+        "sourceRevision": 1,
+        "userExternalId": "driver-1",
+        "enabled": true,
+        "vehicleReference": "vehicle-01",
+        "profile": "unknown"
+      }
+    },
+    "keyword": "enum"
   }
 ]
 
@@ -7589,7 +7746,7 @@ SHA-256: `3234326d04ff99b777232ac833bed319ad08158e18653016d34243ce6c2b8827` · B
 
 ## Original file: contracts/examples/README.md
 
-SHA-256: `3a3a748a4d5f9298f2f03ee46270da31258c27cea582ff8b787d31af733e85e7` · Bytes: 12733.
+SHA-256: `433e592b08625203036050f74f620570da090d0abf94cf5edf7300657053278b` · Bytes: 12822.
 
 <!-- SOURCE-BEGIN contracts/examples/README.md -->
 ````markdown
@@ -7641,7 +7798,7 @@ P06 adds `access-*`: explicit inherit/allow/deny overrides; company, personal an
 
 P05 adds `action-result-full` and `action-result-compacted`, plus invalid missing-response, compacted-with-response and pending-result cases. These use illustrative delivery data for schema conformance only. Actual database tests exercise explicitly synthetic counters and real migrations. Compacted results preserve the original receipt/stable summary, omit full response status/body, and never authorize a new action ID. The public `action.getResult` route still awaits authenticated P06–P08 bindings.
 
-P12 adds normalized routing input, unreachable-table and profile-metadata examples, plus invalid GPS origin, provider-only bike mode and positional coordinates. Provider fixtures live separately in apps/api/test/support/engine-fixtures.ts and are never public payloads. `npm run test:engine` exercises private conversion; `npm run test:erp:routing` checks consumer semantics.
+P12 adds normalized routing input, unreachable-table and profile-metadata examples, plus invalid GPS origin, positional coordinates and provider-only bike mode. D-113 adds explicit removed-bicycle and unknown-mode rejection fixtures for routing/provisioning; valid inputs and metadata retain car/motorcycle only. Provider fixtures live separately in apps/api/test/support/engine-fixtures.ts and are never public payloads. `npm run test:engine` exercises private conversion; `npm run test:erp:routing` checks consumer semantics.
 
 P16 adds `current-heading`, `current-arrived`, `current-manual-origin`, `p16-select-heading`, `p16-arrival`, `p16-correct-origin`, accepted/pending current action statuses and `p16-snapshot-arrived`. Negative examples reject inferred arrival/next stage, missing relevant selection versions and arrival without a current attempt. Exact schema ownership is [current-activity.schema.json](../current-activity.schema.json). Fixed-ID examples are contract fixtures; `npm run current:demo` writes actual browser/API/PostgreSQL state and stable action IDs to `.local/phase-16-browser-demo.json`.
 
@@ -7662,7 +7819,7 @@ P19 examples (`p19-*`) capture the actual disposable HTTP/PostgreSQL demonstrati
 
 ## Original file: contracts/examples/valid.json
 
-SHA-256: `30e2b0b097903a8394a1d80aa380b450beb6d20e2591b8d49b3bdf12ffde1da7` · Bytes: 429233.
+SHA-256: `3bed51ad36d4d6d9b9ddacde33908e840f3942131d7b592eefdfd9f93ccbf3c3` · Bytes: 416993.
 
 <!-- SOURCE-BEGIN contracts/examples/valid.json -->
 ````json
@@ -9840,11 +9997,11 @@ SHA-256: `30e2b0b097903a8394a1d80aa380b450beb6d20e2591b8d49b3bdf12ffde1da7` · B
     }
   },
   {
-    "id": "routing-bicycle-input",
+    "id": "routing-motorcycle-input",
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": true,
     "data": {
-      "mode": "bicycle",
+      "mode": "motorcycle",
       "accountKind": "personal",
       "origin": {
         "kind": "manual-pin",
@@ -9872,7 +10029,7 @@ SHA-256: `30e2b0b097903a8394a1d80aa380b450beb6d20e2591b8d49b3bdf12ffde1da7` · B
     "schema": "routing.schema.json#/$defs/TableResult",
     "valid": true,
     "data": {
-      "mode": "bicycle",
+      "mode": "motorcycle",
       "status": "partial",
       "cells": [
         [
@@ -9905,8 +10062,7 @@ SHA-256: `30e2b0b097903a8394a1d80aa380b450beb6d20e2591b8d49b3bdf12ffde1da7` · B
     "data": {
       "modes": [
         "car",
-        "motorcycle",
-        "bicycle"
+        "motorcycle"
       ],
       "defaultCustomerServiceSeconds": 600,
       "liveVerification": "not-checked"
@@ -20424,6 +20580,29 @@ SHA-256: `30e2b0b097903a8394a1d80aa380b450beb6d20e2591b8d49b3bdf12ffde1da7` · B
       "received": 1,
       "lost": 1,
       "damaged": 0
+    }
+  },
+  {
+    "id": "diagnostics-health-valid",
+    "schema": "diagnostics.schema.json#/$defs/Health",
+    "valid": true,
+    "data": {
+      "observedAt": "2026-09-26T00:00:00.000Z",
+      "liveness": "alive",
+      "database": {
+        "state": "unavailable"
+      },
+      "workers": null,
+      "planning": null,
+      "sender": null,
+      "projection": null,
+      "engine": {
+        "availability": "unknown"
+      },
+      "backup": {
+        "readiness": "unverified",
+        "lastVerifiedRestoreAt": null
+      }
     }
   }
 ]

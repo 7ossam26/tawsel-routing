@@ -47,7 +47,8 @@ test('continuous persisted B2C create → pin → plan → deliver → close →
   await page.goto('/tasks'); await page.reload();
   for (const name of names) await expect(page.locator('.task-card').filter({ hasText: name }).getByText('الموقع مؤكّد')).toBeVisible();
   await page.goto('/prepare?kind=personal');
-  await page.getByLabel('وسيلة الحركة').selectOption('bicycle');
+  await expect(page.getByLabel('وسيلة الحركة').locator('option')).toHaveText(['سيارة', 'دراجة نارية']);
+  await page.getByLabel('وسيلة الحركة').selectOption('motorcycle');
   await page.getByLabel('خط عرض نقطة الانطلاق').fill('');
   await page.getByRole('button', { name: 'احفظ وجهّز المعاينة' }).click();
   await expect(page.getByText('أكمل إحداثيات النقطة المطلوبة قبل تجهيز الخطة.')).toBeVisible();

@@ -2172,11 +2172,11 @@
     }
   },
   {
-    "id": "routing-bicycle-input",
+    "id": "routing-motorcycle-input",
     "schema": "routing.schema.json#/$defs/OptimizationInput",
     "valid": true,
     "data": {
-      "mode": "bicycle",
+      "mode": "motorcycle",
       "accountKind": "personal",
       "origin": {
         "kind": "manual-pin",
@@ -2204,7 +2204,7 @@
     "schema": "routing.schema.json#/$defs/TableResult",
     "valid": true,
     "data": {
-      "mode": "bicycle",
+      "mode": "motorcycle",
       "status": "partial",
       "cells": [
         [
@@ -2237,8 +2237,7 @@
     "data": {
       "modes": [
         "car",
-        "motorcycle",
-        "bicycle"
+        "motorcycle"
       ],
       "defaultCustomerServiceSeconds": 600,
       "liveVerification": "not-checked"

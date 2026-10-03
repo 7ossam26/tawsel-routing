@@ -1,5 +1,7 @@
 # tawsel-routing — Local Stack Context Report
 
+Historical stack inventory: this report describes the original three-profile Engine. [D-113](docs/phases/decision-map.md) later removes bicycle; use the current [routing boundary](docs/engine-boundary.md) and [Dokploy experiment](docs/dokploy-pilot.md) for current configuration. The original inventory and measurements below remain unchanged.
+
 **Purpose of this document.** It is a self-contained handoff brief, written to be pasted into a
 chat that has **no access to this repository or machine**. Everything needed to reason about the
 system is quoted inline — configs, ports, API contracts, measured numbers. Nothing here requires

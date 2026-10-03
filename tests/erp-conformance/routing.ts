@@ -15,7 +15,7 @@ export function assertRoutingCandidate(result:components['schemas']['RoutingOpti
   return result;
 }
 if(process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
-  const candidate:components['schemas']['RoutingOptimizationResult']={mode:'bicycle',status:'partial',policyValidated:false,visits:[],unassignedTaskIds:['task-a'],travelDurationSeconds:0,distanceMetres:0,customerServiceEstimateSeconds:0,branchServiceEstimateSeconds:0,waitingSeconds:0,finishOffsetSeconds:0,endpoint:{kind:'last-customer'}};
+  const candidate:components['schemas']['RoutingOptimizationResult']={mode:'car',status:'partial',policyValidated:false,visits:[],unassignedTaskIds:['task-a'],travelDurationSeconds:0,distanceMetres:0,customerServiceEstimateSeconds:0,branchServiceEstimateSeconds:0,waitingSeconds:0,finishOffsetSeconds:0,endpoint:{kind:'last-customer'}};
   assertRoutingCandidate(candidate,['task-a']);
   assert.throws(()=>assertRoutingCandidate({...candidate,status:'complete'},['task-a']));
   assert.throws(()=>assertRoutingCandidate({...candidate,unassignedTaskIds:['task-a','task-a']},['task-a']));

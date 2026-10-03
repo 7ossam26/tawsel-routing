@@ -1,9 +1,8 @@
 import { EngineError, type Mode } from './models.js';
 
 export const profiles = {
-  car: { port: 5001, pathProfile: 'driving', vroomProfile: 'car', service: 'osrm-car', dataset: 'egypt-260913.osrm' },
-  motorcycle: { port: 5003, pathProfile: 'driving', vroomProfile: 'motorcycle', service: 'osrm-motorcycle', dataset: 'egypt-motorcycle.osrm' },
-  bicycle: { port: 5002, pathProfile: 'cycling', vroomProfile: 'bike', service: 'osrm-bicycle', dataset: 'egypt-bicycle.osrm' }
+  car: { port: 5001, pathProfile: 'driving', vroomProfile: 'car', service: 'osrm-car' },
+  motorcycle: { port: 5003, pathProfile: 'driving', vroomProfile: 'motorcycle', service: 'osrm-motorcycle' }
 } as const;
 export interface EngineConfig {
   osrm: Record<Mode, string>;
@@ -21,7 +20,7 @@ function origin(value: string): string {
 }
 export function validateConfig(config: EngineConfig): EngineConfig {
   const osrm = Object.fromEntries(Object.keys(profiles).map(mode => [mode, origin(config.osrm[mode as Mode])])) as Record<Mode,string>;
-  if (new Set(Object.values(osrm)).size !== 3) throw new EngineError('invalid_config');
+  if (new Set(Object.values(osrm)).size !== Object.keys(profiles).length) throw new EngineError('invalid_config');
   for (const [value, max] of [[config.timeoutMs, 60000],[config.maxConcurrent,32],[config.maxResponseBytes,8388608]]) {
     if (!Number.isSafeInteger(value) || value! < 1 || value! > max!) throw new EngineError('invalid_config');
   }
@@ -32,8 +31,7 @@ export function loadEngineConfig(env: NodeJS.ProcessEnv = process.env): EngineCo
   return validateConfig({
     osrm: {
       car: env.TAWSEL_OSRM_CAR_URL ?? 'http://127.0.0.1:5001',
-      motorcycle: env.TAWSEL_OSRM_MOTORCYCLE_URL ?? 'http://127.0.0.1:5003',
-      bicycle: env.TAWSEL_OSRM_BICYCLE_URL ?? 'http://127.0.0.1:5002'
+      motorcycle: env.TAWSEL_OSRM_MOTORCYCLE_URL ?? 'http://127.0.0.1:5003'
     },
     vroom: env.TAWSEL_VROOM_URL ?? 'http://127.0.0.1:3000',
     timeoutMs: Number(env.TAWSEL_ENGINE_TIMEOUT_MS ?? 5000),

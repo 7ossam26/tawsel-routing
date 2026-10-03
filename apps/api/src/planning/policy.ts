@@ -1,5 +1,5 @@
 import { EngineError, type OptimizationInput, type OptimizationResult, type RouteInput, type RouteResult } from '../engine/index.js';
-import { validateModel } from '../engine/models.js';
+import { isSupportedMode, validateModel } from '../engine/models.js';
 import { payloadHash } from '../commands/json.js';
 import type { Input } from './models.js';
 
@@ -18,7 +18,7 @@ export function instant(anchor:string,seconds:number) {
  * Execution/outcome writers must exclude resolved/return-required remnants in
  * the authoritative snapshot before calling this policy. */
 export function eligibleMembers(input:Input) {
- if(!input.settings)throw new EngineError('invalid_input');
+ if(!input.settings||!isSupportedMode(input.settings.mode))throw new EngineError('invalid_input');
  const members=input.members.filter(m=>m.eligible);
  if(!members.length||members.length+(input.settings.endpoint.kind==='branch'?1:0)>50)invalid();
  if(new Set(input.members.map(m=>m.taskId)).size!==input.members.length||new Set(input.members.map(m=>m.attemptId)).size!==input.members.length)invalid();
