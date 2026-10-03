@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-03T16:04:02.386Z",
+  "evidence": "Local September datasets, not October VPS preprocessing",
+  "osrmVersion": "v26.9.0",
+  "osrmImage": "ghcr.io/project-osrm/osrm-backend@sha256:8a1b1bc938412f15f9b5b32d794c4ec6bf4a85dfbbabfa0a014b70b187edb53b",
+  "vroomVersion": "1.15.0",
+  "vroomCandidateImageId": "sha256:64636327df9fc7cc7a33758679373daea6677961579b6f6affa09e68e6da4704",
+  "readOnly": true,
+  "tmpfs": "/tmp",
+  "datasets": {
+    "car": "egypt-260913.osrm",
+    "motorcycle": "egypt-motorcycle.osrm"
+  },
+  "results": [
+    {
+      "operation": "route",
+      "status": "complete",
+      "mode": "car",
+      "success": true
+    },
+    {
+      "operation": "table",
+      "status": "complete",
+      "mode": "car",
+      "success": true
+    },
+    {
+      "operation": "optimize",
+      "status": "complete",
+      "mode": "car",
+      "success": true
+    },
+    {
+      "operation": "route",
+      "status": "complete",
+      "mode": "motorcycle",
+      "success": true
+    },
+    {
+      "operation": "table",
+      "status": "complete",
+      "mode": "motorcycle",
+      "success": true
+    },
+    {
+      "operation": "optimize",
+      "status": "complete",
+      "mode": "motorcycle",
+      "success": true
+    }
+  ]
+}

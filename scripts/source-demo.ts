@@ -20,6 +20,8 @@ import {receiverWorker} from '../apps/api/test/support/receiver-harness.js';
 import {OutboxClient} from '@tawsel/api-client/outbox';
 import type {ReceiverConfig} from '../apps/mock-erp/src/config.js';
 import type {SourceConformanceConfig} from '../tests/erp-conformance/source.js';
+import {browserFixtureConfig} from './browser-fixture-config.js';
+const browserFixture=browserFixtureConfig();
 const secrets=JSON.parse(await readFile('.local/identity/secrets.json','utf8')) as {control:string;company:string;personal:string;password:string};
 const issuer='http://localhost:8085/realms/tawsel-company';
 async function admin(path:string,init:RequestInit={}){const t=await fetch(`${issuer}/protocol/openid-connect/token`,{method:'POST',body:new URLSearchParams({grant_type:'client_credentials',client_id:'local-test-control',client_secret:secrets.control})});if(!t.ok)throw new Error('Real local Keycloak required');const token=await t.json() as {access_token:string};const r=await fetch(`${issuer.replace('/realms/','/admin/realms/')}/users${path}`,{...init,headers:{authorization:`Bearer ${token.access_token}`,'content-type':'application/json'}});if(!r.ok)throw new Error(`Issuer setup ${r.status}`);return r;}
@@ -42,7 +44,7 @@ const probe=await promisify(execFile)(process.execPath,['--input-type=module','-
 const config:ReceiverConfig={...scope,host:'127.0.0.1',port:3012,testLoopback:true,statusToken:randomBytes(32).toString('hex'),keys:[key],tawselBaseUrl:'http://127.0.0.1:3011',tawselAuthorization:`Bearer ${source.token}`};
 const consumerConfig=join(directory,'receiver.json');await writeFile(consumerConfig,JSON.stringify(config));
 const sender={encryptionKey:randomBytes(32).toString('hex'),keys:[{...scope,...key}],destinations:[{...scope,url:'http://127.0.0.1:3012/api/v1/consumer/events'}],testLoopback:true};
-const apiConfig=join(resolve('.local'),`phase-27-api-${randomUUID()}.json`);await writeFile(apiConfig,JSON.stringify({databaseUrl:db.url,issuer,workerSecret:secrets.control,port:3011,outbox:sender,auth:{origin:'http://localhost:5173',encryptionKey:randomBytes(32).toString('hex'),sessionSeconds:28800,issuers:{company:{issuer,clientId:'tawsel-web',clientSecret:secrets.company},personal:{issuer:'http://localhost:8085/realms/tawsel-personal',clientId:'tawsel-web',clientSecret:secrets.personal}}}}));
+const apiConfig=join(resolve('.local'),`phase-27-api-${randomUUID()}.json`);await writeFile(apiConfig,JSON.stringify({databaseUrl:db.url,issuer,workerSecret:secrets.control,port:3011,outbox:sender,auth:{origin:browserFixture.origin,encryptionKey:randomBytes(32).toString('hex'),sessionSeconds:28800,issuers:{company:{issuer,clientId:'tawsel-web',clientSecret:secrets.company},personal:{issuer:'http://localhost:8085/realms/tawsel-personal',clientId:'tawsel-web',clientSecret:secrets.personal}}}}));
 async function apiProcess(){
  const child=spawn(process.execPath,['--import','tsx','apps/api/test/support/source-api-process.ts'],{windowsHide:true,env:{...runtimeEnv,TAWSEL_SOURCE_TEST_CONFIG:apiConfig},stdio:['ignore','pipe','pipe']});let out='',err='';child.stderr.on('data',b=>err+=String(b));const exit=once(child,'exit');
  await new Promise<void>((res,rej)=>{const timer=setTimeout(()=>rej(new Error(`API startup unavailable ${err}`)),20000);child.once('exit',()=>{clearTimeout(timer);rej(new Error(`API exited ${err}`));});child.stdout.on('data',b=>{out+=String(b);if(out.includes('address')){clearTimeout(timer);res();}});});
@@ -64,14 +66,14 @@ try{
    const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const headers=new Headers();for(const [k,v] of Object.entries(req.headers))if(v&& !['host','connection','content-length'].includes(k))headers.set(k,Array.isArray(v)?v.join(','):v);
    const r=await fetch(`${cc.apiUrl}${req.url}`,{method:req.method!,headers,redirect:'manual',...(chunks.length?{body:Buffer.concat(chunks)}:{})});res.statusCode=r.status;for(const [k,v] of r.headers)if(!['set-cookie','transfer-encoding','content-encoding','content-length'].includes(k))res.setHeader(k,v);if(r.headers.getSetCookie().length)res.setHeader('set-cookie',r.headers.getSetCookie());res.end(Buffer.from(await r.arrayBuffer()));
   }catch{res.statusCode=503;res.end('Test proxy unavailable');}
- });proxy.listen(5173,'localhost');await once(proxy,'listening');
+ });proxy.listen(browserFixture.port,'localhost');await once(proxy,'listening');
  const browser=await chromium.launch();try{
   const context=await browser.newContext(),page=await context.newPage();
   // An explicit test reverse proxy for the existing exact Tawsel OIDC redirect.
   // This is only a browser origin shell; all authentication is the actual API/issuer.
-  await page.goto('http://localhost:5173/');const start=await page.evaluate(async code=>{const b=await(await fetch('/api/session/bootstrap')).json();return(await fetch('/api/session/login',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':b.csrfToken},body:JSON.stringify({kind:'company',companyCode:code})})).json();},source.code);
-  await page.goto(start.authorizationUrl);await page.locator('#username').fill(username);await page.locator('#password').fill(secrets.password);await page.locator('#kc-login').click();await page.waitForURL('http://localhost:5173/account?kind=company');
-  cc.driverCookie=(await context.cookies('http://localhost:5173')).map(c=>`${c.name}=${c.value}`).join('; ');cc.driverOrigin='http://localhost:5173';
+  await page.goto(`${browserFixture.origin}/`);const start=await page.evaluate(async code=>{const b=await(await fetch('/api/session/bootstrap')).json();return(await fetch('/api/session/login',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':b.csrfToken},body:JSON.stringify({kind:'company',companyCode:code})})).json();},source.code);
+  await page.goto(start.authorizationUrl);await page.locator('#username').fill(username);await page.locator('#password').fill(secrets.password);await page.locator('#kc-login').click();await page.waitForURL(`${browserFixture.origin}/account?kind=company`);
+  cc.driverCookie=(await context.cookies(browserFixture.origin)).map(c=>`${c.name}=${c.value}`).join('; ');cc.driverOrigin=browserFixture.origin;
  }finally{await browser.close();proxy.closeAllConnections();await new Promise<void>((res,rej)=>proxy.close(e=>e?rej(e):res()));}
  const executed=await run('execute');console.log('Standalone manual plan/start/outcomes, subset, disposition, departed rejection and new cycle passed');
  await receiver.close();await api.close();api=await apiProcess();receiver=await receiverProcess(erp.url,config,undefined,options);worker=await receiverWorker(erp.url,config,options);
@@ -83,7 +85,7 @@ try{
  const reports=[];for(const a of aggregates)reports.push(await publicOutbox.applied(a.type,a.id));
  const evidence={directory,probe:probe.stdout.trim(),prepared,pending,resumed,executed,result,apiProcessRestarts:2,receiverProcessRestarts:2,reports};
  const proof={status:'passed',startedAt,completedAt:new Date().toISOString(),sourceSha256:release.release.sourceSha256,consumerRuntimeSha256:release.consumerRuntimeSha256,runtime:{node:process.version,npm:npmVersion,postgres:postgresVersion,configuredKeycloak:'26.7.4'},installation:'clean copied public bundle; npm ci --ignore-scripts',internalImports:probe.stdout.trim(),consumerEnvironment:'allowlisted OS variables plus own MOCK_ERP_DATABASE_URL; config holds scoped public service/status/signing credentials',apiProcessRestarts:2,receiverProcessRestarts:2,stableSourceActionId:pending.actionId,originalIdRecovered:pending.actionId===resumed.recoveredActionId,reporting:executed.reporting,result,appliedReports:reports,classification:'Actual local PostgreSQL, Keycloak, HTTP and separate processes. Operator bootstrap uses isolated server fixtures; consumer uses only public artifacts. Explicit manual planning; no live Engine, physical-device, target-host or vendor ERP claim.'};
- await writeFile('docs/verification/integration-local-2026-09-26.json',JSON.stringify(proof,null,2)+'\n');await writeFile('.local/phase-42-standalone-evidence.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify({directory,...result,apiProcessRestarts:2,receiverProcessRestarts:2,stableActionId:pending.actionId},null,2));
+ await writeFile('docs/verification/integration-local-2026-10-03.json',JSON.stringify(proof,null,2)+'\n');await writeFile('.local/two-mode-standalone-evidence.json',JSON.stringify(evidence,null,2));console.log(JSON.stringify({directory,...result,apiProcessRestarts:2,receiverProcessRestarts:2,stableActionId:pending.actionId},null,2));
 }finally{
  await worker?.close();await receiver?.close();await api?.close();await erp.close();await db.close();await admin(`/${subject}`,{method:'DELETE'});
  for(const path of [apiConfig,consumerConfig,conformancePath,join(directory,'receiver-conformance.json')])await unlink(path).catch(e=>{if((e as NodeJS.ErrnoException).code!=='ENOENT')throw e;});

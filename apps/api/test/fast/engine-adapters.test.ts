@@ -3,7 +3,7 @@ import { parse } from 'yaml';
 import { expect, test } from 'vitest';
 import { loadEngineConfig, profiles, validateConfig } from '../../src/engine/config.js';
 import { optimizationRequest, osrmUrl } from '../../src/engine/requests.js';
-import { validateModel, type OptimizationInput } from '../../src/engine/models.js';
+import { isSupportedMode, validateModel, type OptimizationInput } from '../../src/engine/models.js';
 import { optimizationResponse, routeResponse, tableResponse } from '../../src/engine/responses.js';
 import { optimizationFixture, routeFixture, tableFixture } from '../support/engine-fixtures.js';
 import { RoutingEngine } from '../../src/engine/index.js';
@@ -12,10 +12,10 @@ import { once } from 'node:events';
 import { assertRoutingCandidate } from '../../../../tests/erp-conformance/routing.js';
 
 export const input: OptimizationInput = {
-  mode: 'bicycle', accountKind: 'personal', origin: {kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},
+  mode: 'car', accountKind: 'personal', origin: {kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},
   endpoint: {kind:'last-customer'}, tasks:[{taskId:'customer-a',coordinates:{latitude:30.05,longitude:31.24}},{taskId:'customer-b',coordinates:{latitude:30.06,longitude:31.25}}]
 };
-test.each(['car','motorcycle','bicycle'] as const)('%s deliberately maps to retained Compose dataset and VROOM service',mode=>{
+test.each(['car','motorcycle'] as const)('%s deliberately maps to its OSRM and VROOM services without claiming dataset provenance',mode=>{
   const compose=parse(readFileSync('docker-compose.yml','utf8'));
   const vroom=parse(readFileSync('vroom-conf/config.yml','utf8'));
   const profile=profiles[mode],config=loadEngineConfig({});
@@ -23,7 +23,6 @@ test.each(['car','motorcycle','bicycle'] as const)('%s deliberately maps to reta
   const url=osrmUrl(config,'route',{mode,coordinates:[input.origin.coordinates,input.tasks[0]!.coordinates]});
   expect(url.port).toBe(String(profile.port));
   expect(compose.services[profile.service].ports).toContain(`${url.port}:5000`);
-  expect(compose.services[profile.service].command).toContain(`/data/${profile.dataset}`);
   expect(vroom.routingServers.osrm[request.payload.vehicles[0]!.profile]).toEqual({host:profile.service,port:'5000'});
   expect(url.pathname).toContain('31.2357,30.0444;31.24,30.05');
   expect(request.payload.jobs[0]).toEqual({id:1,location:[31.24,30.05],service:600});
@@ -32,6 +31,30 @@ test.each(['car','motorcycle','bicycle'] as const)('%s deliberately maps to reta
 });
 
 const roadInput={mode:input.mode,coordinates:[input.origin.coordinates,input.tasks[0]!.coordinates]};
+test.each(['bicycle','unknown'])('unsupported %s input fails before any OSRM or VROOM HTTP request',async mode=>{
+  let hits=0;
+  await controlled((_req,res)=>{hits++;res.end('{}');},async engine=>{
+    // Parsed external JSON intentionally bypasses compile-time types so the
+    // actual adapter boundary, rather than a type assertion, rejects the mode.
+    const route=JSON.parse(JSON.stringify({...roadInput,mode}));
+    const optimization=JSON.parse(JSON.stringify({...input,mode}));
+    const before=JSON.stringify({route,optimization});
+    expect(isSupportedMode(mode)).toBe(false);
+    await expect(engine.route(route)).rejects.toMatchObject({code:'invalid_input'});
+    await expect(engine.table(route)).rejects.toMatchObject({code:'invalid_input'});
+    await expect(engine.optimize(optimization)).rejects.toMatchObject({code:'invalid_input'});
+    expect(hits).toBe(0);
+    expect(JSON.stringify({route,optimization})).toBe(before);
+  });
+});
+test('profile metadata accepts exactly car and motorcycle, without a third or unknown mode',()=>{
+  expect(Object.keys(profiles)).toEqual(['car','motorcycle']);
+  const metadata={modes:['car','motorcycle'],defaultCustomerServiceSeconds:600,liveVerification:'not-checked'};
+  expect(()=>validateModel('Profiles',metadata,true)).not.toThrow();
+  for(const modes of [['car'],['car','motorcycle','bicycle'],['car','unknown'],['car','car']]){
+    expect(()=>validateModel('Profiles',{...metadata,modes},true)).toThrow('invalid_response');
+  }
+});
 test('provider units and reversed solver order normalize to public IDs; candidate never proves policy',()=>{
   const result=optimizationResponse(input,optimizationFixture);
   assertRoutingCandidate(result,input.tasks.map(t=>t.taskId));
@@ -93,24 +116,26 @@ async function controlled(handler:(req:IncomingMessage,res:ServerResponse)=>void
   const server=createServer(handler);server.listen(0,'127.0.0.1');await once(server,'listening');
   const address=server.address();if(!address||typeof address==='string')throw new Error('listen');
   const url=`http://127.0.0.1:${address.port}`;
-  const config=loadEngineConfig({});config.osrm.bicycle=url;config.vroom=url;
+  const config=loadEngineConfig({});config.osrm.car=url;config.vroom=url;
   try {await run(new RoutingEngine({...config,timeoutMs:250,maxConcurrent:1,...options}),url);}
   finally {server.closeAllConnections();await new Promise<void>(resolve=>server.close(()=>resolve()));}
 }
-test('real controlled HTTP sends private mapping and converts both providers',async()=>{
+test.each(['car','motorcycle'] as const)('real controlled %s HTTP sends private mapping and converts both providers',async mode=>{
   let body='';const paths:string[]=[];
   await controlled((req,res)=>{
     paths.push(req.url!);
     if(req.method==='POST'){req.on('data',chunk=>{body+=String(chunk);});req.on('end',()=>res.end(JSON.stringify(optimizationFixture)));}
     else res.end(JSON.stringify(req.url!.startsWith('/route')?routeFixture:tableFixture));
-  },async engine=>{
-    expect((await engine.route(roadInput)).status).toBe('complete');
-    expect((await engine.table(roadInput)).status).toBe('complete');
-    expect((await engine.optimize(input)).visits[0]!.taskId).toBe('customer-b');
+  },async(_engine,url)=>{
+    const config=loadEngineConfig({});config.osrm[mode]=url;config.vroom=url;
+    const engine=new RoutingEngine({...config,timeoutMs:2000});
+    expect((await engine.route({...roadInput,mode})).status).toBe('complete');
+    expect((await engine.table({...roadInput,mode})).status).toBe('complete');
+    expect((await engine.optimize({...input,mode})).visits[0]!.taskId).toBe('customer-b');
   },{timeoutMs:2000});
-  expect(paths[0]).toContain('/route/v1/cycling/31.2357,30.0444;31.24,30.05');
+  expect(paths[0]).toContain('/route/v1/driving/31.2357,30.0444;31.24,30.05');
   expect(paths[1]).not.toContain('fallback_speed');
-  expect(JSON.parse(body).vehicles[0].profile).toBe('bike');expect(JSON.parse(body).jobs[0].service).toBe(600);
+  expect(JSON.parse(body).vehicles[0].profile).toBe(mode);expect(JSON.parse(body).jobs[0].service).toBe(600);
   expect(body).not.toContain('customer-a');expect(body).not.toContain('priority');
 });
 test('bounded timeout, saturation and cancellation release capacity; stalled response body times out',async()=>{
@@ -149,7 +174,7 @@ test('network outage is typed; pre-cancelled request never consumes capacity',as
     const unused=createServer();unused.listen(0,'127.0.0.1');await once(unused,'listening');
     const address=unused.address();if(!address||typeof address==='string')throw new Error('listen');
     await new Promise<void>(resolve=>unused.close(()=>resolve()));
-    const config=loadEngineConfig({});config.osrm.bicycle=`http://127.0.0.1:${address.port}`;
+    const config=loadEngineConfig({});config.osrm.car=`http://127.0.0.1:${address.port}`;
     await expect(new RoutingEngine(config).route(roadInput)).rejects.toMatchObject({code:'unavailable'});
     expect(url).toContain('127.0.0.1');
   });
@@ -163,7 +188,7 @@ test('caller mutation while provider is pending cannot change validated ID recon
 });
 test('configuration rejects mode collapse, credentials, paths, redirects through URL inputs, and unbounded settings',()=>{
   const c=loadEngineConfig({});
-  for(const config of [{...c,osrm:{...c.osrm,bicycle:c.osrm.car}},{...c,vroom:'http://secret:pass@localhost:3000'},
+  for(const config of [{...c,osrm:{...c.osrm,motorcycle:c.osrm.car}},{...c,vroom:'http://secret:pass@localhost:3000'},
     {...c,vroom:'http://localhost:3000/path'},{...c,timeoutMs:0},{...c,timeoutMs:Infinity},{...c,maxConcurrent:0},{...c,maxResponseBytes:0}]) {
     expect(()=>validateConfig(config)).toThrow('invalid_config');
   }

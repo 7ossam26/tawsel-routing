@@ -2,6 +2,8 @@
 
 Phase 42 · 26 September 2026 · **local handoff candidate; live pilot not approved**.
 
+Current profile amendment — 3 October 2026: [D-113](docs/phases/decision-map.md) removes bicycle permanently. Tawsel accepts car/motorcycle only; OSRM services and VROOM mappings contain those two modes. The current [Dokploy experiment](docs/dokploy-pilot.md) uses fresh application/identity/mock data; dated Phase 42 evidence remains historical.
+
 Tawsel is an Arabic RTL delivery PWA around the retained Nominatim/OSRM/VROOM Engine. It supports independent-driver work and company work supplied through public ERP contracts. Execution, offline capture/replay, branch returns, monitoring and reports/XLSX have local implementation evidence. The reference ERP has separate storage, native source forms, durable source/outgoing/incoming flows and scoped public integration. A commercial ERP connector remains a separate project.
 
 ## Read and reproduce the handoff
@@ -21,7 +23,7 @@ npm run erp:package
 npm run erp:verify
 ```
 
-The second package build includes the newly recorded proof. Output is `dist/erp-handoff/`, with canonical contracts/examples, generated public client, reference source/runtime/migrations, pinned consumer lockfile, guides and evidence. The manifest records actual candidate source identity and SHA-256 digests. `source:demo` installs the consumer outside this checkout and gives it only its own database plus scoped public inputs. No publication runs.
+The second package build includes the newly recorded proof at `docs/verification/integration-local-2026-10-03.json`; the September proof is retained. To produce an ERP package for a final pushed commit, run the package/demo/package/verify sequence in a separate checkout at that exact SHA, stage only the newly generated proof before the second package build, and do not commit the generated manifest/proof there. This keeps that checkout's HEAD stable while the source checkout stays clean for the Dokploy handoff. Output is `dist/erp-handoff/`, with canonical contracts/examples, generated public client, reference source/runtime/migrations, pinned consumer lockfile, guides and evidence. The manifest records actual candidate source identity and SHA-256 digests. `source:demo` installs the consumer outside this checkout and gives it only its own database plus scoped public inputs. No publication runs.
 
 ## Application development
 
@@ -44,7 +46,7 @@ The retained Engine tutorial below describes provider setup independently. Its V
 
 The Engine remains available independently:
 
-- **OSRM** — road routing for **car**, **bicycle**, and **motorcycle** profiles
+- **OSRM** — road routing for **car** and **motorcycle** profiles
 - **VROOM** — vehicle routing optimization (multi-stop, capacity, time windows) on top of OSRM
 - **Nominatim** — geocoding: address ⇄ coordinates, Egypt only
 
@@ -59,13 +61,13 @@ Runs entirely on your machine via Docker. No external APIs, no internet at runti
              │      └──────────────┬───────────────┘
   your app ──┤                     │ asks for travel times
              │                     │ (internal docker network)
-             │      ┌──────────────┼─────────────────────┐
-             │      ▼              ▼                     ▼
-             │ ┌─────────────┐ ┌─────────────┐    ┌─────────────┐
-             │ │  osrm-car   │ │osrm-bicycle │    │osrm-motorcy.│
-             │ │   :5000     │ │   :5000     │    │   :5000     │
-             │ └─────────────┘ └─────────────┘    └─────────────┘
-             │  host :5001      host :5002         host :5003
+             │      ┌──────────────┴───────────────┐
+             │      ▼                              ▼
+             │ ┌─────────────┐              ┌─────────────────┐
+             │ │  osrm-car   │              │ osrm-motorcycle │
+             │ │   :5000     │              │     :5000       │
+             │ └─────────────┘              └─────────────────┘
+             │  host :5001                    host :5003
              │
              │      ┌──────────────────────────────┐
              └────► │  Nominatim  localhost:8080   │  "where is
@@ -80,7 +82,7 @@ Nominatim is a **sibling, not a dependency** — VROOM and OSRM never call it. I
 ## Engine prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
-- ~10 GB free disk space for OSRM, plus **~13 GB** for the Nominatim database
+- Enough disk for the selected PBF, both processed OSRM groups, Nominatim and temporary preprocessing/export files; inspect actual sizes and free space before starting
 - Use **PowerShell**, not Git Bash — see [Gotchas](#gotchas)
 
 ## Engine quick start
@@ -93,13 +95,13 @@ Download from Geofabrik and place it in `data/`:
 https://download.geofabrik.de/africa/egypt-latest.osm.pbf
 ```
 
-Rename it to the expected filename:
+For a new dataset, record its dated filename and preprocessing provenance. The retained local default is:
 
 ```
 data/egypt-260913.osm.pbf
 ```
 
-> ~180 MB download, expands to ~6 GB after processing. Not stored in this repo.
+Set `EGYPT_PBF_FILE` and `OSRM_CAR_DATASET` together before preprocessing a different source. For example, the fresh target uses `egypt-261002.osm.pbf` and car prefix `egypt-261002.osrm`; local defaults remain `egypt-260913.osm.pbf` / `egypt-260913.osrm`. Motorcycle keeps `egypt-motorcycle.osrm`. Do not rename a new PBF to an old date or treat an existing file as proof of compatible preprocessing. These assets are not stored in Git.
 
 ### 2. Start OSRM
 
@@ -107,7 +109,7 @@ data/egypt-260913.osm.pbf
 .\setup.ps1
 ```
 
-**First run** (~20–30 min): pulls the OSRM image, pre-processes all 3 profiles, starts the servers.
+**First run** (duration depends on the input and host): pulls the OSRM image, pre-processes both profiles, starts the servers.
 **Later runs**: detects existing data, skips straight to starting the servers.
 
 ### 3. Start VROOM
@@ -122,7 +124,7 @@ docker run -d --name vroom -p 3000:3000 `
 
 Both flags matter. `--network` puts VROOM on the same network as OSRM so it can resolve the service names; the volume mount supplies [vroom-conf/config.yml](vroom-conf/config.yml), without which VROOM looks for OSRM at `0.0.0.0:5000` and fails on every request.
 
-> Already created it once? Don't re-run this — `docker start vroom` is enough. See [Gotchas](#gotchas).
+> After D-113, recreate the local VROOM container once with the reviewed two-mode configuration; starting an old container does not prove that it loaded the updated mapping. The target configured VROOM image must be rebuilt and deployed by its new digest. See [Gotchas](#gotchas).
 
 ### 4. Start Nominatim (geocoding)
 
@@ -140,7 +142,7 @@ Unlike OSRM and VROOM, this service is in `docker-compose.yml` with everything i
 ### 5. Verify
 
 ```powershell
-docker compose ps                # 3 OSRM + nominatim, all Up
+docker compose ps                # 2 OSRM + nominatim, all Up
 docker ps --filter name=vroom    # vroom, Up (healthy)
 Invoke-RestMethod "http://localhost:8080/status?format=json"   # status = 0
 ```
@@ -150,7 +152,6 @@ Invoke-RestMethod "http://localhost:8080/status?format=json"   # status = 0
 | Profile | URL |
 |---------|-----|
 | 🚗 Car | `http://localhost:5001` |
-| 🚲 Bicycle | `http://localhost:5002` |
 | 🏍️ Motorcycle | `http://localhost:5003` |
 
 ```
@@ -167,7 +168,7 @@ http://localhost:5001/route/v1/driving/31.2357,30.0444;31.3000,30.1000?overview=
 
 ## API — VROOM (multi-stop optimization)
 
-`POST http://localhost:3000` with a JSON body. Profiles available: `car`, `bike`, `motorcycle`.
+`POST http://localhost:3000` with a JSON body. Profiles available: `car`, `motorcycle`. Bicycle and `bike` requests are rejected.
 
 ```json
 {
@@ -291,7 +292,7 @@ Feed it jobs in a deliberately bad order — alternating between two distant clu
 
 **Inline JSON in PowerShell 5.1 doesn't work with curl.** Backslash isn't PowerShell's escape character, so `-d "{\"key\":1}"` reaches curl with literal backslashes and returns `code: 2, Invalid JSON object`. Single quotes fail too. Use `-d "@file.json"` or `Invoke-RestMethod`.
 
-**Port 5000 vs 5001/5002/5003.** All three OSRM containers listen on **5000 internally**; 5001–5003 exist only on the host side to avoid collisions. So [vroom-conf/config.yml](vroom-conf/config.yml) correctly uses `osrm-car:5000` — container-to-container traffic never touches the published host ports. Use 5001–5003 only from your browser, Postman, or PowerShell.
+**Port 5000 vs 5001/5003.** Both OSRM containers listen on **5000 internally**; 5001 and 5003 exist only on the host side to avoid collisions. So [vroom-conf/config.yml](vroom-conf/config.yml) correctly uses `osrm-car:5000` — container-to-container traffic never touches the published host ports. Use 5001 and 5003 only from your browser, Postman, or PowerShell.
 
 **Never rebuild data while servers are running.** `osrm-routed` memory-maps the `.osrm.*` files. Rewriting them under a live server corrupts its view and the process dies on the next request — while `docker compose ps` still cheerfully reports "Up", because the restart policy keeps reviving it. `setup.ps1` now stops the servers before any rebuild.
 
@@ -432,4 +433,4 @@ docker restart vroom
 
 ### Phase 12 routing adapters
 
-`npm run engine:demo` runs a controlled HTTP demonstration for car/motorcycle/bicycle, `npm run test:engine` verifies provider boundaries, and `npm run engine:live` explicitly probes existing services without startup or import. [Boundary/setup](docs/engine-boundary.md), [dated evidence and live gaps](docs/phase-12-evidence.md). Live Engine is unavailable on this host; P13–14 durable planning and route policy are implemented with controlled-provider evidence.
+`npm run engine:demo` runs six controlled HTTP checks: route, table and optimization for car/motorcycle, `npm run test:engine` verifies provider boundaries, and `npm run engine:live` explicitly probes existing services without startup or import. [Boundary/setup](docs/engine-boundary.md), [dated evidence and live gaps](docs/phase-12-evidence.md). Dated Phase 12–16 failures remain historical evidence; current two-mode live verification must be recorded separately. P13–14 durable planning and route policy have controlled-provider evidence.

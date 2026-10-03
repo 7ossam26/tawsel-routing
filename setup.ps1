@@ -11,52 +11,107 @@ param(
   [switch]$ImportNominatim
 )
 
+$ErrorActionPreference = 'Stop'
+Set-Location $PSScriptRoot
+function Invoke-Docker {
+  & docker @args
+  if ($LASTEXITCODE -ne 0) { throw "Docker failed (exit $LASTEXITCODE); preparation stopped." }
+}
+
+# Resolve exactly what Compose will use, including values supplied in .env.
+$composeText = Invoke-Docker @('compose', 'config', '--format', 'json')
+$composeConfig = ($composeText -join "`n") | ConvertFrom-Json
+$carCommand = @($composeConfig.services.'osrm-car'.command)
+if ($carCommand.Count -ne 8 -or ($carCommand[0..6] -join '|') -ne 'osrm-routed|--algorithm|mld|--max-table-size|10000|--max-matching-size|1000') {
+  throw 'Unexpected osrm-car command; refusing to operate on these assets.'
+}
+if ([string]$carCommand[-1] -notmatch '^/data/([A-Za-z0-9][A-Za-z0-9._-]*\.osrm)$') { throw 'OSRM_CAR_DATASET must be a safe basename.' }
+$carDataset = $Matches[1]
+if ([string]$composeConfig.services.nominatim.environment.PBF_PATH -notmatch '^/nominatim/data/([A-Za-z0-9][A-Za-z0-9._-]*\.osm\.pbf)$') { throw 'EGYPT_PBF_FILE must be a safe basename.' }
+$pbfFile = $Matches[1]
+$osrmImage = [string]$composeConfig.services.'osrm-car'.image
+if ($osrmImage -notmatch '^ghcr\.io/project-osrm/osrm-backend@sha256:[a-f0-9]{64}$') {
+  throw 'OSRM_IMAGE must be pinned to the digest compatible with these datasets.'
+}
+
+# Compose derives the same project name for checkouts with the same folder
+# basename. Never let a worktree operate on another checkout's containers.
+$projectContainers = @(Invoke-Docker @('ps', '-aq', '--filter', "label=com.docker.compose.project=$($composeConfig.name)"))
+if ($projectContainers.Count -gt 0) {
+  $containerText = Invoke-Docker (@('inspect') + $projectContainers)
+  $containers = ($containerText -join "`n") | ConvertFrom-Json
+  foreach ($existing in $containers) {
+    $ownerDirectory = $existing.Config.Labels.'com.docker.compose.project.working_dir'
+    if (!$ownerDirectory -or ![string]::Equals([IO.Path]::GetFullPath($ownerDirectory), [IO.Path]::GetFullPath($PSScriptRoot), [StringComparison]::OrdinalIgnoreCase)) {
+      throw 'Compose project belongs to another checkout. Set a unique COMPOSE_PROJECT_NAME before running setup in this worktree.'
+    }
+  }
+}
+
+# Only retire the former bicycle service belonging to this Compose project.
+# Its files/volumes are retained; never remove unrelated containers/orphans.
+$retiredContainers = @(Invoke-Docker @('ps', '-aq', '--filter', "label=com.docker.compose.project=$($composeConfig.name)", '--filter', 'label=com.docker.compose.service=osrm-bicycle'))
+
 Write-Host "=== OSRM Egypt Routing Stack ===" -ForegroundColor Cyan
 
 # Modern OSRM writes no bare ".osrm" file - only ".osrm.*" parts.
-# .osrm.cell_metrics is the last artifact osrm-customize produces, so its
-# presence means the full extract -> partition -> customize chain finished.
-$carReady        = Test-Path "data\egypt-260913.osrm.cell_metrics"
-$bicycleReady    = Test-Path "data\egypt-bicycle.osrm.cell_metrics"
-$motorcycleReady = Test-Path "data\egypt-motorcycle.osrm.cell_metrics"
+# Require the common runtime parts and all MLD parts, not a lone marker file.
+function Test-PreparedDataset([string]$Dataset) {
+  $requiredParts = @('datasource_names','ebg_nodes','edges','fileIndex','geometry','icd','maneuver_overrides','names','nbg_nodes','properties','ramIndex','timestamp','tld','tls','turn_duration_penalties','turn_weight_penalties','cells','cell_metrics','mldgr','partition')
+  foreach ($part in $requiredParts) {
+    $partPath = Join-Path 'data' "$Dataset.$part"
+    if (!(Test-Path -LiteralPath $partPath -PathType Leaf) -or (Get-Item -LiteralPath $partPath).Length -le 0) { return $false }
+  }
+  return $true
+}
+$carReady        = Test-PreparedDataset $carDataset
+$motorcycleReady = Test-PreparedDataset 'egypt-motorcycle.osrm'
+
+# A new input must not silently reuse the fixed motorcycle dataset or the
+# existing local Nominatim import. Server bootstrap uses separate empty volumes
+# and records source identity; this local helper preserves the legacy defaults.
+$existingNominatimVolume = [bool](Invoke-Docker @('volume', 'ls', '--quiet', '--filter', 'name=^nominatim-data$'))
+if ($pbfFile -ne 'egypt-260913.osm.pbf' -and ($carReady -or $motorcycleReady -or $existingNominatimVolume)) {
+  throw 'A source override requires fresh isolated assets/import volumes; retained local data was not prepared from this new source. Use the documented server bootstrap rather than relabeling existing files.'
+}
+if ((-not $carReady -or -not $motorcycleReady) -and !(Test-Path -LiteralPath (Join-Path 'data' $pbfFile) -PathType Leaf)) { throw "Missing source data/$pbfFile. Download and verify it before preprocessing." }
+foreach ($container in $retiredContainers) {
+  if ($container) { Invoke-Docker @('rm', '-f', $container) | Out-Null }
+}
 
 # ── Pre-process only if needed ──────────────────────────────────
 
-if (-not $carReady -or -not $bicycleReady -or -not $motorcycleReady) {
+if (-not $carReady -or -not $motorcycleReady) {
+  if (!(Test-Path -LiteralPath (Join-Path 'data' $pbfFile) -PathType Leaf)) { throw "Missing source data/$pbfFile. Download and verify it before preprocessing." }
   Write-Host "`nFirst-time setup detected. Pulling OSRM image..." -ForegroundColor Yellow
-  docker pull ghcr.io/project-osrm/osrm-backend:latest
+  Invoke-Docker @('pull', $osrmImage)
 
   # osrm-routed memory-maps the .osrm.* files. Rewriting them under a live
   # server corrupts its view and the process dies on the next request.
   Write-Host "Stopping any running servers before rebuilding data..." -ForegroundColor Yellow
-  docker compose stop osrm-car osrm-bicycle osrm-motorcycle
+  Invoke-Docker @('compose', 'stop', 'osrm-car', 'osrm-motorcycle')
 }
 
 if (-not $carReady) {
-  Write-Host "`n[1/3] Pre-processing Car profile (10-15 min)..." -ForegroundColor Yellow
-  docker compose run --rm osrm-preprocess-car
+  Write-Host "`n[1/2] Pre-processing Car profile..." -ForegroundColor Yellow
+  Invoke-Docker @('compose', 'run', '--rm', 'osrm-preprocess-car')
+  if (!(Test-PreparedDataset $carDataset)) { throw 'Car preprocessing produced incomplete runtime files.' }
 } else {
-  Write-Host "`n[1/3] Car profile already built. Skipping." -ForegroundColor DarkGray
-}
-
-if (-not $bicycleReady) {
-  Write-Host "`n[2/3] Pre-processing Bicycle profile (10-15 min)..." -ForegroundColor Yellow
-  docker compose run --rm osrm-preprocess-bicycle
-} else {
-  Write-Host "`n[2/3] Bicycle profile already built. Skipping." -ForegroundColor DarkGray
+  Write-Host "`n[1/2] Car profile already built. Skipping." -ForegroundColor DarkGray
 }
 
 if (-not $motorcycleReady) {
-  Write-Host "`n[3/3] Pre-processing Motorcycle profile (10-15 min)..." -ForegroundColor Yellow
-  docker compose run --rm osrm-preprocess-motorcycle
+  Write-Host "`n[2/2] Pre-processing Motorcycle profile..." -ForegroundColor Yellow
+  Invoke-Docker @('compose', 'run', '--rm', 'osrm-preprocess-motorcycle')
+  if (!(Test-PreparedDataset 'egypt-motorcycle.osrm')) { throw 'Motorcycle preprocessing produced incomplete runtime files.' }
 } else {
-  Write-Host "`n[3/3] Motorcycle profile already built. Skipping." -ForegroundColor DarkGray
+  Write-Host "`n[2/2] Motorcycle profile already built. Skipping." -ForegroundColor DarkGray
 }
 
 # ── Start routing servers ───────────────────────────────────────
 
 Write-Host "`nStarting routing servers..." -ForegroundColor Yellow
-docker compose up -d osrm-car osrm-bicycle osrm-motorcycle
+Invoke-Docker @('compose', 'up', '-d', 'osrm-car', 'osrm-motorcycle')
 
 # ── Nominatim (geocoding) ───────────────────────────────────────
 #
@@ -112,7 +167,6 @@ else {
 
 Write-Host "`n=== All servers running! ===" -ForegroundColor Green
 Write-Host "  Car:        http://localhost:5001" -ForegroundColor Cyan
-Write-Host "  Bicycle:    http://localhost:5002" -ForegroundColor Cyan
 Write-Host "  Motorcycle: http://localhost:5003" -ForegroundColor Cyan
 if ($nominatimReady) {
   Write-Host "  Geocoding:  http://localhost:8080" -ForegroundColor Cyan

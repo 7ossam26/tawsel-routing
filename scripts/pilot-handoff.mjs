@@ -2,36 +2,204 @@ import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import {resolve,join} from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+import {validateProvenance,validateAssetEntries,OSRM_IMAGE} from './engine-assets.mjs';
 
-const baseline=resolve('.local/snapshots/20260930T145930Z');
-const git=(...args)=>{const r=spawnSync('git',args,{encoding:'utf8'});if(r.status!==0)throw new Error('Git state unavailable');return r.stdout.trim();};
-if(git('status','--porcelain'))throw new Error('Commit tracked changes before generating the handoff');
-const commit=git('rev-parse','HEAD'),branch=git('branch','--show-current');
-const remote=git('ls-remote','origin',`refs/heads/${branch}`).split(/\s+/)[0];
-if(remote!==commit)throw new Error('Push the final branch before generating the handoff');
-const inventory=JSON.parse(await readFile(join(baseline,'runtime-inventory.json'),'utf8'));
-const assets=JSON.parse(await readFile(join(baseline,'asset-sha256.json'),'utf8'));
-const imagePath=process.argv[2];
-const imageReport=imagePath?JSON.parse(await readFile(resolve(imagePath),'utf8')):null;
-if(imageReport&&(imageReport.commit!==commit||imageReport.appOrigin!=='https://app.switch2tech.cloud'))throw new Error('Image digest report must match the pushed commit and pilot app origin');
-if(imageReport){
-  const names=['runtime','web','issuer','gateway','vroom','database','nominatim'];
-  if(names.some(name=>!new RegExp(`^ghcr\\.io/7ossam26/tawsel-[a-z-]+@sha256:[a-f0-9]{64}$`).test(imageReport.images?.[name]??'')))throw new Error('Image report must contain seven immutable GHCR digest references');
+const root=fileURLToPath(new URL('../',import.meta.url));
+const sha=value=>createHash('sha256').update(value).digest('hex');
+const commitPattern=/^[a-f0-9]{40}$/;
+const imageRepositories={runtime:'tawsel-runtime',web:'tawsel-web',issuer:'tawsel-issuer',gateway:'tawsel-issuer-gateway',vroom:'tawsel-vroom',database:'tawsel-postgres',nominatim:'tawsel-nominatim'};
+const imageNames=Object.keys(imageRepositories);
+const appOrigin='https://app.switch2tech.cloud';
+const usage='Usage: node scripts/pilot-handoff.mjs --inventory INVENTORY.json --assets ASSETS.json --provenance PROVENANCE.json [--images IMAGES.json]';
+
+export function parseHandoffArguments(args){
+  const options={};
+  for(let index=0;index<args.length;index++){
+    const flag=args[index];
+    if(!['--inventory','--assets','--provenance','--images'].includes(flag)||options[flag.slice(2)]!==undefined)throw new Error(usage);
+    const value=args[++index];
+    if(!value||value.startsWith('--'))throw new Error(usage);
+    options[flag.slice(2)]=resolve(value);
+  }
+  if(!options.inventory||!options.assets||!options.provenance)throw new Error(usage);
+  return options;
 }
-const output=resolve('.local/dokploy-handoff',new Date().toISOString().replace(/[:.]/g,'-'));
-await mkdir(output,{recursive:true});
-const write=async(name,value)=>writeFile(join(output,name),typeof value==='string'?value:JSON.stringify(value,null,2)+'\n',{flag:'wx'});
-const sourceUrl=`https://github.com/7ossam26/tawsel-routing/tree/${commit}`;
-const images=inventory.docker.images.map(image=>({references:image.references,repoDigests:image.repoDigests,sizeBytes:image.sizeBytes}));
-const safeInventory={schemaVersion:1,capturedAtUtc:inventory.capturedAtUtc,purpose:'Local inventory only; not a restorable backup',baselineCommit:inventory.git.head,docker:{clientVersion:inventory.docker.engine.clientVersion,serverVersion:inventory.docker.engine.serverVersion,composeVersion:inventory.docker.engine.composeVersion,architecture:inventory.docker.engine.architecture,cpus:inventory.docker.engine.cpus,memoryBytes:inventory.docker.engine.memoryBytes,containers:inventory.docker.containers.map(c=>({name:c.name,imageReference:c.imageReference,state:c.state,health:c.health,restartPolicy:c.restartPolicy,memoryLimitBytes:c.memoryLimitBytes,shmSizeBytes:c.shmSizeBytes,publishedPorts:c.publishedPorts.map(p=>({containerPort:p.containerPort,hostPort:p.hostPort,hostIp:p.hostIp})),mounts:c.mounts.map(m=>({type:m.type,destination:m.destination,readWrite:m.readWrite}))})),images,nominatimImportFinishedMarker:inventory.docker.nominatimImportFinishedMarker,statsSample:inventory.docker.statsSample.map(s=>({name:s.name,memory:s.memory,memoryPercent:s.memoryPercent}))},assetSummary:inventory.assetSummary};
-const safeAssets=assets.filter(a=>/^(?:data\/|\.local\/maps\/)/.test(a.path)&&!a.path.includes('..')).map(a=>({path:a.path,sizeBytes:a.sizeBytes,sha256:a.sha256}));
-await write('02-LOCAL-INVENTORY.json',safeInventory);
-await write('03-ASSETS-SHA256.json',safeAssets);
-await write('00-START-HERE-AR.md',`# تعليمات للشات الجديد: رفع Tawsel خطوة بخطوة\n\nأنت ChatGPT في شات جديد، وليس لديك وصول تلقائي لجهازي أو ملفاتي أو SSH أو Dokploy. سأرفق ملفات هذه الحزمة وأعطيك رابط المصدر المثبت: ${sourceUrl}. اقرأ المرفقات والملفات ذات الصلة في هذا الـcommit، وراجع توثيق Dokploy الرسمي https://docs.dokploy.com/llms.txt وhttps://docs.dokploy.com/docs/api عند الحاجة. لو لم تستطع فتح ملف في GitHub، اطلب مني إرفاقه تحديدًا؛ لا تخمن محتواه.\n\nمهمتك أن ترشدني لتشغيل Engine، PostgreSQL، Tawsel، Keycloak والبوابة، وMock ERP على Dokploy لتجربة مباشرة للفريق. استخدم الدومينات app.switch2tech.cloud وauth.switch2tech.cloud وmock.switch2tech.cloud؛ admin.switch2tech.cloud لإدارة Dokploy فقط. قواعد التطبيق والهوية والـMock تبدأ فارغة؛ ننقل OSRM والخريطة وNominatim المستورد فقط بعد التحقق من البصمات. البيانات الكبيرة والـvolumes غير مرفقة في الشات.\n\n**في كل رد: خطوة تنفيذية واحدة فقط.** قل أين أنفذها (Windows أو SSH أو Dokploy UI)، وما النتيجة المتوقعة، وما الدليل المنقح الذي أرجعه لك. انتظر ردي قبل الخطوة التالية، وشخّص أي فشل قبل الاستمرار. لا تطلب مني نسخ كلمات مرور أو tokens أو ملفات env أو مفاتيح أو dump في الشات. عندما أحتاج إدخال سر، وجّهني لإدخاله مباشرة في مكانه الآمن واطلب فقط تأكيدًا أو نتيجة فحص منقحة.\n\nابدأ بجرد الـVPS الفعلي: RAM وCPU والمساحة والـarchitecture وإصدار Dokploy وحالة Docker والشبكات، ثم تحقق من DNS وHTTPS للنطاقات، GHCR وصلاحية السحب، وتخزين S3 خارجي وSMTP. قارن الاستهلاك المتوقع مع الجرد المحلي؛ لو المساحة أو الذاكرة لا تكفي، أوقف خطوات النشر واذكر الموارد المطلوبة. افحص Compose الفعلي عبر Dokploy Preview Compose. لا تشغل Compose القديم في جذر الريبو، ولا تعرض قاعدة البيانات أو Engine أو Keycloak Admin أو منافذ خامًا.\n\nتسلسل العمل: جهز الشبكات والـvolumes والأسرار؛ تحقق من نجاح workflow بناء الصور لنفس الـcommit وحمّل تقرير digests إن لم يكن في MANIFEST؛ انقل ملفات OSRM والخريطة وافحص SHA-256، وصدّر volume Nominatim وهي متوقفة ثم استعدها وافحص import-finished؛ شغل PostgreSQL 18 مع TLS وpgBackRest، ثم Keycloak واستورد الـrealms، ثم migrations والأصول والتطبيق، ثم حسابات الفريق والـMock. تحقق من نسخة خارج السيرفر ومن استرجاع معزول قبل فتح النطاقات، ثم نفذ طلبًا كاملًا من Mock ERP حتى وصول النتيجة وفحص Admin/realm master المحجوبين.\n\nملف الجرد المحلي دليل حالة فقط وليس backup. لا تعتبر deployment في حالة queued أو healthcheck بسيطًا دليل نجاح. احتفظ بتقرير مختصر لكل مرحلة وبنقطة توقف واضحة عند الخطأ.\n`);
-await write('01-CURRENT-STATE-AR.md',`# الحالة المثبتة\n\n- مصدر الكود: ${sourceUrl}\n- جرد التشغيل المحلي: ${inventory.capturedAtUtc}؛ حالة وصفية فقط وليست backup.\n- تجربة Mock ERP المحلية اكتملت لطلب موزع ومنفذ مع رجوع الأحداث، لكن تشغيل Dokploy على الـVPS لم يبدأ بعد.\n- المصدر العام لا يحتوي ملفات OSRM المعالجة أو PMTiles أو volume Nominatim أو أسرار التشغيل. ملف SHA-256 المرفق يغطي ملفات data والخرائط فقط؛ Nominatim يحتاج تصديرًا باردًا مستقلًا.\n- الدومينات المعتمدة للتجربة: app.switch2tech.cloud وauth.switch2tech.cloud وmock.switch2tech.cloud. حسابات الفريق تُنشأ على Keycloak وتُقيد في Mock ERP بواسطة subject allowlist.\n- صور الإصدار: ${imageReport?'تقرير digest مرفق داخل MANIFEST.':'تحقق من تشغيل workflow Build pilot images على هذا الـcommit وحمّل release-images.json قبل نشر التطبيق؛ تقرير الصور غير مرفق بعد.'}\n- حدود الخريطة المرئية الحالية هي نطاق القاهرة الموجود في manifest؛ التوجيه المعالج يغطي ملف مصر المستخدم محليًا.\n`);
-await write('04-DOKPLOY-NOTES-AR.md',`# ملاحظات Dokploy المؤكدة\n\n- راجع التوثيق الرسمي: https://docs.dokploy.com/llms.txt وhttps://docs.dokploy.com/docs/api وhttps://docs.dokploy.com/docs/core/docker-compose\n- متغيرات Compose في واجهة Dokploy تُحفظ في .env للاستبدال؛ لا تدخل تلقائيًا للحاويات. استخدم env_file أو mapping صريح بحسب Compose.\n- استخدم Domains في Dokploy للمنافذ الداخلية web:8080 وissuer-gateway:8080 وmock:3010، ثم Preview Compose للتأكد من Traefik والشبكات الفعلية: https://docs.dokploy.com/docs/core/docker-compose/domains\n- ملفات الأسرار يجب أن تبقى في تخزين Dokploy المستمر خارج checkout المتجدد؛ اختبر مسارات file-backed secrets في Preview Compose. لا تنسخ محتواها للشات.\n- Dokploy Volume Backups تدعم named volumes فقط، لا bind mounts: https://docs.dokploy.com/docs/core/volume-backups\n- Keycloak public proxy paths موضحة في https://www.keycloak.org/server/reverseproxy ؛ افحص رفض /admin و/realms/master فعليًا.\n- PostgreSQL/pgBackRest: https://pgbackrest.org/user-guide.html ؛ لا يكفي نجاح backup job وحده من دون اختبار restore.\n`);
-await write('05-DEPLOYMENT-PREREQUISITES-AR.md',`# بيانات مطلوبة قبل أي نشر\n\nاكتب القيم غير السرية فقط في الشات الجديد: مواصفات الـVPS المرصودة، إصدار Dokploy، نوع معمارية CPU، مساحة القرص المتاحة، أسماء الشبكات والـvolumes، حالة DNS للنطاقات الثلاثة، ومزوّد S3 وSMTP دون مفاتيح. أدخل كلمات المرور والمفاتيح داخل Dokploy أو ملفات محمية على السيرفر فقط.\n\nبوابة التوقف: لو الذاكرة/القرص لا تكفي Engine والتطبيق وPostgreSQL وKeycloak وعمليات النسخ/الاسترجاع، لا ترفع الخدمات. الجرد المحلي سجل نحو 6.25 GiB لـEngine في عينة واحدة؛ هذا ليس قياس ذروة.\n\nملفات النشر في الـcommit: deploy/engine.compose.yaml ثم deploy/database.compose.yaml ثم deploy/compose.yaml ثم deploy/mock-public.compose.yaml. استخدم أمثلة env المقابلة كقائمة مفاتيح فقط ولا ترفع نسخًا مُعبأة إلى GitHub أو الشات. فحص أول تثبيت يستخدم kind=initial، وفحص فتح الدومينات kind=go-live، والترقيات اللاحقة kind=upgrade.\n\nملفات الأصول الكبيرة تُنقل مباشرة بين مخزن محمي والـVPS وتُفحص SHA-256 هناك بأداة scripts/pilot-asset-verify.mjs. أداة scripts/pilot-nominatim-export.mjs توقف حاوية Nominatim المحلية، تصدّر الـvolume، تعيد تشغيل الحاوية وتنتج تقرير SHA-256. لا ترفق الأرشيف في الشات، وتحقق من علامـة import-finished في الوجهة قبل بدء الخدمة. فعّل جدولة pgBackRest الموجودة في scripts/pilot-pgbackrest-backup.sh وdeploy/tawsel-pgbackrest-backup.* واختبر restore معزولًا.\n`);
-const names=['00-START-HERE-AR.md','01-CURRENT-STATE-AR.md','02-LOCAL-INVENTORY.json','03-ASSETS-SHA256.json','04-DOKPLOY-NOTES-AR.md','05-DEPLOYMENT-PREREQUISITES-AR.md'];
-const files=Object.fromEntries(await Promise.all(names.map(async name=>[name,createHash('sha256').update(await readFile(join(output,name))).digest('hex')])));
-await write('MANIFEST.json',{schemaVersion:1,generatedAtUtc:new Date().toISOString(),sourceCommit:commit,sourceUrl,sourceBranch:branch,snapshotCapturedAtUtc:inventory.capturedAtUtc,appOrigin:'https://app.switch2tech.cloud',authOrigin:'https://auth.switch2tech.cloud',mockOrigin:'https://mock.switch2tech.cloud',imageReport:imageReport??{status:'pending-github-actions-workflow'},filesSha256:files});
-console.log(output);
+
+function object(value,label){
+  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error(`Invalid ${label}`);
+  return value;
+}
+function safeText(value,label){
+  if(typeof value!=='string'||value.length>1024||Array.from(value).some(character=>character.charCodeAt(0)<32||character.charCodeAt(0)===127))throw new Error(`Invalid inventory text: ${label}`);
+  if(/\b[a-z][a-z0-9+.-]*:\/\/[^\s/]*@/i.test(value)||/[?&](?:access_token|token|password|secret|api_key)=/i.test(value))throw new Error(`Credential-bearing text is not allowed: ${label}`);
+  return value;
+}
+function date(value,label){
+  if(typeof value!=='string'||!/^\d{4}-\d\d-\d\dT.*Z$/.test(value)||!Number.isFinite(Date.parse(value)))throw new Error(`Invalid UTC timestamp: ${label}`);
+  return value;
+}
+function pick(value,fields,label){
+  object(value,label);
+  const selected={};
+  for(const key of fields){
+    const item=value[key];
+    if(item===undefined)continue;
+    if(item===null||typeof item==='boolean')selected[key]=item;
+    else if(typeof item==='number'&&Number.isFinite(item))selected[key]=item;
+    else if(typeof item==='string')selected[key]=safeText(item,`${label}.${key}`);
+    else throw new Error(`Invalid inventory field: ${label}.${key}`);
+  }
+  return selected;
+}
+function strings(value,label){
+  if(!Array.isArray(value))throw new Error(`Invalid inventory list: ${label}`);
+  return value.map((item,index)=>safeText(item,`${label}[${index}]`));
+}
+function mapArray(value,label,fn){
+  if(value===undefined)return undefined;
+  if(!Array.isArray(value))throw new Error(`Invalid inventory list: ${label}`);
+  return value.map(fn);
+}
+function network(value){
+  if(typeof value==='string')return safeText(value,'network');
+  const result=pick(value,['name','driver','scope','internal','attachable','apiAttached','planningAttached','Name','Driver','Scope','Internal','Attachable'],'network');
+  if(value.containers!==undefined)result.containers=mapArray(value.containers,'network.containers',item=>typeof item==='string'?safeText(item,'network.container'):pick(item,['name','service'],'network.container'));
+  return result;
+}
+function targetComponent(value,fields,label){
+  if(typeof value==='string')return safeText(value,label);
+  if(typeof value==='number'&&Number.isFinite(value))return value;
+  if(Array.isArray(value))return value.map(item=>targetComponent(item,fields,label));
+  return pick(value,fields,label);
+}
+
+// Only observed, nonsecret inventory fields are exported. Env, labels, inspect
+// Config, mount source paths, credentials and arbitrary metadata are omitted.
+export function sanitizeInventory(value,{sourceCommit}={}){
+  object(value,'inventory');
+  if(value.schemaVersion!==1||!commitPattern.test(value.sourceCommit??''))throw new Error('Inventory requires schemaVersion 1 and a sourceCommit');
+  if(sourceCommit&&value.sourceCommit!==sourceCommit)throw new Error('Inventory sourceCommit must match the final pushed commit');
+  const result={schemaVersion:1,capturedAtUtc:date(value.capturedAtUtc,'inventory.capturedAtUtc'),sourceCommit:value.sourceCommit,purpose:'Observed inventory only; not a backup or proof of runtime readiness'};
+  if(value.docker!==undefined){
+    const docker=object(value.docker,'inventory.docker');
+    result.docker={};
+    if(docker.engine!==undefined)result.docker.engine=pick(docker.engine,['clientVersion','serverVersion','composeVersion','dokployVersion','architecture','cpus','memoryBytes','operatingSystem','kernelVersion'],'docker.engine');
+    if(docker.containers!==undefined)result.docker.containers=mapArray(docker.containers,'docker.containers',container=>{
+      const out=pick(container,['name','imageReference','state','health','restartPolicy','memoryLimitBytes','shmSizeBytes'],'docker.container');
+      if(container.publishedPorts!==undefined)out.publishedPorts=mapArray(container.publishedPorts,'container.ports',port=>pick(port,['containerPort','hostPort','hostIp','protocol'],'container.port'));
+      if(container.mounts!==undefined)out.mounts=mapArray(container.mounts,'container.mounts',mount=>pick(mount,['type','name','destination','readWrite'],'container.mount'));
+      if(container.networks!==undefined)out.networks=mapArray(container.networks,'container.networks',network);
+      return out;
+    });
+    if(docker.images!==undefined)result.docker.images=mapArray(docker.images,'docker.images',item=>{
+      const out=pick(item,['sizeBytes'],'docker.image');
+      if(item.references!==undefined)out.references=strings(item.references,'image.references');
+      if(item.repoDigests!==undefined)out.repoDigests=strings(item.repoDigests,'image.repoDigests');
+      return out;
+    });
+    if(docker.networks!==undefined)result.docker.networks=mapArray(docker.networks,'docker.networks',network);
+    if(docker.statsSample!==undefined)result.docker.statsSample=mapArray(docker.statsSample,'docker.statsSample',sample=>pick(sample,['name','memory','memoryPercent','cpuPercent'],'docker.stats'));
+    if(typeof docker.nominatimImportFinishedMarker==='boolean')result.docker.nominatimImportFinishedMarker=docker.nominatimImportFinishedMarker;
+  }
+  if(value.target!==undefined){
+    const target=object(value.target,'inventory.target');
+    result.target=pick(target,['capturedAtUtc','checkedAtUtc','architecture','hostname','cpus','cpuCount','memoryBytes','availableMemoryBytes','freeDiskBytes','memoryTotalBytes','memoryUsedBytes','diskTotalBytes','diskUsedBytes','swapBytes','dokployVersion','dockerVersion','composeVersion','applicationDataVerifiedEmpty','nominatimImportStatus'],'target');
+    if(target.checkedAtUtc!==undefined)result.target.checkedAtUtc=date(target.checkedAtUtc,'target.checkedAtUtc');
+    if(target.engineNetwork!==undefined)result.target.engineNetwork=network(target.engineNetwork);
+    if(target.applications!==undefined)result.target.applications=pick(target.applications,['engineAutoDeploy','apiAutoDeploy','planningAutoDeploy','status'],'target.applications');
+    for(const key of ['cpu','mem','memory','disk','server'])if(target[key]!==undefined)result.target[key]=targetComponent(target[key],['name','hostname','architecture','model','cores','logicalCpus','totalBytes','availableBytes','freeBytes','memoryBytes','cpus','provider','region','path','version'],`target.${key}`);
+    if(target.network!==undefined)result.target.network=Array.isArray(target.network)?target.network.map(network):network(target.network);
+    if(target.networks!==undefined)result.target.networks=mapArray(target.networks,'target.networks',network);
+  }
+  return result;
+}
+
+export function validateImageReport(value,commit){
+  if(value===null||value===undefined)return null;
+  object(value,'image report');
+  if(value.commit!==commit||value.appOrigin!==appOrigin)throw new Error('Image report must match the final pushed commit and app origin');
+  object(value.images,'image report images');
+  const images={};
+  for(const name of imageNames){
+    const reference=value.images[name];
+    if(typeof reference!=='string'||!reference.startsWith(`ghcr.io/7ossam26/${imageRepositories[name]}@sha256:`)||!/^ghcr\.io\/7ossam26\/tawsel-[a-z-]+@sha256:[a-f0-9]{64}$/.test(reference))throw new Error(`Image report requires an immutable GHCR digest: ${name}`);
+    images[name]=reference;
+  }
+  return {commit,appOrigin,images};
+}
+
+function publicProvenance(value){
+  const source={file:value.source.file,url:value.source.url,sizeBytes:value.source.sizeBytes,sha256:value.source.sha256};
+  // Export only reviewed identity/status fields and validated version/time
+  // metadata, never an arbitrary build environment.
+  const profiles={};
+  for(const mode of ['car','motorcycle']){
+    const profile=value.profiles[mode];
+    profiles[mode]={dataset:profile.dataset,status:profile.status};
+    if(profile.profileSha256!==undefined)profiles[mode].profileSha256=profile.profileSha256;
+  }
+  return {schemaVersion:1,modes:['car','motorcycle'],source,osrmImage:value.osrmImage,profiles,...(value.osrmVersion!==undefined?{osrmVersion:value.osrmVersion}:{}),...(value.capturedAtUtc!==undefined?{capturedAtUtc:value.capturedAtUtc}:{})};
+}
+
+export function buildHandoffArtifacts({inventory,assets,provenance,imageReport=null,commit,branch,generatedAtUtc=new Date().toISOString()}){
+  if(!commitPattern.test(commit??'')||typeof branch!=='string'||!branch||/[\r\n]/u.test(branch))throw new Error('Invalid handoff source identity');
+  date(generatedAtUtc,'handoff.generatedAtUtc');
+  const safeInventory=sanitizeInventory(inventory,{sourceCommit:commit});
+  const normalized=validateProvenance(provenance,{allowIncomplete:true});
+  const checked=validateAssetEntries(assets,normalized,{allowIncomplete:true});
+  const safeProvenance=publicProvenance(normalized);
+  const safeImages=validateImageReport(imageReport,commit);
+  const sourceUrl=`https://github.com/7ossam26/tawsel-routing/tree/${commit}`;
+  const pendingModes=['car','motorcycle'].filter(mode=>!checked.readiness[mode]);
+  const verificationCommand='node scripts/pilot-asset-verify.mjs 03-ASSETS-SHA256.json /actual/engine-data /actual/maps --pbf-directory /actual/pbf --provenance ENGINE-PROVENANCE.json'+(checked.ready?'':' --allow-incomplete');
+  const readiness={ready:false,inputManifestReady:checked.ready&&safeImages!==null,classification:'Overall readiness remains false: input manifest completeness does not establish target hashes, imported Nominatim, fresh application stores or runtime checks',engineAssetsComplete:checked.ready,profiles:checked.readiness,imagesAvailable:safeImages!==null,targetRuntimeVerified:false,pendingModes};
+  const assetState=checked.ready?'قائمة ملفات التوجيه كاملة وفق تعريف أجزاء التشغيل؛ يلزم فحص البايتات والبصمات في مسارات الهدف.':`Bootstrap غير جاهز لتشغيل Engine: ملفات ${pendingModes.join(' / ')} غير مكتملة أو حالتها pending/failed. المرفقات تسمح بتجهيز PBF والخريطة فقط؛ لا تستخدمها كدليل جاهزية توجيه.`;
+  const artifactValues={
+    '00-START-HERE-AR.md':`# تعليمات للشات الجديد: تجربة Tawsel خطوة بخطوة\n\nالمصدر المثبت: ${sourceUrl}. اقرأ الملفات المرفقة والمصدر ذي الصلة لهذا الـcommit. لا تملك وصولًا تلقائيًا لجهازي أو SSH أو Dokploy؛ لا تفترض تنفيذًا لم ترَ نتيجته.\n\nالهدف تجربة جديدة مصرّح بها، باستخدام native Dokploy Applications وnative Database، وEngine Compose وحده. المطلوب بدء التطبيق والهوية وMock ببيانات جديدة بعد إثبات فراغها؛ لا ننقل قواعد تجارب الجهاز القديمة. D-113 يتيح car وmotorcycle فقط ويرفض bicycle وbike.\n\n**في كل رد خطوة تنفيذية واحدة فقط.** حدد مكان التنفيذ والنتيجة المتوقعة والدليل المنقح، ثم انتظر ردي. لا تطلب كلمات مرور أو tokens أو ملفات env أو مفاتيح أو dumps في الشات؛ أدخل الأسرار في مكانها المحمي مباشرة. شخّص الفشل قبل الاستمرار.\n\nابدأ بالجرد المرفق ثم طابقه مع حالة السيرفر الحالية. حزمة bootstrap التي تظهر ready=false تحتاج استكمال التجهيز، وليست إذنًا لتشغيل ملفات جزئية. لا تعتبر queued أو healthcheck دليل نجاح. شروط backup/restore الكاملة للإنتاج لا تمنع التجربة الحالية، ولا تصبح ناجحة بمجرد تنفيذها.\n`,
+    '01-CURRENT-STATE-AR.md':`# الحالة المسجلة وحدودها\n\n- المصدر: ${sourceUrl}\n- وقت الجرد: ${safeInventory.capturedAtUtc}؛ جرد حالة فقط وليس backup.\n- الأنماط الحالية: car / motorcycle فقط.\n- PBF المختار: ${safeProvenance.source.file}؛ SHA-256: ${safeProvenance.source.sha256}.\n- car: ${safeProvenance.profiles.car.dataset} / ${safeProvenance.profiles.car.status}.\n- motorcycle: ${safeProvenance.profiles.motorcycle.dataset} / ${safeProvenance.profiles.motorcycle.status}.\n- ${assetState}\n- صور الإصدار: ${safeImages?'سبعة digests مثبتة لنفس الـcommit مرفقة؛ وجودها لا يثبت deployment.':'تقرير الصور pending؛ اجلب تقرير digests لنفس الـcommit قبل نشر الخدمات.'}\n- لا تقدم هذه الحزمة دليل نجاح Mock ERP أو jobs على الـVPS أو جاهزية إنتاج. نتائج التشغيل تحتاج دليلًا مستقلًا.\n`,
+    '02-LOCAL-INVENTORY.json':safeInventory,
+    '03-ASSETS-SHA256.json':checked.entries,
+    '04-DOKPLOY-NOTES-AR.md':`# مسار Dokploy الحالي\n\n- استخدم native Applications وnative Database للتطبيق/الهوية/Mock؛ استخدم deploy/engine.compose.yaml للـEngine وحده. Root Compose خاص بالتجهيز المحلي.\n- اضبط autoDeploy=false أثناء التحديث. راجع الصور والإعدادات والمجلدات والشبكات الفعلية ثم نفّذ deployments صراحة.\n- شبكة Engine الخارجية: tawsel-engine-swarm، driver=overlay وInternal=true وAttachable=true. تحقق من ربط API وplanning بالشبكة فعليًا بعد التحديث. لا تستنتج الربط من اسم الشبكة فقط.\n- app.switch2tech.cloud إلى web:8080؛ auth.switch2tech.cloud إلى issuer-gateway:8080؛ mock.switch2tech.cloud إلى public-test mock:3010. admin.switch2tech.cloud لإدارة Dokploy. لا تعرض Engine أو database أو API/workers أو raw Keycloak للعامة.\n- احتفظ بـOSRM digest ${OSRM_IMAGE}. أعد بناء VROOM؛ إعداد الأنماط يُنسخ إلى الصورة عند build، ويبدأ Node مباشرة مع log في /tmp. مجرد بدء الحاوية القديمة لا يثبت تحميل الإعداد الجديد.\n- افحص حجب /admin و/realms/master، ووجود team subject allowlist للـMock، وحدود callback العامة. لا تغير حدود الشبكة/الهوية لإخفاء فشل التجربة.\n`,
+    '05-DEPLOYMENT-PREREQUISITES-AR.md':`# التجهيز والفحوص قبل تشغيل Engine\n\n${assetState}\n\nEGYPT_PBF_FILE=${safeProvenance.source.file}\nOSRM_CAR_DATASET=${safeProvenance.profiles.car.dataset}\nMotorcycle dataset=${safeProvenance.profiles.motorcycle.dataset}\n\nخطة السيرفر الحالية تختار ملفات 261002، والقيم الفعلية لهذا المرفق موضحة في provenance؛ لا تعتمد تاريخًا ثابتًا بدل التحقق من المصدر المختار. الافتراض المحلي القديم يظل egypt-260913.osm.pbf وegypt-260913.osrm؛ لا تستبدل مصدرًا جديدًا باسم التاريخ القديم. جهّز datasets خارج الملفات المركبة في خدمات حية. لا تنقل أي bicycle أو ملفات preprocessing جزئية. Nominatim على مسار bootstrap يحتاج volume فارغًا واستيراد المصدر المختار ثم PG16/import-finished؛ لا تعتبر وجود PBF دليل اكتمال قاعدة البيانات.\n\nافحص البصمات على المسارات الفعلية للهدف:\n\n\`\`\`sh\n${verificationCommand}\n\`\`\`\n\nفحص bootstrap مع --allow-incomplete يمكنه إثبات ملفات PBF/maps المتاحة فقط؛ ready يظل false إلى أن توجد أجزاء تشغيل كلا النمطين مكتملة. بعد اكتمال التجهيز أعد الجرد/manifest/provenance والفحص الكامل.\n\nبعد نشر الصور والإعدادات الصحيحة، سجل ستة فحوص مستقلة: route/table/optimize × car/motorcycle. افحص Nominatim والخريطة وربط API/planning بشكل منفصل، ثم رحلة الطلب ونتيجة callback/applied projection. هذه خطوات تحتاج نتائج فعلية، وليست نتائج تدعيها الحزمة.\n`,
+    'ENGINE-PROVENANCE.json':safeProvenance
+  };
+  const artifacts=new Map(Object.entries(artifactValues).map(([name,value])=>[name,typeof value==='string'?value:JSON.stringify(value,null,2)+'\n']));
+  const filesSha256=Object.fromEntries([...artifacts].map(([name,value])=>[name,sha(value)]));
+  const manifest={schemaVersion:1,generatedAtUtc,sourceCommit:commit,sourceUrl,sourceBranch:branch,inventoryCapturedAtUtc:safeInventory.capturedAtUtc,appOrigin,authOrigin:'https://auth.switch2tech.cloud',mockOrigin:'https://mock.switch2tech.cloud',modes:['car','motorcycle'],osrmImage:OSRM_IMAGE,readiness,assetSummary:{files:checked.files,totalBytes:checked.totalBytes},imageReport:safeImages??{status:'pending-github-actions-workflow',requiredCommit:commit},filesSha256};
+  artifacts.set('MANIFEST.json',JSON.stringify(manifest,null,2)+'\n');
+  return {artifacts,manifest};
+}
+
+const runGit=(...args)=>{
+  const result=spawnSync('git',args,{cwd:root,encoding:'utf8',windowsHide:true,maxBuffer:16*1024*1024});
+  if(result.status!==0)throw new Error('Git state unavailable');
+  return result.stdout.trim();
+};
+export function requirePushedSource(git=runGit){
+  if(git('status','--porcelain'))throw new Error('Commit tracked changes and remove unrelated untracked files before generating the handoff');
+  const commit=git('rev-parse','HEAD'),branch=git('branch','--show-current');
+  if(!commitPattern.test(commit)||!branch)throw new Error('Handoff requires a branch with a committed source identity');
+  const lines=git('ls-remote','origin',`refs/heads/${branch}`).split('\n');
+  if(!lines.some(line=>{const [remote,ref]=line.split(/\s+/);return remote===commit&&ref===`refs/heads/${branch}`;}))throw new Error('Push the final source branch before generating the handoff');
+  return {commit,branch};
+}
+async function readJson(path,label){
+  try{return JSON.parse(await readFile(path,'utf8'));}catch{throw new Error(`Unable to read valid JSON for --${label}`);}
+}
+export async function writeHandoff(output,artifacts){
+  await mkdir(output,{recursive:true});
+  for(const [name,value] of artifacts)await writeFile(join(output,name),value,{flag:'wx'});
+}
+async function main(){
+  const args=parseHandoffArguments(process.argv.slice(2));
+  const context=requirePushedSource();
+  const [inventory,assets,provenance,imageReport]=await Promise.all([readJson(args.inventory,'inventory'),readJson(args.assets,'assets'),readJson(args.provenance,'provenance'),args.images?readJson(args.images,'images'):null]);
+  const {artifacts}=buildHandoffArtifacts({inventory,assets,provenance,imageReport,...context});
+  const output=resolve(root,'.local/dokploy-handoff',new Date().toISOString().replace(/[:.]/g,'-'));
+  await writeHandoff(output,artifacts);
+  console.log(output);
+}
+if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url){
+  main().catch(error=>{console.error(error.message);process.exitCode=1;});
+}

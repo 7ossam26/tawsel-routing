@@ -1,8 +1,10 @@
 # Tawsel — master plan
 
+Current amendment — 3 October 2026: D-113 removes bicycle permanently and limits R-21 to car/motorcycle. The owner chose a fresh experimental deployment without migrating old local experimental application data. [Current checks](docs/verification/two-mode-routing-2026-10-03.md) remain independent of dated Phase 42 evidence.
+
 Phase 42 as-built update — 26 September 2026: application and reference ERP implementation through P41 is available with local evidence. [Final handoff](docs/ERP-INTEGRATION-HANDOFF.md), [complete requirement ledger](docs/verification/requirement-ledger.md), [A–P readiness](docs/verification/pilot-readiness.md) and [execution history](docs/implementation-status.md) distinguish code, local checks, target checks and owner review. The live pilot remains unapproved: physical devices/elapsed offline observation, live Engine, target operations/capacity/recovery and owner review are outstanding.
 
-This plan retains the accepted product specification and engineering proposals under D-01–D-112. Phase numbers below describe ownership and dependency order; historical planning language is not current runtime status. Canonical public paths and versions now live in contracts/openapi.yaml and docs/erp/release-manifest.json. The 42-phase package is the current sequence; the former 11-phase package remains archived. No real ERP connector or public deployment is implied.
+This plan retains the accepted product specification and engineering proposals under D-01–D-113. Phase numbers below describe ownership and dependency order; historical planning language is not current runtime status. Canonical public paths and versions now live in contracts/openapi.yaml and docs/erp/release-manifest.json. The 42-phase package is the current sequence; the former 11-phase package remains archived. No real ERP connector or public deployment is implied.
 
 ## 1. Purpose and success
 
@@ -18,7 +20,7 @@ Success requires connected journeys, an exceptionally simple driver experience, 
 | --- | --- |
 | Separate B2B company and B2C independent accounts; PWA; Arabic RTL; Android/Chrome and iPhone/Safari verification | Linked personal/company workspace account; native React Native/Expo app now |
 | ERP-preassigned B2B tasks; manual B2C name/phone/address or dropped pin; preparation, planning, execution and reports | Real ERP, commercial order/customer administration, global fleet assignment |
-| Car, motorcycle and bicycle routing; maximum 50 remaining planned stops; ten-minute default customer service | Weight/volume fleet capacity, automatic over-limit splitting, daily 50-task cap |
+| Car and motorcycle routing; maximum 50 remaining planned stops; ten-minute default customer service | Weight/volume fleet capacity, automatic over-limit splitting, daily 50-task cap |
 | Current/next state, outcomes, simple collection records, whole-piece B2B partial delivery, source-branch returns | B2C item splitting/branch custody, financial ledger, cash settlement, merchant liability calculation |
 | Roughly 24 hours of downloaded started-work/offline action support; online start for every new round | Offline new-round start, offline optimization, guaranteed complete offline basemap/navigation |
 | Multiple rounds in an explicit workday; deferral; urgency; driver self-correction within approved bounds | Call counters/limits, barcode pickup checklist, signature/photo/POD workflow, incentives |
@@ -179,7 +181,7 @@ Preserve source address and provenance independently from the confirmed executio
 
 Map searches go through the application's private Nominatim adapter, with timeouts, tenant-aware request handling and bounded caching. A result is a candidate with a source/type, not a measured accuracy percentage. Use MapLibre plus explicitly provisioned tile/style/font/sprite assets; retain required attribution. An offline map cache is best effort, while downloaded stop details and stored route geometry remain usable without it. [Nominatim Search](https://nominatim.org/release-docs/latest/api/Search/), [MapLibre basemap setup](https://docs.protomaps.com/basemaps/maplibre)
 
-Plan from the last driver-confirmed physical stop, with optional manually selected origin. On the first round, use a confirmed branch/manual origin. A phone outcome without arrival does not advance the origin. Never label this origin as current GPS. Vehicle mode maps to the correct OSRM service; bicycle may map internally to `bike`. Use longitude/latitude order only within adapters, explicit coordinate names in public contracts, seconds for durations and metres for distances. Default service is 600 seconds per customer; branch service is a separately configured estimate, not silently a customer delivery.
+Plan from the last driver-confirmed physical stop, with optional manually selected origin. On the first round, use a confirmed branch/manual origin. A phone outcome without arrival does not advance the origin. Never label this origin as current GPS. Vehicle mode maps to the correct OSRM service. D-113 limits the public and provider modes to `car` and `motorcycle`; `bicycle` and `bike` are rejected. Use longitude/latitude order only within adapters, explicit coordinate names in public contracts, seconds for durations and metres for distances. Default service is 600 seconds per customer; branch service is a separately configured estimate, not silently a customer delivery.
 
 End at the last customer by default. A selected B2B branch visit or B2C fixed endpoint is explicit. Estimate completion with no hard shift-end cutoff. External navigation opens the selected destination using the current device's navigation app; opening it is not a heading/arrival confirmation.
 

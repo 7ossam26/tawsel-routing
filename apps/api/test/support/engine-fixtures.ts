@@ -1,6 +1,6 @@
 import type { OptimizationInput } from '../../src/engine/models.js';
 
-export const engineInput:OptimizationInput={mode:'bicycle',accountKind:'personal',origin:{kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},endpoint:{kind:'last-customer'},tasks:[{taskId:'customer-a',coordinates:{latitude:30.05,longitude:31.24}},{taskId:'customer-b',coordinates:{latitude:30.06,longitude:31.25}}]};
+export const engineInput:OptimizationInput={mode:'car',accountKind:'personal',origin:{kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},endpoint:{kind:'last-customer'},tasks:[{taskId:'customer-a',coordinates:{latitude:30.05,longitude:31.24}},{taskId:'customer-b',coordinates:{latitude:30.06,longitude:31.25}}]};
 // Hand-authored provider fixtures: travel 30s/300m, two 600s visits => finish 1230s.
 // Deliberately visit ID 2 before ID 1 to catch accidental array-position mapping.
 export const optimizationFixture={

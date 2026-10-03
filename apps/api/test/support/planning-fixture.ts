@@ -10,7 +10,7 @@ import { once } from 'node:events';
 import { RoutingEngine } from '../../src/engine/index.js';
 import { loadEngineConfig } from '../../src/engine/config.js';
 
-export const settings:Settings={mode:'bicycle',origin:{kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},endpoint:{kind:'last-customer'},plannedStartAt:'2026-09-23T10:00:00.000Z'};
+export const settings:Settings={mode:'car',origin:{kind:'manual-pin',coordinates:{latitude:30.0444,longitude:31.2357}},endpoint:{kind:'last-customer'},plannedStartAt:'2026-09-23T10:00:00.000Z'};
 // One logical installation per fixture account. Multi-phone tests override this
 // explicitly; generating an unrelated installation for every action hid fences.
 const deviceId=randomUUID();
@@ -57,5 +57,5 @@ export async function providerFixture(options:{beforeResponse?:()=>Promise<void>
  server.listen(0,'127.0.0.1');await once(server,'listening');
  const address=server.address();if(!address||typeof address==='string')throw new Error('Missing fixture address');
  const url=`http://127.0.0.1:${address.port}`;
- return {url,engine:new RoutingEngine(loadEngineConfig({TAWSEL_VROOM_URL:url,TAWSEL_OSRM_BICYCLE_URL:url,TAWSEL_ENGINE_TIMEOUT_MS:'10000'})),async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
+ return {url,engine:new RoutingEngine(loadEngineConfig({TAWSEL_VROOM_URL:url,TAWSEL_OSRM_CAR_URL:url,TAWSEL_ENGINE_TIMEOUT_MS:'10000'})),async close(){server.closeAllConnections();await new Promise<void>((resolve,reject)=>server.close(e=>e?reject(e):resolve()));}};
 }

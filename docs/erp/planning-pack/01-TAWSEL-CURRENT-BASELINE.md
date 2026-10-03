@@ -1,5 +1,7 @@
 # Tawsel integration context for a new shipping ERP
 
+Current vehicle scope (D-113, 3 October 2026): Tawsel supports only `car` and `motorcycle`. `bicycle` and `bike` are rejected by the current public contracts and providers; the ERP must provision a supported driver profile. Dated evidence describing three modes is historical and does not reopen bicycle support.
+
 The planning task starts with Tawsel as an existing completed system. Discover and plan the separate commercial ERP against its documented public boundary. Completion does not imply that every imaginable API, permission, currency or workflow is supported; exact supported behavior comes from the supplied contracts.
 
 ## Attachments and reading order

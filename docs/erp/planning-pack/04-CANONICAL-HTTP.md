@@ -1,12 +1,12 @@
 # Canonical HTTP, authentication and operation reference
 
-Source commit: `32aad03e8a1a04ac36b95a5a77ab7bf8f7623ada`. Extracted: 2026-09-25T08:22:32.982Z.
+Source checkout base commit: `ecd709cd96fef0e08440506905cfc7650c025824`. Extracted: 2026-10-03T16:12:54.516Z. Consult sourceWorkingTreeChanges and source-file hashes in planning-manifest.json for uncommitted inputs; the base commit alone does not identify those bytes.
 
 Original blocks below are verbatim source text, not rewritten contracts. Their SHA-256 hashes refer to original bytes. Resolve relative schema references using the original path above the block and the companion schema attachment. No repo/network access is needed to read those blocks. Descriptions/fixtures do not override operation authentication or lifecycle.
 
 ## Host and authority index
 
-127 bound HTTP operations below. Alternatives in the authentication column are OpenAPI alternatives, not blanket permission: current capability, resource, actor and lifecycle checks still apply. The three external receiver/source endpoints run on the consumer base URL. A service credential cannot call a human endpoint. The complete catalog additionally contains events/local actions/unbound operations.
+133 bound HTTP operations below. Alternatives in the authentication column are OpenAPI alternatives, not blanket permission: current capability, resource, actor and lifecycle checks still apply. The three external receiver/source endpoints run on the consumer base URL. A service credential cannot call a human endpoint. The complete catalog additionally contains events/local actions/unbound operations.
 
 | Operation ID | Method and path | Server / caller category | Authentication alternatives | Capability | Lifecycle |
 | --- | --- | --- | --- | --- | --- |
@@ -97,9 +97,12 @@ Original blocks below are verbatim source text, not rewritten contracts. Their S
 | planning.requestReplan | POST /api/v1/planning/commands/planning.requestReplan | Tawsel human session | companySession OR personalSession | planning.manage | verified-local |
 | planning.saveDraft | POST /api/v1/planning/commands/planning.saveDraft | Tawsel human session | companySession OR personalSession | planning.manage | verified-local |
 | planning.setManualOrder | POST /api/v1/planning/commands/planning.setManualOrder | Tawsel human session | companySession OR personalSession | planning.manage | verified-local |
+| report.downloadExport | GET /api/v1/report-exports/{exportId}/download | Tawsel human session | personalSession OR companySession | reports.export | verified-local |
+| report.getExportStatus | GET /api/v1/report-exports/{exportId} | Tawsel human session | personalSession OR companySession | reports.export | verified-local |
 | report.getRoundTiming | GET /api/v1/reports/workdays/{workdayId}/rounds/{roundId}/timing | Tawsel human session | personalSession OR companySession | reports.read | verified-local |
 | report.getWorkday | GET /api/v1/reports/workdays/{workdayId} | Tawsel human session | personalSession OR companySession | reports.read | verified-local |
 | report.listWorkdays | GET /api/v1/reports/workdays | Tawsel human session | personalSession OR companySession | reports.read | verified-local |
+| report.requestExcelExport | POST /api/v1/reports/workdays/{workdayId}/exports | Tawsel human session | personalSession OR companySession | reports.export | verified-local |
 | return.checkConfirmation | POST /api/v1/returns/requests/{requestId}/confirmation | Tawsel human session | companySession OR personalSession | execution.own | verified-local |
 | return.getRequest | GET /api/v1/returns/requests/{requestId} | Tawsel human session | companySession OR personalSession | execution.own | verified-local |
 | return.getResult | GET /api/v1/returns/actions/{actionId} | Tawsel human session | companySession OR personalSession | execution.own | verified-local |
@@ -137,6 +140,9 @@ Original blocks below are verbatim source text, not rewritten contracts. Their S
 | session.bootstrap | GET /api/session/bootstrap | Tawsel public/account entry | public | public | verified-local |
 | session.completeLogin | GET /api/session/callback | Tawsel public/account entry | public | public | verified-local |
 | session.resolveCompany | POST /api/session/company | Tawsel public/account entry | public | public | verified-local |
+| diagnostics.getActionTrace | GET /internal/diagnostics/actions/{actionId} | Tawsel read-only deployment operator | DiagnosticsOperator | internal | verified-local |
+| diagnostics.getCapacityAndFreshness | GET /internal/diagnostics/metrics | Tawsel read-only deployment operator | DiagnosticsOperator | internal | verified-local |
+| diagnostics.getHealth | GET /internal/diagnostics/health | Tawsel read-only deployment operator | DiagnosticsOperator | internal | verified-local |
 
 ## Closed emitted-event payload mapping
 
@@ -174,25 +180,83 @@ Use this list for sender event types, not the broader generic envelope or fixtur
 
 ## Original file: contracts/openapi.yaml
 
-SHA-256: `ceb8d0e127d55938439c0ff14c19ca096ebc58cb47b662057407eeb6de70736f` · Bytes: 233705.
+SHA-256: `80c06dc911dc19072598926a827a51a6f36dc2170d3230726a331586a7003271` · Bytes: 240606.
 
 <!-- SOURCE-BEGIN contracts/openapi.yaml -->
 ````yaml
 openapi: 3.1.1
 info:
-  title: Tawsel public contract — identity, intake, planning and execution
+  title: Tawsel public contract — application and reference ERP handoff
   version: 0.1.0
-  description: P07–P26 locally implemented identity, intake, planning, execution, closure, device
-    takeover, source returns, branch resume/redispatch and bounded driver correction/adoption.
-    Evidence distinguishes PostgreSQL and HTTP from provider fixtures. Coherent monitoring and
-    history, signed durable sender and independent receiver projection are implemented. Full offline
-    capture and native ERP source UI remain later phases.
+  description: Phase 42 local handoff candidate. Identity, intake, planning, execution, source
+    returns, bounded corrections, coherent monitoring, ordered replay, reporting and authorized
+    Excel exports are implemented. Signed delivery, separate receiver application and native
+    reference ERP source commands are locally verified. Target deployment, physical devices,
+    live Engine and owner review remain outstanding. See the release manifest and phase evidence.
   license:
     name: Private development contract; no public release
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 x-lifecycle: implemented
 x-owner-phase: 2
 paths:
+  /internal/diagnostics/health:
+    get:
+      operationId: diagnostics.getHealth
+      summary: "Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred."
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsHealth'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
+  /internal/diagnostics/metrics:
+    get:
+      operationId: diagnostics.getCapacityAndFreshness
+      summary: Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness.
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsMetrics'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
+  /internal/diagnostics/actions/{actionId}:
+    get:
+      operationId: diagnostics.getActionTrace
+      summary: Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads.
+      tags: [Diagnostics]
+      security:
+        - DiagnosticsOperator: []
+      parameters:
+        - {name: actionId, in: path, required: true, schema: {type: string, format: uuid}}
+        - {name: tenantId, in: query, required: true, schema: {type: string, format: uuid}}
+        - {name: sourceId, in: query, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200':
+          description: Operator-only observation with explicit limits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosticsTrace'
+        '401':
+          description: Missing or wrong dedicated operator credential
+        '404':
+          description: Surface disabled or exact action identity unavailable
   /api/v1/integration/commands/integration.configureWebhook:
     post:
       operationId: integration.configureWebhook
@@ -6523,8 +6587,107 @@ paths:
           description: Workday or round unavailable in current scope
         "409":
           description: Requested snapshot changed; refresh before exporting
+  /api/v1/reports/workdays/{workdayId}/exports:
+    post:
+      operationId: report.requestExcelExport
+      summary: Create a bounded Excel file from the exact authorized report snapshot
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: workdayId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportExportRequest"
+      responses:
+        "201":
+          description: XLSX is ready; an identical unexpired request reuses its artifact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportExportStatus"
+        "400": {description: Invalid filter or snapshot identity}
+        "401": {description: Session required}
+        "403": {description: Report read or export capability denied}
+        "404": {description: Workday unavailable in current scope}
+        "409": {description: Visible report snapshot changed; refresh before exporting}
+        "413": {description: Generated workbook exceeded the bounded artifact size}
+  /api/v1/report-exports/{exportId}:
+    get:
+      operationId: report.getExportStatus
+      summary: Reauthorize and read the current ready or expired export state
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: exportId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      responses:
+        "200":
+          description: Current scoped export status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportExportStatus"
+        "401": {description: Session required}
+        "403": {description: Current export capability or original visibility denied}
+        "404": {description: Export unavailable to this authenticated identity}
+  /api/v1/report-exports/{exportId}/download:
+    get:
+      operationId: report.downloadExport
+      summary: Reauthorize and download the frozen XLSX artifact before expiry
+      tags: [Reporting]
+      security:
+        - personalSession: []
+        - companySession: []
+      parameters:
+        - name: kind
+          in: query
+          required: true
+          schema: {"enum":["personal","company"]}
+        - name: exportId
+          in: path
+          required: true
+          schema: {"type":"string","format":"uuid"}
+      responses:
+        "200":
+          description: Formula-free real Excel workbook frozen from the requested snapshot
+          headers:
+            Content-Disposition:
+              schema: {"type":"string"}
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema: {"type":"string","format":"binary"}
+        "401": {description: Session required}
+        "403": {description: Current export capability or original visibility denied}
+        "404": {description: Export unavailable to this authenticated identity}
+        "410": {description: Artifact expired and its bytes were removed}
 components:
   schemas:
+    DiagnosticsHealth:
+      $ref: ./diagnostics.schema.json#/$defs/Health
+    DiagnosticsMetrics:
+      $ref: ./diagnostics.schema.json#/$defs/Metrics
+    DiagnosticsTrace:
+      $ref: ./diagnostics.schema.json#/$defs/Trace
     ReportFilters:
       $ref: ./reporting.schema.json#/$defs/Filters
     ReportCounts:
@@ -6559,6 +6722,10 @@ components:
       $ref: ./reporting.schema.json#/$defs/DayList
     ReportTimingSnapshot:
       $ref: ./reporting.schema.json#/$defs/TimingSnapshot
+    ReportExportRequest:
+      $ref: ./report-export.schema.json#/$defs/Request
+    ReportExportStatus:
+      $ref: ./report-export.schema.json#/$defs/Status
     SyncBatch:
       $ref: ./sync.schema.json#/$defs/Batch
     SyncEntry:
@@ -7230,6 +7397,10 @@ components:
     MonitoringActionSnapshot:
       $ref: ./monitoring.schema.json#/$defs/ActionSnapshot
   securitySchemes:
+    DiagnosticsOperator:
+      type: http
+      scheme: bearer
+      description: Dedicated read-only deployment operator secret. Never issue to drivers or ERP consumers; this is outside tenant capability grants.
     ReceiverStatus:
       type: http
       scheme: bearer
@@ -7258,6 +7429,8 @@ components:
       description: Out-of-band server operator token; bootstrap and recovery rotation only. Never
         distribute to ERP application users.
 tags:
+  - name: Diagnostics
+    description: Optional deployment operator surface; keep private behind operator access.
   - name: Reporting
     description: Workday reports with accepted quantities, reported collection and preserved forecasts.
   - name: Sessions
@@ -7299,7 +7472,7 @@ tags:
 
 ## Original file: contracts/operations.json
 
-SHA-256: `b8c7943ad38d3c1365231e5a6e43494cb74b1cc4bd3637ea35f63cf58f7a7d3b` · Bytes: 74881.
+SHA-256: `d1c6b0c3975a7955b9b88dfca75339a51f39a93951433956cfb23d8885839624` · Bytes: 75968.
 
 <!-- SOURCE-BEGIN contracts/operations.json -->
 ````json
@@ -7738,7 +7911,7 @@ SHA-256: `b8c7943ad38d3c1365231e5a6e43494cb74b1cc4bd3637ea35f63cf58f7a7d3b` · B
       "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "planning.manage",
-      "description": "Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim.",
+      "description": "Authenticated car/motorcycle modes and 600-second default; explicitly not a live Engine availability claim.",
       "method": "GET",
       "path": "/api/v1/routing/profiles"
     },
@@ -8356,46 +8529,56 @@ SHA-256: `b8c7943ad38d3c1365231e5a6e43494cb74b1cc4bd3637ea35f63cf58f7a7d3b` · B
       "id": "report.requestExcelExport",
       "family": "reporting",
       "kind": "http-command",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Create authorized export bound to same filter/snapshot/timezone as report."
+      "description": "Create authorized export bound to same filter/snapshot/timezone as report.",
+      "method": "POST",
+      "path": "/api/v1/reports/workdays/{workdayId}/exports"
     },
     {
       "id": "report.getExportStatus",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Read pending/ready/failed/expired export status."
+      "description": "Reauthorize and read ready/expired synchronous export status.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}"
     },
     {
       "id": "report.downloadExport",
       "family": "reporting",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 37,
       "capability": "reports.export",
-      "description": "Reauthorize and download text-safe Excel artifact before expiry."
+      "description": "Reauthorize and download text-safe Excel artifact before expiry.",
+      "method": "GET",
+      "path": "/api/v1/report-exports/{exportId}/download"
     },
     {
       "id": "diagnostics.getHealth",
       "family": "diagnostics",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 38,
-      "capability": "diagnostics.read",
-      "description": "Separate readiness/database/worker/Engine/integration health; scoped operational evidence."
+      "capability": "internal",
+      "description": "Deployment-wide read-only operator status: DB, worker loop evidence, queue/application uncertainty; Engine and backup readiness are not inferred.",
+      "method": "GET",
+      "path": "/internal/diagnostics/health"
     },
     {
       "id": "diagnostics.getCapacityAndFreshness",
       "family": "diagnostics",
       "kind": "http-read",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 38,
-      "capability": "diagnostics.read",
-      "description": "Measured latency/lag/load/queue/lease/resource view with stated conditions."
+      "capability": "internal",
+      "description": "Bounded process timings/resource metrics. Freshness target assessment is made only by the separately recorded harness.",
+      "method": "GET",
+      "path": "/internal/diagnostics/metrics"
     },
     {
       "id": "ui.callRecipient",
@@ -8428,19 +8611,19 @@ SHA-256: `b8c7943ad38d3c1365231e5a6e43494cb74b1cc4bd3637ea35f63cf58f7a7d3b` · B
       "id": "ui.filterAndInspect",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
-      "ownerPhase": 3,
+      "lifecycle": "verified-local",
+      "ownerPhase": 32,
       "capability": "local",
-      "description": "Inspect details, select driver, filter/map/list, open focused dialogs; reads use catalog APIs."
+      "description": "Inspect/filter authorized monitoring and report details with connected APIs; P32/P36/P41 local browser evidence, owner/device review pending."
     },
     {
       "id": "ui.prepareDraft",
       "family": "local-ui",
       "kind": "local-ui",
-      "lifecycle": "designed",
+      "lifecycle": "verified-local",
       "ownerPhase": 28,
       "capability": "local",
-      "description": "Enter unsaved forms/pin/route input; saving uses intake/location/planning operations."
+      "description": "Retain unsaved preparation/pin/route input; explicit saves use canonical operations. P28/P33/P41 local browser and storage evidence; no draft implies acceptance."
     },
     {
       "id": "ui.captureOfflineAction",
@@ -9260,6 +9443,17 @@ SHA-256: `b8c7943ad38d3c1365231e5a6e43494cb74b1cc4bd3637ea35f63cf58f7a7d3b` · B
       "lifecycle": "verified-local",
       "method": "GET",
       "path": "/api/v1/reports/workdays"
+    },
+    {
+      "id": "diagnostics.getActionTrace",
+      "family": "diagnostics",
+      "kind": "http-read",
+      "ownerPhase": 38,
+      "lifecycle": "verified-local",
+      "capability": "internal",
+      "method": "GET",
+      "path": "/internal/diagnostics/actions/{actionId}",
+      "description": "Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads."
     }
   ],
   "authorizationFoundation": {

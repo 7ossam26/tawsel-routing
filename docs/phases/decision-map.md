@@ -1,6 +1,6 @@
 # Tawsel decision-to-implementation map
 
-Package revision 3, amended by D-112. Every numbered discovery decision D-01 through D-112 appears below, including historical answers that were later changed.
+Package revision 3, amended by D-112 and D-113. Every numbered discovery decision D-01 through D-113 appears below, including historical answers that were later changed.
 The current requirement text in [coverage-matrix.md](coverage-matrix.md) and latest amendments govern implementation; a row's older topic is not independent permission to restore superseded behavior.
 Original wording and surrounding questions remain in [TAWSEL-DISCOVERY-LOG.md](../../TAWSEL-DISCOVERY-LOG.md). Requirements originating before numbered discovery remain mapped separately (notably atomicity, integration durability and backup proposals).
 
@@ -75,7 +75,7 @@ Original wording and surrounding questions remain in [TAWSEL-DISCOVERY-LOG.md](.
 | D-67 | [R-29 — Workday/round carryover](coverage-matrix.md#r-29); [R-52 — Results/amount report](coverage-matrix.md#r-52) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
 | D-68 | [R-33 — Confirmed subset and disposition](coverage-matrix.md#r-33); [R-35 — Branch interruption](coverage-matrix.md#r-35) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
 | D-69 | [R-28 — Durable planning and manual fallback](coverage-matrix.md#r-28) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
-| D-70 | [R-21 — Three transport modes](coverage-matrix.md#r-21) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
+| D-70 | [R-21 — Two transport modes](coverage-matrix.md#r-21) | The original three-mode answer is superseded by D-113: retain car and motorcycle only; reject bicycle and bike. |
 | D-71 | [R-23 — Endpoint and finish estimate](coverage-matrix.md#r-23) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
 | D-72 | [R-22 — Service-time estimate](coverage-matrix.md#r-22) | Apply the current mapped requirement and later state/authority amendments; see original decision for context. |
 | D-73 | [R-12 — Departure authority](coverage-matrix.md#r-12); [R-37 — Driver self-correction](coverage-matrix.md#r-37) | Staff departed correction rejected by D-91; driver correction under D-96; simple B2C correction retained. |
@@ -120,7 +120,11 @@ Original wording and surrounding questions remain in [TAWSEL-DISCOVERY-LOG.md](.
 | D-111 | [R-64 — Canonical docs and truthful handoff](coverage-matrix.md#r-64); [ERP deliverables/proof plan](../planning/erp-handoff-deliverables.md) | Owner requires concrete reusable ERP planning/integration outputs and their responsible phases. Strengthen P02, P08/P10/P21/P22/P25, P26–P27 external proof and P42 final bundle; real ERP remains separate. |
 | D-112 | [R-02 — ERP administration authority](coverage-matrix.md#r-02); [R-51 — Real B2C and labelled B2B mock](coverage-matrix.md#r-51); [R-64 — Canonical docs and truthful handoff](coverage-matrix.md#r-64); [ERP deliverables/proof plan](../planning/erp-handoff-deliverables.md) | Compatibility is with Tawsel's released protocol, not ERP internals. ERP-specific translation belongs to a vendor-, Tawsel- or jointly-owned connector; feasibility depends on the ERP's supported integration surface. No source/database access, core ERP schema dependency, universal compatibility claim or new phase. |
 
+| D-113 | [R-21 — Two transport modes](coverage-matrix.md#r-21); [R-60 — Safe deployment](coverage-matrix.md#r-60); [R-64 — Canonical docs and truthful handoff](coverage-matrix.md#r-64) | Permanently remove bicycle and bike; support only car/motorcycle. Supersede D-70's three-mode set. Use fresh experimental application/identity/mock data without historical readers or migrations; preserve dated evidence, original UI references and dataset provenance. Current target checks remain independently required. |
+
 ## Rules when using historical context
+
+D-113 supersedes the three-mode set in D-70. Do not resurrect bicycle support from older evidence or provider configuration.
 
 Do not resurrect D-17 single-branch access, D-20/D-31/D-50 call limits, D-28 immediate monetization, D-73 departed staff correction or pre-D-81 offline-start proposals.
 D-102 makes screen exports visual references only. D-103/D-107 settle the component/application stack. D-105/D-106 require meaningful connected Vitest and simple UX. D-109 changes implementation granularity and prompt completeness, without changing the agreed delivery business rules.

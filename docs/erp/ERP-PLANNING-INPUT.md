@@ -1,5 +1,7 @@
 # ERP planning input — as built at Phase 42
 
+Current vehicle boundary under [D-113](../phases/decision-map.md): the ERP provisions only `car` or `motorcycle`; `bicycle` and `bike` are rejected. Preserve the current source/schema identity when planning against the attachments; older three-mode evidence is historical.
+
 26 September 2026 · public API/client/reference **0.1.0**, envelopes/payloads **1.0.0**. [Exact artifact identity](release-manifest.json), [observed proof](../verification/integration.md), [readiness](../verification/pilot-readiness.md).
 
 ## Fixed responsibility boundary

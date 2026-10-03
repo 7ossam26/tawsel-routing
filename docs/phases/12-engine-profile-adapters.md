@@ -7,13 +7,13 @@ Copy this entire file as the task prompt in the Tawsel repository.
 
 - **Model:** `gpt-6-astra`
 - **Reasoning effort:** `high`
-- **Why this choice:** Three Engine profiles need precise adapter units, coordinates and honest failure behavior.
+- **Why this choice:** Two Engine profiles need precise adapter units, coordinates and honest failure behavior.
 
 Set the model/effort in the Codex picker before running this prompt; text in a prompt does not switch the active model. This is a workload recommendation under D-110, not a correctness guarantee. Record the actual setting used; if unavailable, consult the [model selection guide](model-selection.md). Tests and acceptance evidence remain required.
 
 ## Concrete outcome
 
-Implement and verify the OSRM/VROOM routing boundary for all three vehicle modes, with correct units, coordinates and provider failure semantics.
+Implement and verify the OSRM/VROOM routing boundary for both vehicle modes, with correct units, coordinates and provider failure semantics.
 
 ## Prerequisites to verify before editing
 
@@ -24,7 +24,7 @@ Inspect their real artifacts and run the relevant prerequisite check. Do not inf
 Repair a small prerequisite defect needed here and record it. A material missing prerequisite prevents dependent work; continue independent work without inventing success.
 
 Requirements assigned here: [R-20](coverage-matrix.md#r-20), [R-21](coverage-matrix.md#r-21), [R-22](coverage-matrix.md#r-22), [R-23](coverage-matrix.md#r-23), [R-65](coverage-matrix.md#r-65).
-Decision references: D-18, D-30, D-70, D-71, D-72, D-82, D-108, D-109, D-110.
+Decision references: D-18, D-30, D-70, D-71, D-72, D-82, D-108, D-109, D-110, D-113.
 Use the [decision map](decision-map.md) for later amendments; older answers may have been explicitly replaced.
 
 ## Sources to read
@@ -35,7 +35,7 @@ Use the [decision map](decision-map.md) for later amendments; older answers may 
 
 ## Required behavior and invariants
 
-1. Public modes are car, motorcycle and bicycle; map them deliberately to actual services/datasets, including internal bike naming.
+1. Public modes are car and motorcycle under D-113. Map each to its actual service/dataset; reject bicycle and bike before calling a provider.
 
 2. Use explicit latitude/longitude in public contracts and the provider-required order only inside adapters. Durations are seconds and distances metres.
 
@@ -53,7 +53,7 @@ Use the [decision map](decision-map.md) for later amendments; older answers may 
 
 - [ ] Inspect configured and actual reachable Engine versions, profile mapping, ports and dataset compatibility.
 - [ ] Implement request/response adapters and safe config validation with explicit units, coordinate conversion and temporary ID mapping.
-- [ ] Check: car/motorcycle/bicycle each target the intended service; no default silently routes all modes as car.
+- [ ] Check: car/motorcycle each target the intended service; no default silently routes all modes as car.
 
 Before continuing, record what changed, the focused result and any unresolved dependency in the phase evidence.
 
@@ -68,7 +68,7 @@ Before continuing, record what changed, the focused result and any unresolved de
 ### Checkpoint C — Verification fixtures and live calls
 
 - [ ] Create deterministic adapter fixtures for coordinate order, seconds/metres, 600-second service and ID reconciliation.
-- [ ] Run separate small live calls for all three configured profiles when available, recording versions and limitations.
+- [ ] Run separate small live calls for both configured profiles (six route/table/optimization probes) when available, recording versions and limitations.
 - [ ] Check: setup preserves datasets/mounts; missing local Engine is reported without importing OSM automatically.
 
 Before continuing, record what changed, the focused result and any unresolved dependency in the phase evidence.
@@ -79,7 +79,7 @@ Implement and verify these concrete behaviors, plus the relevant canonical invar
 
 | Given / when | Required observable result |
 | --- | --- |
-| Bicycle request | Uses verified bicycle profile mapping, not an arbitrary label. |
+| Bicycle or bike request | Validation rejects the request without a provider call or silent conversion. |
 | Provider returns unknown or duplicate job IDs | Invalid result, never silently accepted. |
 | Coordinates reversed | Fixture catches the transformation error. |
 | Unreachable leg or unassigned job | Explicit partial/failure data reaches caller. |

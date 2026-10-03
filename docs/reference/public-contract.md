@@ -7066,8 +7066,7 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
     "profile": {
       "enum": [
         "car",
-        "motorcycle",
-        "bicycle"
+        "motorcycle"
       ]
     }
   },
@@ -10028,8 +10027,7 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
   "type": "string",
   "enum": [
     "car",
-    "motorcycle",
-    "bicycle"
+    "motorcycle"
   ]
 }
 ```
@@ -10638,8 +10636,8 @@ Validated provider candidate only, not a published or policy-verified route, arr
       "items": {
         "$ref": "#/$defs/Mode"
       },
-      "minItems": 3,
-      "maxItems": 3,
+      "minItems": 2,
+      "maxItems": 2,
       "uniqueItems": true
     },
     "defaultCustomerServiceSeconds": {
@@ -21306,7 +21304,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | p10-error-stale_revision | common.schema.json#/$defs/Problem | valid foundation shape |
 | p10-received-event-intent | b2b-intake.schema.json#/$defs/ChangedEvent | valid foundation shape |
 | location-valid-confirmation | location.schema.json#/$defs/Confirm | valid foundation shape |
-| routing-bicycle-input | routing.schema.json#/$defs/OptimizationInput | valid foundation shape |
+| routing-motorcycle-input | routing.schema.json#/$defs/OptimizationInput | valid foundation shape |
 | routing-unreachable-table | routing.schema.json#/$defs/TableResult | valid foundation shape |
 | routing-profile-metadata | routing.schema.json#/$defs/Profiles | valid foundation shape |
 | p13-settings | planning.schema.json#/$defs/Settings | valid foundation shape |
@@ -21636,5 +21634,9 @@ Examples include designed fixtures and captured local API results; consult contr
 | report-money-is-exact | reporting.schema.json#/$defs/Collection | invalid (type) |
 | report-no-cross-tenant-filter | reporting.schema.json#/$defs/Filters | invalid (additionalProperties) |
 | diagnostics-health-invalid | diagnostics.schema.json#/$defs/Health | invalid (additionalProperties) |
+| routing-unsupported-bicycle | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
+| routing-unsupported-unknown | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
+| provisioning-unsupported-bicycle | provisioning.schema.json#/$defs/DriverCommand | invalid (enum) |
+| provisioning-unsupported-unknown | provisioning.schema.json#/$defs/DriverCommand | invalid (enum) |
 
 [Canonical example data](../../contracts/examples/README.md)

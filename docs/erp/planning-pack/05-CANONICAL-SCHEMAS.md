@@ -1,40 +1,42 @@
 # Complete canonical JSON Schemas
 
-Source commit: `32aad03e8a1a04ac36b95a5a77ab7bf8f7623ada`. Extracted: 2026-09-25T08:22:32.982Z.
+Source checkout base commit: `ecd709cd96fef0e08440506905cfc7650c025824`. Extracted: 2026-10-03T16:12:54.516Z. Consult sourceWorkingTreeChanges and source-file hashes in planning-manifest.json for uncommitted inputs; the base commit alone does not identify those bytes.
 
 Original blocks below are verbatim source text, not rewritten contracts. Their SHA-256 hashes refer to original bytes. Resolve relative schema references using the original path above the block and the companion schema attachment. No repo/network access is needed to read those blocks. Descriptions/fixtures do not override operation authentication or lifecycle.
 
 ## File index
 
-29 complete schemas. Each schema is embedded once below. Feature schemas can be stricter than common foundations.
+31 complete schemas. Each schema is embedded once below. Feature schemas can be stricter than common foundations.
 
 | Original file | Definition count | SHA-256 |
 | --- | --- | --- |
 | contracts/action-envelope.v1.schema.json | 0 | 3e134a59e3cf8415df51800e84949db6f7ccf25c8b54e899f7f179f10f59cf56 |
-| contracts/action-result.v1.schema.json | 0 | b59e970270e82122f08c3017ad9aabb771de6592b10eec80ec75a2636c486426 |
+| contracts/action-result.v1.schema.json | 0 | b07d3788b001bc67a0648d81fa2a8e0ed24ee113473b7d65ed43f4e704c293b3 |
 | contracts/b2b-intake.schema.json | 22 | 133b951077bab6448f4c0b760543253c6225a588ec00bf4c5f9544fdf8b53d04 |
 | contracts/b2c-intake.schema.json | 14 | 5c9cdea25786dc8656ce7a8ec874d073aede9446e4ed6c7a1b04bc7f0135197d |
 | contracts/branch-activity.schema.json | 7 | b068d838956b603eb1e071e0c2fde2ad2a7abd7b32e3721262b68cf3e481c59b |
-| contracts/common.schema.json | 38 | 2379916f4108d10d8b1176819eaf8f998edb8bc20e951ef73622979a60a3df81 |
+| contracts/common.schema.json | 38 | 32bfce40525e18622e852925df5698c7be3ea22e784b2ba37bf48f8b78fb4933 |
 | contracts/consumer.schema.json | 9 | cbff563ea8ea28a6af9f557e85bab0097c89a095d2cb6ca74e3d066d26352fe1 |
 | contracts/corrections.schema.json | 11 | 6f44c84bd6adc1a39ee0d3f5c01c27f7d3041523c4295243f8672fbdff91aae6 |
 | contracts/current-activity.schema.json | 20 | 7a471aaa12d404c886b4baa33061f0fe8fd908395c8c083bd602c77543444fa4 |
 | contracts/device-ownership.schema.json | 14 | 4fadce037f2cae24b52cd35697623339a5d70ce85244312ff26af97c50cd42f3 |
-| contracts/eligibility.schema.json | 16 | 15e474f47d2695d6d3794ed38a87750502e6402098494ef0f5a98aa5196ef089 |
+| contracts/diagnostics.schema.json | 4 | 1d791c439bd5432caef39c7a93d10902491742447ca94e7ce088183244086d5d |
+| contracts/eligibility.schema.json | 16 | aa734c20f91c6e0a8dc0ac43d750ea0e275211adfb9904e6008eb14d7243a4c9 |
 | contracts/events/envelope.v1.schema.json | 0 | d723d62d419e5fe20f896481df0d54ef6b94d8437d19f3057cc47f199eba7ccd |
 | contracts/events/sender-event.v1.schema.json | 0 | cbce5b5128d8d2f5cf6c58668c989e6b403876531703921a16834dbcf9fb1f06 |
-| contracts/evidence-receipt.v1.schema.json | 0 | ee3d27729454cb915ff9f01fbac5ebb2d9a5c9ead0b1521357f05fb6cef71e9e |
+| contracts/evidence-receipt.v1.schema.json | 0 | 605c896cc16474384c1788e8c90d2242b94eb31fe8bb66fdda9feedcbfd21537 |
 | contracts/local-work.schema.json | 6 | 8e3dac6fe46e12fbfcbe5b9a36c2dfd96fdfd7788e001a9c74399b67a831bd0b |
 | contracts/location.schema.json | 10 | fdffb5d3be3b2dd413f32b8a574dd6ac4c3a882dc53aaefc0f6209dbc233333c |
-| contracts/monitoring.schema.json | 17 | 0fbf77e77b680b7efb5da297c7d313e3f315ebf7b76a630b732af842b6aea3f6 |
+| contracts/monitoring.schema.json | 17 | 73f650249dcc6dab7ee74a1821f6f9a13f69587acc2e17cbe135d5e9eabd666f |
 | contracts/outbox.schema.json | 15 | acae29b68e9e267b2d1f495c6904880f421f3959684a3c14c8fa7c40f34bbf5b |
-| contracts/outcomes.schema.json | 20 | 909bfc5356faa2150077754845a4f83c7328fcfe58571254e701edeab1c72927 |
+| contracts/outcomes.schema.json | 20 | a705cef7d36d9bf1383ee591f741177aafd7f95303bc2a3be878eaa815f82f90 |
 | contracts/planning.schema.json | 22 | 036bd75af7d42081afd48e6688f6bb14f9f840239d39be1c67d87aacace7f04e |
-| contracts/provisioning.schema.json | 28 | a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8 |
+| contracts/provisioning.schema.json | 28 | 0c5d5563394e020848a253350860f061b3c09e10651841b7025215c86074035a |
+| contracts/report-export.schema.json | 3 | f78e9c0bd93e1e5592824505cda38e8980a3e878e0fdcf342334865cc1aaa20f |
 | contracts/reporting.schema.json | 17 | 3a6cb386d62c2a25656f5ea5068c713cfef767a6185eb11f291a570b8f4c82d7 |
 | contracts/returns.schema.json | 25 | 4f2c517fb110241dc841addab69b74aead712b5604cd642138ce1473d8f6949f |
 | contracts/round-start.schema.json | 11 | 86f030f677de2adfa1dce5dea1d8a5391c70dc2c3d86b7d346039380f94e629b |
-| contracts/routing.schema.json | 15 | 164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793 |
+| contracts/routing.schema.json | 15 | cad3fc624f6eff1e2185f8db253d594f8f43aa477099bc2d06388dc2293d8227 |
 | contracts/session.schema.json | 10 | 4e36e094d482ff40e7964733fce8c30433b61844234b786b863de378470d2684 |
 | contracts/source.schema.json | 3 | a715ce999fdca0d7dff7cef0877f65ac6b9a6fc4813fc1341978c83b4e529ae3 |
 | contracts/sync.schema.json | 4 | d5e8884719dade7563fa2cdc69bbe5845ae58849c7eb4ae38661d6dd1a8fb977 |
@@ -111,7 +113,7 @@ SHA-256: `3e134a59e3cf8415df51800e84949db6f7ccf25c8b54e899f7f179f10f59cf56` · B
 
 ## Original file: contracts/action-result.v1.schema.json
 
-SHA-256: `b59e970270e82122f08c3017ad9aabb771de6592b10eec80ec75a2636c486426` · Bytes: 1806.
+SHA-256: `b07d3788b001bc67a0648d81fa2a8e0ed24ee113473b7d65ed43f4e704c293b3` · Bytes: 1840.
 
 <!-- SOURCE-BEGIN contracts/action-result.v1.schema.json -->
 ````json
@@ -1606,7 +1608,7 @@ SHA-256: `b068d838956b603eb1e071e0c2fde2ad2a7abd7b32e3721262b68cf3e481c59b` · B
 
 ## Original file: contracts/common.schema.json
 
-SHA-256: `2379916f4108d10d8b1176819eaf8f998edb8bc20e951ef73622979a60a3df81` · Bytes: 25877.
+SHA-256: `32bfce40525e18622e852925df5698c7be3ea22e784b2ba37bf48f8b78fb4933` · Bytes: 27025.
 
 <!-- SOURCE-BEGIN contracts/common.schema.json -->
 ````json
@@ -5409,9 +5411,907 @@ SHA-256: `4fadce037f2cae24b52cd35697623339a5d70ce85244312ff26af97c50cd42f3` · B
 ````
 <!-- SOURCE-END contracts/device-ownership.schema.json -->
 
+## Original file: contracts/diagnostics.schema.json
+
+SHA-256: `1d791c439bd5432caef39c7a93d10902491742447ca94e7ce088183244086d5d` · Bytes: 23437.
+
+<!-- SOURCE-BEGIN contracts/diagnostics.schema.json -->
+````json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tawsel.invalid/v1/diagnostics.schema.json",
+  "title": "Operator diagnostics; deployment-wide scope, never ERP/driver authorization",
+  "$defs": {
+    "Health": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "liveness": {
+          "const": "alive"
+        },
+        "database": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "state": {
+                  "const": "ready"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "bytes": {
+                  "type": ["number", "null"],
+                  "minimum": 0
+                },
+                "active": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "blocked": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "deadlocks": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "state",
+                "version",
+                "bytes",
+                "active",
+                "blocked",
+                "deadlocks"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "state": {
+                  "const": "unavailable"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          ]
+        },
+        "workers": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "worker": {
+                    "enum": [
+                      "planning",
+                      "outbox",
+                      "provisioning"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "unknown",
+                      "stale",
+                      "recent-loop"
+                    ]
+                  },
+                  "observedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "ageMs": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "elapsedMs": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "minimum": 0
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "worked": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "worker",
+                  "state",
+                  "observedAt",
+                  "ageMs",
+                  "elapsedMs",
+                  "worked"
+                ]
+              },
+              "maxItems": 3
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "planning": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pending": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "running": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "failed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "blocked": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "expired_leases": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "oldest_ms": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "engine_errors": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "pending",
+                "running",
+                "failed",
+                "blocked",
+                "expired_leases",
+                "oldest_ms",
+                "engine_errors"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sender": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pending": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sending": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "failed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "received": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "expired_leases": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "oldest_ms": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "pending",
+                "sending",
+                "failed",
+                "received",
+                "expired_leases",
+                "oldest_ms"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "projection": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "streams": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unknown": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "unapplied_or_unreported": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "oldest_report_ms": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "streams",
+                "unknown",
+                "unapplied_or_unreported",
+                "oldest_report_ms"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "engine": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "availability": {
+                  "const": "not-probed"
+                },
+                "persistedJobErrors": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "availability",
+                "persistedJobErrors"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "availability": {
+                  "const": "unknown"
+                }
+              },
+              "required": [
+                "availability"
+              ]
+            }
+          ]
+        },
+        "backup": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "readiness": {
+              "const": "unverified"
+            },
+            "lastVerifiedRestoreAt": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "readiness",
+            "lastVerifiedRestoreAt"
+          ]
+        }
+      },
+      "required": [
+        "observedAt",
+        "liveness",
+        "database",
+        "workers",
+        "planning",
+        "sender",
+        "projection",
+        "engine",
+        "backup"
+      ]
+    },
+    "Metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "retained": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "p50Ms": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p95Ms": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "p99Ms": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "count",
+        "errors",
+        "retained",
+        "p50Ms",
+        "p95Ms",
+        "p99Ms"
+      ]
+    },
+    "Metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scope": {
+          "const": "this-api-process"
+        },
+        "uptimeSeconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "http": {
+              "$ref": "#/$defs/Metric"
+            },
+            "transaction": {
+              "$ref": "#/$defs/Metric"
+            },
+            "query": {
+              "$ref": "#/$defs/Metric"
+            },
+            "poolWait": {
+              "$ref": "#/$defs/Metric"
+            },
+            "commit": {
+              "$ref": "#/$defs/Metric"
+            },
+            "engine": {
+              "$ref": "#/$defs/Metric"
+            },
+            "export": {
+              "$ref": "#/$defs/Metric"
+            }
+          }
+        },
+        "pool": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "idle": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "waiting": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "total",
+            "idle",
+            "waiting",
+            "max"
+          ]
+        },
+        "process": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "memory": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "rss": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "heapTotal": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "heapUsed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "external": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "arrayBuffers": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "rss",
+                "heapTotal",
+                "heapUsed",
+                "external",
+                "arrayBuffers"
+              ]
+            },
+            "cpuMicroseconds": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "user": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "system": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "user",
+                "system"
+              ]
+            }
+          },
+          "required": [
+            "memory",
+            "cpuMicroseconds"
+          ]
+        },
+        "host": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "logicalCpus": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "totalMemoryBytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "freeMemoryBytes": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "logicalCpus",
+            "totalMemoryBytes",
+            "freeMemoryBytes"
+          ]
+        },
+        "disk": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "scope": {
+                  "const": "application-working-directory"
+                },
+                "availableBytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "totalBytes": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "scope",
+                "availableBytes",
+                "totalBytes"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interpretation": {
+          "type": "string"
+        },
+        "exports": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "stores",
+            "truncated"
+          ],
+          "properties": {
+            "stores": {
+              "type": "array",
+              "maxItems": 64,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "records",
+                  "ready",
+                  "expired",
+                  "bytes",
+                  "maxReady",
+                  "maxFileBytes",
+                  "maxRecords",
+                  "ttlMs"
+                ],
+                "properties": {
+                  "records": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "ready": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "expired": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxReady": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxFileBytes": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxRecords": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "ttlMs": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "required": [
+        "observedAt",
+        "scope",
+        "uptimeSeconds",
+        "metrics",
+        "pool",
+        "process",
+        "host",
+        "disk",
+        "interpretation",
+        "exports"
+      ]
+    },
+    "Trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "action_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "operation_id": {
+              "type": "string"
+            },
+            "business_status": {
+              "enum": [
+                "pending",
+                "accepted",
+                "rejected",
+                "review-required"
+              ]
+            },
+            "received_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "accepted_at": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "action_id",
+            "operation_id",
+            "business_status",
+            "received_at",
+            "accepted_at"
+          ]
+        },
+        "events": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "type": "string"
+              },
+              "aggregate_type": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "aggregate_id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "recipient_id": {
+                "type": "string"
+              },
+              "recipient_sequence": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "pending",
+                      "sending",
+                      "failed",
+                      "received"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "attempts": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "next_attempt_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "lease_until": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "received_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reported_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "applied_through": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "receiver_pending": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "event_id",
+              "aggregate_type",
+              "aggregate_id",
+              "recipient_id",
+              "recipient_sequence",
+              "status",
+              "attempts",
+              "next_attempt_at",
+              "lease_until",
+              "received_at",
+              "reported_at",
+              "applied_through",
+              "receiver_pending"
+            ]
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "interpretation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "events",
+        "truncated",
+        "interpretation"
+      ]
+    }
+  }
+}
+
+````
+<!-- SOURCE-END contracts/diagnostics.schema.json -->
+
 ## Original file: contracts/eligibility.schema.json
 
-SHA-256: `15e474f47d2695d6d3794ed38a87750502e6402098494ef0f5a98aa5196ef089` · Bytes: 19515.
+SHA-256: `aa734c20f91c6e0a8dc0ac43d750ea0e275211adfb9904e6008eb14d7243a4c9` · Bytes: 20329.
 
 <!-- SOURCE-BEGIN contracts/eligibility.schema.json -->
 ````json
@@ -7023,7 +7923,7 @@ SHA-256: `cbce5b5128d8d2f5cf6c58668c989e6b403876531703921a16834dbcf9fb1f06` · B
 
 ## Original file: contracts/evidence-receipt.v1.schema.json
 
-SHA-256: `ee3d27729454cb915ff9f01fbac5ebb2d9a5c9ead0b1521357f05fb6cef71e9e` · Bytes: 2200.
+SHA-256: `605c896cc16474384c1788e8c90d2242b94eb31fe8bb66fdda9feedcbfd21537` · Bytes: 2300.
 
 <!-- SOURCE-BEGIN contracts/evidence-receipt.v1.schema.json -->
 ````json
@@ -7758,7 +8658,7 @@ SHA-256: `fdffb5d3be3b2dd413f32b8a574dd6ac4c3a882dc53aaefc0f6209dbc233333c` · B
 
 ## Original file: contracts/monitoring.schema.json
 
-SHA-256: `0fbf77e77b680b7efb5da297c7d313e3f315ebf7b76a630b732af842b6aea3f6` · Bytes: 22099.
+SHA-256: `73f650249dcc6dab7ee74a1821f6f9a13f69587acc2e17cbe135d5e9eabd666f` · Bytes: 23137.
 
 <!-- SOURCE-BEGIN contracts/monitoring.schema.json -->
 ````json
@@ -9527,7 +10427,7 @@ SHA-256: `acae29b68e9e267b2d1f495c6904880f421f3959684a3c14c8fa7c40f34bbf5b` · B
 
 ## Original file: contracts/outcomes.schema.json
 
-SHA-256: `909bfc5356faa2150077754845a4f83c7328fcfe58571254e701edeab1c72927` · Bytes: 30203.
+SHA-256: `a705cef7d36d9bf1383ee591f741177aafd7f95303bc2a3be878eaa815f82f90` · Bytes: 31441.
 
 <!-- SOURCE-BEGIN contracts/outcomes.schema.json -->
 ````json
@@ -12565,7 +13465,7 @@ SHA-256: `036bd75af7d42081afd48e6688f6bb14f9f840239d39be1c67d87aacace7f04e` · B
 
 ## Original file: contracts/provisioning.schema.json
 
-SHA-256: `a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8` · Bytes: 36921.
+SHA-256: `0c5d5563394e020848a253350860f061b3c09e10651841b7025215c86074035a` · Bytes: 38374.
 
 <!-- SOURCE-BEGIN contracts/provisioning.schema.json -->
 ````json
@@ -12952,8 +13852,7 @@ SHA-256: `a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8` · B
         "profile": {
           "enum": [
             "car",
-            "motorcycle",
-            "bicycle"
+            "motorcycle"
           ]
         }
       },
@@ -14049,6 +14948,62 @@ SHA-256: `a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8` · B
 
 ````
 <!-- SOURCE-END contracts/provisioning.schema.json -->
+
+## Original file: contracts/report-export.schema.json
+
+SHA-256: `f78e9c0bd93e1e5592824505cda38e8980a3e878e0fdcf342334865cc1aaa20f` · Bytes: 1923.
+
+<!-- SOURCE-BEGIN contracts/report-export.schema.json -->
+````json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.tawsel.invalid/v1/report-export.schema.json",
+  "title": "Authorized synchronous Excel export lifecycle",
+  "$defs": {
+    "Filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "roundId": { "$ref": "./common.schema.json#/$defs/Uuid" },
+        "driverId": { "$ref": "./common.schema.json#/$defs/Uuid" },
+        "branchId": { "$ref": "./common.schema.json#/$defs/Uuid" },
+        "outcome": { "enum": ["full", "partial", "refused", "no-answer", "unfinished", "deferred"] }
+      }
+    },
+    "Request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "snapshotId": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "filters": { "$ref": "#/$defs/Filters" }
+      },
+      "required": ["snapshotId"]
+    },
+    "Status": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "exportId": { "$ref": "./common.schema.json#/$defs/Uuid" },
+        "status": { "enum": ["ready", "expired"] },
+        "snapshotId": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "createdAt": { "$ref": "./common.schema.json#/$defs/UtcInstant" },
+        "expiresAt": { "$ref": "./common.schema.json#/$defs/UtcInstant" },
+        "fileName": { "type": "string", "pattern": "^tawsel-workday-[0-9a-f]{8}-[0-9a-f]{8}\\.xlsx$" },
+        "bytes": { "type": "integer", "minimum": 1, "maximum": 4194304 },
+        "downloadUrl": {
+          "anyOf": [
+            { "type": "string", "pattern": "^/api/v1/report-exports/[0-9a-f-]{36}/download\\?kind=(personal|company)$" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "required": ["exportId", "status", "snapshotId", "createdAt", "expiresAt", "fileName", "bytes", "downloadUrl"]
+    }
+  }
+}
+
+````
+<!-- SOURCE-END contracts/report-export.schema.json -->
 
 ## Original file: contracts/reporting.schema.json
 
@@ -16546,7 +17501,7 @@ SHA-256: `86f030f677de2adfa1dce5dea1d8a5391c70dc2c3d86b7d346039380f94e629b` · B
 
 ## Original file: contracts/routing.schema.json
 
-SHA-256: `164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793` · Bytes: 13403.
+SHA-256: `cad3fc624f6eff1e2185f8db253d594f8f43aa477099bc2d06388dc2293d8227` · Bytes: 13383.
 
 <!-- SOURCE-BEGIN contracts/routing.schema.json -->
 ````json
@@ -16559,8 +17514,7 @@ SHA-256: `164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793` · B
       "type": "string",
       "enum": [
         "car",
-        "motorcycle",
-        "bicycle"
+        "motorcycle"
       ]
     },
     "Origin": {
@@ -17067,8 +18021,8 @@ SHA-256: `164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793` · B
           "items": {
             "$ref": "#/$defs/Mode"
           },
-          "minItems": 3,
-          "maxItems": 3,
+          "minItems": 2,
+          "maxItems": 2,
           "uniqueItems": true
         },
         "defaultCustomerServiceSeconds": {

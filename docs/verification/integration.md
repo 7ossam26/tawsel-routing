@@ -1,5 +1,7 @@
 # ERP integration evidence — final local handoff, 26 September 2026
 
+Current amendment — 3 October 2026: [D-113](../phases/decision-map.md) limits the current contracts to car/motorcycle. The results below remain the dated Phase 42 proof. A new public-consumer run for the final two-mode source/runtime must write `integration-local-2026-10-03.json`; its status remains pending in [the current verification record](two-mode-routing-2026-10-03.md) until execution.
+
 ## Phase 42 final public consumer — 26 September 2026
 
 **Passed locally.** [Redacted machine-readable result](integration-local-2026-09-26.json), [ordered A/B/C evidence](../phase-42-evidence.md), [released artifact manifest](../erp/release-manifest.json), [exact external setup](../erp/consumer-quickstart.md). Earlier P26/P27 entries below preserve their historical code and runtime scope.

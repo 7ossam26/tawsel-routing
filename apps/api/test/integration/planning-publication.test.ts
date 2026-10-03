@@ -179,7 +179,7 @@ describe('P13 publication — immutable PostgreSQL forecasts, controlled HTTP ca
    if(fault==='omitted')candidate.visits.pop();
    if(fault==='duplicate')candidate.visits[1]=structuredClone(v);
    if(fault==='unknown')v.taskId=randomUUID();
-   if(fault==='wrong-profile')candidate.mode='car';
+   if(fault==='wrong-profile')candidate.mode=candidate.mode==='car'?'motorcycle':'car';
    if(fault==='wrong-pin')v.coordinates={latitude:v.coordinates.longitude,longitude:v.coordinates.latitude};
    if(fault==='wrong-endpoint')candidate.endpoint={kind:'fixed',coordinates:v.coordinates};
    if(fault==='broken-time')candidate.visits[1]!.arrivalOffsetSeconds=11;

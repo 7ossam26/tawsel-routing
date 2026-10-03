@@ -18,7 +18,7 @@ export async function companyPlanningFixture(db:Awaited<ReturnType<typeof create
   await checked(send(app,source.token,source.command('branch.provision',{externalId:'branch',sourceRevision:1,name:'فرع',enabled:true,location:null})));
   await checked(send(app,source.token,source.command('role.defineCapabilities',{externalId:'role',sourceRevision:1,name:'Driver',capabilities:['execution.own']})));
   const user=await send(app,source.token,source.command('user.provision',{externalId:'policy-driver',sourceRevision:1,subject:driverSubject,roleExternalId:'role',branchExternalIds:['branch'],enabled:true}));await checked(Promise.resolve(user));
-  const driver=await send(app,source.token,source.command('driver.provisionReference',{externalId:'policy-driver',sourceRevision:1,userExternalId:'policy-driver',enabled:true,profile:'bicycle',vehicleReference:null}));await checked(Promise.resolve(driver));
+  const driver=await send(app,source.token,source.command('driver.provisionReference',{externalId:'policy-driver',sourceRevision:1,userExternalId:'policy-driver',enabled:true,profile:'car',vehicleReference:null}));await checked(Promise.resolve(driver));
   const driverId=driver.json().response.body.resourceId as string,accountId=user.json().response.body.resourceId as string;
   await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE tenant_id=$1',[source.tenantId]);
   const principal={kind:'account' as const,issuer,subject:driverSubject},service=new PlanningService(db.pool);

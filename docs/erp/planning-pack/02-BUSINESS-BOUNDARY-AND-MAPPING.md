@@ -1,5 +1,7 @@
 # Business boundary and mapping for ERP discovery
 
+Current vehicle scope (D-113, 3 October 2026): Tawsel supports only `car` and `motorcycle`. `bicycle` and `bike` are rejected by the current public contracts and providers; the ERP must provision a supported driver profile. Dated evidence describing three modes is historical and does not reopen bicycle support.
+
 This explains the existing Tawsel integration boundary; it does not decide the new ERP's entire commercial model. Exact payloads, accepted enums and source identity are in 04–06. Conceptual words in this document are not new wire fields.
 
 ## Ownership and authority

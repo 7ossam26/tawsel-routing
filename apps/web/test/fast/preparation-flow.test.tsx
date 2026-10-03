@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProductionShell } from '../../src/production-shell';
@@ -39,16 +39,21 @@ const plans = (overrides: Record<string, unknown> = {}) => ({ items: [readyPlan]
 function json(value: unknown, status = 200, headers: Record<string, string> = {}) {
   return Promise.resolve(new Response(JSON.stringify(value), { status, headers: { 'Content-Type': 'application/json', ...headers } }));
 }
-function installFetch(options: { current?: unknown; plans?: unknown; planningFailure?: boolean; startFailure?: boolean } = {}) {
+function installFetch(options: { current?: unknown; plans?: unknown; planningFailure?: boolean; startFailure?: boolean; persistPlanning?: boolean } = {}) {
   const planningBodies: unknown[] = [], startBodies: unknown[] = [];
+  let currentPlans = options.plans ?? plans();
   vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
     const url = String(input);
     if (url.includes('/api/session/context')) return json(context);
     if (url.includes('/api/session/bootstrap')) return json({ csrfToken: 'csrf' });
     if (url.includes('/api/v1/rounds/current')) return json(options.current ?? { workday: null, round: null });
     if (url.includes('/api/v1/monitoring/drivers/')) return json(daily, 200, { ETag: '"driver.1"', 'X-Snapshot-Scope': 'driver-scope', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-24T08:00:00Z' });
-    if (url.includes(`/api/v1/planning/drivers/${ids.driver}/plans`)) return json(options.plans ?? plans());
-    if (url.includes('/api/v1/planning/commands/')) { planningBodies.push(JSON.parse(String(init?.body))); return options.planningFailure ? Promise.reject(new Error('lost planning response')) : json({ receipt: { actionId: 'x', businessStatus: 'accepted' }, response: { body: {} } }); }
+    if (url.includes(`/api/v1/planning/drivers/${ids.driver}/plans`)) return json(currentPlans);
+    if (url.includes('/api/v1/planning/commands/')) {
+      const command = JSON.parse(String(init?.body)); planningBodies.push(command);
+      if (options.persistPlanning && command.operationId === 'planning.saveDraft') currentPlans = plans({ items: [{ ...readyPlan, input: { ...baseInput, settings: command.payload.settings } }] });
+      return options.planningFailure ? Promise.reject(new Error('lost planning response')) : json({ receipt: { actionId: 'x', businessStatus: 'accepted' }, response: { body: {} } });
+    }
     if (url.includes('/api/v1/rounds/readiness')) return json({ readinessId: ids.readiness, driverId: ids.driver, deviceId: ids.device, planId: ids.plan, planRevision: 1, inputFingerprint: 'a'.repeat(64), verifiedActionIds: [], issuedAt: '2026-09-24T08:00:00Z', expiresAt: '2026-09-24T08:01:00Z' });
     if (url.includes('/api/v1/rounds/start')) { startBodies.push(JSON.parse(String(init?.body))); return options.startFailure ? Promise.reject(new Error('lost start response')) : json({ receipt: { actionId: 'x', businessStatus: 'rejected', problem: { detail: 'مرفوض للاختبار' } } }); }
     if (url.includes('/api/v1/rounds/actions/')) return json({ actionId: ids.readiness, status: 'pending' }, 202);
@@ -66,6 +71,83 @@ beforeEach(() => {
 afterEach(() => { cleanup(); Reflect.deleteProperty(navigator, 'locks'); vi.restoreAllMocks(); });
 
 describe('connected preparation flow', () => {
+  it.each(['car', 'motorcycle'])('offers only two vehicle modes, defaults a new draft to car and restores a saved %s plan', async mode => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const capture = installFetch({ plans: plans({ items: [] }), persistPlanning: true }), user = userEvent.setup();
+    const view = render(<ProductionShell />);
+    const vehicle = await screen.findByLabelText('وسيلة الحركة') as HTMLSelectElement;
+    expect(vehicle.value).toBe('car');
+    expect(within(vehicle).getAllByRole('option').map(option => ({ value: (option as HTMLOptionElement).value, label: option.textContent }))).toEqual([{ value: 'car', label: 'سيارة' }, { value: 'motorcycle', label: 'دراجة نارية' }]);
+    await user.selectOptions(vehicle, mode);
+    await user.type(screen.getByLabelText('خط عرض نقطة الانطلاق'), '30.0444');
+    await user.type(screen.getByLabelText('خط طول نقطة الانطلاق'), '31.2357');
+    await user.click(screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }));
+    await screen.findByText('حُفظت اختياراتك. راجع حالة الخطة أدناه.');
+    expect(capture.planningBodies).toHaveLength(1);
+    expect(capture.planningBodies[0]).toMatchObject({ payload: { settings: { mode } } });
+    view.unmount(); render(<ProductionShell />);
+    expect((await screen.findByLabelText('وسيلة الحركة') as HTMLSelectElement).value).toBe(mode);
+    expect(capture.planningBodies).toHaveLength(1);
+  });
+
+  it.each(['bicycle', 'unknown'])('requires an explicit vehicle choice for a restored server %s plan and blocks save, manual order and start', async mode => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const retained = { ...readyPlan, input: { ...baseInput, settings: { ...baseInput.settings, mode } } };
+    const capture = installFetch({ plans: plans({ items: [retained], continuation: { sourcePlanId: ids.plan, orderedTaskIds: [ids.ready], mode: 'reoptimization-pending', requiresManualConfirmation: true, roadMetricsAvailable: false } }) }), user = userEvent.setup();
+    render(<ProductionShell />);
+    const vehicle = await screen.findByLabelText('وسيلة الحركة') as HTMLSelectElement;
+    expect(vehicle.value).toBe('');
+    expect(screen.getByText('وسيلة الحركة المحفوظة غير متاحة. اختر سيارة أو دراجة نارية ثم احفظ التجهيز.')).toBeTruthy();
+    for (const name of ['احفظ وجهّز المعاينة', 'اعتماد الترتيب اليدوي', 'ابدأ الجولة']) {
+      const button = screen.getByRole('button', { name }) as HTMLButtonElement;
+      expect(button.disabled).toBe(true); await user.click(button);
+    }
+    expect(capture.planningBodies).toHaveLength(0); expect(capture.startBodies).toHaveLength(0);
+  });
+
+  it.each(['bicycle', 'unknown'])('preserves an unsupported %s session draft and its coordinates until the user selects a supported vehicle', async mode => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const key = `tawsel:prepare-draft:${ids.tenant}:${ids.driver}`;
+    const retained = JSON.stringify({ mode, originLatitude: '30.1234', originLongitude: '31.2357', endpointKind: 'last-customer', endpointLatitude: '', endpointLongitude: '', branchId: '', plannedStartAt: '2026-09-24T09:00' });
+    sessionStorage.setItem(key, retained); sessionStorage.setItem(`${key}:touched`, '1');
+    const capture = installFetch({ persistPlanning: true }), user = userEvent.setup(); render(<ProductionShell />);
+    const vehicle = await screen.findByLabelText('وسيلة الحركة') as HTMLSelectElement;
+    expect(vehicle.value).toBe('');
+    expect((screen.getByLabelText('خط عرض نقطة الانطلاق') as HTMLInputElement).value).toBe('30.1234');
+    const save = screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }) as HTMLButtonElement;
+    expect(save.disabled).toBe(true); await user.click(save);
+    expect(capture.planningBodies).toHaveLength(0); expect(sessionStorage.getItem(key)).toBe(retained);
+    await user.selectOptions(vehicle, 'motorcycle');
+    await user.click(screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }));
+    await waitFor(() => expect(capture.planningBodies).toHaveLength(1));
+    expect(capture.planningBodies[0]).toMatchObject({ payload: { settings: { mode: 'motorcycle', origin: { coordinates: { latitude: 30.1234, longitude: 31.2357 } } } } });
+  });
+
+  it.each([['bicycle', 'car'], ['bicycle', 'motorcycle'], ['unknown', 'car'], ['unknown', 'motorcycle']])('never retries or rewrites a pending %s planning request before an explicit %s choice, including after coordinate edits and reload', async (mode, selectedMode) => {
+    window.history.replaceState({}, '', '/prepare?kind=personal');
+    const key = `tawsel:planning-pending:${ids.tenant}:${ids.driver}`;
+    const originalAction = '90000000-0000-4000-8000-000000000098';
+    const retained = JSON.stringify({ actionId: originalAction, operationId: 'planning.saveDraft', payload: { driverId: ids.driver, expectedSettingsRevision: 1, settings: { ...baseInput.settings, mode } } });
+    sessionStorage.setItem(key, retained);
+    const capture = installFetch({ persistPlanning: true }), user = userEvent.setup();
+    const view = render(<ProductionShell />);
+    const retry = await screen.findByRole('button', { name: 'أعد إرسال طلب التجهيز نفسه' }) as HTMLButtonElement;
+    expect(retry.disabled).toBe(true); await user.click(retry);
+    expect((screen.getByLabelText('وسيلة الحركة') as HTMLSelectElement).value).toBe('');
+    expect(screen.getByText('وسيلة الحركة المحفوظة غير متاحة. اختر سيارة أو دراجة نارية ثم احفظ التجهيز.')).toBeTruthy();
+    const latitude = screen.getByLabelText('خط عرض نقطة الانطلاق');
+    await user.clear(latitude); await user.type(latitude, '30.1234');
+    expect(sessionStorage.getItem(key)).toBe(retained); expect(capture.planningBodies).toHaveLength(0);
+    view.unmount(); render(<ProductionShell />);
+    expect((await screen.findByRole('button', { name: 'أعد إرسال طلب التجهيز نفسه' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByLabelText('وسيلة الحركة') as HTMLSelectElement).value).toBe('');
+    expect(sessionStorage.getItem(key)).toBe(retained); expect(capture.planningBodies).toHaveLength(0);
+    await user.selectOptions(screen.getByLabelText('وسيلة الحركة'), selectedMode);
+    await user.click(screen.getByRole('button', { name: 'احفظ وجهّز المعاينة' }));
+    await waitFor(() => expect(capture.planningBodies).toHaveLength(1));
+    expect(capture.planningBodies[0]).toMatchObject({ actionId: '90000000-0000-4000-8000-000000000099', payload: { settings: { mode: selectedMode, origin: { coordinates: { latitude: 30.1234 } } } } });
+  });
+
   it.each(['origin', 'endpoint'])('rejects blank %s coordinates before sending a planning command', async point => {
     window.history.replaceState({}, '', '/prepare?kind=personal');
     const capture = installFetch(), user = userEvent.setup(); render(<ProductionShell />);

@@ -1,5 +1,7 @@
 # Tawsel → ERP integration handoff
 
+Current amendment — 3 October 2026: [D-113](phases/decision-map.md) removes bicycle; current contracts, provisioning and planning support car/motorcycle only. The Phase 42 results below retain their dated scope. [Current verification](verification/two-mode-routing-2026-10-03.md) and [ERP package instructions](erp/README.md) require new two-mode checks and a new same-source/runtime proof before treating a regenerated package as verified.
+
 26 September 2026 · Phase 42 · **local handoff candidate, live pilot not approved**.
 
 The application and private reference ERP have implemented public boundaries for identity projection, intake, execution, signed delivery, independent application, source receipt and reporting. The real shipping ERP is a separate project. Its fields, identities and commercial workflows do not migrate automatically.

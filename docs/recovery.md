@@ -1,5 +1,7 @@
 # Backup and isolated recovery
 
+Current scope: [D-113](phases/decision-map.md) retains only car/motorcycle. This production recovery guide and its dated rehearsal preserve their backup/restore requirements. The authorized fresh [Dokploy experiment](dokploy-pilot.md) has a separate scope and does not claim production recovery readiness.
+
 Phase 40 implements a reproducible **local** physical backup/WAL recovery rehearsal. [Measured results and gaps](verification/restore.md) determine what has actually passed. The pilot objectives remain **RPO ≤15 minutes and RTO ≤4 hours** for server-stored application data. No off-host destination, operator credentials or deployed topology is available: host-loss recovery and live readiness remain unverified.
 
 ## Run the local rehearsal
@@ -54,7 +56,7 @@ Monitor job failure, destination read/write failure, latest recoverable checkpoi
 
 ## Engine and map recovery is separate
 
-The retained root `docker-compose.yml` contains setup/import services. Do not run it. Record actual Nominatim database/image/import-completion state, three OSRM datasets/profiles and compatible images, VROOM configuration, raw source PBF provenance, PMTiles region/license/checksum/size, and read-only mounts/private network aliases. Back up processed immutable artifacts and an appropriate Nominatim database backup to protected independent storage; retain exact image digests and configuration. Restore onto new verified paths and validate profile routing, geocoding and PMTiles range responses before rebinding read-only mounts. Never reimport into an active Nominatim/OSRM path.
+The retained root `docker-compose.yml` contains setup/import services. Do not run it. Record actual Nominatim database/image/import-completion state, both current OSRM datasets/profiles (car/motorcycle under D-113) and compatible images, VROOM configuration, raw source PBF provenance, PMTiles region/license/checksum/size, and read-only mounts/private network aliases. Back up processed immutable artifacts and an appropriate Nominatim database backup to protected independent storage; retain exact image digests and configuration. Restore onto new verified paths and validate profile routing, geocoding and PMTiles range responses before rebinding read-only mounts. Never reimport into an active Nominatim/OSRM path.
 
 No live Engine inventory, dataset sizes, independent archive or download throughput is available. **Engine/map restore time is unknown and unmeasured**, separate from the small application rehearsal. Estimate transfer time from measured bytes/throughput, add extraction/database recovery and health validation, then rehearse it. Existing PBF URLs or a successful tiny range fixture are not a verified processed-artifact recovery source. This remains a pilot dependency.
 

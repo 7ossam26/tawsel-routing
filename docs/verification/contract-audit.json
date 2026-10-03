@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "classification": "Traceability and canonical checks; runtime route/transaction/browser proof is recorded separately in phase-42-evidence.md.",
   "requirements": 65,
-  "decisions": 112,
+  "decisions": 113,
   "schemas": 31,
   "examples": {
     "valid": 268,
-    "invalid": 167
+    "invalid": 171
   },
   "httpOperations": 133,
   "operations": [
@@ -1013,7 +1013,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "planning.manage",
-      "description": "Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim.",
+      "description": "Authenticated car/motorcycle modes and 600-second default; explicitly not a live Engine availability claim.",
       "method": "GET",
       "path": "/api/v1/routing/profiles",
       "implementationOwner": [

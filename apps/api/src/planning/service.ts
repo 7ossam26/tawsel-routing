@@ -9,6 +9,7 @@ import { canonicalJson } from '../commands/json.js';
 import type { Transaction } from '../db/transaction.js';
 import { enqueuePlanning, fingerprint, planningState, snapshot } from './queue.js';
 import { jobView, PlanningError, requirePlanning, type Input, type JobRow, type Plan } from './models.js';
+import { isSupportedMode } from '../engine/models.js';
 
 const policy:ResourcePolicy=[{capability:'planning.manage',ownership:'assigned-branches'},{capability:'execution.own',ownership:'own-driver'}];
 export async function authorizeDriver(tx:Transaction,a:AccessSession,driverId:string) {
@@ -49,6 +50,7 @@ export class PlanningService {
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:p.driverId}]);
      const state=await planningState(tx,a.context.tenantId,p.driverId),input=await snapshot(tx,state);
      authorizeInput(a,input);
+      if(operation!=='planning.saveDraft' && input.settings && !isSupportedMode(input.settings.mode))throw new PlanningError('validation_failed',400,'اختر سيارة أو موتوسيكل واحفظ إعدادات التخطيط أولًا.');
      if(input.branchActivity)throw new PlanningError('lifecycle_forbidden',409,'أكمل زيارة الفرع قبل تغيير خطة العملاء.');
      if(input.members.some(m=>m.departureAt)&&a.context.driverId!==p.driverId)throw new LifecycleDenied();
      const fenced=await activeExecutionFence(tx,command,p.driverId);if(fenced)return fenced;

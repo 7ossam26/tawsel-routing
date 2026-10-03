@@ -121,7 +121,7 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 
 | Stable ID | Boundary | Lifecycle | Owner | Capability / scope | Action or fact |
 | --- | --- | --- | --- | --- | --- |
-| `routing.getVehicleProfiles` | http-read | verified-local | [P12](phases/12-engine-profile-adapters.md) | planning.manage | Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim. |
+| `routing.getVehicleProfiles` | http-read | verified-local | [P12](phases/12-engine-profile-adapters.md) | planning.manage | Authenticated car/motorcycle modes and 600-second default; explicitly not a live Engine availability claim. |
 | `routing.computeRoadRoute` | internal-work | verified-local | [P12](phases/12-engine-profile-adapters.md) | internal | Private OSRM route/table conversion, seconds/metres and explicit unreachable cells; controlled HTTP verified, actual Engine unavailable. |
 | `routing.optimize` | internal-work | verified-local | [P12](phases/12-engine-profile-adapters.md) | internal | Private VROOM candidate validates exhaustive IDs, unassigned work, coordinates, relative timing and separate service estimates; controlled HTTP verified, live Engine unavailable. P14 validates route policy. |
 | `planning.saveDraft` | http-command | verified-local | [P13](phases/13-planning-jobs-forecast-storage.md) | planning.manage | Save preview inputs: origin, vehicle, endpoint, service/time requirements; no start. |

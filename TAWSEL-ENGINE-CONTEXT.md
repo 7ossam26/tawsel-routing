@@ -192,7 +192,7 @@ Canonical definitions live in `tawsel-routing`. The ERP consumes a released comp
 - Stable `external_task_ref`, unique within `(tenant, integration)`. A source shipment may later generate more than one task; do not globally equate a source order with one trip forever.
 - Explicit longitude/latitude fields in the public contract; adapt to internal `[lon, lat]` arrays. Distances in meters; durations in seconds.
 - Explicit timestamp offsets/UTC for event instants and an IANA zone such as `Africa/Cairo` for scheduling. Translate all solver times onto one documented shared time basis, rather than a separate zero per vehicle.
-- Proposed public vehicle types: `car`, `bicycle`, `motorcycle`. Map public `bicycle` to the existing VROOM `bike` key inside the adapter.
+- Current public vehicle types under [D-113](docs/phases/decision-map.md): `car`, `motorcycle`. Bicycle and the old provider alias `bike` are rejected without conversion. The original stack report retains its historical three-profile inventory.
 - Idempotency for mutations: repeating the same request/key returns the same logical operation; conflicting reuse is rejected. Scope keys by caller and operation.
 - Revision checks for concurrent edits and route changes. Define permitted changes before/after publication and during execution.
 - Monitoring snapshots must include their authoritative resource version, relevant route revision, server update time, current/next-stop semantics, and synchronization metadata. Keep event-schema versions distinct from resource revisions and any stream cursor.

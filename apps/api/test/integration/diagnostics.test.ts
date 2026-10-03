@@ -85,7 +85,7 @@ test('structured exception logging excludes arbitrary headers, query, payload an
 });
 test('Engine outage leaves accepted outcome and monitoring history durable',async()=>{
   const f=await outcomeCompanyFixture(db);clean.push(()=>f.close());
-  const engine=new RoutingEngine({osrm:{car:'http://127.0.0.1:1',motorcycle:'http://127.0.0.1:2',bicycle:'http://127.0.0.1:3'},vroom:'http://127.0.0.1:4',timeoutMs:100,maxConcurrent:1,maxResponseBytes:1024});
+  const engine=new RoutingEngine({osrm:{car:'http://127.0.0.1:1',motorcycle:'http://127.0.0.1:2'},vroom:'http://127.0.0.1:4',timeoutMs:100,maxConcurrent:1,maxResponseBytes:1024});
   await expect(engine.optimize(engineInput)).rejects.toMatchObject({code:'unavailable'});
   const cmd=f.make(0,'outcome.recordNoAnswer'),outcomes=new Outcomes(db.pool);
   expect((await outcomes.command(f.principal,cmd)).receipt.businessStatus).toBe('accepted');

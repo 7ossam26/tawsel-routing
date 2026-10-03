@@ -156,7 +156,7 @@ describe('P15 online start — real PostgreSQL authority and independent transac
     expect((await send(company.app,company.source.token,company.source.command('user.provision',{externalId,sourceRevision:1,subject:externalId,roleExternalId:'role',branchExternalIds:['branch'],enabled:true}))).statusCode).toBe(200);
    }
    expect((await send(company.app,company.source.token,company.source.command('role.defineCapabilities',{externalId:'role',sourceRevision:2,name:'All-powerful label',capabilities:['execution.own','correction.own','planning.manage','location.review','assignment.manage','intake.prepare']}))).statusCode).toBe(200);
-   expect((await send(company.app,company.source.token,company.source.command('driver.provisionReference',{externalId:'policy-second',sourceRevision:1,userExternalId:'policy-second',enabled:true,profile:'bicycle',vehicleReference:null}))).statusCode).toBe(200);
+   expect((await send(company.app,company.source.token,company.source.command('driver.provisionReference',{externalId:'policy-second',sourceRevision:1,userExternalId:'policy-second',enabled:true,profile:'car',vehicleReference:null}))).statusCode).toBe(200);
    await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE tenant_id=$1',[company.tenantId]);
    const sourceTask=await new B2bIntakeService(db.pool).get(`Bearer ${company.source.token}`,'frozen');
    const item={externalId:'frozen',sourceDispatchCycleId:'cycle',expectedSourceRevision:1,expectedAssignmentRevision:1,assignmentRevision:2};

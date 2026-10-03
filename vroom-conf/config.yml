@@ -16,14 +16,11 @@ cliArgs:
   baseurl: '/'
 
 # Hosts are the docker-compose SERVICE names on the tawsel-routing_default
-# network, so the port is OSRM's internal 5000 - not the host-side 5001/5002/5003.
+# network, so the port is OSRM's internal 5000 - not the host-side 5001/5003.
 routingServers:
   osrm:
     car:
       host: 'osrm-car'
-      port: '5000'
-    bike:
-      host: 'osrm-bicycle'
       port: '5000'
     motorcycle:
       host: 'osrm-motorcycle'

@@ -26,7 +26,7 @@ import {Closures} from '../../src/closure/service.js';
 import {runPlanningOnce} from '../../src/planning/worker.js';
 import {intake,command} from '../support/planning-fixture.js';
 import {formatWorkdayInstant} from '@tawsel/api-client/closure';
-import {mkdtemp,copyFile,unlink,rmdir} from 'node:fs/promises';
+import {mkdir,mkdtemp,copyFile,unlink,rmdir} from 'node:fs/promises';
 import {resolve,join,dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {readMigrations,migrate} from '../../src/db/migrate.js';
@@ -178,7 +178,8 @@ test('B: actual branch interruption keeps separate service units and paused scop
  expect(round.latest).toMatchObject({kind:'branch',branchStops:1});expect(round.stops.find(s=>s.taskId===f.tasks[1])!.latest?.membership).toBe('paused');expect(round.stops.find(s=>s.taskId===f.tasks[1])!.arrival.status).toBe('missing');
 });
 test('B: upgrade preserves real pre-P36 forecast/start data and leaves unavailable historical start observation null',async()=>{
- const old=await createTestDatabase(),root=resolve('.local'),directory=await mkdtemp(join(root,'p36-upgrade-')),url=pathToFileURL(directory+'/'),files=(await readMigrations()).slice(0,26).map(m=>m.name);
+ const root=resolve('.local');await mkdir(root,{recursive:true});
+ const old=await createTestDatabase(),directory=await mkdtemp(join(root,'p36-upgrade-')),url=pathToFileURL(directory+'/'),files=(await readMigrations()).slice(0,26).map(m=>m.name);
  if(dirname(directory)!==root)throw new Error('Refuse cleanup outside task-local directory');
  try{
   for(const file of files)await copyFile(new URL(`../../../../db/migrations/${file}`,import.meta.url),new URL(file,url));await prepareAccessFixture(old.pool,undefined,url);

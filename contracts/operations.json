@@ -433,7 +433,7 @@
       "lifecycle": "verified-local",
       "ownerPhase": 12,
       "capability": "planning.manage",
-      "description": "Authenticated car/motorcycle/bicycle modes and 600-second default; explicitly not a live Engine availability claim.",
+      "description": "Authenticated car/motorcycle modes and 600-second default; explicitly not a live Engine availability claim.",
       "method": "GET",
       "path": "/api/v1/routing/profiles"
     },

@@ -4,6 +4,7 @@ import addFormats from 'ajv-formats';
 import type { components } from '@tawsel/api-client';
 
 export type Mode = components['schemas']['RoutingMode'];
+export const isSupportedMode = (value: unknown): value is Mode => value === 'car' || value === 'motorcycle';
 export type Coordinates = components['schemas']['Coordinates'];
 export type OptimizationInput = components['schemas']['RoutingOptimizationInput'];
 export type OptimizationResult = components['schemas']['RoutingOptimizationResult'];

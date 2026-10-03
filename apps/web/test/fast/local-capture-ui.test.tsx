@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import Dexie from 'dexie';
-import { connectedIds, installConnectedFetch } from './execution-fixture';
+import { connectedIds, installConnectedFetch, receiptFixture } from './execution-fixture';
 import { CurrentActivityPage } from '../../src/current-activity';
 import { AccountShell } from '../../src/account-shell';
 import { localWork } from '../../src/local-work';
@@ -52,4 +52,41 @@ it('commits the exact envelope and pending row before the online client sends it
   const user = userEvent.setup(); render(<CurrentActivityPage />);
   await user.click(await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ }));
   await screen.findByText(/تم تأكيد التسليم والتحصيل من الخادم/); expect(checked).toBe(true);
+});
+
+it('stops an initial load before account selection when its response arrives after unmount', async () => {
+  installConnectedFetch(); const original = vi.mocked(fetch).getMockImplementation()!;
+  let complete!: (response: Response) => void;
+  const response = new Promise<Response>(resolve => { complete = resolve; });
+  vi.mocked(fetch).mockImplementation((input, init) => String(input).includes('/api/session/context') ? response : original(input, init));
+  const select = vi.spyOn(localWork, 'select'), view = render(<CurrentActivityPage />);
+  await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1)); view.unmount();
+  await act(async () => { complete(await original('/api/session/context?kind=company')); });
+  expect(select).not.toHaveBeenCalled(); expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it('keeps a late server receipt durable after unmount without refreshing the closed view', async () => {
+  installConnectedFetch(); const original = vi.mocked(fetch).getMockImplementation()!;
+  let complete!: (response: Response) => void, sent: Parameters<typeof receiptFixture>[0] | undefined;
+  const response = new Promise<Response>(resolve => { complete = resolve; });
+  vi.mocked(fetch).mockImplementation((input, init) => {
+    if (String(input).includes('/outcomes/full')) { sent = JSON.parse(String(init?.body)) as Parameters<typeof receiptFixture>[0]; return response; }
+    return original(input, init);
+  });
+  const acknowledge = vi.spyOn(localWork, 'acknowledge'), user = userEvent.setup(), view = render(<CurrentActivityPage />);
+  await user.click(await screen.findByRole('button', { name: /تأكيد التسليم وتحصيل/ }));
+  await waitFor(() => expect(sent).toBeDefined());
+  const saved = (await localWork.actions.toArray())[0]!, requests = vi.mocked(fetch).mock.calls.length;
+  expect(saved.bytes).toBe(JSON.stringify(sent)); expect(await localWork.pending.count()).toBe(1);
+  view.unmount();
+  await act(async () => {
+    complete(new Response(JSON.stringify(receiptFixture(sent!)), { headers: { 'Content-Type': 'application/json' } }));
+    await waitFor(() => expect(acknowledge).toHaveBeenCalledTimes(1));
+    await acknowledge.mock.results[0]!.value;
+  });
+  expect(fetch).toHaveBeenCalledTimes(requests);
+  expect((await localWork.actions.get([saved.scope, saved.actionId]))?.bytes).toBe(saved.bytes);
+  expect((await localWork.acknowledgements.get([saved.scope, saved.actionId]))?.result.receipt).toMatchObject({ actionId: sent!.actionId, businessStatus: 'accepted' });
+  // Until another mounted view downloads the authoritative revision, preserve the overlay.
+  expect(await localWork.pending.count()).toBe(1);
 });

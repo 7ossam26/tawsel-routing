@@ -1,5 +1,9 @@
 # Tawsel implementation status
 
+## Current profile amendment — 3 October 2026
+
+[D-113](phases/decision-map.md) removes bicycle permanently and retains car/motorcycle only. Current source/contracts/UI/setup/docs are being updated in an isolated checkout. [The change verification record](verification/two-mode-routing-2026-10-03.md) tracks new two-mode results, fresh target assets and same-commit handoff. Tests and target rollout are pending until their actual results are recorded; historical Phase 42 totals below are not new passes.
+
 ## Phase 42 — 26 September 2026
 
 **Final local contract/ERP handoff completed; live pilot readiness remains incomplete.** [As-built handoff](ERP-INTEGRATION-HANDOFF.md), [ERP bundle/index and commands](erp/README.md), [exact artifact identity](erp/release-manifest.json), [ordered A/B/C evidence](phase-42-evidence.md), [requirement ledger](verification/requirement-ledger.md), [A–P remaining conditions](verification/pilot-readiness.md). Older entries below retain their historical phase scope.

@@ -63,7 +63,7 @@ describe('session HTTP handlers with real PostgreSQL and labelled signed issuer 
     const cookies=await login();
     const response=await app.inject({url:'/api/v1/routing/profiles?kind=company',cookies});
     expect(response.statusCode,response.body).toBe(200);
-    expect(response.json()).toEqual({modes:['car','motorcycle','bicycle'],defaultCustomerServiceSeconds:600,liveVerification:'not-checked'});
+    expect(response.json()).toEqual({modes:['car','motorcycle'],defaultCustomerServiceSeconds:600,liveVerification:'not-checked'});
     expect(response.headers['cache-control']).toBe('no-store');
     expect(response.body).not.toMatch(/https?:|5001|5002|5003|vroom|osrm/);
     await db.pool.query("DELETE FROM tawsel.role_capabilities WHERE role_id=$1 AND capability='execution.own'",[ids.driverRole]);

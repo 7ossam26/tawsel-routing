@@ -36,7 +36,7 @@ POST `/api/v1/provisioning/commands/<operationId>` uses its exact canonical acti
 | `user.setCapabilityExceptions` | Replaces complete inherit/allow/deny array; empty clears. Duplicate capability entries are rejected even with different effects. Explicit choice overrides live role inheritance. |
 | `user.setBranchMemberships` | Replaces complete branch list; empty clears. Same capabilities apply at all assigned active branches. |
 | `user.disable` | Disables membership and subject binding in the command transaction; queues external issuer-session logout. |
-| `driver.provisionReference` | Stable userExternalId, enabled, car/motorcycle/bicycle profile and nullable vehicleReference. One driver per account; no account reassignment of an existing driver ID. No fleet/commercial module. |
+| `driver.provisionReference` | Stable userExternalId, enabled, car/motorcycle profile and nullable vehicleReference; bicycle/bike are rejected. One driver per account; no account reassignment of an existing driver ID. No fleet/commercial module. |
 
 Every payload has `externalId` and positive safe-integer `sourceRevision`. Entity namespaces are source/branch/role/user/driver. UUIDs returned in `resourceId` are stable; source references are scoped by `(tenant,integration,entity,externalId)`. All relationship references resolve in the same source. Two integrations may both use `driver-1`; their records and grants remain different. Record UUIDs never allow a connector to select another source's record.
 

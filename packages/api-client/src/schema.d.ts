@@ -3624,7 +3624,7 @@ export interface components {
             enabled: boolean;
             externalId: components["schemas"]["ExternalId"];
             /** @enum {unknown} */
-            profile: "car" | "motorcycle" | "bicycle";
+            profile: "car" | "motorcycle";
             sourceRevision: components["schemas"]["Revision"];
             userExternalId: components["schemas"]["ExternalId"];
             vehicleReference: components["schemas"]["ExternalId"] | null;
@@ -4372,7 +4372,7 @@ export interface components {
             uptimeSeconds: number;
         };
         /** @enum {string} */
-        Mode: "car" | "motorcycle" | "bicycle";
+        Mode: "car" | "motorcycle";
         /** @description Nonnegative integer minor units, never a decimal amount or arbitrary underpayment. Currency/exponent must match supported source policy; EGP is exponent 2. */
         Money: {
             amountMinor: number;
