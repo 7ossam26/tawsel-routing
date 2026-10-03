@@ -1,12 +1,25 @@
-param([ValidateSet('start','stop','status')][string]$Action = 'start')
+param(
+  [ValidateSet('start','stop','status')][string]$Action = 'start',
+  [ValidateRange(1024,65535)][int]$Port = 55432
+)
 $ErrorActionPreference = 'Stop'
 $taskRoot = Split-Path -Parent $PSScriptRoot
 $localRoot = Join-Path $taskRoot '.local'
 $clusterPath = Join-Path $localRoot 'postgres-18'
-$pgBin = Split-Path (Get-Command pg_ctl -ErrorAction Stop).Source
+$bundledPgBin = Join-Path $localRoot 'postgres-tools-18.6/pgsql/bin'
+$pgBin = if (Test-Path -LiteralPath (Join-Path $bundledPgBin 'pg_ctl.exe')) {
+  $bundledPgBin
+} else {
+  Split-Path (Get-Command pg_ctl -ErrorAction Stop).Source
+}
 $markerPath = Join-Path $clusterPath 'tawsel-local-cluster'
 $passwordPath = Join-Path $localRoot 'postgres-password'
 $logPath = Join-Path $localRoot 'postgres.log'
+$portPath = Join-Path $localRoot 'postgres-port'
+if (-not $PSBoundParameters.ContainsKey('Port') -and (Test-Path -LiteralPath $portPath)) {
+  $Port = [int](Get-Content -LiteralPath $portPath -Raw).Trim()
+  if ($Port -lt 1024 -or $Port -gt 65535) { throw 'Invalid saved local PostgreSQL port' }
+}
 
 function Invoke-Pg([string]$Program, [string[]]$Arguments) {
   & (Join-Path $pgBin $Program) @Arguments
@@ -32,16 +45,18 @@ if ((Get-Content -LiteralPath (Join-Path $clusterPath 'PG_VERSION') -Raw).Trim()
 & (Join-Path $pgBin 'pg_ctl.exe') -D $clusterPath status *> $null
 if ($LASTEXITCODE -ne 0) {
   # pg_ctl detaches postgres; hide the helper window on Windows.
-  $pgStart = Start-Process -FilePath (Join-Path $pgBin 'pg_ctl.exe') -ArgumentList @('-D', ('"' + $clusterPath + '"'), '-l', ('"' + $logPath + '"'), '-o', '"-h 127.0.0.1 -p 55432"', '-w', 'start') -WindowStyle Hidden -PassThru
+  $pgStart = Start-Process -FilePath (Join-Path $pgBin 'pg_ctl.exe') -ArgumentList @('-D', ('"' + $clusterPath + '"'), '-l', ('"' + $logPath + '"'), '-o', ('"-h 127.0.0.1 -p ' + $Port + '"'), '-w', 'start') -WindowStyle Hidden -PassThru
   # Start-Process -Wait waits for the detached postgres tree too; wait only for pg_ctl.
   $pgStart.WaitForExit()
   if ($pgStart.ExitCode -ne 0) { throw "PostgreSQL startup failed; see $logPath" }
 }
+$runningPort = [int](Get-Content -LiteralPath (Join-Path $clusterPath 'postmaster.pid'))[3]
+if ($runningPort -ne $Port) { throw "Local PostgreSQL is already running on port $runningPort; stop it before selecting port $Port" }
 $previousPassword = $env:PGPASSWORD
 try {
   $localPassword = (Get-Content -LiteralPath $passwordPath -Raw).Trim()
   $env:PGPASSWORD = $localPassword
-  $psqlArgs = @('-h','127.0.0.1','-p','55432','-U','tawsel_local','-d','postgres','-v','ON_ERROR_STOP=1')
+  $psqlArgs = @('-h','127.0.0.1','-p',"$Port",'-U','tawsel_local','-d','postgres','-v','ON_ERROR_STOP=1')
   foreach ($dbName in @('tawsel_app_dev','tawsel_test_control')) {
     $exists = & (Join-Path $pgBin 'psql.exe') @psqlArgs -tAc "SELECT 1 FROM pg_database WHERE datname='$dbName'"
     if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect dedicated cluster' }
@@ -51,7 +66,8 @@ try {
       Invoke-Pg 'psql.exe' ($psqlArgs + @('-c', "COMMENT ON DATABASE $dbName IS '$dbMarker'"))
     }
   }
-  $envText = "TAWSEL_DATABASE_URL=postgresql://tawsel_local:${localPassword}@127.0.0.1:55432/tawsel_app_dev?sslmode=disable`nTAWSEL_TEST_ADMIN_URL=postgresql://tawsel_local:${localPassword}@127.0.0.1:55432/tawsel_test_control?sslmode=disable`n"
+  $envText = "TAWSEL_DATABASE_URL=postgresql://tawsel_local:${localPassword}@127.0.0.1:${Port}/tawsel_app_dev?sslmode=disable`nTAWSEL_TEST_ADMIN_URL=postgresql://tawsel_local:${localPassword}@127.0.0.1:${Port}/tawsel_test_control?sslmode=disable`n"
   [IO.File]::WriteAllText((Join-Path $taskRoot '.env.database.local'), $envText)
-  Write-Output 'Dedicated Tawsel PostgreSQL ready on loopback port 55432; configuration: .env.database.local'
+  [IO.File]::WriteAllText($portPath, "$Port")
+  Write-Output "Dedicated Tawsel PostgreSQL ready on loopback port ${Port}; configuration: .env.database.local"
 } finally { $env:PGPASSWORD = $previousPassword }

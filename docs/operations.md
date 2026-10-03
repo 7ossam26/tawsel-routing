@@ -17,6 +17,8 @@ Phase 42 current runbook. [As-built handoff](ERP-INTEGRATION-HANDOFF.md), [exact
 
 Supervise workers separately from the API; `--once` processes one due item. The reference consumer uses `source-worker` and `worker` for source delivery and incoming application respectively. Follow its [quickstart](erp/consumer-quickstart.md) for credentials, migration and exact commands. A service token never substitutes for a driver's session.
 
+For the already configured local `P08LOCAL` order-to-driver test, keep `npm run dev` in one terminal and run `npm run dev:erp-test` in a second. The latter builds the reference ERP and groups Keycloak, the ERP server, source sender, planning worker, Tawsel event sender and ERP inbox worker in the foreground; Ctrl+C stops the group. It requires the existing local database, identity/ERP configuration and running Engine; it does not provision users, start PostgreSQL or import map data. Mailpit and the provisioning worker are unnecessary for this test with existing enabled accounts. Open the ERP at `http://localhost:5191` and the application at `http://localhost:5173`.
+
 ## Release, diagnostics and recovery
 
 - Use [deployment](deployment.md) for pinned build/configuration, explicit migrations, immutable assets, reader compatibility and rollback. Application migrations are 0001–0028; receiver migrations 0001–0004. Startup checks schema and does not migrate implicitly. The target container/Dokploy/TLS/email/private mock topology has not been verified.
@@ -75,6 +77,8 @@ All three values remain required. API startup also requires `TAWSEL_DATABASE_URL
 On Windows, install PostgreSQL 18 tools and make `pg_ctl`, `initdb` and `psql` available on PATH. `npm run db:local:start` creates only `.local/postgres-18`, initializes SCRAM credentials with a random local password, binds loopback **55432**, and creates `tawsel_app_dev` plus `tawsel_test_control`. It saves generated connection URLs in ignored `.env.database.local`; preserve that file and `.local/postgres-password`. The password is a development credential, never a production secret. Starting again preserves the existing cluster/credentials. Stop with `npm run db:local:stop`; this retains all data and never stops the installed system PostgreSQL service or the Engine.
 
 API/migration commands read `.env.database.local` and then `.env`; shell environment overrides both. Tests and the demo read `.env.database.local` or explicit `TAWSEL_TEST_ADMIN_URL`, never select the application database. `.env.database.local` is only a local convenience, not a deployment mechanism. Do not check it in.
+
+The Windows helper uses the existing `.local/postgres-tools-18.6/pgsql/bin` tools when available, otherwise PostgreSQL tools on PATH. If Windows reserves port 55432, start the stopped cluster with `npm run db:local:start -- -Port 56432` (choose an available port). The helper remembers the successful port in ignored `.local/postgres-port` and updates `.env.database.local`; later starts and stops use the same cluster. Update any separate local mock ERP database URL to the selected port as well.
 
 For other hosts, provision a **separate** PostgreSQL 18.4 server/cluster and a role owning its application database. In psql connected as that role/admin, explicitly mark the intended database:
 

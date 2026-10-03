@@ -23,6 +23,7 @@
     "contracts:demo": "node scripts/contracts.mjs demo",
     "test:contracts": "vitest run --project fast packages/shared/test/fast/contract-foundation.test.ts",
     "dev": "npm run build:foundation && concurrently --kill-others-on-fail --names api,web --prefix-colors green,blue \"npm run dev -w @tawsel/api\" \"npm run dev -w @tawsel/web\"",
+    "dev:erp-test": "npm run build:foundation && npm run build -w @tawsel/mock-erp && concurrently --kill-others --names identity,erp,send,planning,outbox,inbox \"npm run identity:start\" \"npm run mock-erp:start\" \"npm run mock-erp:source-worker\" \"npm run planning:worker\" \"npm run outbox:worker\" \"npm run mock-erp:worker\"",
     "lint": "eslint .",
     "typecheck": "npm run build:foundation && npm run typecheck -w @tawsel/api && npm run typecheck -w @tawsel/web && npm run typecheck -w @tawsel/api-client && tsc -p tsconfig.scripts.json && npm run typecheck -w @tawsel/mock-erp",
     "test": "npm run build:foundation && node --env-file-if-exists=.env.database.local node_modules/vitest/vitest.mjs",
