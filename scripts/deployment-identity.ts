@@ -50,7 +50,9 @@ export async function realmConfiguration(input: IdentityInput) {
       attributes: { 'pkce.code.challenge.method': 'S256', 'post.logout.redirect.uris': `${input.appOrigin}/login` } },
     ...(kind === 'company' ? [
       { clientId: 'tawsel-provisioning', secret: input.workerSecret, enabled: true, protocol: 'openid-connect', publicClient: false, serviceAccountsEnabled: true, standardFlowEnabled: false, directAccessGrantsEnabled: false },
-      ...(input.mockOrigin ? [{ clientId: 'tawsel-mock-erp', secret: input.mockSecret!, enabled: true, protocol: 'openid-connect', publicClient: false, standardFlowEnabled: true, directAccessGrantsEnabled: false, redirectUris: [`${input.mockOrigin}/callback`], webOrigins: [], attributes: { 'pkce.code.challenge.method': 'S256', 'post.logout.redirect.uris': `${input.mockOrigin}/` } }] : [])
+      ...(input.mockOrigin ? [{ clientId: 'tawsel-mock-erp', secret: input.mockSecret!, enabled: true, protocol: 'openid-connect', publicClient: false, standardFlowEnabled: true, directAccessGrantsEnabled: false, redirectUris: [`${input.mockOrigin}/callback`], webOrigins: [], defaultClientScopes: ['basic', 'profile', 'email'],
+        protocolMappers: [{ name: 'own-api-audience', protocol: 'openid-connect', protocolMapper: 'oidc-audience-mapper', config: { 'included.client.audience': 'tawsel-mock-erp', 'access.token.claim': 'true', 'id.token.claim': 'false', 'introspection.token.claim': 'true' } }],
+        attributes: { 'pkce.code.challenge.method': 'S256', 'post.logout.redirect.uris': `${input.mockOrigin}/` } }] : [])
     ] : [])],
     users: kind === 'company' ? [{ username: 'service-account-tawsel-provisioning', enabled: true, serviceAccountClientId: 'tawsel-provisioning', clientRoles: { 'realm-management': ['manage-users', 'view-users', 'query-users'] } }] : [],
     ...(kind === 'personal' ? {

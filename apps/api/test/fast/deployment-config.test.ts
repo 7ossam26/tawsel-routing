@@ -72,7 +72,15 @@ test('production identity prepares exact redirects, separate secrets, phone poli
   expect(personal.loginWithEmailAllowed).toBe(false); expect(personal.verifyEmail).toBe(true);
   expect(personal.users).toEqual([]); expect(personal.resetCredentialsFlow).toBe('tawsel-email-recovery');
   const pilot=await realmConfiguration({...input,teamPilot:true,mockOrigin:'https://mock.example.test',mockSecret:'d'.repeat(64)});
-  expect(pilot[0]!.clients.find(client=>client.clientId==='tawsel-mock-erp')?.redirectUris).toEqual(['https://mock.example.test/callback']);
+  const mock=pilot[0]!.clients.find(client=>client.clientId==='tawsel-mock-erp');
+  expect(mock).toMatchObject({
+    redirectUris:['https://mock.example.test/callback'],publicClient:false,standardFlowEnabled:true,directAccessGrantsEnabled:false,
+    defaultClientScopes:['basic','profile','email'],
+    protocolMappers:[{protocolMapper:'oidc-audience-mapper',config:{'included.client.audience':'tawsel-mock-erp','access.token.claim':'true','id.token.claim':'false','introspection.token.claim':'true'}}],
+    attributes:{'pkce.code.challenge.method':'S256'}
+  });
+  expect(pilot[1]!.clients.some(client=>client.clientId==='tawsel-mock-erp')).toBe(false);
+  expect(company.clients.some(client=>client.clientId==='tawsel-mock-erp')).toBe(false);
   expect(pilot[0]!.registrationAllowed).toBe(false);
   expect(pilot[1]!.registrationAllowed).toBe(false);
   await expect(realmConfiguration({...input,mockOrigin:'https://mock.example.test',mockSecret:'d'.repeat(64)})).rejects.toThrow();
