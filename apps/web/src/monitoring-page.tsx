@@ -72,7 +72,7 @@ export function MonitoringPage() {
   } : {
     processed: items.filter(item => item.outcome !== null).length,
     remaining: items.filter(item => item.outcome === null).length,
-    held: items.filter(item => item.state === 'held' || item.returnRequiredPieces > 0).length,
+    held: new Set(items.filter(item => (item.state === 'held' && (item.heldPieces ?? 0) > 0) || item.returnRequiredPieces > 0).map(item => item.taskId)).size,
     prepared: items.filter(item => item.state === 'prepared').length
   } : null, [data, items, sourceId]);
   useEffect(() => { if (!items.some(item => item.taskId === selectedId)) setSelectedId(data?.current?.taskId && items.some(item => item.taskId === data.current?.taskId) ? data.current.taskId : items[0]?.taskId ?? ''); }, [data, items, selectedId]);

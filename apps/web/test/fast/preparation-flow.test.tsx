@@ -39,7 +39,7 @@ const plans = (overrides: Record<string, unknown> = {}) => ({ items: [readyPlan]
 function json(value: unknown, status = 200, headers: Record<string, string> = {}) {
   return Promise.resolve(new Response(JSON.stringify(value), { status, headers: { 'Content-Type': 'application/json', ...headers } }));
 }
-function installFetch(options: { current?: unknown; plans?: unknown; planningFailure?: boolean; startFailure?: boolean; persistPlanning?: boolean } = {}) {
+function installFetch(options: { current?: unknown; daily?: unknown; plans?: unknown; planningFailure?: boolean; startFailure?: boolean; persistPlanning?: boolean } = {}) {
   const planningBodies: unknown[] = [], startBodies: unknown[] = [];
   let currentPlans = options.plans ?? plans();
   vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
@@ -47,7 +47,7 @@ function installFetch(options: { current?: unknown; plans?: unknown; planningFai
     if (url.includes('/api/session/context')) return json(context);
     if (url.includes('/api/session/bootstrap')) return json({ csrfToken: 'csrf' });
     if (url.includes('/api/v1/rounds/current')) return json(options.current ?? { workday: null, round: null });
-    if (url.includes('/api/v1/monitoring/drivers/')) return json(daily, 200, { ETag: '"driver.1"', 'X-Snapshot-Scope': 'driver-scope', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-24T08:00:00Z' });
+    if (url.includes('/api/v1/monitoring/drivers/')) return json(options.daily ?? daily, 200, { ETag: '"driver.1"', 'X-Snapshot-Scope': 'driver-scope', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-24T08:00:00Z' });
     if (url.includes(`/api/v1/planning/drivers/${ids.driver}/plans`)) return json(currentPlans);
     if (url.includes('/api/v1/planning/commands/')) {
       const command = JSON.parse(String(init?.body)); planningBodies.push(command);
@@ -174,6 +174,38 @@ describe('connected preparation flow', () => {
     expect(screen.getByText('هذه المهمة وحدها مستبعدة حتى تحديد نقطة التوصيل.')).toBeTruthy();
     expect(screen.getByText(/ليست على العهدة ولا قابلة للتنفيذ بعد/)).toBeTruthy();
     expect(screen.getByRole('link', { name: 'جهّز الجولة' })).toBeTruthy();
+  });
+
+  it.each(['full', 'partial', 'refused', 'no-answer'])('excludes settled %s assignment history from active work even without a pin or with retained deferral', async outcome => {
+    const settled = { ...task(ids.ready, 'نتيجة تاريخية بلا عهدة', 'held', null, false, true), dispatchCycleId: ids.round, outcome, outcomeRevision: 1, heldPieces: 0, earliestAt: '2099-01-01T00:00:00Z' };
+    installFetch({ daily: { ...daily, items: [settled], groups: { preparedShipments: 0, heldShipments: 0, deferredShipments: 0, returnRequiredShipments: 0, heldPieces: 0, returnRequiredPieces: 0 } } });
+    render(<ProductionShell />); await screen.findByRole('heading', { name: 'عملك اليوم' });
+    expect(screen.getByText('لا يوجد عمل صالح للتجهيز الآن.')).toBeTruthy();
+    expect(screen.queryByText(settled.recipientName)).toBeNull();
+    for (const name of ['معك ولم يُحسم', 'معك للإرجاع', 'يحتاج تحديد موقع', 'مؤجل لوقت لاحق']) expect(screen.queryByRole('heading', { name })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'حدّد الموقع' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'جهّز الجولة' })).toBeNull();
+  });
+
+  it('keeps fresh and deferred work separate from unresolved returns, including an older withdrawn cycle of a newly ready task', async () => {
+    const returned = { ...task(ids.prepared, 'قطع متبقية بعد التسليم الجزئي', 'held', null, false), dispatchCycleId: ids.round, outcome: 'partial', outcomeRevision: 1, heldPieces: 2, returnRequiredPieces: 2 };
+    const older = { ...returned, taskId: ids.ready, dispatchCycleId: ids.job, state: 'withdrawn', recipientName: 'قطع دورة سابقة', outcome: 'no-answer', heldPieces: 3, returnRequiredPieces: 3, deferred: true, earliestAt: '2099-01-01T00:00:00Z' };
+    const options = { daily: { ...daily, items: [...daily.items, returned, older] } };
+    installFetch(options); render(<ProductionShell />); await screen.findByRole('heading', { name: 'عملك اليوم' });
+    const returnGroup = screen.getByRole('heading', { name: 'معك للإرجاع' }).closest('section')!;
+    expect(within(returnGroup).getByText(returned.recipientName)).toBeTruthy(); expect(within(returnGroup).getByText(older.recipientName)).toBeTruthy();
+    expect(within(returnGroup).getByText('2 قطعة تنتظر التسليم الفعلي للفرع.')).toBeTruthy(); expect(within(returnGroup).getByText('3 قطعة تنتظر التسليم الفعلي للفرع.')).toBeTruthy();
+    expect(within(returnGroup).queryByRole('link', { name: 'حدّد الموقع' })).toBeNull(); expect(within(returnGroup).queryByText('صالح الآن')).toBeNull();
+    const readyGroup = screen.getByRole('heading', { name: 'جاهز للتجهيز' }).closest('section')!;
+    expect(within(readyGroup).getByText('سارة الجاهزة')).toBeTruthy(); expect(within(readyGroup).queryByText(returned.recipientName)).toBeNull();
+    expect(screen.getByRole('heading', { name: 'يحتاج تحديد موقع' })).toBeTruthy(); expect(screen.getByRole('heading', { name: 'قادم من نظام الشركة' })).toBeTruthy();
+    const deferredGroup = screen.getByRole('heading', { name: 'مؤجل لوقت لاحق' }).closest('section')!;
+    expect(within(deferredGroup).getByText('طلب مؤجل')).toBeTruthy(); expect(within(deferredGroup).queryByText(older.recipientName)).toBeNull();
+    // Actual physical receipt changes custody; assignment/outcome history stays.
+    options.daily.items = options.daily.items.map(item => item === returned || item === older ? { ...item, heldPieces: 0, returnRequiredPieces: 0 } : item);
+    await userEvent.click(screen.getByRole('button', { name: 'تحديث' }));
+    await waitFor(() => expect(screen.queryByRole('heading', { name: 'معك للإرجاع' })).toBeNull());
+    expect(options.daily.items).toHaveLength(6); expect(screen.getByText('سارة الجاهزة')).toBeTruthy();
   });
 
   it('maps a partial provider result to unassigned review and never enables start', async () => {

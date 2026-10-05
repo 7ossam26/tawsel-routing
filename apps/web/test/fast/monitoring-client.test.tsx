@@ -91,3 +91,33 @@ it('renders only the scoped task, read-only departed detail, and server-received
   await userEvent.click(screen.getByRole('button', { name: 'مرفوض' })); await waitFor(() => expect(screen.getByText('لا توجد إجراءات مستلمة بهذه الحالة.')).toBeTruthy());
   await userEvent.selectOptions(screen.getByLabelText('المصدر'), ids.source2); expect((await screen.findAllByText('عميل مصدر ثان')).length).toBeGreaterThan(0); expect(screen.queryByText('عميل ظاهر')).toBeNull();
 });
+
+it('keeps completed history visible while source custody counts only actual pieces and unique shipments', async () => {
+  cleanup(); vi.restoreAllMocks();
+  vi.useRealTimers(); window.history.replaceState({}, '', `/monitoring?driverId=${ids.driver}&kind=company`);
+  const view = snapshot(1), base = view.items[0]!;
+  view.items = [
+    { ...base, recipientName: 'تسليم مكتمل بلا عهدة', outcome: 'full', outcomeRevision: 1, heldPieces: 0, eligible: false },
+    { ...base, taskId: ids.task2, attemptId: ids.attempt2, recipientName: 'مرتجع له قطعتان', outcome: 'partial', outcomeRevision: 1, heldPieces: 2, returnRequiredPieces: 2, eligible: false },
+    { ...base, taskId: ids.task2, dispatchCycleId: ids.day, attemptId: ids.round, state: 'withdrawn', recipientName: 'مرتجع دورة سابقة لنفس الشحنة', outcome: 'no-answer', outcomeRevision: 1, heldPieces: 1, returnRequiredPieces: 1, eligible: false },
+    { ...base, taskId: ids.day, attemptId: ids.action, integrationId: ids.source2, recipientName: 'نتيجة مصدر آخر بلا عهدة', outcome: 'no-answer', outcomeRevision: 1, heldPieces: 0, eligible: false }
+  ];
+  view.groups = { ...view.groups, heldShipments: 1, heldPieces: 3, returnRequiredShipments: 1, returnRequiredPieces: 3 };
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async input => {
+    const url = String(input);
+    if (url.includes('/session/context?kind=personal')) return Response.json({ error: { code: 'session_expired', message: 'No personal session in this staff fixture' } }, { status: 401 });
+    if (url.includes('/session/context')) return Response.json({ kind: 'company', access: { tenantId: ids.driver, sourceId: ids.source, principalKind: 'account', tenantKind: 'company', driverId: null, branchIds: [ids.branch], effectiveCapabilities: ['monitor.read'] }, expiresAt: '2026-09-26T00:00:00Z', recoveryEmailVerified: true, loginIdentifier: 'staff', phoneOwnershipVerified: false });
+    const headers = { 'Content-Type': 'application/json', ETag: '"scope.1"', 'X-Snapshot-Scope': 'scope', 'X-Snapshot-Revision': '1', 'X-Refreshed-At': '2026-09-25T00:00:02Z' };
+    if (url.includes('/history')) return new Response(JSON.stringify({ scopeKey: 'scope', snapshotRevision: 1, lastCommittedChange: null, freshness: view.freshness, nextCursor: null, resourceId: ids.task, progress, items: [] }), { headers });
+    if (url.includes(`/drivers/${ids.driver}`)) return new Response(JSON.stringify(view), { headers });
+    throw new Error(url);
+  });
+  render(<ProductionShell />); await screen.findByText('تسليم مكتمل بلا عهدة');
+  const custodyCount = () => screen.getByText('معلّقة أو مرتجعة').parentElement?.querySelector('strong')?.textContent;
+  expect(custodyCount()).toBe('1');
+  await userEvent.selectOptions(screen.getByLabelText('المصدر'), ids.source);
+  expect(custodyCount()).toBe('1'); expect((await screen.findAllByText('تسليم مكتمل بلا عهدة')).length).toBeGreaterThan(0);
+  await userEvent.selectOptions(screen.getByLabelText('المصدر'), ids.source2);
+  expect(custodyCount()).toBe('0'); expect((await screen.findAllByText('نتيجة مصدر آخر بلا عهدة')).length).toBeGreaterThan(0);
+  cleanup(); vi.restoreAllMocks();
+});

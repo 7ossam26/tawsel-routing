@@ -191,11 +191,15 @@ export function PreparationFlow() {
   }, [job, load, planning]);
 
   const now = Date.now();
-  const unresolved = daily?.items.filter(item => !item.coordinates && !['withdrawn', 'unassigned'].includes(item.state)) ?? [];
-  const prepared = daily?.items.filter(item => item.state === 'prepared') ?? [];
-  const deferred = daily?.items.filter(item => item.deferred || Boolean(item.earliestAt && Date.parse(item.earliestAt) > now)) ?? [];
-  const ready = daily?.items.filter(item => item.eligible && item.coordinates && !item.deferred && (!item.earliestAt || Date.parse(item.earliestAt) <= now)) ?? [];
-  const held = daily?.items.filter(item => item.state === 'held' && !deferred.some(value => value.taskId === item.taskId)) ?? [];
+  // Assignment state is retained after outcomes and physical return receipt.
+  // Only unresolved work and pieces still in custody belong to the day groups.
+  const outstanding = daily?.items.filter(item => item.outcome === null && item.returnRequiredPieces === 0 && !['withdrawn', 'unassigned'].includes(item.state)) ?? [];
+  const unresolved = outstanding.filter(item => !item.coordinates);
+  const prepared = outstanding.filter(item => item.state === 'prepared');
+  const deferred = outstanding.filter(item => item.deferred || Boolean(item.earliestAt && Date.parse(item.earliestAt) > now));
+  const ready = outstanding.filter(item => item.eligible && item.coordinates && !item.deferred && (!item.earliestAt || Date.parse(item.earliestAt) <= now));
+  const held = outstanding.filter(item => item.state === 'held' && (item.heldPieces === null || item.heldPieces > 0) && !deferred.includes(item));
+  const returns = daily?.items.filter(item => item.returnRequiredPieces > 0) ?? [];
   const startable = plans?.items.find(plan => plan.current && plan.inputCurrent && supportedMode(plan.input.settings?.mode) && ['ready', 'manual'].includes(plan.state));
   const partial = plans?.items.find(plan => plan.current && plan.inputCurrent && plan.state === 'partial') ?? plans?.items.find(plan => plan.state === 'partial');
   const activeOtherPhone = Boolean(current?.round && current.round.owner.deviceId !== deviceId());
@@ -354,23 +358,24 @@ export function PreparationFlow() {
         {pendingStart ? <div className="preparation-actions"><ActionButton busy={busy} onClick={() => void checkStart()}>تحقق من بدء الجولة</ActionButton><ActionButton variant="secondary" busy={busy} onClick={() => void sendStart(pendingStart)}>أعد إرسال طلب البدء نفسه</ActionButton></div> : <ActionButton busy={busy} disabled={!startable || dirty || modeNeedsReview || Boolean(session && pendingExecutionLinks(session, '').length)} onClick={() => void startRound()}>ابدأ الجولة</ActionButton>}
         {!startable && !pendingStart ? <p className="field-hint">يلزم خطة كاملة أو ترتيب يدوي صالح للنسخة الحالية. لا توجد موافقة إضافية من المرسل.</p> : null}
       </section>
-    </> : <DailyWork kind={kind} ready={ready} unresolved={unresolved} prepared={prepared} held={held} deferred={deferred} onRefresh={() => void load()} />}
+    </> : <DailyWork kind={kind} ready={ready} unresolved={unresolved} prepared={prepared} held={held} returns={returns} deferred={deferred} onRefresh={() => void load()} />}
   </main>;
 }
 
-function DailyWork({ kind, ready, unresolved, prepared, held, deferred, onRefresh }: { kind: 'personal' | 'company'; ready: Daily['items']; unresolved: Daily['items']; prepared: Daily['items']; held: Daily['items']; deferred: Daily['items']; onRefresh: () => void }) {
+function DailyWork({ kind, ready, unresolved, prepared, held, returns, deferred, onRefresh }: { kind: 'personal' | 'company'; ready: Daily['items']; unresolved: Daily['items']; prepared: Daily['items']; held: Daily['items']; returns: Daily['items']; deferred: Daily['items']; onRefresh: () => void }) {
   const groups = [
     { id: 'ready', title: 'جاهز للتجهيز', items: ready, empty: 'لا يوجد عمل صالح للتجهيز الآن.' },
     { id: 'unresolved', title: 'يحتاج تحديد موقع', items: unresolved, empty: '' },
     { id: 'prepared', title: 'قادم من نظام الشركة', items: prepared, empty: '' },
     { id: 'held', title: 'معك ولم يُحسم', items: held.filter(item => !ready.some(value => value.taskId === item.taskId)), empty: '' },
+    { id: 'returns', title: 'معك للإرجاع', items: returns, empty: '' },
     { id: 'deferred', title: 'مؤجل لوقت لاحق', items: deferred, empty: '' }
   ];
   return <>
     <section className="daily-summary"><div><strong>{ready.length}</strong><span>جاهز</span></div><div><strong>{unresolved.length}</strong><span>موقع ناقص</span></div><div><strong>{prepared.length}</strong><span>قادم</span></div><button onClick={onRefresh}><RefreshCw aria-hidden="true" />تحديث</button></section>
     {unresolved.length && ready.length ? <StatusNotice tone="waiting" title="بعض العمل يحتاج مراجعة">المهام ذات الموقع الناقص مستبعدة بوضوح، ويمكنك متابعة تجهيز {ready.length} مهمة صالحة.</StatusNotice> : null}
     {prepared.length ? <StatusNotice title="عمل الشركة قادم وليس على عهدتك">المهام المجهّزة في نظام الشركة لا تصبح قابلة للتنفيذ إلا بعد الاستلام المؤكد.</StatusNotice> : null}
-    <div className="daily-groups">{groups.map(group => group.items.length || group.empty ? <section className="daily-group" key={group.id}><h2>{group.title}</h2>{group.items.length ? <div className="task-list">{group.items.map(item => <article className="task-card" key={`${group.id}-${item.taskId}`}><div className="task-card__top"><h3><bdi>{item.recipientName}</bdi></h3><span className={item.coordinates ? 'readiness readiness--ready' : 'readiness readiness--missing'}>{item.coordinates ? item.eligible ? 'صالح الآن' : 'ليس ضمن التنفيذ الآن' : 'الموقع غير مؤكد'}</span></div>{item.recipientPhone ? <a href={`tel:${item.recipientPhone}`} dir="ltr"><bdi>{item.recipientPhone}</bdi></a> : null}{!item.coordinates ? <><p className="task-blocker">هذه المهمة وحدها مستبعدة حتى تحديد نقطة التوصيل.</p><a className="edit-link" href={`/locations/${item.taskId}?kind=${kind}`}><MapPin aria-hidden="true" />حدّد الموقع</a></> : null}{item.state === 'prepared' ? <p className="field-hint">مجهّزة في نظام الشركة · ليست على العهدة ولا قابلة للتنفيذ بعد.</p> : null}{item.deferred || item.earliestAt ? <p className="field-hint">{item.earliestAt ? `متاحة بعد ${new Date(item.earliestAt).toLocaleString('ar-EG')}` : 'مؤجلة بقرار صريح'}</p> : null}</article>)}</div> : <p className="field-hint">{group.empty}</p>}</section> : null)}</div>
+    <div className="daily-groups">{groups.map(group => group.items.length || group.empty ? <section className="daily-group" key={group.id}><h2>{group.title}</h2>{group.items.length ? <div className="task-list">{group.items.map(item => <article className="task-card" key={`${group.id}-${item.taskId}-${item.dispatchCycleId ?? 'personal'}`}><div className="task-card__top"><h3><bdi>{item.recipientName}</bdi></h3><span className={item.coordinates ? 'readiness readiness--ready' : 'readiness readiness--missing'}>{item.returnRequiredPieces > 0 ? 'بانتظار استلام الفرع' : item.coordinates ? item.eligible ? 'صالح الآن' : 'ليس ضمن التنفيذ الآن' : 'الموقع غير مؤكد'}</span></div>{item.recipientPhone ? <a href={`tel:${item.recipientPhone}`} dir="ltr"><bdi>{item.recipientPhone}</bdi></a> : null}{item.returnRequiredPieces > 0 ? <p className="field-hint">{item.returnRequiredPieces} قطعة تنتظر التسليم الفعلي للفرع.</p> : !item.coordinates ? <><p className="task-blocker">هذه المهمة وحدها مستبعدة حتى تحديد نقطة التوصيل.</p><a className="edit-link" href={`/locations/${item.taskId}?kind=${kind}`}><MapPin aria-hidden="true" />حدّد الموقع</a></> : null}{item.state === 'prepared' && item.returnRequiredPieces === 0 ? <p className="field-hint">مجهّزة في نظام الشركة · ليست على العهدة ولا قابلة للتنفيذ بعد.</p> : null}{item.returnRequiredPieces === 0 && (item.deferred || item.earliestAt) ? <p className="field-hint">{item.earliestAt ? `متاحة بعد ${new Date(item.earliestAt).toLocaleString('ar-EG')}` : 'مؤجلة بقرار صريح'}</p> : null}</article>)}</div> : <p className="field-hint">{group.empty}</p>}</section> : null)}</div>
     <div className="preparation-actions">{ready.length ? <a className="action-link action-link--primary" href={`/prepare?kind=${kind}`}>جهّز الجولة</a> : null}{kind === 'personal' ? <a className="action-link" href="/tasks/new">إضافة مهمة سريعة</a> : null}</div>
   </>;
 }
