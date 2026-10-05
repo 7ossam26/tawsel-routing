@@ -31,7 +31,8 @@ function inspect(name) { return JSON.parse(docker(['inspect', name]))[0]; }
 function request(front, path, method = 'GET', headers = {}) {
   const options = { method, headers: { Host: front === gateway ? 'auth.fixture.test' : 'app.fixture.test', ...headers } };
   if (method === 'POST') { options.body = 'fixture=a%20b'; options.headers['Content-Type'] = 'application/x-www-form-urlencoded'; }
-  const js = `fetch(${JSON.stringify(`http://${front}:8080${path}`)},{...${JSON.stringify(options)},signal:AbortSignal.timeout(3000)}).then(async r=>console.log(JSON.stringify({status:r.status,text:await r.text(),headers:Object.fromEntries(r.headers)}))).catch(()=>process.exit(2))`;
+  // node:http supports an explicit Host header; Fetch may replace it from URL.
+  const js = `const o={...${JSON.stringify(options)},signal:AbortSignal.timeout(3000)};const r=require('node:http').request(${JSON.stringify(`http://${front}:8080${path}`)},o,s=>{let text='';s.setEncoding('utf8');s.on('data',b=>text+=b);s.on('end',()=>console.log(JSON.stringify({status:s.statusCode,text,headers:Object.fromEntries(Object.entries(s.headers).map(([k,v])=>[k,Array.isArray(v)?v.join(', '):v]))})));});r.on('error',()=>process.exit(2));r.end(o.body)`;
   return JSON.parse(docker(['exec', probe, 'node', '-e', js]));
 }
 function responseBody(front, path, marker, method = 'GET') {
