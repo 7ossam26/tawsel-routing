@@ -60,6 +60,14 @@ Run an **independent fresh Nominatim import** into an empty target `nominatim-db
 
 ## Native database and Applications
 
+### Current motorcycle application trial
+
+The current shared-host trial uses the prepared September motorcycle dataset and manages the two runtime containers, OSRM motorcycle and VROOM, through the native Engine Compose record. Car runtime remains deferred. This narrower trial does not complete the fresh October two-mode preparation/import procedure above.
+
+To exercise the application, deploy the native database, migrations, identity, retained web assets, API/workers and authenticated Mock in dependency order with the reviewed images/configuration. Staff and driver issuer subjects must be created and reserved through the operator bootstrap; the Mock must allowlist the staff subject. Seed branch, role, user and motorcycle driver through the Mock's durable source commands so its own selectors contain accepted records. Register the exact public HTTPS callback and scoped signing key, then verify outgoing events and incoming projection separately.
+
+Use `mock.switch2tech.cloud` to enter written-address shipments, choose the motorcycle courier and explicitly confirm received assignment. The driver's `app.switch2tech.cloud` session reviews each original address and confirms its delivery point before planning/start. Verified Cairo map assets and manual map/coordinate selection support this first journey while private Nominatim search is unavailable; address search is still a separate unfinished capability. A written address is never silently treated as a ready location. Confirm the motorcycle selection again in driver preparation; the general application still retains car as its new-draft default.
+
 Create empty native Dokploy application/identity/mock stores; do not restore old workstation app/identity/mock databases or migrate bicycle records from experiments. Nominatim PG16 is a separate Engine database imported freshly on the server. Configure native database networking and scoped roles, then verify connectivity from the intended services. Use protected file-backed configuration where supported and check the effective mounts and environment of each native Application. The production PostgreSQL/pgBackRest Compose remains a separate documented option; it is not the mandatory database topology for this experiment.
 
 Use the current image/environment templates and identity provisioning inputs as configuration references, applying them to the native Applications. Keep public web, issuer gateway and authenticated mock routes separate from private API and workers. Verify the application's actual migration/schema readiness before starting its workers. Keep exact app/mock redirect origins and separate human/service secrets; generating an issuer import does not verify login or SMTP.

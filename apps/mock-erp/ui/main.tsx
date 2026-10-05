@@ -14,16 +14,13 @@ import '../../web/src/styles.css';
 import './style.css';
 import './integration-status.css';
 import {applicationCopy,applicationState} from './integration-status';
+import {Administration,SnapshotForm,Select,options,type RecordRow,type Submit} from './source-forms';
 type S=components['schemas'];
-type RecordRow={kind:string;external_id:string;revision:number;desired:Record<string,unknown>;status:string;result:S['ActionResult']|null;last_error:string|null};
 type CommandRow={action_id:string;envelope:{operationId:string};status:string;last_error:string|null;attempts:number};
 type State={records:RecordRow[];commands:CommandRow[]};
-type Submit=(op:string,payload:Record<string,unknown>,keys:string[])=>Promise<void>;
 const statusText:Record<string,string>={pending:'محفوظ — بانتظار توصيل',accepted:'قبله توصيل',rejected:'رفضه توصيل', 'review-required':'يحتاج مراجعة',unassigned:'غير مسندة',prepared:'مجهزة — ليست مع المندوب',held:'استلام مؤكد من المصدر',withdrawn:'أزيلت قبل المغادرة'};
 const errorText:Record<string,string>={invalid_source_command:'راجع الحقول والقيم؛ لم يُحفظ طلب جديد.',invalid_source_form:'بيانات الطلب غير مكتملة؛ راجع الحقول.',source_identity_conflict:'معرف الطلب يتعارض مع طلب محفوظ. حدّث البيانات وراجع التعديل.',capacity_exceeded:'الدفعة تتجاوز الحد المتاح. لم يقبل توصيل أي شحنة منها.',departed_edit_forbidden:'غادرت الشحنة؛ تعديل الموظف غير مسموح.',lifecycle_forbidden:'الشحنة غادرت أو تغيرت حالتها؛ التعديل غير مسموح.',source_revision_conflict:'تغيرت البيانات. حدّث الصفحة وراجع الطلب.',stale_revision:'تغيرت حالة الشحنة. حدّث البيانات قبل إعادة الطلب.',native_login_required:'سجّل الدخول من جديد. الطلبات المحفوظة باقية.',native_access_denied:'هذا الحساب غير مخول بإدارة النموذج.',native_csrf_denied:'حدّث الصفحة ثم أعد المحاولة.'};
 async function api<T>(path:string,body?:unknown,csrf?:string):Promise<T>{const response=await fetch(path,{method:body===undefined?'GET':'POST',credentials:'same-origin',headers:body===undefined?{}:{'content-type':'application/json','x-csrf-token':csrf??''},...(body===undefined?{}:{body:JSON.stringify(body)})}).catch(()=>{throw new Error('تعذر الاتصال. لم تتأكد النتيجة؛ حاول لاحقًا.');});const value=await response.json();if(!response.ok)throw Object.assign(new Error(errorText[value.code as string]??'تعذر تأكيد الطلب. البيانات المحفوظة باقية؛ حاول لاحقًا.'),{status:response.status});return value as T;}
-function Select({label,value,onChange,items}:{label:string;value:string;onChange:(s:string)=>void;items:{value:string;label:string}[]}){return <label className="native-select">{label}<select aria-label={label} value={value} onChange={e=>onChange(e.target.value)}><option value="">اختر</option>{items.map(i=><option key={i.value} value={i.value}>{i.label}</option>)}</select></label>;}
-const options=(rows:RecordRow[],kind:string)=>rows.filter(r=>r.kind===kind&&r.status==='accepted').map(r=>({value:r.external_id,label:String(r.desired.name??r.external_id)}));
 const resource=(r:RecordRow)=>String(r.result?.response?.body.resourceId??'');
 function App(){
  const [session,setSession]=useState<{subject:string;csrf:string}|null>(null),[state,setState]=useState<State>({records:[],commands:[]}),[tab,setTab]=useState('tasks'),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
@@ -54,29 +51,6 @@ function App(){
  </>}
  </main></>;
 }
-function Administration({rows,submit}:{rows:RecordRow[];submit:Submit}){
- const [kind,setKind]=useState('branch'),[id,setId]=useState(''),[name,setName]=useState(''),[subject,setSubject]=useState(''),[role,setRole]=useState(''),[branch,setBranch]=useState(''),[cap,setCap]=useState('execution.own'),[effect,setEffect]=useState('inherit'),[issuer,setIssuer]=useState('');
- const entity=kind==='exceptions'?'user':kind,old=rows.find(r=>r.kind===entity&&r.external_id===id),revision=Number(old?.desired.sourceRevision??0)+1;
- const save=async(e:FormEvent)=>{e.preventDefault();let op:string,p:Record<string,unknown>;
-  if(kind==='branch'){op='branch.provision';p={externalId:id,sourceRevision:revision,name,enabled:true,location:null};}
-  else if(kind==='role'){op='role.defineCapabilities';p={externalId:id,sourceRevision:revision,name,capabilities:[cap]};}
-  else if(kind==='user'){op='user.provision';p={externalId:id,sourceRevision:revision,subject,roleExternalId:role,branchExternalIds:[branch],enabled:true};}
-  else if(kind==='driver'){op='driver.provisionReference';p={externalId:id,sourceRevision:revision,userExternalId:subject,enabled:true,profile:'car',vehicleReference:null};}
-  else {op='user.setCapabilityExceptions';const previous=(old?.desired.exceptions??[]) as {capability:string;effect:string}[];p={externalId:id,sourceRevision:revision,exceptions:[...previous.filter(x=>x.capability!==cap),{capability:cap,effect}]};}
-  await submit(op,p,[`${entity}/${id}`]);
- };
- return <section className="native-card"><h2>إدارة المستخدمين والفروع</h2><p>البيانات تذهب إلى التهيئة الموثوقة. اسم الدور وحده لا يمنح صلاحية.</p><Select label="نوع التعديل" value={kind} onChange={setKind} items={[{value:'branch',label:'فرع'},{value:'role',label:'دور وصلاحياته'},{value:'user',label:'مستخدم ودوره وفرعه'},{value:'driver',label:'مرجع مندوب'},{value:'exceptions',label:'استثناء صلاحية مستخدم'}]}/>
- <form onSubmit={e=>void save(e).catch(()=>{})} className="native-form"><Field id="admin-id" label="مرجع المصدر" required value={id} onChange={e=>setId(e.target.value)}/>
- {(kind==='branch'||kind==='role')&&<Field id="admin-name" label="الاسم" required value={name} onChange={e=>setName(e.target.value)}/>}
- {(kind==='user'||kind==='driver')&&<Field id="admin-subject" label={kind==='user'?'معرف المستخدم في جهة الهوية':'مرجع مستخدم ERP'} required value={subject} onChange={e=>setSubject(e.target.value)}/>}
- {kind==='user'&&<><Select label="دور المستخدم" value={role} onChange={setRole} items={options(rows,'role')}/><Select label="فرع المستخدم" value={branch} onChange={setBranch} items={options(rows,'branch')}/></>}
- {(kind==='role'||kind==='exceptions')&&<Select label="الصلاحية" value={cap} onChange={setCap} items={[{value:'execution.own',label:'تنفيذ المندوب'},{value:'monitor.read',label:'عرض المتابعة'},{value:'return.receive',label:'استلام المرتجعات'},{value:'return.dispose',label:'تسجيل الفقد والتلف'},{value:'planning.manage',label:'إدارة التخطيط'}]}/>}
- {kind==='exceptions'&&<Select label="استثناء المستخدم" value={effect} onChange={setEffect} items={[{value:'inherit',label:'وراثة من الدور'},{value:'allow',label:'سماح'},{value:'deny',label:'منع'}]}/>}
- <ActionButton type="submit">حفظ وإرسال التعديل</ActionButton></form>
- {old&&<p>آخر طلب: {statusText[old.status]} · المراجعة المحلية {old.revision}</p>}
- {(kind==='user'||kind==='exceptions')&&<><ActionButton variant="quiet" onClick={()=>void api<S['ProvisioningStatus']>(`/native/provisioning?entity=user&externalId=${encodeURIComponent(id)}`).then(s=>setIssuer(s.issuerStatus==='ready'?(s.enabled?'الحساب جاهز لدى جهة الهوية':'الحساب معطل'):'بانتظار تأكيد جهة الهوية')).catch(e=>setIssuer(e.message))}>فحص جاهزية الحساب</ActionButton><p role="status">{issuer}</p></>}
- </section>;
-}
 function Tasks({rows,submit}:{rows:RecordRow[];submit:Submit}){
  const [tasks,setTasks]=useState<S['B2bTask'][]>([]),[error,setError]=useState(''),[selected,setSelected]=useState<string[]>([]),[driver,setDriver]=useState(''),[mode,setMode]=useState('prepare'),[asserted,setAsserted]=useState(false),[editing,setEditing]=useState<S['B2bTask']|null|undefined>(undefined);
  const refresh=async()=>{try{const all:S['B2bTask'][]=[];let cursor:string|null=null;do{const page:S['B2bTaskList']=await api<S['B2bTaskList']>(`/native/tasks${cursor?'?cursor='+encodeURIComponent(cursor):''}`);all.push(...page.items);cursor=page.nextCursor??null;}while(cursor);setTasks(all);setError('');}catch(e){setError((e as Error).message);}};
@@ -94,21 +68,6 @@ function Tasks({rows,submit}:{rows:RecordRow[];submit:Submit}){
  <ActionButton type="submit" disabled={!selected.length||!driver||mode==='receive'&&!asserted}>{mode==='prepare'?'إرسال التجهيز':'تأكيد الاستلام والإسناد'}</ActionButton></form></section>
  {editing!==undefined&&<SnapshotForm key={editing?.taskId??'new'} task={editing} rows={rows} submit={submit} close={()=>setEditing(undefined)}/>}
  </>;
-}
-function SnapshotForm({task,rows,submit,close,previous}:{task:S['B2bTask']|null;rows:RecordRow[];submit:Submit;close:()=>void;previous?:{externalId:string;cycleId:string;sourceRevision:number;quantity:number}}){
- const local=rows.find(r=>r.kind==='shipment'&&r.external_id===(task?.externalId??previous?.externalId));const old=(local?.desired.snapshot??local?.desired??{}) as Partial<S['B2bSourceSnapshot']>;
- const [id,setId]=useState(task?.externalId??previous?.externalId??''),[branch,setBranch]=useState(old.sourceBranchExternalId??''),[name,setName]=useState(old.recipientName??''),[phone,setPhone]=useState(old.recipientPhone??''),[quantity,setQuantity]=useState(String(previous?.quantity??old.lines?.[0]?.quantity??3)),[unit,setUnit]=useState(String(old.lines?.[0]?.unitDue.amountMinor??10000)),[shipping,setShipping]=useState(String(old.shippingDue?.amountMinor??5000)),[latitude,setLatitude]=useState(String(old.destination?.kind==='confirmed-pin'?old.destination.coordinates.latitude:30.04)),[longitude,setLongitude]=useState(String(old.destination?.kind==='confirmed-pin'?old.destination.coordinates.longitude:31.23)),[pin,setPin]=useState(false),[split,setSplit]=useState(old.splittingAllowed??true);
- const save=async(e:FormEvent)=>{e.preventDefault();const sourceRevision=(task?.sourceRevision??previous?.sourceRevision??0)+1;const money=(amountMinor:number)=>({amountMinor,currency:'EGP',exponent:2});
-  const snapshot={externalId:id,sourceDispatchCycleId:task?.sourceDispatchCycleId??`cycle-${crypto.randomUUID()}`,sourceRevision,expectedSourceRevision:sourceRevision-1,sourceBranchExternalId:branch,recipientName:name,recipientPhone:phone,destination:{kind:'confirmed-pin',coordinates:{latitude:Number(latitude),longitude:Number(longitude)}},splittingAllowed:split,allocation:'exact-outstanding-per-unit',lines:[{sourceLineId:old.lines?.[0]?.sourceLineId??'pieces',description:'قطع',quantity:Number(quantity),unitDue:money(Number(unit))}],shippingDue:money(Number(shipping)),totalDue:money(Number(quantity)*Number(unit)+Number(shipping)),priority:'ordinary'};
-  await submit(previous?'dispatch.createFromReceipt':'intake.submitSnapshot',previous?{externalId:id,previousDispatchCycleId:previous.cycleId,snapshot}:snapshot,[`shipment/${id}`]);close();
- };
- return <section className="native-card"><h2>{previous?'دورة إرسال جديدة من القطع المستلمة':task?'تعديل بيانات المصدر':'شحنة اختبار جديدة'}</h2><p>نموذج صغير لسطر قطع واحد. المبالغ بالقروش، والموقع يُؤكَّد يدويًا.</p><form className="native-form" onSubmit={e=>void save(e).catch(()=>{})}>
- <Field id="shipment-id" label="مرجع الشحنة" required readOnly={!!task||!!previous} value={id} onChange={e=>setId(e.target.value)}/><Select label="فرع الإرسال" value={branch} onChange={setBranch} items={options(rows,'branch')}/>
- <Field id="recipient" label="اسم المستلم" required value={name} onChange={e=>setName(e.target.value)}/><Field id="phone" label="الهاتف" required value={phone} onChange={e=>setPhone(e.target.value)}/>
- <Field id="quantity" label="عدد القطع" type="number" min={1} max={previous?.quantity??1000000} step={1} required value={quantity} onChange={e=>setQuantity(e.target.value)}/><Field id="unit" label="المستحق لكل قطعة — قرش" type="number" min={0} step={1} required value={unit} onChange={e=>setUnit(e.target.value)}/><Field id="shipping" label="الشحن المستحق — قرش" type="number" min={0} step={1} required value={shipping} onChange={e=>setShipping(e.target.value)}/>
- <Field id="latitude" label="خط العرض" type="number" min={-90} max={90} step="any" required value={latitude} onChange={e=>{setLatitude(e.target.value);setPin(false);}}/><Field id="longitude" label="خط الطول" type="number" min={-180} max={180} step="any" required value={longitude} onChange={e=>{setLongitude(e.target.value);setPin(false);}}/>
- <label className="native-check"><input type="checkbox" checked={pin} onChange={e=>setPin(e.target.checked)}/>راجعت نقطة التسليم وأؤكدها</label><label className="native-check"><input type="checkbox" checked={split} onChange={e=>setSplit(e.target.checked)}/>المصدر يسمح بتسليم جزئي</label>
- <ActionButton disabled={!pin||!branch} type="submit">حفظ وإرسال الشحنة</ActionButton><ActionButton variant="quiet" type="button" onClick={close}>إلغاء</ActionButton></form></section>;
 }
 function Returns({rows,submit}:{rows:RecordRow[];submit:Submit}){
  const [driver,setDriver]=useState(''),[branch,setBranch]=useState(''),[requests,setRequests]=useState<S['ReturnRequestView'][]>([]),[error,setError]=useState(''),[loaded,setLoaded]=useState(false),[redispatch,setRedispatch]=useState<S['ReturnItem']|null>(null);
