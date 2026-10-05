@@ -33,4 +33,5 @@ CMD ["node", "--env-file=/run/secrets/runtime.env", "apps/api/dist/main.js"]
 FROM ${NGINX_IMAGE} AS web
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
+RUN nginx -t
 EXPOSE 8080

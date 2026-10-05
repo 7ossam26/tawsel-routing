@@ -35,7 +35,7 @@ try {
   const path = (name: string) => '"' + join(root, name).replaceAll('\\', '/') + '"';
   let config = await readFile('deploy/nginx.conf', 'utf8');
   config = config.replace('listen 8080;', `listen 127.0.0.1:${port};`)
-    .replace('http://api:3001', `http://127.0.0.1:${address.port}`)
+    .replace('set $api_upstream api:3001;', `set $api_upstream 127.0.0.1:${address.port};`)
     .replace('/usr/share/nginx/html', path('web')).replace('/maps/;', path('maps') .replace(/"$/, '/"') + ';')
     .replaceAll('/retained;', path('retained') + ';');
   await writeFile(join(root, 'nginx.conf'), `daemon off;\nworker_processes 1;\npid nginx.pid;\nevents { worker_connections 128; }\nhttp { default_type application/octet-stream;\n${config}\n}`);

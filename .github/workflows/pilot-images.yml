@@ -84,6 +84,12 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_PREFIX }}/tawsel-issuer-gateway:pilot-${{ github.sha }}
           build-args: NGINX_IMAGE=${{ env.NGINX_BASE }}
+      - name: Verify Web and gateway DNS recovery and route isolation
+        env:
+          PROXY_FIXTURE_IMAGE: ${{ env.NODE_BASE }}
+          PROXY_GATEWAY_IMAGE: ${{ env.IMAGE_PREFIX }}/tawsel-issuer-gateway@${{ steps.gateway.outputs.digest }}
+          PROXY_WEB_IMAGE: ${{ env.IMAGE_PREFIX }}/tawsel-web@${{ steps.web.outputs.digest }}
+        run: node scripts/deployment-proxy-smoke.mjs
       - name: Configured VROOM
         id: vroom
         uses: docker/build-push-action@v6
