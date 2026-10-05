@@ -72,6 +72,11 @@ try {
   const net = JSON.parse(docker(['network', 'inspect', network]))[0];
   const [address, mask] = net.IPAM.Config[0].Subnet.split('/');
   assert.ok(Number(mask) <= 28 && Number(mask) >= 16, 'Fixture subnet must fit distinct static IPv4 addresses');
+  // Docker accepts static endpoints only on an explicitly configured subnet.
+  // Recreate only our still-empty network using Docker's unused allocation.
+  assert.equal(Object.keys(net.Containers).length, 0);
+  docker(['network', 'rm', network]);
+  docker(['network', 'create', '--internal', '--subnet', net.IPAM.Config[0].Subnet, network]);
   const base = address.split('.').reduce((value, part) => value * 256 + Number(part), 0);
   const host = offset => [24, 16, 8, 0].map(shift => ((base + offset) >>> shift) & 255).join('.');
   startBackend(oldIssuer, host(10), 'issuer', 8080, 'issuer-old');
