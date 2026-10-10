@@ -5,9 +5,9 @@
     "initialTawselCommit": "bbc977b6662a9093eabd0039661f4992a0e5f292",
     "shahnCurrentReadOnlyCommit": "ccd685cdbd20b24b3a20f437e6949ba04ff93b84",
     "shahnApprovedPublisherPin": "32aad03e8a1a04ac36b95a5a77ab7bf8f7623ada",
-    "sourceCommit": null,
-    "sourceSha256": null,
-    "consumerRuntimeSha256": null,
+    "sourceCommit": "fff79bcb90aaba5676bbc0cd64d78d9ce93845b2",
+    "sourceSha256": "1da953c86788247a1deaad49bec0c87b5170ab9d795cac8a50dc84c4a0cf869a",
+    "consumerRuntimeSha256": "763b801501aed62f04ef11db5e40b991bdb1f00cdd45ed5e79797842a9d680b6",
     "applicationImageDigest": null,
     "deployedRuntimeIdentity": null,
     "originalByteHashRule": "SHA256 on original bytes; no LF normalization",
@@ -47,7 +47,15 @@
       "newInDelta": false,
       "businessSelection": "retained source boundary",
       "generatedFixtures": [],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "77391bd8-a2bb-444a-9ec4-c58e13b63fd5",
+          "status": "accepted",
+          "receiptId": "13411138-0d9d-42f8-bb19-6e19f5ee9f81"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/interoperability.test.ts",
         "apps/api/test/integration/outbox-inbox-recovery.test.ts",
@@ -60,7 +68,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -75,7 +83,15 @@
       "newInDelta": false,
       "businessSelection": "retained source boundary",
       "generatedFixtures": [],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "28fbdce0-a7fb-4902-9ccc-75652136e01a",
+          "status": "accepted",
+          "receiptId": "99343ad7-997a-44e7-8e64-7e80eccd5699"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/interoperability.test.ts",
         "apps/api/test/integration/outbox-inbox-recovery.test.ts",
@@ -88,7 +104,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -129,7 +145,58 @@
       "newInDelta": false,
       "businessSelection": "retained source boundary",
       "generatedFixtures": [],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.962Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "type": "integration"
+          },
+          "reportedAt": "2026-10-10T08:33:01.823Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.906Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "type": "return-request"
+          },
+          "reportedAt": "2026-10-10T08:33:01.931Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "e98e99f2-cf5c-4bc7-a162-abc4381d5451",
+            "type": "trip"
+          },
+          "reportedAt": "2026-10-10T08:33:01.870Z",
+          "status": "read-positive"
+        }
+      ],
       "regressionSuites": [],
       "regressionClassification": "real disposable database and route/domain suites; matching operation string is traceability, not proof of every HTTP case or a per-command identity",
       "historicalEvidence": {
@@ -138,7 +205,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -153,7 +220,58 @@
       "newInDelta": false,
       "businessSelection": "retained source boundary",
       "generatedFixtures": [],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.962Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "type": "integration"
+          },
+          "reportedAt": "2026-10-10T08:33:01.823Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.906Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "type": "return-request"
+          },
+          "reportedAt": "2026-10-10T08:33:01.931Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "e98e99f2-cf5c-4bc7-a162-abc4381d5451",
+            "type": "trip"
+          },
+          "reportedAt": "2026-10-10T08:33:01.870Z",
+          "status": "read-positive"
+        }
+      ],
       "regressionSuites": [],
       "regressionClassification": "real disposable database and route/domain suites; matching operation string is traceability, not proof of every HTTP case or a per-command identity",
       "historicalEvidence": {
@@ -162,7 +280,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -274,7 +392,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "f7cda910-718d-4513-a505-e34e393f5dd0",
+          "status": "accepted",
+          "receiptId": "11200155-e56e-4a1c-a97f-b87bdae67cdc"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/authorization-isolation.test.ts",
         "apps/api/test/integration/b2b-intake-admission.test.ts",
@@ -293,7 +419,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -350,7 +476,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "26d1fc2a-6c57-4370-a413-e0d3573d11a3",
+          "status": "accepted",
+          "receiptId": "d3294628-3f90-4de4-b243-9ef23bbbeb4f"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/dispatch-cycle.test.ts",
@@ -373,7 +507,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -395,7 +529,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "20ade8e8-5c73-4816-bd70-7955d3503674",
+          "status": "accepted",
+          "receiptId": "b80cd842-4cdc-4957-8f7b-3fe1957698fa"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/dispatch-cycle.test.ts",
@@ -413,7 +555,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -572,7 +714,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "a6305f29-efef-4f65-97db-7d7c3a70c94c",
+          "status": "accepted",
+          "receiptId": "383d7343-bed3-4a89-97c1-4da52acc5928"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/dispatch-cycle.test.ts",
@@ -588,7 +738,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -658,7 +808,22 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "9d315822-95f5-4c61-81ef-32dcce52e437",
+          "status": "accepted",
+          "receiptId": "31d07726-f6bf-4acb-a472-3225109865e2"
+        },
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "e89171ab-f254-40c5-8d20-f09b279841e3",
+          "status": "accepted",
+          "receiptId": "ed2280ec-cd37-46af-bb5e-3b4c3fedfe5b"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/branch-interruption.test.ts",
@@ -678,7 +843,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -706,7 +871,22 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "9b8c974f-f444-482e-b2bd-c6d61ebd39e8",
+          "status": "accepted",
+          "receiptId": "6f2d69a4-248f-46e1-b94b-3ab15d807031"
+        },
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "500f68f1-1dbe-494f-83cd-cb50a28e7598",
+          "status": "accepted",
+          "receiptId": "9ef543ee-9158-45d1-b511-25d77c2e0c76"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/interoperability.test.ts",
@@ -720,7 +900,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -742,7 +922,29 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "ef6878bd-d1be-4788-878d-e7bdbdef2a06",
+          "status": "accepted",
+          "receiptId": "1584e31d-97bf-4295-bfb3-badbed6066e5"
+        },
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "d91a8511-5c07-4a2d-baba-4a75b3eeb366",
+          "status": "accepted",
+          "receiptId": "d9feaa30-9d0a-4b51-b3b0-644162b7e0d4"
+        },
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "0d2be219-4fd8-4388-bfae-9b7843379647",
+          "status": "accepted",
+          "receiptId": "9402d55e-c4f5-4726-b6e0-67dd8037adbc"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/branch-interruption.test.ts",
@@ -760,7 +962,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -782,7 +984,22 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "532d5149-69d2-4daa-9cae-a4987ebada2a",
+          "status": "rejected",
+          "receiptId": "c2a575d0-8d08-4a83-9782-251afb8a1d83"
+        },
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "8be557d0-4397-48a7-a421-bd3b29f5b48c",
+          "status": "accepted",
+          "receiptId": "e268b20e-c20d-4872-902e-846a7cd378d5"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/b2b-intake-admission.test.ts",
         "apps/api/test/integration/interoperability.test.ts",
@@ -795,7 +1012,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -966,7 +1183,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "bbbdebfa-fde7-478f-9995-57322b481bc8",
+          "status": "accepted",
+          "receiptId": "773434db-91e1-4863-aa2c-e23c84db64a8"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/branch-interruption.test.ts",
         "apps/api/test/integration/dispatch-cycle.test.ts",
@@ -982,7 +1207,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -1004,7 +1229,15 @@
           "classification": "generated valid shape; no runtime acceptance inferred"
         }
       ],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "8b41e52f-b1a1-4f31-845a-2b02c4b882ae",
+          "status": "accepted",
+          "receiptId": "c694efe6-07b6-4540-bb49-02f3fbbc67ad"
+        }
+      ],
       "regressionSuites": [
         "apps/api/test/integration/dispatch-cycle.test.ts",
         "apps/api/test/integration/interoperability.test.ts",
@@ -1018,7 +1251,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -1120,10 +1353,17 @@
       ],
       "freshPublicWitnesses": [
         {
+          "classification": "fresh separate-process public HTTP reference source",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "actionId": "cc64b8ab-bb89-4227-8cd2-65c9c12d5e69",
+          "status": "accepted",
+          "receiptId": "ee5040c2-7199-4819-8dca-f70a365410c7"
+        },
+        {
           "classification": "fresh authenticated public HTTP injection with real PostgreSQL",
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "actionId": "27ab08dc-eac9-4c54-91a6-af6118513bba",
-          "receiptId": "6e98d18f-3af3-4644-bed3-ebc23953686d",
+          "actionId": "7301f2e8-2afd-4327-969f-eaa84f940614",
+          "receiptId": "8fafdbe8-33dd-4631-8c86-6b1974f32e3b",
           "status": "accepted"
         }
       ],
@@ -1353,7 +1593,58 @@
       "newInDelta": false,
       "businessSelection": "retained source boundary",
       "generatedFixtures": [],
-      "freshPublicWitnesses": [],
+      "freshPublicWitnesses": [
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.962Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "type": "integration"
+          },
+          "reportedAt": "2026-10-10T08:33:01.823Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "type": "task"
+          },
+          "reportedAt": "2026-10-10T08:33:01.906Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "type": "return-request"
+          },
+          "reportedAt": "2026-10-10T08:33:01.931Z",
+          "status": "read-positive"
+        },
+        {
+          "classification": "fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints",
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "aggregate": {
+            "id": "e98e99f2-cf5c-4bc7-a162-abc4381d5451",
+            "type": "trip"
+          },
+          "reportedAt": "2026-10-10T08:33:01.870Z",
+          "status": "read-positive"
+        }
+      ],
       "regressionSuites": [],
       "regressionClassification": "real disposable database and route/domain suites; matching operation string is traceability, not proof of every HTTP case or a per-command identity",
       "historicalEvidence": {
@@ -1362,7 +1653,7 @@
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
         "scope": "selected historical subset only; not a fresh run or closed acceptance"
       },
-      "status": "local-regression-and-fixtures; fresh-public-full-row-pending",
+      "status": "local-public-positive-exercised; native-full-row-pending",
       "pending": [
         "native Shahn conformance and adoption",
         "joint authority/negative/recovery case review",
@@ -1388,8 +1679,8 @@
         {
           "classification": "fresh authenticated public HTTP injection with real PostgreSQL",
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
-          "actionId": "f1edc804-931c-4438-8113-c3576d2bcade",
-          "receiptId": "96d733b8-4288-4fea-abf3-17757e370ad5",
+          "actionId": "a0cd90ca-34ba-474d-b57a-7d74ad5d266a",
+          "receiptId": "42670b62-f4cf-4156-ac23-b0ed2dd12b82",
           "status": "accepted"
         }
       ],
@@ -1424,9 +1715,82 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "33015288-cfb4-40c9-b21e-36a0fa6a7789",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 1,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "14af0d3f-2ea1-43c7-b22a-f12a890e8093",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 2,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "a18d2793-befb-4ef5-ad00-4c3ffd8cdd02",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 3,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "a22e95b3-81e3-45eb-ba54-ef0cec6d54b7",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 4,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "f77b5b97-096b-4405-9819-ae3c721ae177",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 5,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "7655c2ac-bdde-465f-af1c-0620ae728d9e",
+          "eventType": "provisioning.changed",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 6,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1450,13 +1814,38 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "40117a9d-7a85-429b-812b-9b8ddd0fc8b6",
+          "eventType": "task.snapshotAccepted",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 1,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "7462da19-e153-452c-aef1-0e8069195f9b",
+          "eventType": "task.snapshotAccepted",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 1,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
-          "eventId": "f6360fe4-2b11-424a-afe8-39602ce8884e",
+          "eventId": "41c2c2e5-e651-40df-959c-d7d7a4ff7485",
           "aggregate": {
-            "id": "fe60687e-adea-52e9-a21f-395100fe4b9a",
+            "id": "593ceff2-70e0-56ce-a59a-8b3a146c1e38",
             "recipientSequence": 1,
             "type": "task"
           },
@@ -1464,26 +1853,26 @@
         },
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "26ae68cf-82fc-44b5-a58e-384b7c7ff0c1",
+          "eventId": "2008f4a9-6d8d-48de-a895-8f663a149211",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 1
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         },
         {
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
-          "eventId": "38bcdd5f-0050-4b7a-b49d-a33054f39c74",
+          "eventId": "2be77382-a60c-447e-991a-748e4cae91c3",
           "aggregate": {
             "type": "task",
-            "id": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+            "id": "38fca57d-9256-556f-a006-0a19dc23a26d",
             "recipientSequence": 1
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         }
       ],
-      "status": "local-producer-positive; native-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1500,20 +1889,57 @@
       "payloadVersion": "1.0.0",
       "schema": "contracts/events/sender-event.v1.schema.json",
       "generatedFixtures": [],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "999a5ac6-0954-42de-bb6f-6e1c3b1fe16b",
+          "eventType": "assignment.prepared",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 2,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "00c12c9f-69a1-4e2a-987e-37a595418e98",
+          "eventType": "assignment.prepared",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 6,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "edbedc24-fef9-4d70-a8e7-e51e31222c48",
+          "eventType": "assignment.prepared",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 2,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
-          "eventId": "8ada7d30-cb74-43fe-a75b-d32b5b790be2",
+          "eventId": "344de84e-c3cf-4ae2-95f5-51d129520033",
           "aggregate": {
-            "id": "fe60687e-adea-52e9-a21f-395100fe4b9a",
+            "id": "593ceff2-70e0-56ce-a59a-8b3a146c1e38",
             "recipientSequence": 2,
             "type": "task"
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         }
       ],
-      "status": "local-producer-positive; native-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1537,40 +1963,89 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "89be287a-3bbc-4351-81c6-4583cccd8d6f",
+          "eventType": "assignment.received",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 3,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "0ce210cf-2e09-4937-b225-e38c478f3989",
+          "eventType": "assignment.received",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 7,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "3adc9169-cd97-4985-aadb-8531e3c0cd54",
+          "eventType": "assignment.received",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 3,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "e6f395b4-992a-49cb-8241-6c86bf963d41",
+          "eventType": "assignment.received",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 5,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "216c7a9d-3ba5-4527-9e4c-6909ffe944d5",
+          "eventId": "100193a2-1455-45c7-a0b1-65605176b59f",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 2
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         },
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "59b5554f-aaf8-4be2-879f-45e7e8428e51",
+          "eventId": "73d69a5d-394c-4247-b6e6-bef9630c6b8b",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 5
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         },
         {
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
-          "eventId": "355b80a8-86e5-4583-bacc-a4f294314913",
+          "eventId": "1d51b009-26c8-4b69-adcb-885f6614372b",
           "aggregate": {
             "type": "task",
-            "id": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+            "id": "38fca57d-9256-556f-a006-0a19dc23a26d",
             "recipientSequence": 2
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         }
       ],
-      "status": "local-producer-positive; native-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1587,20 +2062,33 @@
       "payloadVersion": "1.0.0",
       "schema": "contracts/events/sender-event.v1.schema.json",
       "generatedFixtures": [],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "33f31f61-9eca-4265-8779-f9336ec8bca1",
+          "eventType": "assignment.withdrawn",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 4,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
-          "eventId": "6a2d5687-c4d0-4a81-a294-cfe248d95a45",
+          "eventId": "a47c205b-5f26-4b7b-b7fa-30b3955de262",
           "aggregate": {
-            "id": "fe60687e-adea-52e9-a21f-395100fe4b9a",
+            "id": "593ceff2-70e0-56ce-a59a-8b3a146c1e38",
             "recipientSequence": 3,
             "type": "task"
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         }
       ],
-      "status": "local-producer-positive; native-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1655,9 +2143,22 @@
       "payloadVersion": "1.0.0",
       "schema": "contracts/events/sender-event.v1.schema.json",
       "generatedFixtures": [],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "03a18fab-c97f-4e13-bbe5-34e8257e9200",
+          "eventType": "dispatch.createdFromReceipt",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 5,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1700,9 +2201,22 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "70b70397-3496-4072-b27b-ae57890e6178",
+          "eventType": "plan.revisionPublished",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "c8c2fad8-4134-4288-8f5c-5abb0fe25c15",
+            "recipientSequence": 7,
+            "type": "integration"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1726,9 +2240,22 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "6b88b0ba-1e10-4db1-8c19-75e0375c61a1",
+          "eventType": "round.started",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "e98e99f2-cf5c-4bc7-a162-abc4381d5451",
+            "recipientSequence": 1,
+            "type": "trip"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1796,9 +2323,34 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "ebcde190-4ae4-4fc6-bf46-da746ceef2fd",
+          "eventType": "outcome.recorded",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "0f5f0130-2945-52fb-ac23-21eb0e4d0ffe",
+            "recipientSequence": 4,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        },
+        {
+          "eventId": "96a4d764-10d2-48a7-8530-e76c18c46a3d",
+          "eventType": "outcome.recorded",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "07529209-ee63-53d7-aade-001fac8cc1d1",
+            "recipientSequence": 6,
+            "type": "task"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1942,9 +2494,22 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "56f6eece-e9ab-4588-ae98-212847751fca",
+          "eventType": "return.requested",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "recipientSequence": 1,
+            "type": "return-request"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1968,9 +2533,22 @@
           "classification": "generated schema fixture"
         }
       ],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "f39ce30f-406d-431d-bf9e-e392f867b39d",
+          "eventType": "return.subsetReceived",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "recipientSequence": 2,
+            "type": "return-request"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -1987,9 +2565,22 @@
       "payloadVersion": "1.0.0",
       "schema": "contracts/events/sender-event.v1.schema.json",
       "generatedFixtures": [],
-      "freshSignedWitnesses": [],
+      "freshSignedWitnesses": [
+        {
+          "eventId": "c260fa75-8a15-4404-85c1-29bf37f2321c",
+          "eventType": "return.dispositionRecorded",
+          "payloadVersion": "1.0.0",
+          "aggregate": {
+            "id": "a85d4ef4-a0cb-440e-82ef-a2b2bbde5671",
+            "recipientSequence": 3,
+            "type": "return-request"
+          },
+          "proof": "docs/verification/integration-local-2026-10-10.json",
+          "classification": "fresh signed producer/independent HTTP reference consumer; applied reports in proof"
+        }
+      ],
       "freshProducerWitnesses": [],
-      "status": "generated-fixtures-and-regression; fresh-signed-full-row-pending",
+      "status": "local-reference-signed-positive; native-full-row-pending",
       "historicalEvidence": {
         "date": "2026-10-08",
         "reference": "owner archive: attachments/docs/verification/P22/OPERATION-EVENT-EVIDENCE.md",
@@ -2104,7 +2695,7 @@
       ],
       "freshSignedWitnesses": [
         {
-          "eventId": "2d91ebe9-5aae-49d3-9980-c8e1dd0c6bd0",
+          "eventId": "6dd4430a-9dc2-4baa-ae3f-0794bb4e18fd",
           "eventType": "dispatch.createdFromReceipt",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
@@ -2114,10 +2705,10 @@
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "2d91ebe9-5aae-49d3-9980-c8e1dd0c6bd0",
+          "eventId": "6dd4430a-9dc2-4baa-ae3f-0794bb4e18fd",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 4
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
@@ -2145,21 +2736,21 @@
       ],
       "freshSignedWitnesses": [
         {
-          "eventId": "715405f9-1b2f-4593-861b-6556cc7c7916",
+          "eventId": "09f17e63-f722-4ba5-b0e8-6cf41e66554e",
           "eventType": "outcome.recorded",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
           "classification": "fresh signed HTTP into separate durable reference receiver; atomic independent projection checked"
         },
         {
-          "eventId": "9ace73c1-cf51-494a-9dce-81e5113a96b1",
+          "eventId": "120a1dd6-8307-4b2b-9e92-6acc1f16ce90",
           "eventType": "outcome.recorded",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
           "classification": "fresh signed HTTP into separate durable reference receiver; atomic independent projection checked"
         },
         {
-          "eventId": "a6d1fe32-ff57-4bc7-b54e-8da2c9b7bfdd",
+          "eventId": "91f882c7-c16c-441f-bc3e-f66bc745fc38",
           "eventType": "outcome.recorded",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
@@ -2169,30 +2760,30 @@
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "715405f9-1b2f-4593-861b-6556cc7c7916",
+          "eventId": "09f17e63-f722-4ba5-b0e8-6cf41e66554e",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 3
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         },
         {
           "proof": "docs/verification/interoperability-examples-2026-10-10.json",
-          "eventId": "9ace73c1-cf51-494a-9dce-81e5113a96b1",
+          "eventId": "120a1dd6-8307-4b2b-9e92-6acc1f16ce90",
           "aggregate": {
             "type": "task",
-            "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "recipientSequence": 6
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
         },
         {
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
-          "eventId": "a6d1fe32-ff57-4bc7-b54e-8da2c9b7bfdd",
+          "eventId": "91f882c7-c16c-441f-bc3e-f66bc745fc38",
           "aggregate": {
             "type": "task",
-            "id": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+            "id": "38fca57d-9256-556f-a006-0a19dc23a26d",
             "recipientSequence": 3
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
@@ -2220,7 +2811,7 @@
       ],
       "freshSignedWitnesses": [
         {
-          "eventId": "23d99957-f487-44a8-953c-8cad26a3ac91",
+          "eventId": "00a8b53c-7024-482a-85f1-a5a3d5de9e85",
           "eventType": "outcome.corrected",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
@@ -2230,10 +2821,10 @@
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-reasons-2026-10-10.json",
-          "eventId": "23d99957-f487-44a8-953c-8cad26a3ac91",
+          "eventId": "00a8b53c-7024-482a-85f1-a5a3d5de9e85",
           "aggregate": {
             "type": "task",
-            "id": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+            "id": "38fca57d-9256-556f-a006-0a19dc23a26d",
             "recipientSequence": 4
           },
           "classification": "real committed producer plus schema-valid public replay/reconciliation"
@@ -2261,7 +2852,7 @@
       ],
       "freshSignedWitnesses": [
         {
-          "eventId": "73b93ed5-b7bc-4562-bae4-c83404f4f7c8",
+          "eventId": "32544808-b6b0-48f5-9b9a-36cac7bea6f0",
           "eventType": "dispatch.relocatedBeforeDeparture",
           "payloadVersion": "2.0.0",
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
@@ -2271,9 +2862,9 @@
       "freshProducerWitnesses": [
         {
           "proof": "docs/verification/interoperability-predeparture-2026-10-10.json",
-          "eventId": "73b93ed5-b7bc-4562-bae4-c83404f4f7c8",
+          "eventId": "32544808-b6b0-48f5-9b9a-36cac7bea6f0",
           "aggregate": {
-            "id": "fe60687e-adea-52e9-a21f-395100fe4b9a",
+            "id": "593ceff2-70e0-56ce-a59a-8b3a146c1e38",
             "recipientSequence": 4,
             "type": "task"
           },
