@@ -1,23 +1,29 @@
 {
   "manifestVersion": 1,
-  "generatedAt": "2026-09-30T14:29:51.676Z",
+  "generatedAt": "2026-10-10T08:34:20.766Z",
   "release": {
-    "name": "tawsel-0.1.0-phase42-local",
+    "name": "tawsel-0.2.0-interop-2026-10-10",
     "status": "local-handoff-candidate",
     "published": false,
-    "baseCommit": "a891d189f38f24c4d73a3c9e2ac4e74016f8dc6a",
-    "sourceSha256": "ce622c6c21d49da235099d15068917918e67b50dd7102a8a630f1e97abdab4ac",
-    "workingTree": "Uncommitted Phase 42 candidate; source identity lists actual source/config/test bytes, independent of documentation."
+    "baseCommit": "fff79bcb90aaba5676bbc0cd64d78d9ce93845b2",
+    "sourceSha256": "1da953c86788247a1deaad49bec0c87b5170ab9d795cac8a50dc84c4a0cf869a",
+    "workingTree": "Source identity lists actual source/config/test bytes at the recorded base commit; generated package/proof remain uncommitted derived artifacts, independent of documentation."
   },
   "supportedVersions": {
-    "api": "0.1.0",
+    "api": "0.2.0",
     "openapi": "3.1.1",
-    "client": "0.1.0",
-    "referenceConsumer": "0.1.0",
+    "client": "0.2.0",
+    "referenceConsumer": "0.2.0",
     "action": "1.0.0",
-    "payload": "1.0.0",
+    "payload": [
+      "1.0.0",
+      "2.0.0"
+    ],
     "event": "1.0.0",
-    "eventPayload": "1.0.0",
+    "eventPayload": [
+      "1.0.0",
+      "2.0.0"
+    ],
     "report": "1.0.0",
     "jsonSchema": "https://json-schema.org/draft/2020-12/schema"
   },
@@ -38,7 +44,7 @@
   "engine": {
     "runtimeVersion": null,
     "datasetIdentity": null,
-    "verification": "unavailable; configured Engine inputs and maps are separate from application release"
+    "verification": "not certified by this consumer package; Engine inputs, runtime evidence and build provenance are separate from application release"
   },
   "migrations": {
     "application": [
@@ -69,7 +75,8 @@
       "0025_consumer_checkpoints.sql",
       "0026_replay_dependencies.sql",
       "0027_reporting_provenance.sql",
-      "0028_worker_observations.sql"
+      "0028_worker_observations.sql",
+      "0029_interoperability.sql"
     ],
     "reference": [
       "0001_receiver.sql",
@@ -78,12 +85,12 @@
       "0004_native_sessions.sql"
     ]
   },
-  "consumerRuntimeSha256": "5fb60736379645bbd64be32f0fe9df15773137ceebf81905cd02a39a20b46d3f",
+  "consumerRuntimeSha256": "763b801501aed62f04ef11db5e40b991bdb1f00cdd45ed5e79797842a9d680b6",
   "artifacts": [
     {
       "path": ".env.example",
-      "bytes": 3914,
-      "sha256": "5282653e4243fd9aae028a7060dbc5bb89d16b4eb3044f365c02e179de383a58",
+      "bytes": 3865,
+      "sha256": "a222537bb30d0c27db96d975d43027d3a895f5b72bd9f946133a9ce3f1901c08",
       "source": ".env.example"
     },
     {
@@ -100,20 +107,20 @@
     },
     {
       "path": "apps/mock-erp/dist/app.js",
-      "bytes": 2728,
-      "sha256": "aff7e3dbc9a885bddc56a652b1e0d4edcfe585bb488a33c290106e6914ae1bb3",
+      "bytes": 2811,
+      "sha256": "837e02c4dbdc271547428746b9ef0a8031ea407ab9f4a24254f21181410e7486",
       "source": "apps/mock-erp/dist/app.js"
     },
     {
       "path": "apps/mock-erp/dist/config.d.ts",
-      "bytes": 680,
-      "sha256": "5b5db151a6d358f6a8524101c8360600089630ae226a9cd51a4fa4b2894828e4",
+      "bytes": 754,
+      "sha256": "7002c4a4a83662b0ca92fef8ef8bad0f1d6cf32a8b69cf9820ef51976b5d5cb2",
       "source": "apps/mock-erp/dist/config.d.ts"
     },
     {
       "path": "apps/mock-erp/dist/config.js",
-      "bytes": 2867,
-      "sha256": "a29376b605deea47f2ec48e092b2786f892e57caa89ede54058a4b2e8d5dafea",
+      "bytes": 3978,
+      "sha256": "deb2e8ad4352df9b272d08c336138388047fc6124baa584b5542124b454aeb36",
       "source": "apps/mock-erp/dist/config.js"
     },
     {
@@ -124,9 +131,21 @@
     },
     {
       "path": "apps/mock-erp/dist/database.js",
-      "bytes": 5396,
-      "sha256": "bceadf98d5d126bef2e2ed8c2297115d8988045ede8d36da05d62aa8faa5bce5",
+      "bytes": 6141,
+      "sha256": "b959dfaebd08be0efd65321a803dc0aeef7811939a5272b0e59838886577d84a",
       "source": "apps/mock-erp/dist/database.js"
+    },
+    {
+      "path": "apps/mock-erp/dist/health.d.ts",
+      "bytes": 327,
+      "sha256": "6adc300c55117fbabb83cc8e601aaa2f8fefc5d57380fee19361ef58a98dd781",
+      "source": "apps/mock-erp/dist/health.d.ts"
+    },
+    {
+      "path": "apps/mock-erp/dist/health.js",
+      "bytes": 935,
+      "sha256": "c93b269e52552b8f4aecdd22226630d1cfa1e5fd0e91782b79ebcf90595a3b03",
+      "source": "apps/mock-erp/dist/health.js"
     },
     {
       "path": "apps/mock-erp/dist/inbox.d.ts",
@@ -136,8 +155,8 @@
     },
     {
       "path": "apps/mock-erp/dist/inbox.js",
-      "bytes": 3328,
-      "sha256": "a5e7bd26d9920e20ad83ee9b5a0aea8f7f977fea1ced62e637aa6006acc21a37",
+      "bytes": 3325,
+      "sha256": "3a867f80e4cc679db0e37a43a3d81c7eed269a0263b69687b1ec5e39d69769a0",
       "source": "apps/mock-erp/dist/inbox.js"
     },
     {
@@ -238,38 +257,44 @@
     },
     {
       "path": "apps/mock-erp/package.json",
-      "bytes": 981,
-      "sha256": "89531127860895dae622d5264e32c93dc29345c67f1d7511c88d3cef670e33ff",
+      "bytes": 1079,
+      "sha256": "7d06e749d639decc07cc9b7699d1e4b66d2f9c49a4891b207726fb1110ab11ba",
       "source": "apps/mock-erp/package.json"
     },
     {
       "path": "apps/mock-erp/README.md",
-      "bytes": 944,
-      "sha256": "336a35b8a1519e50b63ab85b47c7d3db2e85fbda2f5920ec8fc7475b2376d3c7",
+      "bytes": 2113,
+      "sha256": "39006a6b2631b9d9edb96c4945dfd310fa8a3d7bde2dae9483c6e0f1911f1be8",
       "source": "apps/mock-erp/README.md"
     },
     {
       "path": "apps/mock-erp/src/app.ts",
-      "bytes": 2768,
-      "sha256": "4c5b3f9f49778590d928ca7a68035aae585eceefa87fa22ad3cc911a613cf66c",
+      "bytes": 2844,
+      "sha256": "1e22de166e91943f77f9f09bb01de01e2fc6e443d80b9c691cd7c2be25818e20",
       "source": "apps/mock-erp/src/app.ts"
     },
     {
       "path": "apps/mock-erp/src/config.ts",
-      "bytes": 3030,
-      "sha256": "5a27620b5a1bedd6e24bc14d92f1c705cd6e79b5d5a3f011c2732da70c42e6b3",
+      "bytes": 4054,
+      "sha256": "8d660dfc80fd41cdc57104d211f4f0cc0f581d057d89141dd68c27aee83ed4e4",
       "source": "apps/mock-erp/src/config.ts"
     },
     {
       "path": "apps/mock-erp/src/database.ts",
-      "bytes": 5000,
-      "sha256": "ad2792e693c3eef5b1661acab25ea4f6dc59fb24eb2e5cbf1cb22d8cb5b9e769",
+      "bytes": 5659,
+      "sha256": "3b1f9d952087d75cc8e23a21db22d38483e67c1b62657187f61fbca70ae1c240",
       "source": "apps/mock-erp/src/database.ts"
     },
     {
+      "path": "apps/mock-erp/src/health.ts",
+      "bytes": 927,
+      "sha256": "48b83e7840a46da57002b1cd171b66bc09b3e0256ff2d0f24f87318a34ee0b49",
+      "source": "apps/mock-erp/src/health.ts"
+    },
+    {
       "path": "apps/mock-erp/src/inbox.ts",
-      "bytes": 3296,
-      "sha256": "6def28cd369c0b4ee34a072c0361aafe1dabab683d27f15bab4dda73ac9af66f",
+      "bytes": 3293,
+      "sha256": "25a2ca64431bb7bd891a684fc3bd7b7c8db62924ed6e9c79de4106b666fea1d6",
       "source": "apps/mock-erp/src/inbox.ts"
     },
     {
@@ -405,10 +430,10 @@
       "source": "apps/mock-erp/ui-dist/assets/cairo-latin-800-normal-ReWrxM5E.woff"
     },
     {
-      "path": "apps/mock-erp/ui-dist/assets/index-mRRSzy_u.js",
-      "bytes": 251635,
-      "sha256": "cd1e41fe78cdb361c5cfa62527a642b3967657cf10a479bf009995bc909999cb",
-      "source": "apps/mock-erp/ui-dist/assets/index-mRRSzy_u.js"
+      "path": "apps/mock-erp/ui-dist/assets/index-CodM4QBA.js",
+      "bytes": 254325,
+      "sha256": "faa69fff10487c963857a30ee4ce88fa7de7eaf365b2d025938c407acc02ac55",
+      "source": "apps/mock-erp/ui-dist/assets/index-CodM4QBA.js"
     },
     {
       "path": "apps/mock-erp/ui-dist/assets/index-WBxnteOg.css",
@@ -419,7 +444,7 @@
     {
       "path": "apps/mock-erp/ui-dist/index.html",
       "bytes": 392,
-      "sha256": "bd2d0c84c7b8cf1a52023c7653687c50904d3e6ea22c2e5139f1e14ca6c784bf",
+      "sha256": "52005122037a8df6a68ebf2de35d5be9e0d7ee2084f9be86beeffb0d928b6fdc",
       "source": "apps/mock-erp/ui-dist/index.html"
     },
     {
@@ -442,9 +467,15 @@
     },
     {
       "path": "apps/mock-erp/ui/main.tsx",
-      "bytes": 30906,
-      "sha256": "c81d7e3f7e772db0a159a8fe48c8b8e7926530c648fd5e7ad535248f863d59f0",
+      "bytes": 21425,
+      "sha256": "b592f0b73f8eda1f0a30970aacacce751e36dd0540ed7dff7aeecf445b788bd6",
       "source": "apps/mock-erp/ui/main.tsx"
+    },
+    {
+      "path": "apps/mock-erp/ui/source-forms.tsx",
+      "bytes": 13745,
+      "sha256": "61ce6c4d371f25e3a5d24a91af05524a172d4c146dad391305a21b646b33a6b6",
+      "source": "apps/mock-erp/ui/source-forms.tsx"
     },
     {
       "path": "apps/mock-erp/ui/style.css",
@@ -454,8 +485,8 @@
     },
     {
       "path": "contracts/action-envelope.v1.schema.json",
-      "bytes": 1916,
-      "sha256": "3e134a59e3cf8415df51800e84949db6f7ccf25c8b54e899f7f179f10f59cf56",
+      "bytes": 2574,
+      "sha256": "1cf7c2cd8eaa69d2343a59001b7420bc1f412770dd5b52a614d6f02d10b9dd59",
       "source": "contracts/action-envelope.v1.schema.json"
     },
     {
@@ -466,8 +497,8 @@
     },
     {
       "path": "contracts/b2b-intake.schema.json",
-      "bytes": 28322,
-      "sha256": "133b951077bab6448f4c0b760543253c6225a588ec00bf4c5f9544fdf8b53d04",
+      "bytes": 32607,
+      "sha256": "080fa94c110d2e3df2e10d17ad4ae19a9753740b19d3c7ab9c19f1b0b9410775",
       "source": "contracts/b2b-intake.schema.json"
     },
     {
@@ -489,21 +520,27 @@
       "source": "contracts/common.schema.json"
     },
     {
+      "path": "contracts/connection-package.schema.json",
+      "bytes": 5873,
+      "sha256": "c064a12035e23e9be8ca333af808c41c2804986e2e34850898ce65f5aacc05cd",
+      "source": "contracts/connection-package.schema.json"
+    },
+    {
       "path": "contracts/consumer.schema.json",
-      "bytes": 12793,
-      "sha256": "cbff563ea8ea28a6af9f557e85bab0097c89a095d2cb6ca74e3d066d26352fe1",
+      "bytes": 12276,
+      "sha256": "316b64d695836f938a6d6d981974ad144362023010b2a8dc3fc4eea828b10d37",
       "source": "contracts/consumer.schema.json"
     },
     {
       "path": "contracts/corrections.schema.json",
-      "bytes": 10075,
-      "sha256": "6f44c84bd6adc1a39ee0d3f5c01c27f7d3041523c4295243f8672fbdff91aae6",
+      "bytes": 19758,
+      "sha256": "752d127c56b6be90de14276c0cb302099e32104e1db0f1ffc7f16735f0ff68c5",
       "source": "contracts/corrections.schema.json"
     },
     {
       "path": "contracts/current-activity.schema.json",
-      "bytes": 28600,
-      "sha256": "7a471aaa12d404c886b4baa33061f0fe8fd908395c8c083bd602c77543444fa4",
+      "bytes": 27668,
+      "sha256": "c94b5953e89ffcfea8a204356e56e95074649dc711def2389d455392d7db2a81",
       "source": "contracts/current-activity.schema.json"
     },
     {
@@ -526,15 +563,27 @@
     },
     {
       "path": "contracts/events/envelope.v1.schema.json",
-      "bytes": 3304,
-      "sha256": "d723d62d419e5fe20f896481df0d54ef6b94d8437d19f3057cc47f199eba7ccd",
+      "bytes": 3243,
+      "sha256": "80640c598bd2d48abfd8d0373e781983878837c927ba5fda63b311dc8970cefb",
       "source": "contracts/events/envelope.v1.schema.json"
     },
     {
+      "path": "contracts/events/sender-event.schema.json",
+      "bytes": 277,
+      "sha256": "04d2e5d0f17ffd82927b6abdd63fca1056cda1340b7fe23430cc2f9a8bf4c1df",
+      "source": "contracts/events/sender-event.schema.json"
+    },
+    {
       "path": "contracts/events/sender-event.v1.schema.json",
-      "bytes": 14025,
-      "sha256": "cbce5b5128d8d2f5cf6c58668c989e6b403876531703921a16834dbcf9fb1f06",
+      "bytes": 13404,
+      "sha256": "1b726be7666c7251fa5ba68bb1a9dad9a93e5aa134383c0a7d2fe5a35d37fd8f",
       "source": "contracts/events/sender-event.v1.schema.json"
+    },
+    {
+      "path": "contracts/events/sender-event.v2.schema.json",
+      "bytes": 2250,
+      "sha256": "cdd598d89bd94691ee774f021fb7a9760c363e79c39d21931e569b0b9763ee18",
+      "source": "contracts/events/sender-event.v2.schema.json"
     },
     {
       "path": "contracts/evidence-receipt.v1.schema.json",
@@ -544,20 +593,20 @@
     },
     {
       "path": "contracts/examples/invalid.json",
-      "bytes": 225979,
-      "sha256": "1d6e1edde1f489de99b8ce7977de05725db528cca54b5246d25d957c13cec1b6",
+      "bytes": 238709,
+      "sha256": "ed8b81fdda298df45a1ff3175a9b4d075ff4b30aeced5e3f0d92ff5fc3c43e9c",
       "source": "contracts/examples/invalid.json"
     },
     {
       "path": "contracts/examples/README.md",
-      "bytes": 12733,
-      "sha256": "3a3a748a4d5f9298f2f03ee46270da31258c27cea582ff8b787d31af733e85e7",
+      "bytes": 12885,
+      "sha256": "5aa6f9175b59d8b10256994fe0da12f8ace5d1d3b39255666d7c03e3eacee94e",
       "source": "contracts/examples/README.md"
     },
     {
       "path": "contracts/examples/valid.json",
-      "bytes": 429787,
-      "sha256": "744dcef5b503fee2b7a2284e226a7ef68905875a84467e946e72a4100f3c9410",
+      "bytes": 445764,
+      "sha256": "c6b5e261acd462e63e173d8a5a789551ed48b568fa8d285a3852929961092105",
       "source": "contracts/examples/valid.json"
     },
     {
@@ -586,26 +635,26 @@
     },
     {
       "path": "contracts/openapi.yaml",
-      "bytes": 240606,
-      "sha256": "80c06dc911dc19072598926a827a51a6f36dc2170d3230726a331586a7003271",
+      "bytes": 235611,
+      "sha256": "82f2651273a6ddbf21d0b5b49b7341f24f16ae3abac4586777b46e24a717beff",
       "source": "contracts/openapi.yaml"
     },
     {
       "path": "contracts/operations.json",
-      "bytes": 75976,
-      "sha256": "838abf9fbc704494a3729fe4c171da9781a69188bfacf4f5a074ced151afc4d2",
+      "bytes": 74901,
+      "sha256": "7d6749ec93bbfb6a6cb66d47a6a819d5ebf3799cf7a3ad102c73d64541b4a3ba",
       "source": "contracts/operations.json"
     },
     {
       "path": "contracts/outbox.schema.json",
-      "bytes": 17186,
-      "sha256": "acae29b68e9e267b2d1f495c6904880f421f3959684a3c14c8fa7c40f34bbf5b",
+      "bytes": 16472,
+      "sha256": "3caf10f546d24bcd9f3209bc1c128befe87fd683a743c52884f043aca6e3e997",
       "source": "contracts/outbox.schema.json"
     },
     {
       "path": "contracts/outcomes.schema.json",
-      "bytes": 30203,
-      "sha256": "909bfc5356faa2150077754845a4f83c7328fcfe58571254e701edeab1c72927",
+      "bytes": 76231,
+      "sha256": "daac6d4490880d218669fc569df717b4e8b49a6a55be8f13d325798638087c85",
       "source": "contracts/outcomes.schema.json"
     },
     {
@@ -616,8 +665,8 @@
     },
     {
       "path": "contracts/provisioning.schema.json",
-      "bytes": 36921,
-      "sha256": "a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8",
+      "bytes": 37800,
+      "sha256": "44e4e80a8eb95007dcdd2dbbefdffb03fb72ca64bef2256efc01483b7995f5fa",
       "source": "contracts/provisioning.schema.json"
     },
     {
@@ -646,8 +695,8 @@
     },
     {
       "path": "contracts/routing.schema.json",
-      "bytes": 13403,
-      "sha256": "164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793",
+      "bytes": 13383,
+      "sha256": "cad3fc624f6eff1e2185f8db253d594f8f43aa477099bc2d06388dc2293d8227",
       "source": "contracts/routing.schema.json"
     },
     {
@@ -843,6 +892,24 @@
       "source": "db/migrations/0028_worker_observations.sql"
     },
     {
+      "path": "db/migrations/0029_interoperability.sql",
+      "bytes": 5303,
+      "sha256": "07f73f7aadfa187cb8907369ed0ea7bf1f845bc5764408434696fe9668e51ce7",
+      "source": "db/migrations/0029_interoperability.sql"
+    },
+    {
+      "path": "deploy/auth-gateway.conf",
+      "bytes": 1333,
+      "sha256": "a55072771ca0e8cb389f572e0acff15868a88e3f21a551b855bdefead8147c12",
+      "source": "deploy/auth-gateway.conf"
+    },
+    {
+      "path": "deploy/AuthGateway.Dockerfile",
+      "bytes": 127,
+      "sha256": "c57312931c16aafab91e42d411fb4ef303bc1b1f29f0e1d55d736ed8d079f7d9",
+      "source": "deploy/AuthGateway.Dockerfile"
+    },
+    {
       "path": "deploy/base-images.json",
       "bytes": 608,
       "sha256": "3cb019f981bbcd5e1e50286694a04650078c815f19e2a1c08e03c59b8eac8a1a",
@@ -850,32 +917,68 @@
     },
     {
       "path": "deploy/compose.yaml",
-      "bytes": 4814,
-      "sha256": "ff3f5516efbca992b519d83fb93669b0744228eb954f7a2c28f7511a98a76be6",
+      "bytes": 5814,
+      "sha256": "bd16872857754c3f6db1d525b6095bd0f34c9b807ae0da94f4cf013a48b3c611",
       "source": "deploy/compose.yaml"
     },
     {
       "path": "deploy/config.env.example",
-      "bytes": 852,
-      "sha256": "42f12ff809ab51eb19ff3da9a75dcd2a30fc25602d1b06258e24ee3a36dac6f4",
+      "bytes": 1213,
+      "sha256": "0f11d3475b28bf67b719d52c0de1b48a20fc243c743bbeeaeea9a7d186d0e3fa",
       "source": "deploy/config.env.example"
     },
     {
+      "path": "deploy/database.compose.yaml",
+      "bytes": 2859,
+      "sha256": "bec5670b26c1dc585550df334c14f0dbfc5a8044273fce52a5bb10082499c0ad",
+      "source": "deploy/database.compose.yaml"
+    },
+    {
+      "path": "deploy/database.env.example",
+      "bytes": 811,
+      "sha256": "f044f9fd437f5598811f21ddb94e3e1e635b03fcfb56dce5e8ed8e225c5ba5e4",
+      "source": "deploy/database.env.example"
+    },
+    {
       "path": "deploy/Dockerfile",
-      "bytes": 1519,
-      "sha256": "7f62078c2e04a368c582464c80cabb6be7a78f57e88afe098976f9f07aecb14d",
+      "bytes": 1540,
+      "sha256": "3e50e00c93b7d54ca56147345aa2c595c44558c86f5165c5fb729b63d0a027f2",
       "source": "deploy/Dockerfile"
     },
     {
+      "path": "deploy/engine.compose.yaml",
+      "bytes": 3997,
+      "sha256": "ea5968569f5dac8f7c6422b95e4e1980d6281bcc63b95b17896bb24acfeb287d",
+      "source": "deploy/engine.compose.yaml"
+    },
+    {
+      "path": "deploy/engine.env.example",
+      "bytes": 1488,
+      "sha256": "04699672c8432e22914af0aff3402074527f390c9e6eea5b5cfabf88904c77eb",
+      "source": "deploy/engine.env.example"
+    },
+    {
+      "path": "deploy/go-live-evidence.example.json",
+      "bytes": 936,
+      "sha256": "5870517d46991644784347ea29aff32bc315bb4233f32926b5bce5c54dad89e7",
+      "source": "deploy/go-live-evidence.example.json"
+    },
+    {
       "path": "deploy/identity-input.example.json",
-      "bytes": 376,
-      "sha256": "267af08aa5611a553f3089734e6370e1c74360923a4e5104df7a71903c254413",
+      "bytes": 504,
+      "sha256": "ad7af67d1db2126aaf92d453b1ffffffeac7cb81a22aff93b9ea8d3f38c96270",
       "source": "deploy/identity-input.example.json"
     },
     {
+      "path": "deploy/initial-evidence.example.json",
+      "bytes": 522,
+      "sha256": "7c8adb8c0260ad4994f3022aaf1cb07d6ea04b32bfd1e87453c69f45db445d65",
+      "source": "deploy/initial-evidence.example.json"
+    },
+    {
       "path": "deploy/issuer.env.example",
-      "bytes": 553,
-      "sha256": "2424edeb1b1734fcd94a5b7c6401648733b7cee450da24e03b270799406f97eb",
+      "bytes": 556,
+      "sha256": "8641ae7b019c312f0668c5247c8d320e03c1c55c63fb9b068903f2ce33754ff3",
       "source": "deploy/issuer.env.example"
     },
     {
@@ -891,6 +994,30 @@
       "source": "deploy/mock-local.compose.yaml"
     },
     {
+      "path": "deploy/mock-public.compose.yaml",
+      "bytes": 2202,
+      "sha256": "8b243cc7b241124b7ba9fee887be73ad063407d089ac0433d9258d96fadcf824",
+      "source": "deploy/mock-public.compose.yaml"
+    },
+    {
+      "path": "deploy/mock-public.config.example.json",
+      "bytes": 898,
+      "sha256": "9027c018402457f628dd7bf71f57b8c88d50adc2a578eb58b6dd0b3bac1d71a9",
+      "source": "deploy/mock-public.config.example.json"
+    },
+    {
+      "path": "deploy/mock-public.env.example",
+      "bytes": 430,
+      "sha256": "4216d928a2d1d50c575b7d7e6ada9c01597ddc816865c5f5563edb23f5c41dc5",
+      "source": "deploy/mock-public.env.example"
+    },
+    {
+      "path": "deploy/mock-public.env.secrets.example",
+      "bytes": 159,
+      "sha256": "6a866434f589311d20e7de59ff3aab738f33a29b2d6f8c9ab750e48f0c8216c9",
+      "source": "deploy/mock-public.env.secrets.example"
+    },
+    {
       "path": "deploy/mock.env.example",
       "bytes": 274,
       "sha256": "24e899862d491ec866e841735197a99aea66f0cb7949c45cdd74ec7771146620",
@@ -898,21 +1025,81 @@
     },
     {
       "path": "deploy/nginx.conf",
-      "bytes": 1367,
-      "sha256": "7d6c40071566841b014410cf3ee97256442223560422808e81a94f332c463582",
+      "bytes": 1556,
+      "sha256": "9471f7c1da0404cc6af12265f8ccfbb311a136bb7a017a2fc37825f926317611",
       "source": "deploy/nginx.conf"
     },
     {
+      "path": "deploy/nominatim-start.sh",
+      "bytes": 241,
+      "sha256": "2255fc3f67cb705f528dae072c3477439e7a4c7401cbd5a968d11944acac890e",
+      "source": "deploy/nominatim-start.sh"
+    },
+    {
+      "path": "deploy/Nominatim.Dockerfile",
+      "bytes": 366,
+      "sha256": "b1438d7a47b2239ed18bab6a13d0da82384fc6a0d7facb4516eaaba3cae9d7ba",
+      "source": "deploy/Nominatim.Dockerfile"
+    },
+    {
+      "path": "deploy/pgbackrest.conf.example",
+      "bytes": 534,
+      "sha256": "da040827a73e0929d86c453d2a294171695ec45c303696dddf792a1f8c2aa021",
+      "source": "deploy/pgbackrest.conf.example"
+    },
+    {
+      "path": "deploy/postgres-entrypoint.sh",
+      "bytes": 585,
+      "sha256": "ff51587014d591af86c2d35cf16456c2fa99a8378a3c7440a63e9920b47a336f",
+      "source": "deploy/postgres-entrypoint.sh"
+    },
+    {
+      "path": "deploy/postgres-init.sh",
+      "bytes": 1680,
+      "sha256": "f5e4eac3b0ac711f88f144f3f235b4bf1703dc80912a98ba9bc88adb714b93e4",
+      "source": "deploy/postgres-init.sh"
+    },
+    {
+      "path": "deploy/Postgres.Dockerfile",
+      "bytes": 475,
+      "sha256": "1ddcbc3218ebbd761fee18c1bb78d53d15c643e6a7a839fdbc5f3a908d7d6df3",
+      "source": "deploy/Postgres.Dockerfile"
+    },
+    {
       "path": "deploy/release-evidence.example.json",
-      "bytes": 816,
-      "sha256": "e0b7a1348c719b96f2700d5fcb979e2e11e93986ba05d8ffaf6d6406dc122964",
+      "bytes": 838,
+      "sha256": "0eefed27f1d4e74090a54da69602598d3557326a339a5080519f767d857d357f",
       "source": "deploy/release-evidence.example.json"
     },
     {
       "path": "deploy/runtime.env.example",
-      "bytes": 977,
-      "sha256": "c485f7889740371743391107d938db57c83b601ced5597c19755a1153b8f3d4d",
+      "bytes": 1080,
+      "sha256": "099a4d2f6a29339b5ed06a81ec239b9084c6e0d45e74b1c5c2eeb04888123efd",
       "source": "deploy/runtime.env.example"
+    },
+    {
+      "path": "deploy/tawsel-pgbackrest-backup.service",
+      "bytes": 269,
+      "sha256": "5ab1aebe30b912cd58c3c0622ba447bdc62c1d44ae5cc5cce6cd83529ddda18f",
+      "source": "deploy/tawsel-pgbackrest-backup.service"
+    },
+    {
+      "path": "deploy/tawsel-pgbackrest-backup.timer",
+      "bytes": 212,
+      "sha256": "c39812bf2b4bd76231bfcd860eb10950062eb75f5f09a4b39ba78ee1d6eef910",
+      "source": "deploy/tawsel-pgbackrest-backup.timer"
+    },
+    {
+      "path": "deploy/team-seed.example.json",
+      "bytes": 158,
+      "sha256": "12a403ec2116d12187e429a05c63c65cdbd4557e3eefccf2d7768d00438e95a4",
+      "source": "deploy/team-seed.example.json"
+    },
+    {
+      "path": "deploy/Vroom.Dockerfile",
+      "bytes": 286,
+      "sha256": "0e94c2c42413ab7deac691d4ed581a23434729ac2c09f5f717ee07a8e6f9d984",
+      "source": "deploy/Vroom.Dockerfile"
     },
     {
       "path": "DESIGN.md",
@@ -945,9 +1132,21 @@
       "source": "dist/erp-reference/api-client/dist/closure.js"
     },
     {
+      "path": "dist/erp-reference/api-client/dist/connection-package.d.ts",
+      "bytes": 1604,
+      "sha256": "56d89c7d0a4ef43e6931f652b54ab0552ab19cd1994c81e3baee64160e845033",
+      "source": "dist/erp-reference/api-client/dist/connection-package.d.ts"
+    },
+    {
+      "path": "dist/erp-reference/api-client/dist/connection-package.js",
+      "bytes": 2478,
+      "sha256": "25af7201a4dd98933b78f63114b83da293bfbcc8b07e9a282b0a5dc178df978e",
+      "source": "dist/erp-reference/api-client/dist/connection-package.js"
+    },
+    {
       "path": "dist/erp-reference/api-client/dist/contracts/action-envelope.v1.schema.json",
-      "bytes": 1916,
-      "sha256": "3e134a59e3cf8415df51800e84949db6f7ccf25c8b54e899f7f179f10f59cf56",
+      "bytes": 2574,
+      "sha256": "1cf7c2cd8eaa69d2343a59001b7420bc1f412770dd5b52a614d6f02d10b9dd59",
       "source": "dist/erp-reference/api-client/dist/contracts/action-envelope.v1.schema.json"
     },
     {
@@ -958,8 +1157,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/b2b-intake.schema.json",
-      "bytes": 28322,
-      "sha256": "133b951077bab6448f4c0b760543253c6225a588ec00bf4c5f9544fdf8b53d04",
+      "bytes": 32607,
+      "sha256": "080fa94c110d2e3df2e10d17ad4ae19a9753740b19d3c7ab9c19f1b0b9410775",
       "source": "dist/erp-reference/api-client/dist/contracts/b2b-intake.schema.json"
     },
     {
@@ -981,21 +1180,27 @@
       "source": "dist/erp-reference/api-client/dist/contracts/common.schema.json"
     },
     {
+      "path": "dist/erp-reference/api-client/dist/contracts/connection-package.schema.json",
+      "bytes": 5873,
+      "sha256": "c064a12035e23e9be8ca333af808c41c2804986e2e34850898ce65f5aacc05cd",
+      "source": "dist/erp-reference/api-client/dist/contracts/connection-package.schema.json"
+    },
+    {
       "path": "dist/erp-reference/api-client/dist/contracts/consumer.schema.json",
-      "bytes": 12793,
-      "sha256": "cbff563ea8ea28a6af9f557e85bab0097c89a095d2cb6ca74e3d066d26352fe1",
+      "bytes": 12276,
+      "sha256": "316b64d695836f938a6d6d981974ad144362023010b2a8dc3fc4eea828b10d37",
       "source": "dist/erp-reference/api-client/dist/contracts/consumer.schema.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/corrections.schema.json",
-      "bytes": 10075,
-      "sha256": "6f44c84bd6adc1a39ee0d3f5c01c27f7d3041523c4295243f8672fbdff91aae6",
+      "bytes": 19758,
+      "sha256": "752d127c56b6be90de14276c0cb302099e32104e1db0f1ffc7f16735f0ff68c5",
       "source": "dist/erp-reference/api-client/dist/contracts/corrections.schema.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/current-activity.schema.json",
-      "bytes": 28600,
-      "sha256": "7a471aaa12d404c886b4baa33061f0fe8fd908395c8c083bd602c77543444fa4",
+      "bytes": 27668,
+      "sha256": "c94b5953e89ffcfea8a204356e56e95074649dc711def2389d455392d7db2a81",
       "source": "dist/erp-reference/api-client/dist/contracts/current-activity.schema.json"
     },
     {
@@ -1018,15 +1223,27 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/events/envelope.v1.schema.json",
-      "bytes": 3304,
-      "sha256": "d723d62d419e5fe20f896481df0d54ef6b94d8437d19f3057cc47f199eba7ccd",
+      "bytes": 3243,
+      "sha256": "80640c598bd2d48abfd8d0373e781983878837c927ba5fda63b311dc8970cefb",
       "source": "dist/erp-reference/api-client/dist/contracts/events/envelope.v1.schema.json"
     },
     {
+      "path": "dist/erp-reference/api-client/dist/contracts/events/sender-event.schema.json",
+      "bytes": 277,
+      "sha256": "04d2e5d0f17ffd82927b6abdd63fca1056cda1340b7fe23430cc2f9a8bf4c1df",
+      "source": "dist/erp-reference/api-client/dist/contracts/events/sender-event.schema.json"
+    },
+    {
       "path": "dist/erp-reference/api-client/dist/contracts/events/sender-event.v1.schema.json",
-      "bytes": 14025,
-      "sha256": "cbce5b5128d8d2f5cf6c58668c989e6b403876531703921a16834dbcf9fb1f06",
+      "bytes": 13404,
+      "sha256": "1b726be7666c7251fa5ba68bb1a9dad9a93e5aa134383c0a7d2fe5a35d37fd8f",
       "source": "dist/erp-reference/api-client/dist/contracts/events/sender-event.v1.schema.json"
+    },
+    {
+      "path": "dist/erp-reference/api-client/dist/contracts/events/sender-event.v2.schema.json",
+      "bytes": 2250,
+      "sha256": "cdd598d89bd94691ee774f021fb7a9760c363e79c39d21931e569b0b9763ee18",
+      "source": "dist/erp-reference/api-client/dist/contracts/events/sender-event.v2.schema.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/evidence-receipt.v1.schema.json",
@@ -1036,20 +1253,20 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/examples/invalid.json",
-      "bytes": 225979,
-      "sha256": "1d6e1edde1f489de99b8ce7977de05725db528cca54b5246d25d957c13cec1b6",
+      "bytes": 238709,
+      "sha256": "ed8b81fdda298df45a1ff3175a9b4d075ff4b30aeced5e3f0d92ff5fc3c43e9c",
       "source": "dist/erp-reference/api-client/dist/contracts/examples/invalid.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/examples/README.md",
-      "bytes": 12733,
-      "sha256": "3a3a748a4d5f9298f2f03ee46270da31258c27cea582ff8b787d31af733e85e7",
+      "bytes": 12885,
+      "sha256": "5aa6f9175b59d8b10256994fe0da12f8ace5d1d3b39255666d7c03e3eacee94e",
       "source": "dist/erp-reference/api-client/dist/contracts/examples/README.md"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/examples/valid.json",
-      "bytes": 429787,
-      "sha256": "744dcef5b503fee2b7a2284e226a7ef68905875a84467e946e72a4100f3c9410",
+      "bytes": 445764,
+      "sha256": "c6b5e261acd462e63e173d8a5a789551ed48b568fa8d285a3852929961092105",
       "source": "dist/erp-reference/api-client/dist/contracts/examples/valid.json"
     },
     {
@@ -1078,26 +1295,26 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/openapi.yaml",
-      "bytes": 240606,
-      "sha256": "80c06dc911dc19072598926a827a51a6f36dc2170d3230726a331586a7003271",
+      "bytes": 235611,
+      "sha256": "82f2651273a6ddbf21d0b5b49b7341f24f16ae3abac4586777b46e24a717beff",
       "source": "dist/erp-reference/api-client/dist/contracts/openapi.yaml"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/operations.json",
-      "bytes": 75976,
-      "sha256": "838abf9fbc704494a3729fe4c171da9781a69188bfacf4f5a074ced151afc4d2",
+      "bytes": 74901,
+      "sha256": "7d6749ec93bbfb6a6cb66d47a6a819d5ebf3799cf7a3ad102c73d64541b4a3ba",
       "source": "dist/erp-reference/api-client/dist/contracts/operations.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/outbox.schema.json",
-      "bytes": 17186,
-      "sha256": "acae29b68e9e267b2d1f495c6904880f421f3959684a3c14c8fa7c40f34bbf5b",
+      "bytes": 16472,
+      "sha256": "3caf10f546d24bcd9f3209bc1c128befe87fd683a743c52884f043aca6e3e997",
       "source": "dist/erp-reference/api-client/dist/contracts/outbox.schema.json"
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/outcomes.schema.json",
-      "bytes": 30203,
-      "sha256": "909bfc5356faa2150077754845a4f83c7328fcfe58571254e701edeab1c72927",
+      "bytes": 76231,
+      "sha256": "daac6d4490880d218669fc569df717b4e8b49a6a55be8f13d325798638087c85",
       "source": "dist/erp-reference/api-client/dist/contracts/outcomes.schema.json"
     },
     {
@@ -1108,8 +1325,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/provisioning.schema.json",
-      "bytes": 36921,
-      "sha256": "a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8",
+      "bytes": 37800,
+      "sha256": "44e4e80a8eb95007dcdd2dbbefdffb03fb72ca64bef2256efc01483b7995f5fa",
       "source": "dist/erp-reference/api-client/dist/contracts/provisioning.schema.json"
     },
     {
@@ -1138,8 +1355,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/contracts/routing.schema.json",
-      "bytes": 13403,
-      "sha256": "164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793",
+      "bytes": 13383,
+      "sha256": "cad3fc624f6eff1e2185f8db253d594f8f43aa477099bc2d06388dc2293d8227",
       "source": "dist/erp-reference/api-client/dist/contracts/routing.schema.json"
     },
     {
@@ -1228,8 +1445,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/intake.d.ts",
-      "bytes": 4849,
-      "sha256": "d220dab3def799b6724f8504254f10bfb8a4382fab31c71757805f10c1b81b02",
+      "bytes": 4875,
+      "sha256": "3557b9b1dc39a8b9e65b8b962bd89559bbe3c99b91eb2dded96affd3483c21d7",
       "source": "dist/erp-reference/api-client/dist/intake.d.ts"
     },
     {
@@ -1264,8 +1481,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/outbox.d.ts",
-      "bytes": 3210,
-      "sha256": "e3de6e4b5b6ccb862e30b160085c66b50f210227a691d8c234e207cd0195eacb",
+      "bytes": 3207,
+      "sha256": "8a08d3fc0934c3ae847d4ee7d0c7ab419f999f6f6855161eafc33bc384db1663",
       "source": "dist/erp-reference/api-client/dist/outbox.d.ts"
     },
     {
@@ -1360,8 +1577,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/dist/schema.d.ts",
-      "bytes": 579948,
-      "sha256": "60155256b32c83acb0f88ceb7a4f521b0c84d25b038c3b73feaa392eb7102a2f",
+      "bytes": 605995,
+      "sha256": "0b9dcc1392b5b2aa37a0e1b97062e9bad29aa014d4ee5110c2e9641f14f5f5fd",
       "source": "dist/erp-reference/api-client/dist/schema.d.ts"
     },
     {
@@ -1426,8 +1643,8 @@
     },
     {
       "path": "dist/erp-reference/api-client/package.json",
-      "bytes": 1131,
-      "sha256": "1c1c8106913d3f7c8295a10ceb48a5841bb8b3ebcb175499cecf9f439b5f0cd0",
+      "bytes": 1164,
+      "sha256": "3c07c709b0a2dfc30c96ef93c26a1b49933a2d4bef064eaee533d1a040f06616",
       "source": "dist/erp-reference/api-client/package.json"
     },
     {
@@ -1468,20 +1685,20 @@
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/app.js",
-      "bytes": 2728,
-      "sha256": "aff7e3dbc9a885bddc56a652b1e0d4edcfe585bb488a33c290106e6914ae1bb3",
+      "bytes": 2811,
+      "sha256": "837e02c4dbdc271547428746b9ef0a8031ea407ab9f4a24254f21181410e7486",
       "source": "dist/erp-reference/mock-erp/dist/app.js"
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/config.d.ts",
-      "bytes": 680,
-      "sha256": "5b5db151a6d358f6a8524101c8360600089630ae226a9cd51a4fa4b2894828e4",
+      "bytes": 754,
+      "sha256": "7002c4a4a83662b0ca92fef8ef8bad0f1d6cf32a8b69cf9820ef51976b5d5cb2",
       "source": "dist/erp-reference/mock-erp/dist/config.d.ts"
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/config.js",
-      "bytes": 2867,
-      "sha256": "a29376b605deea47f2ec48e092b2786f892e57caa89ede54058a4b2e8d5dafea",
+      "bytes": 3978,
+      "sha256": "deb2e8ad4352df9b272d08c336138388047fc6124baa584b5542124b454aeb36",
       "source": "dist/erp-reference/mock-erp/dist/config.js"
     },
     {
@@ -1492,9 +1709,21 @@
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/database.js",
-      "bytes": 5396,
-      "sha256": "bceadf98d5d126bef2e2ed8c2297115d8988045ede8d36da05d62aa8faa5bce5",
+      "bytes": 6141,
+      "sha256": "b959dfaebd08be0efd65321a803dc0aeef7811939a5272b0e59838886577d84a",
       "source": "dist/erp-reference/mock-erp/dist/database.js"
+    },
+    {
+      "path": "dist/erp-reference/mock-erp/dist/health.d.ts",
+      "bytes": 327,
+      "sha256": "6adc300c55117fbabb83cc8e601aaa2f8fefc5d57380fee19361ef58a98dd781",
+      "source": "dist/erp-reference/mock-erp/dist/health.d.ts"
+    },
+    {
+      "path": "dist/erp-reference/mock-erp/dist/health.js",
+      "bytes": 935,
+      "sha256": "c93b269e52552b8f4aecdd22226630d1cfa1e5fd0e91782b79ebcf90595a3b03",
+      "source": "dist/erp-reference/mock-erp/dist/health.js"
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/inbox.d.ts",
@@ -1504,8 +1733,8 @@
     },
     {
       "path": "dist/erp-reference/mock-erp/dist/inbox.js",
-      "bytes": 3328,
-      "sha256": "a5e7bd26d9920e20ad83ee9b5a0aea8f7f977fea1ced62e637aa6006acc21a37",
+      "bytes": 3325,
+      "sha256": "3a867f80e4cc679db0e37a43a3d81c7eed269a0263b69687b1ec5e39d69769a0",
       "source": "dist/erp-reference/mock-erp/dist/inbox.js"
     },
     {
@@ -1607,7 +1836,7 @@
     {
       "path": "dist/erp-reference/mock-erp/package.json",
       "bytes": 513,
-      "sha256": "7dfd130180578038556a74d11abc31b571bf612faca64f33618e28460f169fcc",
+      "sha256": "fbb61c60b5c5ea3902f31212cff6c8bc12c604255b2d914f42bed0bc3d55d0bb",
       "source": "dist/erp-reference/mock-erp/package.json"
     },
     {
@@ -1707,10 +1936,10 @@
       "source": "dist/erp-reference/mock-erp/ui-dist/assets/cairo-latin-800-normal-ReWrxM5E.woff"
     },
     {
-      "path": "dist/erp-reference/mock-erp/ui-dist/assets/index-mRRSzy_u.js",
-      "bytes": 251635,
-      "sha256": "cd1e41fe78cdb361c5cfa62527a642b3967657cf10a479bf009995bc909999cb",
-      "source": "dist/erp-reference/mock-erp/ui-dist/assets/index-mRRSzy_u.js"
+      "path": "dist/erp-reference/mock-erp/ui-dist/assets/index-CodM4QBA.js",
+      "bytes": 254325,
+      "sha256": "faa69fff10487c963857a30ee4ce88fa7de7eaf365b2d025938c407acc02ac55",
+      "source": "dist/erp-reference/mock-erp/ui-dist/assets/index-CodM4QBA.js"
     },
     {
       "path": "dist/erp-reference/mock-erp/ui-dist/assets/index-WBxnteOg.css",
@@ -1721,13 +1950,13 @@
     {
       "path": "dist/erp-reference/mock-erp/ui-dist/index.html",
       "bytes": 392,
-      "sha256": "bd2d0c84c7b8cf1a52023c7653687c50904d3e6ea22c2e5139f1e14ca6c784bf",
+      "sha256": "52005122037a8df6a68ebf2de35d5be9e0d7ee2084f9be86beeffb0d928b6fdc",
       "source": "dist/erp-reference/mock-erp/ui-dist/index.html"
     },
     {
       "path": "dist/erp-reference/package-lock.json",
-      "bytes": 73533,
-      "sha256": "9270640848398c89505b1f2c2fd72992ae511a7a3f63a3b681a6f8fefeba54c5",
+      "bytes": 71642,
+      "sha256": "0d7e91318a5db6bff7837ccb0060c2ed95d59ec89d6d82ce1806bbf0e78c3412",
       "source": "dist/erp-reference/package-lock.json"
     },
     {
@@ -1768,8 +1997,8 @@
     },
     {
       "path": "docs/contract-coverage.md",
-      "bytes": 52284,
-      "sha256": "d31541b35cdbd8f991281885f5b672f752ad2e207a668538f04e13a9cd51596f",
+      "bytes": 52756,
+      "sha256": "acb80d93ca5584a4ce4a07be3da219fa0dd8d226b41d858782949792d148fc25",
       "source": "docs/contract-coverage.md"
     },
     {
@@ -1786,8 +2015,8 @@
     },
     {
       "path": "docs/deployment.md",
-      "bytes": 17652,
-      "sha256": "b2bd57dca79aa22bc32504d81a44cb39ce6e8a778cdf3c12f73b39140e954647",
+      "bytes": 18240,
+      "sha256": "abc34e9aee6e712005f92d4297d28b83637269915dc23a94f45cd53fef087279",
       "source": "docs/deployment.md"
     },
     {
@@ -1803,6 +2032,12 @@
       "source": "docs/diagnostics.md"
     },
     {
+      "path": "docs/dokploy-pilot.md",
+      "bytes": 16010,
+      "sha256": "877ba433eaf1471958b87885918856d013e38bb7d08fdef9c81e358d90f11429",
+      "source": "docs/dokploy-pilot.md"
+    },
+    {
       "path": "docs/eligibility.md",
       "bytes": 8454,
       "sha256": "92de9b16b9276eda5b863eba79f846f9d7eaf0b687a691791f8b31ee80ee20b9",
@@ -1810,44 +2045,80 @@
     },
     {
       "path": "docs/engine-boundary.md",
-      "bytes": 7831,
-      "sha256": "d2d460247f745ceab85bf560a4c003ac78ba27c429de2e3566e561f31ceafe54",
+      "bytes": 9804,
+      "sha256": "0df3ef3a379914fa523c444b4dfdbe5bc50eb29785371e89993cf316d85506c2",
       "source": "docs/engine-boundary.md"
     },
     {
       "path": "docs/ERP-INTEGRATION-HANDOFF.md",
-      "bytes": 7872,
-      "sha256": "772b3b2003e0a3341239bdec44a763dcdc2dc40c6fae0917e3840a9cb1604b5f",
+      "bytes": 9187,
+      "sha256": "0023a5c8a70e541da0c3b6315f87e784c682e92be410b46a6d9b0f3aaf891671",
       "source": "docs/ERP-INTEGRATION-HANDOFF.md"
     },
     {
+      "path": "docs/erp/connection-metadata.example.json",
+      "bytes": 924,
+      "sha256": "7b21fca6804a6232ca658d1a57bec9410ca054fcba5f81252c76adae96020276",
+      "source": "docs/erp/connection-metadata.example.json"
+    },
+    {
       "path": "docs/erp/consumer-quickstart.md",
-      "bytes": 13357,
-      "sha256": "02c4c73eb0bc64f30032a1f40d6349953cb96601ede0a71115591685192595e8",
+      "bytes": 13506,
+      "sha256": "c9b6b582acbcb7a72a15267ef22aec6269da3a6441ea9787e377a74bcda80c68",
       "source": "docs/erp/consumer-quickstart.md"
     },
     {
+      "path": "docs/erp/enrollment-request.example.json",
+      "bytes": 480,
+      "sha256": "42e78b98f125a92d86323e2b690ef2ef0087a02a50b0a20e5a40c7343730d323",
+      "source": "docs/erp/enrollment-request.example.json"
+    },
+    {
+      "path": "docs/erp/erp_requirements_discovery_notes.md",
+      "bytes": 17606,
+      "sha256": "7f4e9a1960656347c4d8d809c10f54b1dbba2f901d26192fab2c275f170a78b7",
+      "source": "docs/erp/erp_requirements_discovery_notes.md"
+    },
+    {
       "path": "docs/erp/ERP-PLANNING-INPUT.md",
-      "bytes": 7976,
-      "sha256": "1f92d2707e5f829edc090049d720ff64fb7fb1f5316f2f0858dde9f7ff99500b",
+      "bytes": 8252,
+      "sha256": "ce867cff656fd67395eb5c3c234c417c075c61c905ee604c52e9f38532cc3975",
       "source": "docs/erp/ERP-PLANNING-INPUT.md"
     },
     {
+      "path": "docs/erp/ERP-PRIOR-OWNER-DECISIONS.md",
+      "bytes": 40487,
+      "sha256": "50e40e45968d6b92362dcc7b75cd90b93c164e25d893a589c6406d5debfaf2eb",
+      "source": "docs/erp/ERP-PRIOR-OWNER-DECISIONS.md"
+    },
+    {
       "path": "docs/erp/field-and-status-mapping.md",
-      "bytes": 17552,
-      "sha256": "454227c99bcf556743aaeab8b046f3b476f29852ffbea3c91e208044051827f6",
+      "bytes": 17587,
+      "sha256": "1ac356aa1abdffc58ed96c0def6efd9c72a675ba85153d8e4321037725be3492",
       "source": "docs/erp/field-and-status-mapping.md"
     },
     {
+      "path": "docs/erp/interoperability-2026-10-10.md",
+      "bytes": 21155,
+      "sha256": "a76b0e905468c78c2f6056c0073c994be36c881bb12c6c65de55d7e9b4a2da28",
+      "source": "docs/erp/interoperability-2026-10-10.md"
+    },
+    {
+      "path": "docs/erp/planning-pack/07-ERP-DISCOVERY-AND-CHANGE-CONTROL.md",
+      "bytes": 13228,
+      "sha256": "20380ca9669c8aba983b794482d641a576585a56985bd30b6a0c6306c6b65070",
+      "source": "docs/erp/planning-pack/07-ERP-DISCOVERY-AND-CHANGE-CONTROL.md"
+    },
+    {
       "path": "docs/erp/planning-pack/README.md",
-      "bytes": 580,
-      "sha256": "38dacc58b2b985b324c4384183135a138b2397c6754874d35fe5ac0f37a65efd",
+      "bytes": 1244,
+      "sha256": "d8bf62bf7bf20caf9aff9104c1eefef67b9d850eb73cc02089d87f2d1e54f087",
       "source": "docs/erp/planning-pack/README.md"
     },
     {
       "path": "docs/erp/README.md",
-      "bytes": 4679,
-      "sha256": "255bb806f77af43c005e2b53a0e46b7aaba28fbbb2f28e3abbe4e83165e4d5ca",
+      "bytes": 5723,
+      "sha256": "0abeb712e173508f693b75c2a62133e9e2c755bc258e0b2dfcf69e2c7894b91d",
       "source": "docs/erp/README.md"
     },
     {
@@ -1858,26 +2129,32 @@
     },
     {
       "path": "docs/erp/reference-package-lock.json",
-      "bytes": 73533,
-      "sha256": "9270640848398c89505b1f2c2fd72992ae511a7a3f63a3b681a6f8fefeba54c5",
+      "bytes": 71642,
+      "sha256": "0d7e91318a5db6bff7837ccb0060c2ed95d59ec89d6d82ce1806bbf0e78c3412",
       "source": "docs/erp/reference-package-lock.json"
     },
     {
+      "path": "docs/erp/releases/release-manifest-2026-10-03.json",
+      "bytes": 176167,
+      "sha256": "2095f9ecaf0aca1bd70546070060c95263c0541c80789b9aa466399836bd2b20",
+      "source": "docs/erp/releases/release-manifest-2026-10-03.json"
+    },
+    {
       "path": "docs/erp/source-protocol.md",
-      "bytes": 7783,
-      "sha256": "c0aff83801900ab09bde103e41c3529a474b6c9fc1e66326d96f5af05faf93bc",
+      "bytes": 9013,
+      "sha256": "7f3d08f644dd1345cf807ce2ce5b92055e2c19af89e9fa3a464a72762589ff74",
       "source": "docs/erp/source-protocol.md"
     },
     {
       "path": "docs/identity.md",
-      "bytes": 13531,
-      "sha256": "b1ff71a2acc2b125c12448f0424a3dba77ee71c432ec258e5ef221140f487155",
+      "bytes": 14073,
+      "sha256": "768627edf4a1bdc249dbb8033bdebee288029699c87b35bfc18dc86cbcd481d8",
       "source": "docs/identity.md"
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 141707,
-      "sha256": "18489f639aa2b0559a759551131fda9fac926b1d0789de3dafeb01b1ad2b4aff",
+      "bytes": 142219,
+      "sha256": "5388bcb009a1912e3ed539eb584895456f5706e93119d2cb4f79650b57b48c9d",
       "source": "docs/implementation-status.md"
     },
     {
@@ -1948,8 +2225,8 @@
     },
     {
       "path": "docs/monitoring.md",
-      "bytes": 10176,
-      "sha256": "6a4c8f522a2a1357517ec6c130fa51680c847a12632df05d1c68e69ee5516206",
+      "bytes": 10880,
+      "sha256": "82742baed5aaca39ee8b6a1b98ad9d289cd841b8e2c1cf94ae7de4d0f41e21c9",
       "source": "docs/monitoring.md"
     },
     {
@@ -1966,8 +2243,8 @@
     },
     {
       "path": "docs/operations.md",
-      "bytes": 18472,
-      "sha256": "6827050f0807445befdcc59ca5e41b3ddfe4194f05834ef845ab852ef51b9288",
+      "bytes": 19650,
+      "sha256": "a40668dd75459e65aa3cdb4bb87bad47b1e6f004984e495d006208137475def8",
       "source": "docs/operations.md"
     },
     {
@@ -2380,8 +2657,8 @@
     },
     {
       "path": "docs/phases/12-engine-profile-adapters.md",
-      "bytes": 10217,
-      "sha256": "e52f6c7866a4bbb00aa9edf6137edf7b0d27bd5a6640e21ca4caa03526730283",
+      "bytes": 10413,
+      "sha256": "562da63d43d2feb1e4875f33c5b3b022d28ea9c16d672298864590dfb04a948d",
       "source": "docs/phases/12-engine-profile-adapters.md"
     },
     {
@@ -2566,26 +2843,26 @@
     },
     {
       "path": "docs/phases/coverage-matrix.md",
-      "bytes": 82035,
-      "sha256": "ef109c25f48463a3194cfd2923bb2572f13388f1eb0e5c9fc68ac1524634353d",
+      "bytes": 82115,
+      "sha256": "897cf88c89adb9587593fc9e7d2924ea74100ee6b771508bc6236befa1b903f7",
       "source": "docs/phases/coverage-matrix.md"
     },
     {
       "path": "docs/phases/decision-map.md",
-      "bytes": 27041,
-      "sha256": "745cf00479f5623ad1b80b9084080c3bda4c5e85ffe8de2e9d77c511dc58f9a3",
+      "bytes": 27826,
+      "sha256": "d4cf573916ea9b0a790faab6f498e104fd133056e8bedabf5f6959d031d3ccca",
       "source": "docs/phases/decision-map.md"
     },
     {
       "path": "docs/phases/model-selection.md",
-      "bytes": 11930,
-      "sha256": "4b214141caa6e75b340f42b20df2312e4831b95dadefc1fb062e8b6cc796c20f",
+      "bytes": 11986,
+      "sha256": "a38cf2e6839ab196b3d2c7f5a79e27e528f963b44ef5f2eaec08c920280275bd",
       "source": "docs/phases/model-selection.md"
     },
     {
       "path": "docs/phases/README.md",
-      "bytes": 28365,
-      "sha256": "60eda9ce55af1190a119718579f518a09727f84228eea67cfe2594841df95549",
+      "bytes": 28372,
+      "sha256": "1e754e611989e6b2209ed9b19c322d3a82a251e369234bc38ca5e55c19957736",
       "source": "docs/phases/README.md"
     },
     {
@@ -2614,20 +2891,20 @@
     },
     {
       "path": "docs/provisioning.md",
-      "bytes": 13717,
-      "sha256": "978b9eae19575dde03b97bde23800ca6a9673e3fec3e422679c0d6c57559f496",
+      "bytes": 13736,
+      "sha256": "db4b3b57c5e1ee0e1ec9fb8603a0e81471fb254f2603e0d7fc7f28ac9b2c9813",
       "source": "docs/provisioning.md"
     },
     {
       "path": "docs/recovery.md",
-      "bytes": 13304,
-      "sha256": "82b889a0100862b052b6ca543ac515466d9b37ed6d9eebb53c9fd48105e98005",
+      "bytes": 13649,
+      "sha256": "a1cc9db9fe1e2bf2d89f5eb57c119b7689786c3ab3a79227969a916aeab52827",
       "source": "docs/recovery.md"
     },
     {
       "path": "docs/reference/public-contract.md",
-      "bytes": 464009,
-      "sha256": "909de80d2fb4676449a66da7b48948e7ecb5655ae3d679e8f1d1d8e8685aeb21",
+      "bytes": 468324,
+      "sha256": "ceefe3c1a75909516ef5fc04b7428686da96e9b00724e867610c351b37a48462",
       "source": "docs/reference/public-contract.md"
     },
     {
@@ -2662,8 +2939,8 @@
     },
     {
       "path": "docs/ui-actions.md",
-      "bytes": 37516,
-      "sha256": "cd354842c8c505b0f3796cdbc2f000cd0eeb4d3711a5a2a771cae9da008eaa0a",
+      "bytes": 37845,
+      "sha256": "a4b8f21934a1b178e78dfc177a314a509f9fd4aa9a89f183a721da40c7b09408",
       "source": "docs/ui-actions.md"
     },
     {
@@ -2698,8 +2975,8 @@
     },
     {
       "path": "docs/verification/contract-audit.json",
-      "bytes": 149510,
-      "sha256": "203a857cee0dca3d3d490f234ef17faff5bcd9fa78a240167f499145561bea57",
+      "bytes": 151700,
+      "sha256": "0da8bae05471ec0e3b585be47f5848a792c2d7b2263bc080c29a02160aafcb08",
       "source": "docs/verification/contract-audit.json"
     },
     {
@@ -2709,10 +2986,22 @@
       "source": "docs/verification/deployment.md"
     },
     {
+      "path": "docs/verification/engine-two-mode-2026-10-03.json",
+      "bytes": 1305,
+      "sha256": "50c0671a7f70fea34f7e4c24482484cc24fbbe2ddb08796047da5cdca56cd5da",
+      "source": "docs/verification/engine-two-mode-2026-10-03.json"
+    },
+    {
       "path": "docs/verification/implementation-owners.json",
-      "bytes": 10769,
-      "sha256": "5aad6c73d72c33a25f1d0c1f4447d2924dc7aa7bba249a9771c1db636a8fa5bb",
+      "bytes": 10866,
+      "sha256": "e6eac6e3d88efb71f028bd6dbf32f835531d62fc8659537d1bdaf8efab524cb3",
       "source": "docs/verification/implementation-owners.json"
+    },
+    {
+      "path": "docs/verification/installation-helper-2026-10-10.json",
+      "bytes": 754,
+      "sha256": "5e34c96a0587f7b12c9a60e3b243a791bee1ec918685fd9f6aa1d9c1367f8a40",
+      "source": "docs/verification/installation-helper-2026-10-10.json"
     },
     {
       "path": "docs/verification/integration-local-2026-09-26-initial.json",
@@ -2727,10 +3016,70 @@
       "source": "docs/verification/integration-local-2026-09-26.json"
     },
     {
+      "path": "docs/verification/integration-local-2026-10-10.json",
+      "bytes": 92830,
+      "sha256": "e97c54b14e8068a47eeaa6aa0503df84fc9687c878c2ace82ad94bdd96c53db7",
+      "source": "docs/verification/integration-local-2026-10-10.json"
+    },
+    {
       "path": "docs/verification/integration.md",
-      "bytes": 12285,
-      "sha256": "b7784d88050db42f87a4fcdba9f84cb858f41f324d4d1d3556bfaa89e47d10d3",
+      "bytes": 12685,
+      "sha256": "7e87c9d8c55e140a38b10e12efe7cd0eeb51878392e46a9863d7af7b8637c1eb",
       "source": "docs/verification/integration.md"
+    },
+    {
+      "path": "docs/verification/interoperability-browser-2026-10-10.json",
+      "bytes": 27770,
+      "sha256": "c6a52676c8d523f58edb5222734e7dcf2a7ba788c252648ca6694a4e681b42bc",
+      "source": "docs/verification/interoperability-browser-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-checks-2026-10-10.json",
+      "bytes": 4534,
+      "sha256": "226196fc1cac7de0dec883f866386c24a8463e2c8ffede2651a5961eabd4b863",
+      "source": "docs/verification/interoperability-checks-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-examples-2026-10-10.json",
+      "bytes": 43228,
+      "sha256": "2c10a334f9be2249ad55db2fdccdb3b83b8a7944713d62e8adb970b8c97631c4",
+      "source": "docs/verification/interoperability-examples-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-ledger-2026-10-10.json",
+      "bytes": 130884,
+      "sha256": "638703d4ad53848268afeaccaca47649811bab16fb5fd820b602eb19feef4778",
+      "source": "docs/verification/interoperability-ledger-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-legacy-browser-2026-10-10.json",
+      "bytes": 43124,
+      "sha256": "3c082d538c177b5cb8cad34d4a0be5c4d60b95f76b6119ae3646b3a7ec348cb6",
+      "source": "docs/verification/interoperability-legacy-browser-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-lost-response-2026-10-10.json",
+      "bytes": 14409,
+      "sha256": "b78e2bdea55b10ef4eac266ba727ddeba5f37ed06d12f66bf111ab9b229d3a78",
+      "source": "docs/verification/interoperability-lost-response-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-predeparture-2026-10-10.json",
+      "bytes": 24152,
+      "sha256": "4b978e8eb6bed364268d49c6858b3b3cf9523fb6d3d59439d022e11036ce64cf",
+      "source": "docs/verification/interoperability-predeparture-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-reasons-2026-10-10.json",
+      "bytes": 37479,
+      "sha256": "2853fe7b734289ea039fb846c6a2e80305ccdd188e140088fed33e72f760f4a2",
+      "source": "docs/verification/interoperability-reasons-2026-10-10.json"
+    },
+    {
+      "path": "docs/verification/interoperability-return-race-2026-10-10.json",
+      "bytes": 9292,
+      "sha256": "b48219bc56c457838527b0bc1349bfdf46e7e58677299cd4e63c0850c45397d3",
+      "source": "docs/verification/interoperability-return-race-2026-10-10.json"
     },
     {
       "path": "docs/verification/package-local-2026-09-26.json",
@@ -2800,20 +3149,20 @@
     },
     {
       "path": "docs/verification/pilot-readiness.md",
-      "bytes": 11076,
-      "sha256": "3b4c398305e4be4608fb65c9fdc703edd4e10f3b9ce57239211d06cee7f5ceb9",
+      "bytes": 11889,
+      "sha256": "44075ba1738cb0afa9e22d999d08306060a9cfdb6a7e8f83e2c11ea287b7da19",
       "source": "docs/verification/pilot-readiness.md"
     },
     {
       "path": "docs/verification/pilot-walkthrough.md",
-      "bytes": 12307,
-      "sha256": "760b8f2598beaa6d11070c94ac39c600a92b07fbbdcce2c19bf249fef96a490e",
+      "bytes": 13249,
+      "sha256": "0fa5b8e761909209c1dac8491fcf934631fa5f917ca473189b112ad602a45266",
       "source": "docs/verification/pilot-walkthrough.md"
     },
     {
       "path": "docs/verification/requirement-ledger.md",
-      "bytes": 50863,
-      "sha256": "969b32c88310c09dfd2bac568eb205fe800c7a244a19f300891c4e05fab3b9c4",
+      "bytes": 51249,
+      "sha256": "a1e8c31012716a7d021ef4737cee9b892d0ac1cf7e020d665d1be74dd8b05444",
       "source": "docs/verification/requirement-ledger.md"
     },
     {
@@ -2829,6 +3178,12 @@
       "source": "docs/verification/restore.md"
     },
     {
+      "path": "docs/verification/two-mode-routing-2026-10-03.md",
+      "bytes": 8050,
+      "sha256": "401ab438d112e74e8efb0c3b2722d45ec69ffb9920387440e36250d406569023",
+      "source": "docs/verification/two-mode-routing-2026-10-03.md"
+    },
+    {
       "path": "docs/workday-closure.md",
       "bytes": 9532,
       "sha256": "bce2a72a4400c5faf5591c2d320caac57c460b30c2c0497bde4c2a34dcc6c5db",
@@ -2836,19 +3191,85 @@
     },
     {
       "path": "master-plan.md",
-      "bytes": 80421,
-      "sha256": "bc1940b90573997570ac2ad5f09bd6dc499b211b0acda7337337394375eab524",
+      "bytes": 80810,
+      "sha256": "709708f4f5875cfc73added1eebd3f4f3f776c0ca7d3df206e17b458ceb95f21",
       "source": "master-plan.md"
     },
     {
       "path": "metadata/source-identity.json",
-      "bytes": 81174,
-      "sha256": "e5d6bf8787436e1ed49601cb1060a62b7541c4e9850d69e7b2d9e147d743ce91"
+      "bytes": 88869,
+      "sha256": "bc2bc9ab177118573aa89e7ae84a69a8aa0e7adc3e9100c837f3b763d885da7f"
     },
     {
       "path": "metadata/workspace-package.json",
-      "bytes": 17480,
-      "sha256": "5ae9d514bef972eebb1450e31db733a219a30f3b2ea4b0585ce8ac57148b059d"
+      "bytes": 17893,
+      "sha256": "b22f550a55e87626f5a8144915ecf4a9ab85ca5f2aa2c72253cba6dd1b78d70f"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/correction.png",
+      "bytes": 71875,
+      "sha256": "1f772c1d5dd2410087169553d62f44def2c4fe81e8c65d34d8951ee2cbbbd4a5",
+      "source": "output/playwright/interop-2026-10-10/correction.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/no-answer.png",
+      "bytes": 150050,
+      "sha256": "20ffa350acdd8c9fe136fda85ef793fc72c9a9a8e4859dab7a123a2335245309",
+      "source": "output/playwright/interop-2026-10-10/no-answer.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-capacity-320.png",
+      "bytes": 45150,
+      "sha256": "584aec106989e84c2ad7cf317c3377e019a3ef14c626d8518b14cf35465fda3b",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-capacity-320.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-correction-1440.png",
+      "bytes": 99706,
+      "sha256": "812c773dd03312b0e8e82e7788b0c72d22395917bcfc691589a1a2e3ecc2d7d2",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-correction-1440.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-day-denial-personal.png",
+      "bytes": 50502,
+      "sha256": "71f663ddea98309ae263e8013d525401d5476f8065d6181807a48d54db9b702f",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-day-denial-personal.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-future-1366.png",
+      "bytes": 29675,
+      "sha256": "1579cb440bb6a174bcce50e032a986d2e1c8b6298185ce29f77ad60059aaf723",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-future-1366.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-receipt-denial-390.png",
+      "bytes": 76524,
+      "sha256": "7b22125d1d3eca5a048c0179756080221b75e7c4f079a605efc82a75bfdf934e",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-receipt-denial-390.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-30-unpaid-sheet-390.png",
+      "bytes": 172372,
+      "sha256": "da47efaf19f925059ae70285e63c7908f2b402184503bd9fb133b18b1d3b4311",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-30-unpaid-sheet-390.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-34-adopted-evidence.png",
+      "bytes": 33883,
+      "sha256": "78870d9bd6b399702af515f1996676cb113cb6a70fc4a698ca92de2202f84743",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-34-adopted-evidence.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-34-recovered-mobile.png",
+      "bytes": 137060,
+      "sha256": "7a229527a23459467f5d836dc7945e30c251d42969bca543aee374527c8ec0f5",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-34-recovered-mobile.png"
+    },
+    {
+      "path": "output/playwright/interop-2026-10-10/regression-phase-34-retry-mobile.png",
+      "bytes": 144471,
+      "sha256": "1d6d2faefb019ede1491e2e27eac84716a9f1781ff4d44075af0a01d8c680cfa",
+      "source": "output/playwright/interop-2026-10-10/regression-phase-34-retry-mobile.png"
     },
     {
       "path": "output/playwright/phase-01-cairo-rtl-mobile.png",
@@ -3547,9 +3968,21 @@
       "source": "packages/api-client/dist/closure.js"
     },
     {
+      "path": "packages/api-client/dist/connection-package.d.ts",
+      "bytes": 1604,
+      "sha256": "56d89c7d0a4ef43e6931f652b54ab0552ab19cd1994c81e3baee64160e845033",
+      "source": "packages/api-client/dist/connection-package.d.ts"
+    },
+    {
+      "path": "packages/api-client/dist/connection-package.js",
+      "bytes": 2478,
+      "sha256": "25af7201a4dd98933b78f63114b83da293bfbcc8b07e9a282b0a5dc178df978e",
+      "source": "packages/api-client/dist/connection-package.js"
+    },
+    {
       "path": "packages/api-client/dist/contracts/action-envelope.v1.schema.json",
-      "bytes": 1916,
-      "sha256": "3e134a59e3cf8415df51800e84949db6f7ccf25c8b54e899f7f179f10f59cf56",
+      "bytes": 2574,
+      "sha256": "1cf7c2cd8eaa69d2343a59001b7420bc1f412770dd5b52a614d6f02d10b9dd59",
       "source": "packages/api-client/dist/contracts/action-envelope.v1.schema.json"
     },
     {
@@ -3560,8 +3993,8 @@
     },
     {
       "path": "packages/api-client/dist/contracts/b2b-intake.schema.json",
-      "bytes": 28322,
-      "sha256": "133b951077bab6448f4c0b760543253c6225a588ec00bf4c5f9544fdf8b53d04",
+      "bytes": 32607,
+      "sha256": "080fa94c110d2e3df2e10d17ad4ae19a9753740b19d3c7ab9c19f1b0b9410775",
       "source": "packages/api-client/dist/contracts/b2b-intake.schema.json"
     },
     {
@@ -3583,21 +4016,27 @@
       "source": "packages/api-client/dist/contracts/common.schema.json"
     },
     {
+      "path": "packages/api-client/dist/contracts/connection-package.schema.json",
+      "bytes": 5873,
+      "sha256": "c064a12035e23e9be8ca333af808c41c2804986e2e34850898ce65f5aacc05cd",
+      "source": "packages/api-client/dist/contracts/connection-package.schema.json"
+    },
+    {
       "path": "packages/api-client/dist/contracts/consumer.schema.json",
-      "bytes": 12793,
-      "sha256": "cbff563ea8ea28a6af9f557e85bab0097c89a095d2cb6ca74e3d066d26352fe1",
+      "bytes": 12276,
+      "sha256": "316b64d695836f938a6d6d981974ad144362023010b2a8dc3fc4eea828b10d37",
       "source": "packages/api-client/dist/contracts/consumer.schema.json"
     },
     {
       "path": "packages/api-client/dist/contracts/corrections.schema.json",
-      "bytes": 10075,
-      "sha256": "6f44c84bd6adc1a39ee0d3f5c01c27f7d3041523c4295243f8672fbdff91aae6",
+      "bytes": 19758,
+      "sha256": "752d127c56b6be90de14276c0cb302099e32104e1db0f1ffc7f16735f0ff68c5",
       "source": "packages/api-client/dist/contracts/corrections.schema.json"
     },
     {
       "path": "packages/api-client/dist/contracts/current-activity.schema.json",
-      "bytes": 28600,
-      "sha256": "7a471aaa12d404c886b4baa33061f0fe8fd908395c8c083bd602c77543444fa4",
+      "bytes": 27668,
+      "sha256": "c94b5953e89ffcfea8a204356e56e95074649dc711def2389d455392d7db2a81",
       "source": "packages/api-client/dist/contracts/current-activity.schema.json"
     },
     {
@@ -3620,15 +4059,27 @@
     },
     {
       "path": "packages/api-client/dist/contracts/events/envelope.v1.schema.json",
-      "bytes": 3304,
-      "sha256": "d723d62d419e5fe20f896481df0d54ef6b94d8437d19f3057cc47f199eba7ccd",
+      "bytes": 3243,
+      "sha256": "80640c598bd2d48abfd8d0373e781983878837c927ba5fda63b311dc8970cefb",
       "source": "packages/api-client/dist/contracts/events/envelope.v1.schema.json"
     },
     {
+      "path": "packages/api-client/dist/contracts/events/sender-event.schema.json",
+      "bytes": 277,
+      "sha256": "04d2e5d0f17ffd82927b6abdd63fca1056cda1340b7fe23430cc2f9a8bf4c1df",
+      "source": "packages/api-client/dist/contracts/events/sender-event.schema.json"
+    },
+    {
       "path": "packages/api-client/dist/contracts/events/sender-event.v1.schema.json",
-      "bytes": 14025,
-      "sha256": "cbce5b5128d8d2f5cf6c58668c989e6b403876531703921a16834dbcf9fb1f06",
+      "bytes": 13404,
+      "sha256": "1b726be7666c7251fa5ba68bb1a9dad9a93e5aa134383c0a7d2fe5a35d37fd8f",
       "source": "packages/api-client/dist/contracts/events/sender-event.v1.schema.json"
+    },
+    {
+      "path": "packages/api-client/dist/contracts/events/sender-event.v2.schema.json",
+      "bytes": 2250,
+      "sha256": "cdd598d89bd94691ee774f021fb7a9760c363e79c39d21931e569b0b9763ee18",
+      "source": "packages/api-client/dist/contracts/events/sender-event.v2.schema.json"
     },
     {
       "path": "packages/api-client/dist/contracts/evidence-receipt.v1.schema.json",
@@ -3638,20 +4089,20 @@
     },
     {
       "path": "packages/api-client/dist/contracts/examples/invalid.json",
-      "bytes": 225979,
-      "sha256": "1d6e1edde1f489de99b8ce7977de05725db528cca54b5246d25d957c13cec1b6",
+      "bytes": 238709,
+      "sha256": "ed8b81fdda298df45a1ff3175a9b4d075ff4b30aeced5e3f0d92ff5fc3c43e9c",
       "source": "packages/api-client/dist/contracts/examples/invalid.json"
     },
     {
       "path": "packages/api-client/dist/contracts/examples/README.md",
-      "bytes": 12733,
-      "sha256": "3a3a748a4d5f9298f2f03ee46270da31258c27cea582ff8b787d31af733e85e7",
+      "bytes": 12885,
+      "sha256": "5aa6f9175b59d8b10256994fe0da12f8ace5d1d3b39255666d7c03e3eacee94e",
       "source": "packages/api-client/dist/contracts/examples/README.md"
     },
     {
       "path": "packages/api-client/dist/contracts/examples/valid.json",
-      "bytes": 429787,
-      "sha256": "744dcef5b503fee2b7a2284e226a7ef68905875a84467e946e72a4100f3c9410",
+      "bytes": 445764,
+      "sha256": "c6b5e261acd462e63e173d8a5a789551ed48b568fa8d285a3852929961092105",
       "source": "packages/api-client/dist/contracts/examples/valid.json"
     },
     {
@@ -3680,26 +4131,26 @@
     },
     {
       "path": "packages/api-client/dist/contracts/openapi.yaml",
-      "bytes": 240606,
-      "sha256": "80c06dc911dc19072598926a827a51a6f36dc2170d3230726a331586a7003271",
+      "bytes": 235611,
+      "sha256": "82f2651273a6ddbf21d0b5b49b7341f24f16ae3abac4586777b46e24a717beff",
       "source": "packages/api-client/dist/contracts/openapi.yaml"
     },
     {
       "path": "packages/api-client/dist/contracts/operations.json",
-      "bytes": 75976,
-      "sha256": "838abf9fbc704494a3729fe4c171da9781a69188bfacf4f5a074ced151afc4d2",
+      "bytes": 74901,
+      "sha256": "7d6749ec93bbfb6a6cb66d47a6a819d5ebf3799cf7a3ad102c73d64541b4a3ba",
       "source": "packages/api-client/dist/contracts/operations.json"
     },
     {
       "path": "packages/api-client/dist/contracts/outbox.schema.json",
-      "bytes": 17186,
-      "sha256": "acae29b68e9e267b2d1f495c6904880f421f3959684a3c14c8fa7c40f34bbf5b",
+      "bytes": 16472,
+      "sha256": "3caf10f546d24bcd9f3209bc1c128befe87fd683a743c52884f043aca6e3e997",
       "source": "packages/api-client/dist/contracts/outbox.schema.json"
     },
     {
       "path": "packages/api-client/dist/contracts/outcomes.schema.json",
-      "bytes": 30203,
-      "sha256": "909bfc5356faa2150077754845a4f83c7328fcfe58571254e701edeab1c72927",
+      "bytes": 76231,
+      "sha256": "daac6d4490880d218669fc569df717b4e8b49a6a55be8f13d325798638087c85",
       "source": "packages/api-client/dist/contracts/outcomes.schema.json"
     },
     {
@@ -3710,8 +4161,8 @@
     },
     {
       "path": "packages/api-client/dist/contracts/provisioning.schema.json",
-      "bytes": 36921,
-      "sha256": "a6fe07968bcc85452431ff858764fc934b740ee522ab968859dcd2a0da7679b8",
+      "bytes": 37800,
+      "sha256": "44e4e80a8eb95007dcdd2dbbefdffb03fb72ca64bef2256efc01483b7995f5fa",
       "source": "packages/api-client/dist/contracts/provisioning.schema.json"
     },
     {
@@ -3740,8 +4191,8 @@
     },
     {
       "path": "packages/api-client/dist/contracts/routing.schema.json",
-      "bytes": 13403,
-      "sha256": "164fe51675a27b82b1ff6cba92c88a4a768bbbe3406cb50a549343e6a340e793",
+      "bytes": 13383,
+      "sha256": "cad3fc624f6eff1e2185f8db253d594f8f43aa477099bc2d06388dc2293d8227",
       "source": "packages/api-client/dist/contracts/routing.schema.json"
     },
     {
@@ -3830,8 +4281,8 @@
     },
     {
       "path": "packages/api-client/dist/intake.d.ts",
-      "bytes": 4849,
-      "sha256": "d220dab3def799b6724f8504254f10bfb8a4382fab31c71757805f10c1b81b02",
+      "bytes": 4875,
+      "sha256": "3557b9b1dc39a8b9e65b8b962bd89559bbe3c99b91eb2dded96affd3483c21d7",
       "source": "packages/api-client/dist/intake.d.ts"
     },
     {
@@ -3866,8 +4317,8 @@
     },
     {
       "path": "packages/api-client/dist/outbox.d.ts",
-      "bytes": 3210,
-      "sha256": "e3de6e4b5b6ccb862e30b160085c66b50f210227a691d8c234e207cd0195eacb",
+      "bytes": 3207,
+      "sha256": "8a08d3fc0934c3ae847d4ee7d0c7ab419f999f6f6855161eafc33bc384db1663",
       "source": "packages/api-client/dist/outbox.d.ts"
     },
     {
@@ -3962,8 +4413,8 @@
     },
     {
       "path": "packages/api-client/dist/schema.d.ts",
-      "bytes": 579948,
-      "sha256": "60155256b32c83acb0f88ceb7a4f521b0c84d25b038c3b73feaa392eb7102a2f",
+      "bytes": 605995,
+      "sha256": "0b9dcc1392b5b2aa37a0e1b97062e9bad29aa014d4ee5110c2e9641f14f5f5fd",
       "source": "packages/api-client/dist/schema.d.ts"
     },
     {
@@ -4040,8 +4491,8 @@
     },
     {
       "path": "packages/api-client/package.json",
-      "bytes": 1334,
-      "sha256": "1950376453ab1a20e6f75e28b9b2626e4cca4663446115d19ea06bae9e626ebf",
+      "bytes": 1312,
+      "sha256": "508c92ee4d62cd827979668fab139da3558586b9be78832295a8d6012ae1ccd3",
       "source": "packages/api-client/package.json"
     },
     {
@@ -4061,6 +4512,12 @@
       "bytes": 2626,
       "sha256": "66caa761b71af0188732636b29f6a146c561c74a1d7b775cd6f04890a78b7c06",
       "source": "packages/api-client/src/closure.ts"
+    },
+    {
+      "path": "packages/api-client/src/connection-package.ts",
+      "bytes": 2675,
+      "sha256": "102a23bd899673977b0c512ff07bf76a046d1587ef76a7aba8d8ddd7198ae3cf",
+      "source": "packages/api-client/src/connection-package.ts"
     },
     {
       "path": "packages/api-client/src/corrections.ts",
@@ -4094,8 +4551,8 @@
     },
     {
       "path": "packages/api-client/src/intake.ts",
-      "bytes": 1990,
-      "sha256": "6b82632c5adac073ca83234e10f3cbb33863854851bba4eece9490a86ead3bec",
+      "bytes": 2014,
+      "sha256": "099f406b88a09982fa99c9a6738a3de6bfc633d0a81e924c26b5ed84dc2e3ff9",
       "source": "packages/api-client/src/intake.ts"
     },
     {
@@ -4160,8 +4617,8 @@
     },
     {
       "path": "packages/api-client/src/schema.d.ts",
-      "bytes": 579948,
-      "sha256": "60155256b32c83acb0f88ceb7a4f521b0c84d25b038c3b73feaa392eb7102a2f",
+      "bytes": 605995,
+      "sha256": "0b9dcc1392b5b2aa37a0e1b97062e9bad29aa014d4ee5110c2e9641f14f5f5fd",
       "source": "packages/api-client/src/schema.d.ts"
     },
     {
@@ -4196,8 +4653,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 635,
-      "sha256": "b6c4db2510715d97631c18c6844e684beea196b69a304b7e576ad0cd2edba973"
+      "bytes": 641,
+      "sha256": "9ca9ea691bf733fe3037ba75d9d1eb29bbbbdc20aa0f492731a5180ed7d5731b"
     },
     {
       "path": "scripts/build-receiver-bundle.mjs",
@@ -4207,38 +4664,56 @@
     },
     {
       "path": "scripts/erp-release.mjs",
-      "bytes": 8474,
-      "sha256": "d4c6722b94c08323a2b9fa9fce47ffe5918cdb971c886802cc7f3326177444dc",
+      "bytes": 8890,
+      "sha256": "f7617ef7ecb640b7e96e2d7cd460691b3aea9376b03aa8fc8f9b1b7e7b394a54",
       "source": "scripts/erp-release.mjs"
     },
     {
       "path": "scripts/handoff-audit.mjs",
       "bytes": 7332,
-      "sha256": "347bc25e1b640337af903de2f22725913a6637319e4cba9967a84233ae013d97",
+      "sha256": "58310141b04de2f266d97411271bec96e915e0245c86641efeec31c8da4b41e7",
       "source": "scripts/handoff-audit.mjs"
     },
     {
+      "path": "scripts/integration-install.mjs",
+      "bytes": 10926,
+      "sha256": "d27eabbfce5120da6d6372fd9bda47bd677b6ec3ccdc50348e597392dd093a2e",
+      "source": "scripts/integration-install.mjs"
+    },
+    {
+      "path": "scripts/integration-install.ps1",
+      "bytes": 2291,
+      "sha256": "72b1d7fe1f296715472f301b853b2bbc8bf610cc166c69dacdb26291e8899637",
+      "source": "scripts/integration-install.ps1"
+    },
+    {
+      "path": "scripts/interoperability-ledger.mjs",
+      "bytes": 9591,
+      "sha256": "46c7600846439b56309ce76e9b3c499c41d3c4dfa2497d51645003b92fe4be87",
+      "source": "scripts/interoperability-ledger.mjs"
+    },
+    {
       "path": "scripts/verify-erp-release.mjs",
-      "bytes": 5123,
-      "sha256": "e230f7668fa1dd3aa0377bd340f30369673835a5dfe46d2e32e5a59ed63cf6df",
+      "bytes": 5305,
+      "sha256": "490f594cba9335b60c93e0657ffe9b7a0abe6eff3f5a8ee71920a4150088bc7f",
       "source": "scripts/verify-erp-release.mjs"
     },
     {
       "path": "STACK-CONTEXT.md",
-      "bytes": 29982,
-      "sha256": "f9e9efcd945c3dd30069cf13823a48e3553c6e43b9229c6babe27a28853d59b1",
+      "bytes": 30977,
+      "sha256": "c151b8efe2f42c6c91ddd3b1e21324e039bd5a16d01e2c0b7fe91fcd321ef307",
       "source": "STACK-CONTEXT.md"
     },
     {
       "path": "TAWSEL-DISCOVERY-LOG.md",
-      "bytes": 180588,
-      "sha256": "8de78613181b5ae9db4547196974ec6a71e648345699d67b5d8436c5a089f4a7",
+      "bytes": 182243,
+      "sha256": "4c015af66320c374ae7c9a76200e62a2272b47478e0d09b07b0c2528f9829d8d",
       "source": "TAWSEL-DISCOVERY-LOG.md"
     },
     {
       "path": "TAWSEL-ENGINE-CONTEXT.md",
-      "bytes": 47531,
-      "sha256": "a650cd4e5df21f81aa61fa0b99b066a21b72f51c0d4c9090aa9c88ce8d8f96b8",
+      "bytes": 48062,
+      "sha256": "cad964f536b0f4e5bf686f06f7c81aa5646e22fcedfa5f8c2e1c91ff105a7b5b",
       "source": "TAWSEL-ENGINE-CONTEXT.md"
     },
     {
@@ -4369,8 +4844,8 @@
     },
     {
       "path": "tests/erp-conformance/routing.ts",
-      "bytes": 2089,
-      "sha256": "71ef317651c0d65d6946d567086d5b70cea60051616b67cacfbc4e4e8ba14f22",
+      "bytes": 2085,
+      "sha256": "9be8ccbfcb8812aaa1d689a6878ca56c3c06046299ab0646d8edebe851919d77",
       "source": "tests/erp-conformance/routing.ts"
     },
     {
