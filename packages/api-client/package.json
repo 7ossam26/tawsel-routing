@@ -1,6 +1,6 @@
 {
   "name": "@tawsel/api-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Tawsel public protocol types and provisioning, intake, execution and return HTTP consumers",
@@ -42,7 +42,8 @@
     "src/sync.ts",
     "src/session.ts",
     "src/reporting.ts",
-    "src/diagnostics.ts"
+    "src/diagnostics.ts",
+    "src/connection-package.ts"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json && node ../../scripts/build-public-client.mjs",

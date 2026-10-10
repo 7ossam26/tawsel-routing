@@ -1976,6 +1976,28 @@
       "method": "GET",
       "path": "/internal/diagnostics/actions/{actionId}",
       "description": "Operator-only exact tenant/source/action correlation to sender and last receiver checkpoint, without recipient payloads."
+    },
+    {
+      "id": "dispatch.relocateBeforeDeparture",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "implemented",
+      "ownerPhase": 22,
+      "capability": "assignment.manage",
+      "description": "Create a fresh branch cycle after withdrawal and asserted ERP destination receipt; frozen old cycle remains at its branch.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/dispatch.createFromReceipt"
+    },
+    {
+      "id": "dispatch.relocatedBeforeDeparture",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "implemented",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Retained fresh-cycle and ERP transfer assertion after predeparture relocation.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate"
     }
   ],
   "authorizationFoundation": {

@@ -16,8 +16,8 @@ export async function authorize(tx:Transaction,a:AccessSession,workdayId:string)
  const driver=ownDriver(a);await authorizeDriver(tx,a,driver);await day(tx,a,workdayId);
  // Both retained history and currently held work must remain visible on replay.
  const resources=(await tx.query(`SELECT tenant_id,driver_id,branch_id,integration_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2
- UNION SELECT d.tenant_id,d.driver_id,t.branch_id,t.integration_id FROM tawsel.round_admissions d JOIN tawsel.rounds r USING(tenant_id,round_id)
- JOIN tawsel.b2b_tasks t ON t.tenant_id=d.tenant_id AND t.task_id=d.task_id WHERE d.tenant_id=$1 AND d.driver_id=$2 AND r.workday_id=$3`,[a.context.tenantId,driver,workdayId])).rows;
+ UNION SELECT d.tenant_id,d.driver_id,COALESCE((to_jsonb(c)->>'branch_id')::uuid,t.branch_id),t.integration_id FROM tawsel.round_admissions d JOIN tawsel.rounds r USING(tenant_id,round_id)
+ JOIN tawsel.b2b_tasks t ON t.tenant_id=d.tenant_id AND t.task_id=d.task_id JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=d.tenant_id AND c.dispatch_cycle_id=d.dispatch_cycle_id WHERE d.tenant_id=$1 AND d.driver_id=$2 AND r.workday_id=$3`,[a.context.tenantId,driver,workdayId])).rows;
  for(const resource of resources)a.requireResource(own,resource);
 }
 export async function sourceItems(tx:Transaction,tenant:string,driver:string,workdayId:string){

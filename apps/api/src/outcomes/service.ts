@@ -1,4 +1,5 @@
 import {appendOutcome} from './persistence.js';
+import {requireInterop} from '../provisioning/interop.js';
 import {executionFence} from '../devices/fence.js';
 import { randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
@@ -72,7 +73,8 @@ export class Outcomes {
       const amount=(await tx.query('SELECT amount_minor FROM tawsel.task_collection_amounts WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,p.taskId])).rows[0];
       frozen={kind:'personal',collection:amount?money(Number(amount.amount_minor)):null};
      }
-     const calculation=calculate(op,p,frozen),now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
+     if(m.integrationId)await requireInterop(tx,r.tenant_id,m.integrationId,c.payloadVersion);
+     const calculation=calculate(op,p,frozen,c.payloadVersion),now=(await tx.query<{now:Date}>('SELECT clock_timestamp() AS now')).rows[0]!.now;
      time={actionId:c.actionId,recordedAt:now.toISOString(),observation:c.observation};
      const attempt=(await tx.query('SELECT heading,arrival FROM tawsel.execution_attempts WHERE tenant_id=$1 AND round_id=$2 AND attempt_id=$3',[r.tenant_id,r.round_id,p.attemptId])).rows[0];
      const revision=Number((await tx.query('SELECT COALESCE(max(revision),0)+1 AS revision FROM tawsel.delivery_outcomes WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,p.taskId])).rows[0].revision);
@@ -83,7 +85,7 @@ export class Outcomes {
      await appendOutcome(tx,r.tenant_id,a.context.sourceId,c.actionId,accepted);
      const body={outcome:accepted,current:{roundId:r.round_id,revision:activityRevision+1,currentActivity:null,physicalOrigin:await physicalOrigin(tx,r.tenant_id,driverId)}};
      requireOutcome('CommandResult',body);const event={outcome:accepted};requireOutcome('Event',event);
-     return {status:'accepted',response:{status:200,body},summary:{roundId:r.round_id,driverId,taskId:p.taskId,outcomeId:accepted.outcomeId,outcomeRevision:revision},audit:{outcome:accepted,previousActivity:before},resourceVersions:{outcomeRevision:revision,resourceRevision:activityRevision+1,deviceGeneration:Number(r.device_generation)},intents:m.integrationId?[{eventId:randomUUID(),recipientId:m.integrationId,eventType:'outcome.recorded',payloadVersion:'1.0.0',payload:event}]:[]};
+     return {status:'accepted',response:{status:200,body},summary:{roundId:r.round_id,driverId,taskId:p.taskId,outcomeId:accepted.outcomeId,outcomeRevision:revision},audit:{outcome:accepted,previousActivity:before},resourceVersions:{outcomeRevision:revision,resourceRevision:activityRevision+1,deviceGeneration:Number(r.device_generation)},intents:m.integrationId?[{eventId:randomUUID(),recipientId:m.integrationId,eventType:'outcome.recorded',payloadVersion:c.payloadVersion,payload:event}]:[]};
     }catch(error){if(error instanceof OutcomeError||error instanceof CurrentError)return rejected(c,r,error);throw error;}},
     async writeProgress(){
      // Deliberately after domain writes: a failure at either kernel checkpoint

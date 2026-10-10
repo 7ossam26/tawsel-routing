@@ -208,6 +208,8 @@ Additional §9/§17 operations are private routing, map assets and owner diagnos
 | `branch.recordArrival` | http-command | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | execution.own | Explicit arrival at the source-bound branch; records physical origin without inferring receipt. |
 | `branch.arrivalRecorded` | event | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Confirmed branch arrival; no physical receipt or stock implication. |
 | `dispatch.listCycles` | http-read | verified-local | [P22](phases/22-branch-interruption-redispatch.md) | assignment.manage | Source-scoped preserved dispatch snapshots, holders and predecessor identities. |
+| `dispatch.relocateBeforeDeparture` | http-command | implemented | [P22](phases/22-branch-interruption-redispatch.md) | assignment.manage | Create a fresh branch cycle after withdrawal and asserted ERP destination receipt; frozen old cycle remains at its branch. |
+| `dispatch.relocatedBeforeDeparture` | event | implemented | [P22](phases/22-branch-interruption-redispatch.md) | recipient-scope | Retained fresh-cycle and ERP transfer assertion after predeparture relocation. |
 
 ### monitoring-history
 

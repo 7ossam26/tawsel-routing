@@ -3,7 +3,9 @@ import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
-const dir = resolve(root, '.local/identity');
+const dir = resolve(process.env.TAWSEL_TEST_IDENTITY_DIRECTORY ?? resolve(root, '.local/identity'));
+const origin = process.env.TAWSEL_TEST_IDENTITY_ORIGIN ?? 'http://localhost:8085';
+if(process.env.TAWSEL_TEST_IDENTITY_DIRECTORY&&(!dir.startsWith(resolve(root,'.local')+'/')&&!dir.startsWith(resolve(root,'.local')+'\\')))throw new Error('Disposable identity must remain in ignored local fixture storage');
 await mkdir(dir, { recursive: true });
 const key = () => randomBytes(32).toString('hex');
 let secrets;
@@ -48,9 +50,9 @@ for (const kind of ['company', 'personal']) {
   await writeFile(resolve(installation, `data/import/tawsel-${kind}-realm.json`), JSON.stringify(realm, null, 2));
 }
 const env = { TAWSEL_ORIGIN: 'http://localhost:5173', TAWSEL_SESSION_KEY: secrets.session,
-  TAWSEL_COMPANY_ISSUER: 'http://localhost:8085/realms/tawsel-company', TAWSEL_COMPANY_CLIENT_ID: 'tawsel-web', TAWSEL_COMPANY_CLIENT_SECRET: secrets.company,
-  TAWSEL_PERSONAL_ISSUER: 'http://localhost:8085/realms/tawsel-personal', TAWSEL_PERSONAL_CLIENT_ID: 'tawsel-web', TAWSEL_PERSONAL_CLIENT_SECRET: secrets.personal };
-await writeFile(resolve(root, '.env.identity.local'), Object.entries(env).map(([k, v]) => `${k}=${v}`).join('\n') + '\n');
+  TAWSEL_COMPANY_ISSUER: `${origin}/realms/tawsel-company`, TAWSEL_COMPANY_CLIENT_ID: 'tawsel-web', TAWSEL_COMPANY_CLIENT_SECRET: secrets.company,
+  TAWSEL_PERSONAL_ISSUER: `${origin}/realms/tawsel-personal`, TAWSEL_PERSONAL_CLIENT_ID: 'tawsel-web', TAWSEL_PERSONAL_CLIENT_SECRET: secrets.personal };
+await writeFile(process.env.TAWSEL_TEST_IDENTITY_DIRECTORY?resolve(dir,'fixture.env'):resolve(root, '.env.identity.local'), Object.entries(env).map(([k, v]) => `${k}=${v}`).join('\n') + '\n');
 await mkdir(resolve(installation, 'themes/tawsel/login/resources/css'), { recursive: true });
 await mkdir(resolve(installation, 'themes/tawsel/login/resources/js'), { recursive: true });
 for (const file of ['theme.properties', 'resources/css/tawsel.css', 'resources/js/tawsel.js']) {
@@ -61,4 +63,4 @@ for (const file of ['theme.properties', 'resources/css/tawsel.css', 'resources/j
 }
 await mkdir(resolve(installation, 'themes/tawsel/login/resources/fonts'), { recursive: true });
 await copyFile(resolve(root, 'node_modules/@fontsource/cairo/files/cairo-arabic-400-normal.woff2'), resolve(installation, 'themes/tawsel/login/resources/fonts/cairo.woff2'));
-console.log('Local realm configuration and ignored secrets generated. See docs/identity.md; credentials are in .local/identity/secrets.json.');
+console.log('Local realm configuration and ignored secrets generated. See docs/identity.md; credentials remain in the selected protected ignored fixture directory.');

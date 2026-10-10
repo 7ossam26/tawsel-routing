@@ -1,5 +1,13 @@
 # ERP discovery and controlled Tawsel updates
 
+## Implemented interoperability delta — 10 October 2026
+
+The governing business register remains `attachments/TAWSEL-CHANGE-REQUESTS.md` in the owner's supplied archive. Its consolidated rows and later amendments govern this technical delta; historical phase instructions do not authorize deployment or reuse of credentials. [The current implementation/adoption document](../interoperability-2026-10-10.md) records the fixed reason representation, cycle branch migration, both A→B sequences, private installation, explicit payload negotiation and operator-assisted enrollment. [The dated ledger](../../verification/interoperability-ledger-2026-10-10.json) carries concrete local evidence and open adoption gates.
+
+Reviewed candidate delta: one new source operation `dispatch.relocateBeforeDeparture`; one new event type of that name; v2 variants of `outcome.recorded`, `outcome.corrected` and `dispatch.createdFromReceipt`; connection metadata/private-package and nonsecret pending enrollment-request definitions. No automatic reservation operation is published: issuer marker-writer ownership and trusted-administrator boundaries are not established for the actual independent installation. Existing generic identity grants retain their scope. CR-002 physical transport stays entirely in ERP.
+
+Release order: Shahn verifies byte hashes and adopts v1/v2 closed readers, durable inbox/projection and backend private-package import first; operators verify exact subjects, scoped grants and signed callback; only then an explicit increasing source bind revision raises `interopVersion` to 2.0.0. Retained v1 evidence remains unchanged. Native stock, financial/custody fencing, user/operator acceptance and separate-server HTTPS443 execution still require Shahn and joint witnesses. The current Tawsel branch does not edit or deploy Shahn. The original planning guidance below remains historical methodology, not a new instruction to restart discovery.
+
 This is a planning method and question map, not an approved ERP feature list. The user wants rounds of questions, explicit decisions, a complete master plan and then independently executable Codex phase prompts. Do not skip discovery because the connector already has contracts.
 
 ## Discover the ERP business itself

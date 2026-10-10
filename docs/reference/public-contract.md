@@ -2593,7 +2593,7 @@ P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membe
             "maxLength": 256
           },
           "event": {
-            "$ref": "./events/sender-event.v1.schema.json"
+            "$ref": "./events/sender-event.schema.json"
           }
         },
         "required": [
@@ -3520,7 +3520,7 @@ P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membe
       "type": "array",
       "maxItems": 100,
       "items": {
-        "$ref": "./events/sender-event.v1.schema.json"
+        "$ref": "./events/sender-event.schema.json"
       }
     },
     "nextAfterSequence": {
@@ -3800,639 +3800,18 @@ P05 verifies the PostgreSQL kernel and retained ActionResult. P06 verifies membe
 
 ### SenderEvent
 
-[Canonical definition](../../contracts/events/sender-event.v1.schema.json)
+[Canonical definition](../../contracts/events/sender-event.schema.json)
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.tawsel.invalid/v1/events/sender-event.v1.schema.json",
-  "title": "P25 emitted integration events v1",
-  "allOf": [
-    {
-      "$ref": "./envelope.v1.schema.json"
-    }
-  ],
+  "$id": "https://schemas.tawsel.invalid/v1/events/sender-event.schema.json",
   "oneOf": [
     {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "provisioning.changed"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../provisioning.schema.json#/$defs/ProvisioningChanged"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
+      "$ref": "./sender-event.v1.schema.json"
     },
     {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.snapshotAccepted"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "assignment.prepared"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "assignment.received"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "assignment.withdrawn"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "assignment.reassigned"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.urgencyChanged"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "dispatch.createdFromReceipt"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../b2b-intake.schema.json#/$defs/ChangedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "location.pinConfirmed"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../location.schema.json#/$defs/ConfirmedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "plan.revisionPublished"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../planning.schema.json#/$defs/PublishedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "round.started"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../round-start.schema.json#/$defs/StartedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "current.headingSelected"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../current-activity.schema.json#/$defs/HeadingEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "current.arrivalRecorded"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../current-activity.schema.json#/$defs/ArrivalEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "outcome.recorded"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../outcomes.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.deferred"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../eligibility.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.retryAdmitted"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../eligibility.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.deferredActivated"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../eligibility.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "task.driverUrgencyChanged"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../eligibility.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "round.ended"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../workday-closure.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "workday.ended"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../workday-closure.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "return.requested"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../returns.schema.json#/$defs/RequestedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "return.subsetReceived"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../returns.schema.json#/$defs/ReceivedEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "return.dispositionRecorded"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../returns.schema.json#/$defs/DispositionEvent"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "branch.roundInterrupted"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../branch-activity.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "branch.arrivalRecorded"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../branch-activity.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "branch.roundResumed"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../branch-activity.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "const": "outcome.corrected"
-        },
-        "eventKind": {
-          "const": "transition"
-        },
-        "payloadVersion": {
-          "const": "1.0.0"
-        },
-        "payload": {
-          "$ref": "../corrections.schema.json#/$defs/Event"
-        }
-      },
-      "required": [
-        "eventType",
-        "eventKind",
-        "payloadVersion",
-        "payload"
-      ]
+      "$ref": "./sender-event.v2.schema.json"
     }
   ]
 }
@@ -5863,7 +5242,10 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
       "const": "1.0.0"
     },
     "payloadVersion": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "2.0.0"
+      ]
     },
     "actionId": {
       "$ref": "./common.schema.json#/$defs/Uuid"
@@ -5909,7 +5291,38 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
     "observation",
     "payload"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "payloadVersion": {
+            "const": "2.0.0"
+          }
+        },
+        "required": [
+          "payloadVersion"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "operationId": {
+            "enum": [
+              "outcome.recordFull",
+              "outcome.recordPartial",
+              "outcome.recordRefusal",
+              "outcome.recordNoAnswer",
+              "outcome.correct",
+              "dispatch.createFromReceipt",
+              "dispatch.relocateBeforeDeparture"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }
 ```
 
@@ -6153,7 +5566,10 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
       "const": "1.0.0"
     },
     "payloadVersion": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "2.0.0"
+      ]
     },
     "eventId": {
       "$ref": "../common.schema.json#/$defs/Uuid"
@@ -6683,6 +6099,16 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
         ]
       },
       "description": "Operator-only replacement of monitoring grants. Omitted preserves; [] revokes. Never permits another source or branch."
+    },
+    "erpCompanyId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "interopVersion": {
+      "enum": [
+        "1.0.0",
+        "2.0.0"
+      ],
+      "description": "Operator release gate. Enable v2 only after recipient readers adopt this candidate. Omission preserves."
     }
   },
   "required": [
@@ -7214,7 +6640,10 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
     "supportedVersions": {
       "type": "array",
       "items": {
-        "const": "1.0.0"
+        "enum": [
+          "1.0.0",
+          "2.0.0"
+        ]
       },
       "uniqueItems": true,
       "maxItems": 100
@@ -7229,6 +6658,30 @@ Durable scoped command result. P20 exposes action.getResult for authorized round
     },
     "humanDelegation": {
       "const": false
+    },
+    "erpCompanyId": {
+      "anyOf": [
+        {
+          "$ref": "./common.schema.json#/$defs/Uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "interopVersion": {
+      "enum": [
+        "1.0.0",
+        "2.0.0"
+      ]
+    },
+    "serviceCapabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "maxItems": 100
     }
   },
   "required": [
@@ -14230,6 +13683,9 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
     },
     "reportedCollection": {
       "$ref": "#/$defs/Money"
+    },
+    "rejection": {
+      "$ref": "#/$defs/Rejection"
     }
   },
   "required": [
@@ -14303,6 +13759,9 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
     },
     "reportedCollection": {
       "$ref": "#/$defs/Money"
+    },
+    "rejection": {
+      "$ref": "#/$defs/Rejection"
     }
   },
   "required": [
@@ -14387,29 +13846,66 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "./action-envelope.v1.schema.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "outcome.recordFull"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
         },
-        "payload": {
-          "$ref": "#/$defs/Full"
-        },
-        "context": {
+        {
           "type": "object",
           "properties": {
-            "kind": {
-              "const": "device"
+            "operationId": {
+              "const": "outcome.recordFull"
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyFull"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
             }
-          }
+          },
+          "required": []
         }
-      },
-      "required": []
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "outcome.recordFull"
+            },
+            "payload": {
+              "$ref": "#/$defs/FullV2"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          },
+          "required": []
+        }
+      ]
     }
   ]
 }
@@ -14421,29 +13917,66 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "./action-envelope.v1.schema.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "outcome.recordPartial"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
         },
-        "payload": {
-          "$ref": "#/$defs/Partial"
-        },
-        "context": {
+        {
           "type": "object",
           "properties": {
-            "kind": {
-              "const": "device"
+            "operationId": {
+              "const": "outcome.recordPartial"
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyPartial"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
             }
-          }
+          },
+          "required": []
         }
-      },
-      "required": []
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "outcome.recordPartial"
+            },
+            "payload": {
+              "$ref": "#/$defs/PartialV2"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          },
+          "required": []
+        }
+      ]
     }
   ]
 }
@@ -14455,29 +13988,66 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "./action-envelope.v1.schema.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "outcome.recordRefusal"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
         },
-        "payload": {
-          "$ref": "#/$defs/Refusal"
-        },
-        "context": {
+        {
           "type": "object",
           "properties": {
-            "kind": {
-              "const": "device"
+            "operationId": {
+              "const": "outcome.recordRefusal"
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyRefusal"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
             }
-          }
+          },
+          "required": []
         }
-      },
-      "required": []
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "outcome.recordRefusal"
+            },
+            "payload": {
+              "$ref": "#/$defs/RefusalV2"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          },
+          "required": []
+        }
+      ]
     }
   ]
 }
@@ -14489,29 +14059,66 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "./action-envelope.v1.schema.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "outcome.recordNoAnswer"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
         },
-        "payload": {
-          "$ref": "#/$defs/NoAnswer"
-        },
-        "context": {
+        {
           "type": "object",
           "properties": {
-            "kind": {
-              "const": "device"
+            "operationId": {
+              "const": "outcome.recordNoAnswer"
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyNoAnswer"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
             }
-          }
+          },
+          "required": []
         }
-      },
-      "required": []
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "outcome.recordNoAnswer"
+            },
+            "payload": {
+              "$ref": "#/$defs/NoAnswerV2"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          },
+          "required": []
+        }
+      ]
     }
   ]
 }
@@ -14640,6 +14247,12 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
     },
     "returnRequired": {
       "type": "boolean"
+    },
+    "recordVersion": {
+      "const": "2.0.0"
+    },
+    "rejection": {
+      "$ref": "#/$defs/Rejection"
     }
   },
   "required": [
@@ -14811,6 +14424,16 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
         },
         "type": "object"
       }
+    },
+    {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LegacyCalculation"
+        },
+        {
+          "$ref": "#/$defs/CalculationV2"
+        }
+      ]
     }
   ]
 }
@@ -14942,6 +14565,12 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
           "type": "null"
         }
       ]
+    },
+    "recordVersion": {
+      "const": "2.0.0"
+    },
+    "rejection": {
+      "$ref": "#/$defs/Rejection"
     }
   },
   "required": [
@@ -15129,6 +14758,16 @@ Server-effective settings. Origin is the last explicit arrival/manual correction
         },
         "type": "object"
       }
+    },
+    {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LegacyRecord"
+        },
+        {
+          "$ref": "#/$defs/RecordV2"
+        }
+      ]
     }
   ]
 }
@@ -19510,6 +19149,9 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
     },
     "snapshot": {
       "$ref": "#/$defs/SourceSnapshot"
+    },
+    "transfer": {
+      "$ref": "#/$defs/Transfer"
     }
   },
   "required": [
@@ -19527,27 +19169,63 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "./action-envelope.v1.schema.json"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "dispatch.createFromReceipt"
+            },
+            "context": {
+              "$ref": "./common.schema.json#/$defs/IntegrationContext"
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyRedispatch"
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
+            }
+          },
+          "required": [
+            "operationId",
+            "context",
+            "payload"
+          ]
+        }
+      ]
     },
     {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "dispatch.createFromReceipt"
+      "allOf": [
+        {
+          "$ref": "./action-envelope.v1.schema.json"
         },
-        "context": {
-          "$ref": "./common.schema.json#/$defs/IntegrationContext"
-        },
-        "payload": {
-          "$ref": "#/$defs/Redispatch"
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "dispatch.createFromReceipt"
+            },
+            "context": {
+              "$ref": "./common.schema.json#/$defs/IntegrationContext"
+            },
+            "payload": {
+              "$ref": "#/$defs/RedispatchV2"
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          },
+          "required": [
+            "operationId",
+            "context",
+            "payload"
+          ]
         }
-      },
-      "required": [
-        "operationId",
-        "context",
-        "payload"
       ]
     }
   ]
@@ -19626,6 +19304,9 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
         },
         "reportedCollection": {
           "$ref": "outcomes.schema.json#/$defs/Money"
+        },
+        "rejection": {
+          "$ref": "./outcomes.schema.json#/$defs/Rejection"
         }
       },
       "required": [
@@ -19649,6 +19330,9 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
             "collected",
             "refused"
           ]
+        },
+        "rejection": {
+          "$ref": "./outcomes.schema.json#/$defs/Rejection"
         }
       },
       "required": [
@@ -19715,28 +19399,64 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 
 ```json
 {
-  "allOf": [
+  "oneOf": [
     {
-      "$ref": "action-envelope.v1.schema.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "operationId": {
-          "const": "outcome.correct"
+      "allOf": [
+        {
+          "$ref": "action-envelope.v1.schema.json"
         },
-        "context": {
+        {
           "type": "object",
           "properties": {
-            "kind": {
-              "const": "device"
+            "operationId": {
+              "const": "outcome.correct"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payload": {
+              "$ref": "#/$defs/LegacyCorrect"
+            },
+            "payloadVersion": {
+              "const": "1.0.0"
             }
           }
-        },
-        "payload": {
-          "$ref": "#/$defs/Correct"
         }
-      }
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "$ref": "action-envelope.v1.schema.json"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "const": "outcome.correct"
+            },
+            "context": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "device"
+                }
+              }
+            },
+            "payload": {
+              "$ref": "#/$defs/CorrectV2"
+            },
+            "payloadVersion": {
+              "const": "2.0.0"
+            }
+          }
+        }
+      ]
     }
   ]
 }
@@ -21193,6 +20913,365 @@ P05 hash v1 includes every envelope field plus trusted actor identity: sorted ob
 }
 ```
 
+### OutcomeRejection
+
+[Canonical definition](../../contracts/outcomes.schema.json#/$defs/Rejection)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "catalogVersion": {
+      "const": "1.0.0"
+    },
+    "code": {
+      "enum": [
+        "changed-mind",
+        "amount-disagreement",
+        "wrong-product",
+        "condition-problem",
+        "inspection-unavailable",
+        "missing-pieces",
+        "other"
+      ]
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "\\S"
+    }
+  },
+  "required": [
+    "catalogVersion",
+    "code"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "const": "other"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "then": {
+        "required": [
+          "detail"
+        ],
+        "type": "object",
+        "properties": {
+          "detail": {}
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "detail"
+          ],
+          "type": "object",
+          "properties": {
+            "detail": {}
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}
+```
+
+### B2bTransfer
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Transfer)
+
+Scoped ERP assertion of completed transfer and actual destination receipt. Opaque native references retained for audit, not independent physical proof or a cross-system lock.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "sourceBranchExternalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "transferId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "destinationReceiptId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "receivedAtDestination": {
+      "const": true
+    }
+  },
+  "required": [
+    "sourceBranchExternalId",
+    "transferId",
+    "destinationReceiptId",
+    "receivedAtDestination"
+  ],
+  "additionalProperties": false,
+  "description": "Scoped ERP assertion of completed transfer and actual destination receipt. Opaque native references retained for audit, not independent physical proof or a cross-system lock."
+}
+```
+
+### B2bRelocate
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/Relocate)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "externalId": {
+      "$ref": "./common.schema.json#/$defs/ExternalId"
+    },
+    "previousDispatchCycleId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "snapshot": {
+      "$ref": "#/$defs/SourceSnapshot"
+    },
+    "transfer": {
+      "$ref": "#/$defs/Transfer"
+    }
+  },
+  "required": [
+    "externalId",
+    "previousDispatchCycleId",
+    "snapshot",
+    "transfer"
+  ],
+  "additionalProperties": false
+}
+```
+
+### B2bRelocateCommand
+
+[Canonical definition](../../contracts/b2b-intake.schema.json#/$defs/RelocateCommand)
+
+```json
+{
+  "allOf": [
+    {
+      "$ref": "./action-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "const": "dispatch.relocateBeforeDeparture"
+        },
+        "payloadVersion": {
+          "const": "2.0.0"
+        },
+        "context": {
+          "$ref": "./common.schema.json#/$defs/IntegrationContext"
+        },
+        "payload": {
+          "$ref": "#/$defs/Relocate"
+        }
+      }
+    }
+  ]
+}
+```
+
+### ConnectionMetadata
+
+[Canonical definition](../../contracts/connection-package.schema.json#/$defs/Metadata)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "packageVersion": {
+      "const": "1.0.0"
+    },
+    "tenantId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "integrationId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "erpCompanyId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    },
+    "sourceExternalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "issuer": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "apiUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "callbackUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "companyCode": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]{2,32}$"
+    },
+    "sourceCommit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "contractSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "interopVersion": {
+      "enum": [
+        "1.0.0",
+        "2.0.0"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "identity.provision",
+          "integration.manage",
+          "intake.prepare",
+          "assignment.manage",
+          "monitor.read",
+          "return.receive",
+          "return.dispose"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "enrollmentMode": {
+      "const": "operator-assisted-exact-subjects"
+    },
+    "bootstrapActionId": {
+      "$ref": "./common.schema.json#/$defs/Uuid"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "packageVersion",
+    "tenantId",
+    "integrationId",
+    "erpCompanyId",
+    "sourceExternalId",
+    "issuer",
+    "apiUrl",
+    "callbackUrl",
+    "companyCode",
+    "sourceCommit",
+    "contractSha256",
+    "interopVersion",
+    "capabilities",
+    "enrollmentMode",
+    "bootstrapActionId"
+  ]
+}
+```
+
+### PrivateConnectionPackage
+
+[Canonical definition](../../contracts/connection-package.schema.json#/$defs/Private)
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "metadata": {
+      "$ref": "#/$defs/Metadata"
+    },
+    "credential": {
+      "type": "object",
+      "properties": {
+        "bearer": {
+          "type": "string",
+          "pattern": "^twp_[a-f0-9-]{36}\\.[a-f0-9]{64}$"
+        },
+        "expiresAt": {
+          "$ref": "./common.schema.json#/$defs/UtcInstant"
+        }
+      },
+      "required": [
+        "bearer",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "signingKeys": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,64}$"
+          },
+          "secret": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "verifyUntil": {
+            "$ref": "./common.schema.json#/$defs/UtcInstant"
+          }
+        },
+        "required": [
+          "keyId",
+          "secret"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "setup": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "const": "prepared-for-erp-import"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "$ref": "./common.schema.json#/$defs/Uuid"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "state",
+        "actions"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "metadata",
+    "credential",
+    "signingKeys",
+    "setup"
+  ],
+  "additionalProperties": false
+}
+```
+
 ## Validated examples
 
 Examples include designed fixtures and captured local API results; consult contracts/examples/README.md and the phase evidence for provenance. Schema validation alone is not runtime proof. Invalid cases are rejection fixtures, not requests to a live service.
@@ -21467,6 +21546,17 @@ Examples include designed fixtures and captured local API results; consult contr
 | report-Filters | reporting.schema.json#/$defs/Filters | valid foundation shape |
 | report-Pieces | reporting.schema.json#/$defs/Pieces | valid foundation shape |
 | diagnostics-health-valid | diagnostics.schema.json#/$defs/Health | valid foundation shape |
+| interop-v2-refusal-missing-pieces | outcomes.schema.json#/$defs/RefusalCommand | valid foundation shape |
+| private-connection-nonsecret-metadata | connection-package.schema.json#/$defs/Metadata | valid foundation shape |
+| interop-predeparture-public-request | b2b-intake.schema.json#/$defs/RelocateCommand | valid foundation shape |
+| interop-returned-public-request-v2 | b2b-intake.schema.json#/$defs/RedispatchCommand | valid foundation shape |
+| interop-partial-public-request-v2 | outcomes.schema.json#/$defs/PartialCommand | valid foundation shape |
+| interop-correction-public-request-v2 | corrections.schema.json#/$defs/CorrectCommand | valid foundation shape |
+| operator-assisted-pending-enrollment | connection-package.schema.json#/$defs/EnrollmentRequest | valid foundation shape |
+| interop-sender-v2-dispatch.relocatedBeforeDeparture | events/sender-event.v2.schema.json | valid foundation shape |
+| interop-sender-v2-outcome.recorded | events/sender-event.v2.schema.json | valid foundation shape |
+| interop-sender-v2-dispatch.createdFromReceipt | events/sender-event.v2.schema.json | valid foundation shape |
+| interop-sender-v2-outcome.corrected | events/sender-event.v2.schema.json | valid foundation shape |
 | piece--1 | common.schema.json#/$defs/PieceCount | invalid (minimum) |
 | piece-1.5 | common.schema.json#/$defs/PieceCount | invalid (type) |
 | piece-2 | common.schema.json#/$defs/PieceCount | invalid (type) |
@@ -21486,7 +21576,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | time-invalid-date | common.schema.json#/$defs/UtcInstant | invalid (format) |
 | pin-outside-latitude | common.schema.json#/$defs/Coordinates | invalid (maximum) |
 | action-future-envelope | action-envelope.v1.schema.json | invalid (const) |
-| action-future-payload | action-envelope.v1.schema.json | invalid (const) |
+| action-future-payload | action-envelope.v1.schema.json | invalid (enum) |
 | action-missing-device-generation | action-envelope.v1.schema.json | invalid (required) |
 | action-extra-authority | action-envelope.v1.schema.json | invalid (additionalProperties) |
 | action-duplicate-dependency | action-envelope.v1.schema.json | invalid (uniqueItems) |
@@ -21628,7 +21718,7 @@ Examples include designed fixtures and captured local API results; consult contr
 | p34-received-without-receipt | sync.schema.json#/$defs/Entry | invalid (required) |
 | p35-account-restriction-without-reauth | session.schema.json#/$defs/LoginRequest | invalid (required) |
 | p35-account-restriction-not-an-auth-grant | session.schema.json#/$defs/LoginRequest | invalid (additionalProperties) |
-| p35-unknown-payload-not-v1 | sync.schema.json#/$defs/Batch | invalid (const) |
+| p35-unknown-payload-not-v1 | sync.schema.json#/$defs/Batch | invalid (enum) |
 | report-no-invented-actual | reporting.schema.json#/$defs/Time | invalid (type) |
 | report-null-needs-reason | reporting.schema.json#/$defs/Measurement | invalid (oneOf) |
 | report-money-is-exact | reporting.schema.json#/$defs/Collection | invalid (type) |
@@ -21638,5 +21728,13 @@ Examples include designed fixtures and captured local API results; consult contr
 | routing-unsupported-unknown | routing.schema.json#/$defs/OptimizationInput | invalid (enum) |
 | provisioning-unsupported-bicycle | provisioning.schema.json#/$defs/DriverCommand | invalid (enum) |
 | provisioning-unsupported-unknown | provisioning.schema.json#/$defs/DriverCommand | invalid (enum) |
+| interop-other-without-detail | outcomes.schema.json#/$defs/RefusalCommand | invalid (required) |
+| interop-other-whitespace | outcomes.schema.json#/$defs/RefusalCommand | invalid (pattern) |
+| interop-unknown-code | outcomes.schema.json#/$defs/RefusalCommand | invalid (enum) |
+| interop-unknown-catalog | outcomes.schema.json#/$defs/RefusalCommand | invalid (const) |
+| interop-transfer-unreceived | b2b-intake.schema.json#/$defs/RelocateCommand | invalid (const) |
+| interop-transfer-no-receipt-id | b2b-intake.schema.json#/$defs/RelocateCommand | invalid (required) |
+| interop-reason-forbidden-in-closed-v1-event | events/sender-event.v1.schema.json | invalid (additionalProperties) |
+| interop-full-irrelevant-rejection | outcomes.schema.json#/$defs/FullCommand | invalid (additionalProperties) |
 
 [Canonical example data](../../contracts/examples/README.md)

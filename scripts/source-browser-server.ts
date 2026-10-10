@@ -16,8 +16,8 @@ import {keycloakAdministration} from '../apps/api/src/provisioning/issuer.js';
 import {runOutboxOnce} from '../apps/api/src/outbox/worker.js';
 import {OutboxClient} from '@tawsel/api-client/outbox';
 import type {ReceiverConfig} from '../apps/mock-erp/src/config.js';
-const secrets=JSON.parse(await readFile('.local/identity/secrets.json','utf8')) as {control:string;erp:string;company:string;personal:string;session:string;password:string};
-const issuer='http://localhost:8085/realms/tawsel-company';
+const secrets=JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`,'utf8')) as {control:string;erp:string;company:string;personal:string;session:string;password:string};
+const issuer=`${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`;
 async function admin(path:string,init:RequestInit={}){
  const t=await fetch(`${issuer}/protocol/openid-connect/token`,{method:'POST',body:new URLSearchParams({grant_type:'client_credentials',client_id:'local-test-control',client_secret:secrets.control})});if(!t.ok)throw new Error('Actual local Keycloak required');
  const token=await t.json() as {access_token:string};const r=await fetch(`${issuer.replace('/realms/','/admin/realms/')}/users${path}`,{...init,headers:{authorization:`Bearer ${token.access_token}`,'content-type':'application/json'}});if(!r.ok)throw new Error(`Issuer test setup ${r.status}`);return r;
@@ -27,7 +27,7 @@ for(const name of ['staff','driver']){const username=`p27-${name}-${suffix}`;con
 const db=await createTestDatabase(),erp=await createReceiverDatabase();await migrate(db.pool);
 const scope={tenantId:randomUUID(),integrationId:randomUUID()},key={keyId:'p27-reference',secret:randomBytes(32).toString('hex')};
 const senderConfig={encryptionKey:randomBytes(32),keys:[{...scope,...key}],destinations:[{...scope,url:'http://127.0.0.1:5191/api/v1/consumer/events'}],testLoopback:true};
-const auth={origin:'http://localhost:5173',encryptionKey:randomBytes(32),sessionSeconds:28800,issuers:{company:{issuer,clientId:'tawsel-web',clientSecret:secrets.company},personal:{issuer:'http://localhost:8085/realms/tawsel-personal',clientId:'tawsel-web',clientSecret:secrets.personal}}};
+const auth={origin:'http://localhost:5173',encryptionKey:randomBytes(32),sessionSeconds:28800,issuers:{company:{issuer,clientId:'tawsel-web',clientSecret:secrets.company},personal:{issuer:`${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`,clientId:'tawsel-web',clientSecret:secrets.personal}}};
 const app=buildApp(createDatabasePool(db.config),auth,{issuer,operatorToken},senderConfig);await app.ready();
 const source=await bindSource(app,users.map(u=>u.subject),scope.tenantId);scope.integrationId=source.integrationId;senderConfig.keys[0]!.integrationId=source.integrationId;senderConfig.destinations[0]!.integrationId=source.integrationId;
 const grant=structuredClone(source.bootstrapCommand);grant.actionId=randomUUID();grant.payload.sourceRevision=2;grant.payload.intakeCapabilities=['intake.prepare','assignment.manage'];grant.payload.returnCapabilities=['return.receive','return.dispose'];

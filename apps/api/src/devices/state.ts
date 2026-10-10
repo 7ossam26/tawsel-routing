@@ -13,7 +13,7 @@ export async function ownRound(tx:Transaction,a:AccessSession,roundId:string){
  if(!r||r.owner_account_id!==a.context.sourceId)throw new AccessDenied(true);
  // Include retained admissions: a later move must not expose historical branch data.
  const rows=(await tx.query(`SELECT tenant_id,driver_id,branch_id,integration_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2
- UNION SELECT r.tenant_id,r.driver_id,t.branch_id,t.integration_id FROM tawsel.round_admissions r JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) WHERE r.tenant_id=$1 AND r.round_id=$3`,[r.tenant_id,driver,roundId])).rows;
+ UNION SELECT r.tenant_id,r.driver_id,COALESCE((to_jsonb(c)->>'branch_id')::uuid,t.branch_id),t.integration_id FROM tawsel.round_admissions r JOIN tawsel.b2b_tasks t USING(tenant_id,task_id) JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=r.tenant_id AND c.dispatch_cycle_id=r.dispatch_cycle_id WHERE r.tenant_id=$1 AND r.round_id=$3`,[r.tenant_id,driver,roundId])).rows;
  for(const row of rows)a.requireResource(own,row);
  return r;
 }

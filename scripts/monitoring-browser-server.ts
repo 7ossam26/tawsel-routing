@@ -12,8 +12,8 @@ import { buildApp } from '../apps/api/src/app.js';
 import { createDatabasePool } from '../apps/api/src/db/pool.js';
 import { CurrentActivity } from '../apps/api/src/current/service.js';
 
-const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; company: string; personal: string; password: string };
-const issuer = 'http://localhost:8085/realms/tawsel-company';
+const secrets = JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`, 'utf8')) as { control: string; company: string; personal: string; password: string };
+const issuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`;
 async function issuerAdmin(path = '', init: RequestInit = {}) {
   const token = await fetch(`${issuer}/protocol/openid-connect/token`, { method: 'POST', body: new URLSearchParams({ grant_type: 'client_credentials', client_id: 'local-test-control', client_secret: secrets.control }) });
   if (!token.ok) throw new Error('Actual local Keycloak is required.');
@@ -36,7 +36,7 @@ try {
     ['user.provision', { externalId: 'monitor-staff', sourceRevision: 1, subject, roleExternalId: 'monitor-role', branchExternalIds: ['branch'], enabled: true }]
   ] as const) { const response = await send(fixture.app, fixture.source.token, fixture.source.command(operation, payload)); if (response.statusCode !== 200) throw new Error(response.body); }
   await db.pool.query('UPDATE tawsel.identity_subjects SET enabled=true WHERE issuer=$1 AND subject=$2', [issuer, subject]);
-  const auth = { origin: 'http://localhost:5173', encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: 'http://localhost:8085/realms/tawsel-personal', clientId: 'tawsel-web', clientSecret: secrets.personal } } };
+  const auth = { origin: 'http://localhost:5173', encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { company: { issuer, clientId: 'tawsel-web', clientSecret: secrets.company }, personal: { issuer: `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`, clientId: 'tawsel-web', clientSecret: secrets.personal } } };
   const app = buildApp(createDatabasePool(db.config), auth); closers.unshift(() => app.close());
   let changed = false;
   app.get('/__fixture/info', async () => ({ username, password: secrets.password, companyCode: fixture.source.code, driverId: fixture.driverId, hidden: 'SECRET RECIPIENT B' }));

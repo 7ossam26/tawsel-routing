@@ -47,7 +47,7 @@ export class ReconciliationReads{
   for(const r of rows){
    if(Number(r.recipient_sequence)!==sequence+1)throw new ProvisioningError('dependency_unavailable',503,'No authoritative checkpoint covers missing history');
    const event=r.body?JSON.parse(r.body.toString('utf8')):envelope(r);
-   if(!conforms('events/sender-event.v1.schema.json',event)||!eventIdentity(event,{tenantId:b.tenantId,integrationId:b.integrationId}))throw new ProvisioningError('dependency_unavailable',503,'Unsupported retained event');
+   if(!conforms('events/sender-event.schema.json',event)||!eventIdentity(event,{tenantId:b.tenantId,integrationId:b.integrationId}))throw new ProvisioningError('dependency_unavailable',503,'Unsupported retained event');
    state=projectEvent(state,event);sequence++;
   }
   if(sequence!==head||!conforms('consumer.schema.json#/$defs/State',state))throw new ProvisioningError('dependency_unavailable',503,'Current checkpoint unavailable');

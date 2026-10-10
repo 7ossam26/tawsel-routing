@@ -1,6 +1,6 @@
 import type { components } from './schema.js';
 type S=components['schemas'];
-export type IntakeCommand=S['B2bRedispatchCommand']|S['B2bSourceSnapshotCommand']|S['B2bPrepareCommand']|S['B2bReceiveBatchCommand']|S['B2bWithdrawCommand']|S['B2bReassignCommand']|S['B2bUrgencyCommand'];
+export type IntakeCommand=S['B2bRelocateCommand']|S['B2bRedispatchCommand']|S['B2bSourceSnapshotCommand']|S['B2bPrepareCommand']|S['B2bReceiveBatchCommand']|S['B2bWithdrawCommand']|S['B2bReassignCommand']|S['B2bUrgencyCommand'];
 export type IntakeTask=S['B2bTask'];
 /** Public-only HTTP consumer. A network exception leaves acceptance unknown;
  * callers persist and retry the same immutable envelope, never mint a new ID. */

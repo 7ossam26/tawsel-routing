@@ -4,11 +4,11 @@ import { CorrectionsClient } from '@tawsel/api-client/src/corrections';
 import { ActionButton, StatusNotice } from './components/ui';
 import { api, deviceId } from './independent-tasks';
 import { confirmedExecutionOwner, executionEnvelope, useExecutionCommand } from './execution-command';
-import { amountLabel, proposedResult, ResultFields, resultNames, type ResultDraft } from './execution-result';
+import { amountLabel, proposedResult, ResultFields, resultNames, rejectionNames, type ResultDraft } from './execution-result';
 
 type S = components['schemas'];
 function RecordedResult({ title, value }: { title: string; value: S['OutcomeRecord'] | null }) {
-  return <article className="piece-row"><h2>{title}</h2>{value ? <><strong>{resultNames[value.outcome]}</strong><p>المراجعة {value.revision} · {amountLabel(value.collection.reported)}</p>{value.kind === 'company' ? <p>المسلّم {value.lines.reduce((n, line) => n + line.delivered, 0)} · للإرجاع وقت التسجيل {value.lines.reduce((n, line) => n + line.heldReturnRequired, 0)}{value.collection.unpaidShipping.amountMinor ? ` · شحن غير مدفوع ${amountLabel(value.collection.unpaidShipping)}` : ''}</p> : null}<p>{new Date(value.time.recordedAt).toLocaleString('ar-EG')}</p></> : <p>لا تتوفر هذه النتيجة في القراءة الحالية.</p>}</article>;
+  return <article className="piece-row"><h2>{title}</h2>{value ? <><strong>{resultNames[value.outcome]}</strong><p>المراجعة {value.revision} · {amountLabel(value.collection.reported)}</p>{value.kind === 'company' ? <p>المسلّم {value.lines.reduce((n, line) => n + line.delivered, 0)} · للإرجاع وقت التسجيل {value.lines.reduce((n, line) => n + line.heldReturnRequired, 0)}{value.collection.unpaidShipping.amountMinor ? ` · شحن غير مدفوع ${amountLabel(value.collection.unpaidShipping)}` : ''}</p> : null}{value.rejection?<p>سبب الرفض: {rejectionNames[value.rejection.code]}{value.rejection.detail?` — ${value.rejection.detail}`:''}</p>:value.kind==='company'&&['partial','refused'].includes(value.outcome)?<p>السبب غير مسجّل في هذه النتيجة القديمة.</p>:null}<p>{new Date(value.time.recordedAt).toLocaleString('ar-EG')}</p></> : <p>لا تتوفر هذه النتيجة في القراءة الحالية.</p>}</article>;
 }
 
 export function CorrectionPage() {
@@ -26,7 +26,7 @@ export function CorrectionPage() {
       const storageKey = `tawsel:correction:${context.access.tenantId}:${context.access.sourceId}:${attemptId}`; setDraftKey(storageKey);
       if (initial) {
         const saved = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null');
-        setDraft(saved?.draft ?? { outcome: next.effectiveOutcome?.outcome ?? 'full', quantities: Object.fromEntries(next.effectiveOutcome?.lines.map(line => [line.sourceLineId, String(line.delivered)]) ?? []), unpaid: next.effectiveOutcome?.collection.shippingStatus === 'explicitly-unpaid' });
+        setDraft(saved?.draft ?? { outcome: next.effectiveOutcome?.outcome ?? 'full', quantities: Object.fromEntries(next.effectiveOutcome?.lines.map(line => [line.sourceLineId, String(line.delivered)]) ?? []), unpaid: next.effectiveOutcome?.collection.shippingStatus === 'explicitly-unpaid', reason:next.effectiveOutcome?.rejection?.code,detail:next.effectiveOutcome?.rejection?.detail });
         setBaseRevision(saved?.baseRevision ?? next.effectiveOutcomeRevision);
       }
       setError('');
@@ -40,7 +40,7 @@ export function CorrectionPage() {
   const preview = draft && availability?.delivery ? proposedResult(availability.delivery, draft) : null;
   async function submit() {
     if (!session || !availability || !owner || !mayEdit || stale || command.pending || !preview?.replacement) return;
-    const value: S['CorrectionCorrectCommand'] = { ...executionEnvelope(session, executionRoundId, owner.owner.generation), operationId: 'outcome.correct', resources: { tripId: availability.roundId, taskId: availability.taskId, attemptId }, payload: { roundId: availability.roundId, taskId: availability.taskId, attemptId, expectedOutcomeRevision: baseRevision, replacement: preview.replacement } };
+    const value: S['CorrectionCorrectCommand'] = { ...executionEnvelope(session, executionRoundId, owner.owner.generation), payloadVersion:availability.delivery?.rejectionCatalogVersion?'2.0.0':'1.0.0', operationId: 'outcome.correct', resources: { tripId: availability.roundId, taskId: availability.taskId, attemptId }, payload: { roundId: availability.roundId, taskId: availability.taskId, attemptId, expectedOutcomeRevision: baseRevision, replacement: preview.replacement } };
     const accepted = await command.execute(value);
     if (accepted) { sessionStorage.removeItem(draftKey); await load(true); } else await load();
   }

@@ -69,7 +69,10 @@ test('B2B branch staff before departure, assigned driver afterward; source stays
  const cmd=(account:string,rev=0)=>{const c=command(payload(rev));c.context={kind:'device',tenantId:ids.tenant,accountId:account,deviceId:randomUUID(),deviceGeneration:1,deviceSequence:1};return c;};
  await service.confirm(principals.staff,cmd(ids.staff));expect((await service.get(principals.staff,id)).original.addressText).toBe('عنوان تجاري أصلي');
  await db.pool.query('UPDATE tawsel.b2b_tasks SET branch_id=$2 WHERE task_id=$1',[id,ids.forbiddenBranch]);
+ expect((await service.get(principals.staff,id)).original.addressText).toBe('عنوان تجاري أصلي'); // Frozen cycle owns scope; master edits cannot re-scope it.
+ await db.pool.query('DELETE FROM tawsel.membership_branches WHERE tenant_id=$1 AND account_id=$2 AND branch_id=$3',[ids.tenant,ids.staff,ids.branch]);
  await expect(service.get(principals.staff,id)).rejects.toMatchObject({statusCode:404});
+ await db.pool.query('INSERT INTO tawsel.membership_branches VALUES($1,$2,$3)',[ids.tenant,ids.staff,ids.branch]);
  await db.pool.query('UPDATE tawsel.b2b_tasks SET branch_id=$2 WHERE task_id=$1',[id,ids.branch]);
  expect((await db.pool.query("SELECT count(*)::int n FROM tawsel.driver_planned_stops WHERE state='remaining'")).rows[0].n).toBe(1);
  await db.pool.query('UPDATE tawsel.b2b_dispatch_cycles SET departure_at=clock_timestamp() WHERE task_id=$1',[id]);

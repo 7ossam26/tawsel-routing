@@ -17,8 +17,8 @@ import { runPlanningOnce } from '../apps/api/src/planning/worker.js';
 import { buildApp } from '../apps/api/src/app.js';
 import { createDatabasePool } from '../apps/api/src/db/pool.js';
 
-const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; company: string; personal: string; password: string };
-const companyIssuer = 'http://localhost:8085/realms/tawsel-company', personalIssuer = 'http://localhost:8085/realms/tawsel-personal';
+const secrets = JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`, 'utf8')) as { control: string; company: string; personal: string; password: string };
+const companyIssuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`, personalIssuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`;
 const users: { issuer: string; subject: string; username: string }[] = [];
 async function issuerAdmin(issuer: string, path = '', init: RequestInit = {}) {
   const token = await fetch(`${issuer}/protocol/openid-connect/token`, { method: 'POST', body: new URLSearchParams({ grant_type: 'client_credentials', client_id: 'local-test-control', client_secret: secrets.control }) });
@@ -44,6 +44,7 @@ const engine = await providerFixture(); await runPlanningOnce(db.pool, engine.en
 
 const company = await companyPlanningFixture(db, { issuer: companyIssuer, driverSubject: companyUser.subject });
 const bootstrap = structuredClone(company.source.bootstrapCommand); bootstrap.actionId = randomUUID(); bootstrap.payload.sourceRevision = 3; bootstrap.payload.returnCapabilities = ['return.receive', 'return.dispose'];
+if(process.env.TAWSEL_INTEROP_FIXTURE==='1')Object.assign(bootstrap.payload,{interopVersion:'2.0.0',erpCompanyId:randomUUID()});
 if ((await send(company.app, operatorToken, bootstrap)).statusCode !== 200) throw new Error('return provisioning');
 if ((await send(company.app, company.source.token, company.source.command('role.defineCapabilities', { externalId: 'role', sourceRevision: 2, name: 'Driver', capabilities: ['execution.own', 'correction.own'] }))).statusCode !== 200) throw new Error('driver provisioning');
 const taskIds: Record<string, string> = {};
@@ -86,7 +87,7 @@ app.post('/__fixture/close-personal', async () => {
 });
 app.get('/__fixture/state', async () => ({
   rounds: (await db.pool.query('SELECT driver_id,round_id,owner_device_id,device_generation FROM tawsel.rounds ORDER BY started_at')).rows,
-  outcomes: (await db.pool.query("SELECT task_id,attempt_id,revision,outcome,record->'arrival' AS arrival,record->'collection' AS collection FROM tawsel.delivery_outcomes ORDER BY round_id,task_id")).rows,
+  outcomes: (await db.pool.query("SELECT task_id,attempt_id,revision,outcome,record->'arrival' AS arrival,record->'collection' AS collection,record->'rejection' AS rejection FROM tawsel.delivery_outcomes ORDER BY round_id,task_id")).rows,
   actions: (await db.pool.query("SELECT operation_id,action_id,business_status FROM tawsel.command_identities WHERE operation_id LIKE 'current.%' OR operation_id LIKE 'outcome.%' OR operation_id LIKE 'task.%' OR operation_id LIKE 'return.%' ORDER BY received_at")).rows,
   history: (await db.pool.query('SELECT round_id,revision,operation_id,current_activity FROM tawsel.current_activity_history ORDER BY round_id,revision')).rows
 }));

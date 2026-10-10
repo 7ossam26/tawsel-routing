@@ -19,8 +19,8 @@ import {runPlanningOnce} from '../apps/api/src/planning/worker.js';
 import {money} from '../apps/api/src/outcomes/arithmetic.js';
 import {Reporting} from '../apps/api/src/reporting/service.js';
 
-const secrets=JSON.parse(await readFile('.local/identity/secrets.json','utf8')) as {control:string;company:string;personal:string;password:string};
-const companyIssuer='http://localhost:8085/realms/tawsel-company',personalIssuer='http://localhost:8085/realms/tawsel-personal';
+const secrets=JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`,'utf8')) as {control:string;company:string;personal:string;password:string};
+const companyIssuer=`${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`,personalIssuer=`${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`;
 async function admin(issuer:string,path='',init:RequestInit={}){
  const token=await fetch(`${issuer}/protocol/openid-connect/token`,{method:'POST',body:new URLSearchParams({grant_type:'client_credentials',client_id:'local-test-control',client_secret:secrets.control})});if(!token.ok)throw new Error('Actual local Keycloak required.');
  const {access_token}=await token.json() as {access_token:string};const response=await fetch(`${issuer.replace('/realms/','/admin/realms/')}/users${path}`,{...init,headers:{authorization:`Bearer ${access_token}`,'content-type':'application/json'}});if(!response.ok)throw new Error(`Issuer fixture setup failed: ${response.status}`);return response;

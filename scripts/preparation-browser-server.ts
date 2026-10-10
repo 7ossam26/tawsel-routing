@@ -15,9 +15,9 @@ import { createDatabasePool } from '../apps/api/src/db/pool.js';
 import { browserFixtureConfig } from './browser-fixture-config.js';
 
 const browser = browserFixtureConfig();
-const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; company: string; personal: string; password: string };
-const companyIssuer = 'http://localhost:8085/realms/tawsel-company';
-const personalIssuer = 'http://localhost:8085/realms/tawsel-personal';
+const secrets = JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`, 'utf8')) as { control: string; company: string; personal: string; password: string };
+const companyIssuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`;
+const personalIssuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`;
 const users: { issuer: string; subject: string; username: string }[] = [];
 
 async function issuerAdmin(issuer: string, path = '', init: RequestInit = {}) {

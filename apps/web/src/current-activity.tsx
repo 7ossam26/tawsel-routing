@@ -181,7 +181,7 @@ export function CurrentActivityPage() {
       if (!isActive(run) || !result) return;
       setPending(null);
       if (result.receipt.businessStatus !== 'accepted') { setError(result.receipt.problem?.detail ?? 'لم يُقبل الإجراء؛ الدليل محفوظ.'); await refresh(); return; }
-      setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم دون وصول أو رسوم أو عدّاد مكالمات.' : exact.command.operationId === 'outcome.recordFull' ? 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'تم تأكيد النتيجة والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
+      setSuccess(exact.kind === 'takeover' ? 'اكتمل نقل التنفيذ وتحميل الحالة المؤكدة لهذا الهاتف.' : exact.kind === 'outcome' ? exact.command.operationId === 'outcome.recordNoAnswer' ? 'تم تسجيل عدم الرد من الخادم. الوصول المسجّل سابقًا محفوظ، ولا يوجد تحصيل أو محاولة دفع شحن.' : exact.command.operationId === 'outcome.recordFull' ? 'تم تأكيد التسليم والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'تم تأكيد النتيجة والتحصيل من الخادم. المحطة التالية اقتراح فقط.' : 'أكّد الخادم الإجراء.');
       await refresh(); if (isActive(run)) headingRef.current?.focus();
     } catch (failure) {
       if (isActive(run)) setError(saved ? 'الإجراء محفوظ على الهاتف؛ تعذر تأكيده أو تحديث الحالة. راجع الإجراءات المحفوظة.' : failure instanceof Error ? 'لم يُحفظ على الهاتف. ' + failure.message : 'لم يُحفظ على الهاتف؛ احتفظ بالمدخلات وحاول مجددًا.');
@@ -216,7 +216,7 @@ export function CurrentActivityPage() {
     const operationId = replacement.outcome === 'partial' ? 'outcome.recordPartial' : 'outcome.recordRefusal';
     const base = envelope(context, state, target, operationId, snapshotToken);
     const { outcome: _, ...fields } = replacement; void _;
-    void execute({ kind: 'outcome', command: { ...base, payload: { ...base.payload, ...fields } } as OutcomeCommand });
+    void execute({ kind: 'outcome', command: { ...base, payloadVersion:target.delivery.rejectionCatalogVersion?'2.0.0':'1.0.0', payload: { ...base.payload, ...fields } } as OutcomeCommand });
   };
   const takeOver = () => {
     if (!state || !context || pending) return;
@@ -242,7 +242,7 @@ export function CurrentActivityPage() {
         {target.delivery.fullCollection ? <div className="collection-due"><span>المطلوب عند التسليم الكامل</span><strong><bdi>{amountLabel(target.delivery.fullCollection)}</bdi></strong>{target.delivery.kind === 'company' ? <small>البضاعة {amountLabel(target.delivery.goodsDue)} · الشحن {amountLabel(target.delivery.shippingDue)}</small> : <small>مبلغ اختياري حُفظ مع مهمة الحساب المستقل.</small>}</div> : <div className="collection-due collection-due--none"><span>التسليم الكامل</span><strong>بدون تحصيل</strong></div>}
         {!same || current?.stage !== 'arrived' ? <ActionButton onClick={move} busy={busy} disabled={!canWrite || Boolean(pending)}>{same ? 'وصلت' : 'اتجه للعميل'}</ActionButton> : <ActionButton onClick={() => recordOutcome('outcome.recordFull')} busy={busy} disabled={!canWrite || Boolean(pending)}><CheckCircle2 aria-hidden="true" />{target.delivery.fullCollection ? `تأكيد التسليم وتحصيل ${amountLabel(target.delivery.fullCollection)}` : 'تأكيد التسليم الكامل'}</ActionButton>}
         <details className="current-secondary"><summary id="task-options">خيارات المهمة</summary><div className="context-actions"><a className="edit-link" href={`/execution/options?kind=${kind}&roundId=${state.roundId}&taskId=${target.taskId}`}>التأجيل والأولوية والسجل</a>{target.delivery.allowedActions.includes('partial') ? <ActionButton variant="secondary" disabled={!canWrite || busy || Boolean(pending)} onClick={() => { setError(''); setException('partial'); }}>تسليم بعض القطع</ActionButton> : null}{target.delivery.allowedActions.includes('refusal') ? <ActionButton variant="secondary" disabled={!canWrite || busy || Boolean(pending)} onClick={() => { setError(''); setException('refused'); }}>رفض الاستلام</ActionButton> : null}</div></details>
-        {same && current?.stage === 'heading' && target.delivery.allowedActions.includes('no-answer') ? <button className="outcome-secondary" type="button" disabled={!canWrite || busy || Boolean(pending)} onClick={() => recordOutcome('outcome.recordNoAnswer')}>لم يرد العميل</button> : null}
+        {same && (current?.stage === 'heading'||current?.stage === 'arrived') && target.delivery.allowedActions.includes('no-answer') ? <button className="outcome-secondary" type="button" disabled={!canWrite || busy || Boolean(pending)} onClick={() => recordOutcome('outcome.recordNoAnswer')}>لم يرد العميل</button> : null}
       </section> : <StatusNotice title="لا توجد محطة متاحة الآن">حدّث الجولة للتحقق من العمل المتاح.</StatusNotice>}
       {!current && state.nextSuggestion ? <StatusNotice title="التالي مقترح فقط">{state.nextSuggestion.recipientName} ظاهر للمراجعة. اضغط «اتجه للعميل» لبدء الحركة صراحةً.</StatusNotice> : null}
       <a className="edit-link" href={`/execution/options?kind=${kind}&roundId=${state.roundId}`}>العمل المؤجل والنتائج السابقة</a>

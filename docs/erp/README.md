@@ -1,6 +1,6 @@
 # ERP handoff — start here
 
-Current scope under [D-113](../phases/decision-map.md): car/motorcycle only. The old dated manifest/proof remains a historical local candidate until a new package is built and verified for the final source/runtime SHA. Preserve the September proof; the current consumer run writes `docs/verification/integration-local-2026-10-03.json`.
+Current scope under [D-113](../phases/decision-map.md): car/motorcycle only. Read the [10 October interoperability delta](interoperability-2026-10-10.md), [change control 07](planning-pack/07-ERP-DISCOVERY-AND-CHANGE-CONTROL.md) and [dated conformance ledger](../verification/interoperability-ledger-2026-10-10.json) first. Current API/client/reference versions are 0.2.0 with explicit v1/v2 payload readers. The current clean consumer run writes `docs/verification/integration-local-2026-10-10.json`; September and 3 October evidence remains historical. Native Shahn adoption and separate-server acceptance remain pending.
 
 For an exact final pushed commit, build the package in a separate checkout at that SHA: `npm run erp:package`, `npm run source:demo`, stage only the new proof, `npm run erp:package`, then `npm run erp:verify`. Keep its generated manifest/proof uncommitted so HEAD remains stable, and use the clean source checkout for the Dokploy handoff.
 
@@ -12,7 +12,7 @@ For an exact final pushed commit, build the package in a separate checkout at th
 2. [field-and-status-mapping.md](field-and-status-mapping.md): actual reference identifiers, fields, states, events and worked results. Real vendor mappings remain explicitly unknown.
 3. [consumer-quickstart.md](consumer-quickstart.md): clean install and two-way public conformance, including the report/export journey.
 4. [source-protocol.md](source-protocol.md), [receiver-protocol.md](receiver-protocol.md), [integration guide](../integration-guide.md), [provisioning](../provisioning.md), [sender](../outbox-delivery.md) and [state/consistency](../tracking-and-consistency.md).
-5. [Canonical HTTP](../../contracts/openapi.yaml), [schemas](../../contracts/common.schema.json), [sender events](../../contracts/events/sender-event.v1.schema.json), [examples](../../contracts/examples/README.md), [generated client](../../packages/api-client/README.md), [operation coverage](../contract-coverage.md).
+5. [Canonical HTTP](../../contracts/openapi.yaml), [schemas](../../contracts/common.schema.json), [sender union reader](../../contracts/events/sender-event.schema.json), [frozen v1 events](../../contracts/events/sender-event.v1.schema.json), [examples](../../contracts/examples/README.md), [generated client](../../packages/api-client/README.md), [operation coverage](../contract-coverage.md).
 6. [Release manifest](release-manifest.json), [execution ledger](../verification/requirement-ledger.md), [phase evidence](../phase-42-evidence.md) and [A–P readiness](../verification/pilot-readiness.md).
 
 ## Package and inspect

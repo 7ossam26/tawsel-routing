@@ -3,7 +3,11 @@ import type { LocalAction, LocalEnvelope } from './local-work.js';
 /** Explicit released readers. No default version, mutation or new action ID.
  * A future translator must preserve the original envelope/hash/receipt identity. */
 const readers: Record<string, (action: LocalAction) => LocalEnvelope> = {
-  '1.0.0/1.0.0': action => action.envelope
+  '1.0.0/1.0.0': action => action.envelope,
+  '1.0.0/2.0.0': action => {
+    if(!['outcome.recordFull','outcome.recordPartial','outcome.recordRefusal','outcome.recordNoAnswer','outcome.correct'].includes(action.envelope.operationId))throw new Error('صيغة هذا الإجراء غير مدعومة؛ احتفظ بالأصل.');
+    return action.envelope;
+  }
 };
 export function readLocalAction(action: LocalAction): LocalEnvelope {
   const reader = readers[`${action.envelope.schemaVersion}/${action.envelope.payloadVersion}`];

@@ -20,7 +20,7 @@ export function envelope(intent:Intent):components['schemas']['EventEnvelope'] {
  if((p.outcome||correction?.outcome)&&Number.isSafeInteger(fact.revision))versions.outcomeRevision=fact.revision as number;
  // Shared route/activity revisions are deliberately absent from the envelope.
  const sourceReference=fact.sourceReference as components['schemas']['SourceReference']|undefined;
- return {schemaVersion:'1.0.0',payloadVersion:intent.payload_version as '1.0.0',eventId:intent.event_id,eventType:intent.event_type,
+ return {schemaVersion:'1.0.0',payloadVersion:intent.payload_version as '1.0.0'|'2.0.0',eventId:intent.event_id,eventType:intent.event_type,
   eventKind:'transition',tenantId:intent.tenant_id,recipientIntegrationId:intent.recipient_id,
   aggregate:{type:intent.aggregate_type,id:intent.aggregate_id,recipientSequence:Number(intent.recipient_sequence)},
   resources,versions,correlation:{actionId:intent.action_id,...(sourceReference?{sourceReference}:{})},

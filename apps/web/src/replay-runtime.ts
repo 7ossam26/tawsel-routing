@@ -30,7 +30,11 @@ export function replayCoordinator(kind: 'company' | 'personal') {
         if (snapshot.context.roundState === 'ended' || snapshot.context.mode !== 'owner') await localWork.retireConfirmedRound(scope, saved.roundId);
       }
       const active = await localWork.downloaded(kind, deviceId());
-      if (active) await downloadWork(kind);
+      // Owner snapshots above still revoke stale authority on every wake.
+      // With no overlay there is nothing to reconcile into a new download;
+      // page loads already read the current server state. Repeated focus/page
+      // wakes must not redownload the entire round and exhaust session limits.
+      if (active && rounds.size) await downloadWork(kind);
     }
   });
 }

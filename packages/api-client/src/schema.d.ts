@@ -960,6 +960,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/intake/commands/dispatch.relocateBeforeDeparture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Fresh branch cycle after durable predeparture withdrawal and ERP destination receipt */
+        post: operations["dispatch.relocateBeforeDeparture"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/intake/commands/intake.prepare": {
         parameters: {
             query?: never;
@@ -2290,7 +2307,7 @@ export interface components {
         };
         "$defs-CommandResult": {
             current: components["schemas"]["CommandResult"];
-            outcome: components["schemas"]["Record"];
+            outcome: components["schemas"]["$defs-Record"];
         };
         "$defs-Current": {
             attemptId: string | null;
@@ -2313,7 +2330,18 @@ export interface components {
             tenantId: components["schemas"]["Uuid"];
         };
         "$defs-Event": {
-            change: components["schemas"]["$defs-Record"];
+            closureId: components["schemas"]["Uuid"];
+            driverId: components["schemas"]["Uuid"];
+            endedRoundId: components["schemas"]["Uuid"] | null;
+            roundEndedAt: components["schemas"]["UtcInstant"] | null;
+            tasks: components["schemas"]["SourceItem"][];
+            time: components["schemas"]["ActionTime"];
+            workdayEndedAt: components["schemas"]["UtcInstant"] | null;
+            workdayId: components["schemas"]["Uuid"];
+        };
+        "$defs-EventV2": {
+            correction: components["schemas"]["$defs-RecordV2"];
+            previousOutcome: components["schemas"]["$defs-Record"] | null;
         };
         "$defs-Filters": {
             branchId?: components["schemas"]["Uuid"];
@@ -2351,6 +2379,18 @@ export interface components {
             serviceEstimateSeconds?: number;
             taskId: string;
         };
+        "$defs-LegacyEvent": {
+            correction: components["schemas"]["$defs-LegacyRecord"];
+            previousOutcome: components["schemas"]["LegacyRecord"] | null;
+        };
+        "$defs-LegacyRecord": {
+            correctionId: components["schemas"]["Uuid"];
+            evidenceActionId: components["schemas"]["Uuid"] | null;
+            evidenceReceiptId: components["schemas"]["Uuid"] | null;
+            outcome: components["schemas"]["LegacyRecord"];
+            previousOutcomeId: components["schemas"]["Uuid"] | null;
+            previousRevision: number;
+        };
         "$defs-Money": {
             amountMinor: number;
             /** @constant */
@@ -2384,29 +2424,40 @@ export interface components {
             shipments: number;
         };
         "$defs-Record": {
+            arrival: components["schemas"]["ActionTime"] | null;
             assignmentRevision: number;
             attemptId: components["schemas"]["Uuid"];
-            deferred: boolean;
+            branchId: components["schemas"]["Uuid"] | null;
+            collection: components["schemas"]["Collection"];
             dispatchCycleId: components["schemas"]["Uuid"] | null;
             driverId: components["schemas"]["Uuid"];
-            earliestAt: string | null;
-            /**
-             * @description Preparation uses the last ended round only as an ownership anchor; it never reopens its execution or workday.
-             * @enum {unknown}
-             */
-            mode?: "active-round" | "preparation";
+            heading: components["schemas"]["ActionTime"] | null;
             /** @enum {unknown} */
-            operationId: "task.deferWhole" | "task.retryWhole" | "task.activateDeferred" | "task.setDriverUrgency";
-            previousAttemptId: components["schemas"]["Uuid"];
-            revision: number;
+            kind: "company" | "personal";
+            lines: components["schemas"]["LineResult"][];
+            /** @enum {unknown} */
+            outcome: "full" | "partial" | "refused" | "no-answer";
+            outcomeId: components["schemas"]["Uuid"];
+            /** @constant */
+            recordVersion?: "2.0.0";
+            rejection?: components["schemas"]["Rejection"];
+            returnRequired: boolean;
+            revision: components["schemas"]["Revision"];
             roundId: components["schemas"]["Uuid"];
             sourceDispatchCycleId: components["schemas"]["ExternalId"] | null;
             sourceReference: components["schemas"]["SourceReference"] | null;
             sourceRevision: components["schemas"]["Revision"];
             taskId: components["schemas"]["Uuid"];
             time: components["schemas"]["ActionTime"];
-            /** @enum {unknown} */
-            urgency: "ordinary" | "urgent";
+            workdayId: components["schemas"]["Uuid"];
+        } & (unknown & unknown & unknown & unknown & (components["schemas"]["LegacyRecord"] | components["schemas"]["RecordV2"]));
+        "$defs-RecordV2": {
+            correctionId: components["schemas"]["Uuid"];
+            evidenceActionId: components["schemas"]["Uuid"] | null;
+            evidenceReceiptId: components["schemas"]["Uuid"] | null;
+            outcome: components["schemas"]["RecordV2"];
+            previousOutcomeId: components["schemas"]["Uuid"] | null;
+            previousRevision: number;
         };
         "$defs-Request": {
             items: components["schemas"]["Offer"][];
@@ -2448,10 +2499,10 @@ export interface components {
         };
         "$defs-State": {
             notices: {
-                event: components["schemas"]["sender-event.v1.schema"];
+                event: components["schemas"]["sender-event.schema"];
                 key: string;
             }[];
-            outcomes: components["schemas"]["Record"][];
+            outcomes: components["schemas"]["$defs-Record"][];
             returnItems: {
                 damaged: components["schemas"]["PieceCount"];
                 itemId: components["schemas"]["Uuid"];
@@ -2577,12 +2628,12 @@ export interface components {
             payload: {
                 [key: string]: unknown;
             };
-            /** @constant */
-            payloadVersion: "1.0.0";
+            /** @enum {unknown} */
+            payloadVersion: "1.0.0" | "2.0.0";
             resources: components["schemas"]["ResourceContext"];
             /** @constant */
             schemaVersion: "1.0.0";
-        };
+        } & unknown;
         /**
          * Durable command result v1
          * @description Durable scoped command result. P20 exposes action.getResult for authorized round execution/takeover actions; other families retain their feature adapters. Compacted results preserve identity and never execute again; unresolved evidence is held, full responses last at least 30 days.
@@ -2775,14 +2826,14 @@ export interface components {
             constraints: components["schemas"]["Constraint"][];
             /** @description Frozen replacement choices and exact amounts excluding this attempt from prior collections. Choices do not override availability.allowed. */
             delivery?: components["schemas"]["DeliveryAffordance"];
-            effectiveOutcome: components["schemas"]["Record"] | null;
+            effectiveOutcome: components["schemas"]["$defs-Record"] | null;
             effectiveOutcomeRevision: number;
             /** @description Latest round anchoring current device ownership, generation and snapshot token; roundId remains the original outcome round. */
             executionRoundId?: components["schemas"]["Uuid"];
             message: string;
             nextSteps: ("refresh-state" | "view-history" | "erp-commercial-review")[];
             /** @description First recorded result for this attempt; effectiveOutcome retains the latest correction. */
-            originalOutcome?: components["schemas"]["Record"] | null;
+            originalOutcome?: components["schemas"]["$defs-Record"] | null;
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
@@ -2800,10 +2851,13 @@ export interface components {
         B2bReceiveBatchCommand: components["schemas"]["ReceiveBatchCommand"];
         B2bRedispatch: components["schemas"]["Redispatch"];
         B2bRedispatchCommand: components["schemas"]["RedispatchCommand"];
+        B2bRelocate: components["schemas"]["Relocate"];
+        B2bRelocateCommand: components["schemas"]["RelocateCommand"];
         B2bSourceSnapshot: components["schemas"]["SourceSnapshot"];
         B2bSourceSnapshotCommand: components["schemas"]["SourceSnapshotCommand"];
         B2bTask: components["schemas"]["Task"];
         B2bTaskList: components["schemas"]["TaskList"];
+        B2bTransfer: components["schemas"]["Transfer"];
         B2bUrgency: components["schemas"]["Urgency"];
         B2bUrgencyCommand: components["schemas"]["UrgencyCommand"];
         B2bWithdraw: components["schemas"]["Withdraw"];
@@ -2821,10 +2875,16 @@ export interface components {
             companyCode: string;
             credentialId: components["schemas"]["Uuid"];
             displayName: string;
+            erpCompanyId?: components["schemas"]["Uuid"];
             expiresAt: components["schemas"]["UtcInstant"];
             externalId: components["schemas"]["ExternalId"];
             /** @description Operator-owned service grants. Omit to preserve existing grants; empty removes both. */
             intakeCapabilities?: ("intake.prepare" | "assignment.manage")[];
+            /**
+             * @description Operator release gate. Enable v2 only after recipient readers adopt this candidate. Omission preserves.
+             * @enum {unknown}
+             */
+            interopVersion?: "1.0.0" | "2.0.0";
             /** @description Operator-only replacement of monitoring grants. Omitted preserves; [] revokes. Never permits another source or branch. */
             monitoringCapabilities?: "monitor.read"[];
             /** @description Operator-only full replacement of return grants; omitted preserves, [] clears. Separate from intakeCapabilities. */
@@ -2944,8 +3004,23 @@ export interface components {
             lines: components["schemas"]["LineResult"][];
             /** @enum {unknown} */
             outcome: "full" | "partial" | "refused" | "no-answer";
+            /** @constant */
+            recordVersion?: "2.0.0";
+            rejection?: components["schemas"]["Rejection"];
             returnRequired: boolean;
-        } & (unknown & unknown & unknown & unknown);
+        } & (unknown & unknown & unknown & unknown & (components["schemas"]["LegacyCalculation"] | components["schemas"]["CalculationV2"]));
+        CalculationV2: {
+            collection: components["schemas"]["Collection"];
+            /** @enum {unknown} */
+            kind: "company" | "personal";
+            lines: components["schemas"]["LineResult"][];
+            /** @enum {unknown} */
+            outcome: "full" | "partial" | "refused" | "no-answer";
+            /** @constant */
+            recordVersion: "2.0.0";
+            rejection?: components["schemas"]["Rejection"];
+            returnRequired: boolean;
+        } & (unknown & unknown & unknown & unknown & unknown);
         CallbackQuery: {
             code?: string;
             error?: string;
@@ -3063,7 +3138,7 @@ export interface components {
         ClosureCommandResult: components["schemas"]["workday-closure.schema_$defs-CommandResult"];
         ClosureEndDayCommand: components["schemas"]["EndDayCommand"];
         ClosureEndRoundCommand: components["schemas"]["EndRoundCommand"];
-        ClosureEvent: components["schemas"]["workday-closure.schema_$defs-Event"];
+        ClosureEvent: components["schemas"]["$defs-Event"];
         ClosureRecord: components["schemas"]["workday-closure.schema_$defs-Record"];
         ClosureRoundSummary: components["schemas"]["RoundSummary"];
         ClosureSourceItem: components["schemas"]["SourceItem"];
@@ -3184,6 +3259,7 @@ export interface components {
             items: components["schemas"]["Evidence"][];
             nextActionId: components["schemas"]["Uuid"] | null;
         };
+        ConnectionMetadata: components["schemas"]["Metadata"];
         /** @enum {unknown} */
         Constraint: "closed-workday" | "dependent-receipt" | "dependent-redispatch" | "changed-assignment" | "changed-source" | "changed-attempt" | "not-current-owner" | "correction-not-authorized" | "outcome-required" | "claimed-handover";
         "consumer.schema_$defs-Snapshot": {
@@ -3258,15 +3334,27 @@ export interface components {
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
-        CorrectCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        CorrectCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context?: {
                 /** @constant */
                 kind?: "device";
             };
             /** @constant */
             operationId?: "outcome.correct";
-            payload?: components["schemas"]["Correct"];
-        };
+            payload?: components["schemas"]["LegacyCorrect"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context?: {
+                /** @constant */
+                kind?: "device";
+            };
+            /** @constant */
+            operationId?: "outcome.correct";
+            payload?: components["schemas"]["CorrectV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
         CorrectionActionResult: components["schemas"]["action-result.v1.schema"];
         CorrectionActionStatus: components["schemas"]["corrections.schema_$defs-ActionStatus"];
         CorrectionAdoptionEvent: components["schemas"]["AdoptionEvent"];
@@ -3286,13 +3374,13 @@ export interface components {
         };
         "corrections.schema_$defs-Event": {
             correction: components["schemas"]["corrections.schema_$defs-Record"];
-            previousOutcome: components["schemas"]["Record"] | null;
+            previousOutcome: components["schemas"]["$defs-Record"] | null;
         };
         "corrections.schema_$defs-Record": {
             correctionId: components["schemas"]["Uuid"];
             evidenceActionId: components["schemas"]["Uuid"] | null;
             evidenceReceiptId: components["schemas"]["Uuid"] | null;
-            outcome: components["schemas"]["Record"];
+            outcome: components["schemas"]["$defs-Record"];
             previousOutcomeId: components["schemas"]["Uuid"] | null;
             previousRevision: number;
         };
@@ -3309,6 +3397,13 @@ export interface components {
             /** @constant */
             operationId?: "current.correctOrigin";
             payload?: components["schemas"]["CorrectOrigin"];
+        };
+        CorrectV2: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedOutcomeRevision: number;
+            replacement: components["schemas"]["ReplacementV2"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
         };
         Counts: {
             attempts: number;
@@ -3446,6 +3541,11 @@ export interface components {
                 sourceLineId: components["schemas"]["ExternalId"];
                 unitDue: components["schemas"]["DeliveryMoney"];
             }[];
+            /**
+             * @description Present only when the source has adopted v2; new partial/refusal writers then require a fixed rejection reason.
+             * @constant
+             */
+            rejectionCatalogVersion?: "1.0.0";
             shippingDue: components["schemas"]["DeliveryMoney"] | null;
         };
         DeliveryMoney: {
@@ -3664,13 +3764,13 @@ export interface components {
             status: "accepted" | "rejected" | "review-required";
         };
         "eligibility.schema_$defs-CommandResult": {
-            change: components["schemas"]["$defs-Record"];
+            change: components["schemas"]["Record"];
             state: components["schemas"]["State"];
         };
         "eligibility.schema_$defs-Snapshot": {
             activityRevision: number;
             currentAttemptId: components["schemas"]["Uuid"] | null;
-            history: components["schemas"]["$defs-Record"][];
+            history: components["schemas"]["Record"][];
             items: components["schemas"]["State"][];
             /** @enum {unknown} */
             mode?: "active-round" | "preparation" | "historical";
@@ -3684,8 +3784,8 @@ export interface components {
         EligibilityCommandResult: components["schemas"]["eligibility.schema_$defs-CommandResult"];
         EligibilityDefer: components["schemas"]["Defer"];
         EligibilityDeferCommand: components["schemas"]["DeferCommand"];
-        EligibilityEvent: components["schemas"]["$defs-Event"];
-        EligibilityRecord: components["schemas"]["$defs-Record"];
+        EligibilityEvent: components["schemas"]["Event"];
+        EligibilityRecord: components["schemas"]["Record"];
         EligibilityRetry: components["schemas"]["Retry"];
         EligibilityRetryCommand: components["schemas"]["RetryCommand"];
         EligibilitySnapshot: components["schemas"]["eligibility.schema_$defs-Snapshot"];
@@ -3765,8 +3865,8 @@ export interface components {
             payload: {
                 [key: string]: unknown;
             };
-            /** @constant */
-            payloadVersion: "1.0.0";
+            /** @enum {unknown} */
+            payloadVersion: "1.0.0" | "2.0.0";
             recipientIntegrationId: components["schemas"]["Uuid"];
             resources: components["schemas"]["ResourceContext"];
             /** @constant */
@@ -3778,9 +3878,12 @@ export interface components {
         /** @enum {string} */
         ErrorCode: "wrong_source_branch" | "quantity_exceeded" | "validation_failed" | "idempotency_conflict" | "capacity_exceeded" | "invalid_pin" | "unauthorized" | "forbidden_resource" | "lifecycle_forbidden" | "departed_edit_forbidden" | "stale_revision" | "stale_device" | "unsupported_price_allocation" | "dependency_missing" | "dependency_unavailable" | "unassigned_route" | "result_unknown" | "unsupported_schema_version" | "replay_expired" | "correction_dependency_conflict" | "sync_required" | "sync_incomplete" | "plan_not_startable" | "round_already_active";
         Event: {
-            outcome: components["schemas"]["Record"];
+            change: components["schemas"]["Record"];
         };
         EventEnvelope: components["schemas"]["envelope.v1.schema"];
+        EventV2: {
+            outcome: components["schemas"]["RecordV2"];
+        };
         Evidence: {
             actionId: components["schemas"]["Uuid"];
             /** @constant */
@@ -3895,14 +3998,37 @@ export interface components {
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
-        FullCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        FullCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context?: {
                 /** @constant */
                 kind?: "device";
             };
             /** @constant */
             operationId?: "outcome.recordFull";
-            payload?: components["schemas"]["Full"];
+            payload?: components["schemas"]["LegacyFull"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context?: {
+                /** @constant */
+                kind?: "device";
+            };
+            /** @constant */
+            operationId?: "outcome.recordFull";
+            payload?: components["schemas"]["FullV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
+        FullV2: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
         };
         Generation: number;
         Group: {
@@ -4016,7 +4142,7 @@ export interface components {
             effective: boolean;
             /** @constant */
             kind: "outcome";
-            outcome: components["schemas"]["Record"];
+            outcome: components["schemas"]["$defs-Record"];
         } | {
             correction: components["schemas"]["corrections.schema_$defs-Record"];
             /** @constant */
@@ -4191,6 +4317,120 @@ export interface components {
             distanceMetres: number;
             durationSeconds: number;
         };
+        LegacyCalculation: {
+            collection: components["schemas"]["Collection"];
+            /** @enum {unknown} */
+            kind: "company" | "personal";
+            lines: components["schemas"]["LineResult"][];
+            /** @enum {unknown} */
+            outcome: "full" | "partial" | "refused" | "no-answer";
+            returnRequired: boolean;
+        } & (unknown & unknown & unknown & unknown);
+        LegacyCorrect: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedOutcomeRevision: number;
+            replacement: components["schemas"]["LegacyReplacement"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
+        };
+        LegacyEvent: {
+            outcome: components["schemas"]["LegacyRecord"];
+        };
+        LegacyFull: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
+        };
+        LegacyNoAnswer: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
+        };
+        LegacyPartial: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            pieces: components["schemas"]["Piece"][];
+            reportedCollection: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
+        };
+        LegacyRecord: {
+            arrival: components["schemas"]["ActionTime"] | null;
+            assignmentRevision: number;
+            attemptId: components["schemas"]["Uuid"];
+            branchId: components["schemas"]["Uuid"] | null;
+            collection: components["schemas"]["Collection"];
+            dispatchCycleId: components["schemas"]["Uuid"] | null;
+            driverId: components["schemas"]["Uuid"];
+            heading: components["schemas"]["ActionTime"] | null;
+            /** @enum {unknown} */
+            kind: "company" | "personal";
+            lines: components["schemas"]["LineResult"][];
+            /** @enum {unknown} */
+            outcome: "full" | "partial" | "refused" | "no-answer";
+            outcomeId: components["schemas"]["Uuid"];
+            returnRequired: boolean;
+            revision: components["schemas"]["Revision"];
+            roundId: components["schemas"]["Uuid"];
+            sourceDispatchCycleId: components["schemas"]["ExternalId"] | null;
+            sourceReference: components["schemas"]["SourceReference"] | null;
+            sourceRevision: components["schemas"]["Revision"];
+            taskId: components["schemas"]["Uuid"];
+            time: components["schemas"]["ActionTime"];
+            workdayId: components["schemas"]["Uuid"];
+        } & (unknown & unknown & unknown & unknown);
+        LegacyRedispatch: {
+            externalId: string;
+            previousDispatchCycleId: components["schemas"]["Uuid"];
+            snapshot: components["schemas"]["SourceSnapshot"];
+        };
+        LegacyRefusal: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            /** @enum {unknown} */
+            shippingPayment?: "collected" | "refused";
+            taskId: components["schemas"]["Uuid"];
+        };
+        LegacyReplacement: {
+            /** @constant */
+            outcome: "full";
+            reportedCollection?: components["schemas"]["$defs-Money"];
+        } | {
+            /** @constant */
+            outcome: "partial";
+            pieces: components["schemas"]["Piece"][];
+            reportedCollection: components["schemas"]["$defs-Money"];
+        } | {
+            /** @constant */
+            outcome: "refused";
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            /** @enum {unknown} */
+            shippingPayment?: "collected" | "refused";
+        } | {
+            /** @constant */
+            outcome: "no-answer";
+        };
         Line: {
             description: string;
             quantity: number;
@@ -4302,6 +4542,29 @@ export interface components {
             serviceEstimateSeconds: 600;
             sourceRevision: number;
             taskId: components["schemas"]["Uuid"];
+        };
+        Metadata: {
+            /** Format: uri */
+            apiUrl: string;
+            bootstrapActionId: components["schemas"]["Uuid"];
+            /** Format: uri */
+            callbackUrl: string;
+            capabilities: ("identity.provision" | "integration.manage" | "intake.prepare" | "assignment.manage" | "monitor.read" | "return.receive" | "return.dispose")[];
+            companyCode: string;
+            contractSha256: string;
+            /** @constant */
+            enrollmentMode: "operator-assisted-exact-subjects";
+            erpCompanyId: components["schemas"]["Uuid"];
+            integrationId: components["schemas"]["Uuid"];
+            /** @enum {unknown} */
+            interopVersion: "1.0.0" | "2.0.0";
+            /** Format: uri */
+            issuer: string;
+            /** @constant */
+            packageVersion: "1.0.0";
+            sourceCommit: string;
+            sourceExternalId: string;
+            tenantId: components["schemas"]["Uuid"];
         };
         Metric: {
             count: number;
@@ -4424,14 +4687,36 @@ export interface components {
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
-        NoAnswerCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        NoAnswerCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context?: {
                 /** @constant */
                 kind?: "device";
             };
             /** @constant */
             operationId?: "outcome.recordNoAnswer";
-            payload?: components["schemas"]["NoAnswer"];
+            payload?: components["schemas"]["LegacyNoAnswer"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context?: {
+                /** @constant */
+                kind?: "device";
+            };
+            /** @constant */
+            operationId?: "outcome.recordNoAnswer";
+            payload?: components["schemas"]["NoAnswerV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
+        NoAnswerV2: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
         };
         Observation: {
             clock: components["schemas"]["ClockEvidence"];
@@ -4496,7 +4781,7 @@ export interface components {
         OutcomeCalculation: components["schemas"]["Calculation"];
         OutcomeCollection: components["schemas"]["Collection"];
         OutcomeCommandResult: components["schemas"]["$defs-CommandResult"];
-        OutcomeEvent: components["schemas"]["Event"];
+        OutcomeEvent: components["schemas"]["outcomes.schema_$defs-Event"];
         OutcomeFull: components["schemas"]["Full"];
         OutcomeFullCommand: components["schemas"]["FullCommand"];
         OutcomeLineResult: components["schemas"]["LineResult"];
@@ -4507,9 +4792,10 @@ export interface components {
         OutcomePartialCommand: components["schemas"]["PartialCommand"];
         OutcomePiece: components["schemas"]["Piece"];
         OutcomeProgress: components["schemas"]["Progress"];
-        OutcomeRecord: components["schemas"]["Record"];
+        OutcomeRecord: components["schemas"]["$defs-Record"];
         OutcomeRefusal: components["schemas"]["Refusal"];
         OutcomeRefusalCommand: components["schemas"]["RefusalCommand"];
+        OutcomeRejection: components["schemas"]["Rejection"];
         "outcomes.schema_$defs-ActionResult": components["schemas"]["action-result.v1.schema"] & ({
             /** @enum {unknown} */
             operationId?: "outcome.recordFull" | "outcome.recordPartial" | "outcome.recordRefusal" | "outcome.recordNoAnswer";
@@ -4524,6 +4810,9 @@ export interface components {
             /** @enum {unknown} */
             status: "accepted" | "rejected" | "review-required";
         };
+        "outcomes.schema_$defs-Event": {
+            outcome: components["schemas"]["$defs-Record"];
+        };
         "outcomes.schema_$defs-Snapshot": {
             /** @description P21 current custody for latest resolved company attempts in this snapshot. Original outcome lines retain historical return-required quantities. */
             custody?: {
@@ -4533,8 +4822,8 @@ export interface components {
                 sourceLineId: components["schemas"]["ExternalId"];
             }[];
             /** @description Preserved outcomes including earlier attempts. Collection totals include all history; items count latest resolved attempts only. */
-            history?: components["schemas"]["Record"][];
-            items: components["schemas"]["Record"][];
+            history?: components["schemas"]["$defs-Record"][];
+            items: components["schemas"]["$defs-Record"][];
             progress: components["schemas"]["Progress"];
             roundId: components["schemas"]["Uuid"];
         };
@@ -4562,18 +4851,44 @@ export interface components {
             expectedPinRevision: number;
             expectedSourceRevision: number;
             pieces: components["schemas"]["Piece"][];
+            rejection?: components["schemas"]["Rejection"];
             reportedCollection: components["schemas"]["$defs-Money"];
             roundId: components["schemas"]["Uuid"];
             taskId: components["schemas"]["Uuid"];
         };
-        PartialCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        PartialCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context?: {
                 /** @constant */
                 kind?: "device";
             };
             /** @constant */
             operationId?: "outcome.recordPartial";
-            payload?: components["schemas"]["Partial"];
+            payload?: components["schemas"]["LegacyPartial"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context?: {
+                /** @constant */
+                kind?: "device";
+            };
+            /** @constant */
+            operationId?: "outcome.recordPartial";
+            payload?: components["schemas"]["PartialV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
+        PartialV2: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            pieces: components["schemas"]["Piece"][];
+            rejection?: components["schemas"]["Rejection"];
+            reportedCollection: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            taskId: components["schemas"]["Uuid"];
         };
         PhysicalOrigin: {
             attemptId: components["schemas"]["Uuid"] | null;
@@ -4696,6 +5011,24 @@ export interface components {
             /** @constant */
             schemaVersion: "1.0.0";
         };
+        Private: {
+            credential: {
+                bearer: string;
+                expiresAt: components["schemas"]["UtcInstant"];
+            };
+            metadata: components["schemas"]["Metadata"];
+            setup: {
+                actions: components["schemas"]["Uuid"][];
+                /** @constant */
+                state: "prepared-for-erp-import";
+            };
+            signingKeys: {
+                keyId: string;
+                secret: string;
+                verifyUntil?: components["schemas"]["UtcInstant"];
+            }[];
+        };
+        PrivateConnectionPackage: components["schemas"]["Private"];
         Problem: {
             actionId?: components["schemas"]["Uuid"];
             code: components["schemas"]["ErrorCode"];
@@ -4896,6 +5229,31 @@ export interface components {
         /** @description E.164 or an Egyptian mobile number. The service stores the submitted value and a separate normalized E.164 value. */
         RecipientPhone: string;
         Record: {
+            assignmentRevision: number;
+            attemptId: components["schemas"]["Uuid"];
+            deferred: boolean;
+            dispatchCycleId: components["schemas"]["Uuid"] | null;
+            driverId: components["schemas"]["Uuid"];
+            earliestAt: string | null;
+            /**
+             * @description Preparation uses the last ended round only as an ownership anchor; it never reopens its execution or workday.
+             * @enum {unknown}
+             */
+            mode?: "active-round" | "preparation";
+            /** @enum {unknown} */
+            operationId: "task.deferWhole" | "task.retryWhole" | "task.activateDeferred" | "task.setDriverUrgency";
+            previousAttemptId: components["schemas"]["Uuid"];
+            revision: number;
+            roundId: components["schemas"]["Uuid"];
+            sourceDispatchCycleId: components["schemas"]["ExternalId"] | null;
+            sourceReference: components["schemas"]["SourceReference"] | null;
+            sourceRevision: components["schemas"]["Revision"];
+            taskId: components["schemas"]["Uuid"];
+            time: components["schemas"]["ActionTime"];
+            /** @enum {unknown} */
+            urgency: "ordinary" | "urgent";
+        };
+        RecordV2: {
             arrival: components["schemas"]["ActionTime"] | null;
             assignmentRevision: number;
             attemptId: components["schemas"]["Uuid"];
@@ -4910,6 +5268,9 @@ export interface components {
             /** @enum {unknown} */
             outcome: "full" | "partial" | "refused" | "no-answer";
             outcomeId: components["schemas"]["Uuid"];
+            /** @constant */
+            recordVersion: "2.0.0";
+            rejection?: components["schemas"]["Rejection"];
             returnRequired: boolean;
             revision: components["schemas"]["Revision"];
             roundId: components["schemas"]["Uuid"];
@@ -4919,7 +5280,7 @@ export interface components {
             taskId: components["schemas"]["Uuid"];
             time: components["schemas"]["ActionTime"];
             workdayId: components["schemas"]["Uuid"];
-        } & (unknown & unknown & unknown & unknown);
+        } & (unknown & unknown & unknown & unknown & unknown);
         Recovery: {
             activityRevision: number;
             adoptedOutcomeId: components["schemas"]["Uuid"] | null;
@@ -4939,12 +5300,34 @@ export interface components {
             externalId: string;
             previousDispatchCycleId: components["schemas"]["Uuid"];
             snapshot: components["schemas"]["SourceSnapshot"];
+            transfer?: components["schemas"]["Transfer"];
         };
-        RedispatchCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        RedispatchCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context: components["schemas"]["IntegrationContext"];
             /** @constant */
             operationId: "dispatch.createFromReceipt";
-            payload: components["schemas"]["Redispatch"];
+            payload: components["schemas"]["LegacyRedispatch"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context: components["schemas"]["IntegrationContext"];
+            /** @constant */
+            operationId: "dispatch.createFromReceipt";
+            payload: components["schemas"]["RedispatchV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
+        RedispatchedEvent: {
+            actionId: components["schemas"]["Uuid"];
+            previousDispatchCycleId: components["schemas"]["Uuid"];
+            task: components["schemas"]["Task"];
+            transfer?: components["schemas"]["Transfer"];
+        };
+        RedispatchV2: {
+            externalId: string;
+            previousDispatchCycleId: components["schemas"]["Uuid"];
+            snapshot: components["schemas"]["SourceSnapshot"];
+            transfer?: components["schemas"]["Transfer"];
         };
         Refusal: {
             attemptId: components["schemas"]["Uuid"];
@@ -4953,20 +5336,74 @@ export interface components {
             expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
             expectedPinRevision: number;
             expectedSourceRevision: number;
+            rejection?: components["schemas"]["Rejection"];
             reportedCollection?: components["schemas"]["$defs-Money"];
             roundId: components["schemas"]["Uuid"];
             /** @enum {unknown} */
             shippingPayment?: "collected" | "refused";
             taskId: components["schemas"]["Uuid"];
         };
-        RefusalCommand: components["schemas"]["action-envelope.v1.schema"] & {
+        RefusalCommand: (components["schemas"]["action-envelope.v1.schema"] & {
             context?: {
                 /** @constant */
                 kind?: "device";
             };
             /** @constant */
             operationId?: "outcome.recordRefusal";
-            payload?: components["schemas"]["Refusal"];
+            payload?: components["schemas"]["LegacyRefusal"];
+            /** @constant */
+            payloadVersion?: "1.0.0";
+        }) | (components["schemas"]["action-envelope.v1.schema"] & {
+            context?: {
+                /** @constant */
+                kind?: "device";
+            };
+            /** @constant */
+            operationId?: "outcome.recordRefusal";
+            payload?: components["schemas"]["RefusalV2"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        });
+        RefusalV2: {
+            attemptId: components["schemas"]["Uuid"];
+            expectedActivityRevision: number;
+            expectedAssignmentRevision: number;
+            expectedCurrentAttemptId: components["schemas"]["Uuid"] | null;
+            expectedPinRevision: number;
+            expectedSourceRevision: number;
+            rejection?: components["schemas"]["Rejection"];
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            roundId: components["schemas"]["Uuid"];
+            /** @enum {unknown} */
+            shippingPayment?: "collected" | "refused";
+            taskId: components["schemas"]["Uuid"];
+        };
+        Rejection: {
+            /** @constant */
+            catalogVersion: "1.0.0";
+            /** @enum {unknown} */
+            code: "changed-mind" | "amount-disagreement" | "wrong-product" | "condition-problem" | "inspection-unavailable" | "missing-pieces" | "other";
+            detail?: string;
+        } & unknown;
+        Relocate: {
+            externalId: components["schemas"]["ExternalId"];
+            previousDispatchCycleId: components["schemas"]["Uuid"];
+            snapshot: components["schemas"]["SourceSnapshot"];
+            transfer: components["schemas"]["Transfer"];
+        };
+        RelocateCommand: components["schemas"]["action-envelope.v1.schema"] & {
+            context?: components["schemas"]["IntegrationContext"];
+            /** @constant */
+            operationId?: "dispatch.relocateBeforeDeparture";
+            payload?: components["schemas"]["Relocate"];
+            /** @constant */
+            payloadVersion?: "2.0.0";
+        };
+        RelocatedEvent: {
+            actionId: components["schemas"]["Uuid"];
+            previousDispatchCycleId: components["schemas"]["Uuid"];
+            task: components["schemas"]["Task"];
+            transfer: components["schemas"]["Transfer"];
         };
         Replacement: {
             /** @constant */
@@ -4976,10 +5413,33 @@ export interface components {
             /** @constant */
             outcome: "partial";
             pieces: components["schemas"]["Piece"][];
+            rejection?: components["schemas"]["Rejection"];
             reportedCollection: components["schemas"]["$defs-Money"];
         } | {
             /** @constant */
             outcome: "refused";
+            rejection?: components["schemas"]["Rejection"];
+            reportedCollection?: components["schemas"]["$defs-Money"];
+            /** @enum {unknown} */
+            shippingPayment?: "collected" | "refused";
+        } | {
+            /** @constant */
+            outcome: "no-answer";
+        };
+        ReplacementV2: {
+            /** @constant */
+            outcome: "full";
+            reportedCollection?: components["schemas"]["$defs-Money"];
+        } | {
+            /** @constant */
+            outcome: "partial";
+            pieces: components["schemas"]["Piece"][];
+            rejection?: components["schemas"]["Rejection"];
+            reportedCollection: components["schemas"]["$defs-Money"];
+        } | {
+            /** @constant */
+            outcome: "refused";
+            rejection?: components["schemas"]["Rejection"];
             reportedCollection?: components["schemas"]["$defs-Money"];
             /** @enum {unknown} */
             shippingPayment?: "collected" | "refused";
@@ -4988,7 +5448,7 @@ export interface components {
             outcome: "no-answer";
         };
         Replay: {
-            events: components["schemas"]["sender-event.v1.schema"][];
+            events: components["schemas"]["sender-event.schema"][];
             nextAfterSequence: number | null;
             /** @constant */
             projectionStatus: "unknown";
@@ -5054,8 +5514,8 @@ export interface components {
             corrections: components["schemas"]["corrections.schema_$defs-Record"][];
             deferred: boolean;
             dispatchCycleId: components["schemas"]["Uuid"] | null;
-            history: components["schemas"]["Record"][];
-            outcome: components["schemas"]["Record"] | null;
+            history: components["schemas"]["$defs-Record"][];
+            outcome: components["schemas"]["$defs-Record"] | null;
             pinRevision: number;
             recipientName: string;
             returns: components["schemas"]["Return"][];
@@ -5493,6 +5953,7 @@ export interface components {
             operationId?: "current.selectHeading";
             payload?: components["schemas"]["SelectHeading"];
         };
+        "sender-event.schema": components["schemas"]["sender-event.v1.schema"] | components["schemas"]["sender-event.v2.schema"];
         /** P25 emitted integration events v1 */
         "sender-event.v1.schema": components["schemas"]["envelope.v1.schema"] & ({
             /** @constant */
@@ -5603,7 +6064,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "outcome.recorded";
-            payload: components["schemas"]["Event"];
+            payload: components["schemas"]["LegacyEvent"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5611,7 +6072,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "task.deferred";
-            payload: components["schemas"]["$defs-Event"];
+            payload: components["schemas"]["Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5619,7 +6080,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "task.retryAdmitted";
-            payload: components["schemas"]["$defs-Event"];
+            payload: components["schemas"]["Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5627,7 +6088,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "task.deferredActivated";
-            payload: components["schemas"]["$defs-Event"];
+            payload: components["schemas"]["Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5635,7 +6096,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "task.driverUrgencyChanged";
-            payload: components["schemas"]["$defs-Event"];
+            payload: components["schemas"]["Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5643,7 +6104,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "round.ended";
-            payload: components["schemas"]["workday-closure.schema_$defs-Event"];
+            payload: components["schemas"]["$defs-Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5651,7 +6112,7 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "workday.ended";
-            payload: components["schemas"]["workday-closure.schema_$defs-Event"];
+            payload: components["schemas"]["$defs-Event"];
             /** @constant */
             payloadVersion: "1.0.0";
         } | {
@@ -5707,11 +6168,45 @@ export interface components {
             eventKind: "transition";
             /** @constant */
             eventType: "outcome.corrected";
-            payload: components["schemas"]["corrections.schema_$defs-Event"];
+            payload: components["schemas"]["$defs-LegacyEvent"];
             /** @constant */
             payloadVersion: "1.0.0";
         });
-        SenderEvent: components["schemas"]["sender-event.v1.schema"];
+        /** Reviewed interoperability v2 sender variants */
+        "sender-event.v2.schema": components["schemas"]["envelope.v1.schema"] & ({
+            /** @constant */
+            eventKind: "transition";
+            /** @constant */
+            eventType: "dispatch.createdFromReceipt";
+            payload: components["schemas"]["RedispatchedEvent"];
+            /** @constant */
+            payloadVersion: "2.0.0";
+        } | {
+            /** @constant */
+            eventKind: "transition";
+            /** @constant */
+            eventType: "outcome.recorded";
+            payload: components["schemas"]["EventV2"];
+            /** @constant */
+            payloadVersion: "2.0.0";
+        } | {
+            /** @constant */
+            eventKind: "transition";
+            /** @constant */
+            eventType: "outcome.corrected";
+            payload: components["schemas"]["$defs-EventV2"];
+            /** @constant */
+            payloadVersion: "2.0.0";
+        } | {
+            /** @constant */
+            eventKind: "transition";
+            /** @constant */
+            eventType: "dispatch.relocatedBeforeDeparture";
+            payload: components["schemas"]["RelocatedEvent"];
+            /** @constant */
+            payloadVersion: "2.0.0";
+        });
+        SenderEvent: components["schemas"]["sender-event.schema"];
         Sequence: number;
         SessionContext: {
             access: components["schemas"]["AccessContext"];
@@ -5773,12 +6268,16 @@ export interface components {
         };
         SourceConfiguration: {
             allowedOperations: components["schemas"]["OperationId"][];
+            erpCompanyId?: components["schemas"]["Uuid"] | null;
             /** @constant */
             humanDelegation: false;
             identity: components["schemas"]["VerifiedService"];
+            /** @enum {unknown} */
+            interopVersion?: "1.0.0" | "2.0.0";
             /** Format: uri */
             issuer: string;
-            supportedVersions: "1.0.0"[];
+            serviceCapabilities?: string[];
+            supportedVersions: ("1.0.0" | "2.0.0")[];
         };
         SourceItem: {
             dispatchCycleId: components["schemas"]["Uuid"];
@@ -5929,7 +6428,7 @@ export interface components {
             driverId: components["schemas"]["Uuid"];
             endedAt: components["schemas"]["UtcInstant"] | null;
             openedAt: components["schemas"]["UtcInstant"];
-            outcomes: components["schemas"]["Record"][];
+            outcomes: components["schemas"]["$defs-Record"][];
             rounds: components["schemas"]["RoundSummary"][];
             scope: {
                 attempts: number;
@@ -6080,6 +6579,14 @@ export interface components {
             }[];
             interpretation: string;
             truncated: boolean;
+        };
+        /** @description Scoped ERP assertion of completed transfer and actual destination receipt. Opaque native references retained for audit, not independent physical proof or a cross-system lock. */
+        Transfer: {
+            destinationReceiptId: components["schemas"]["Uuid"];
+            /** @constant */
+            receivedAtDestination: true;
+            sourceBranchExternalId: components["schemas"]["ExternalId"];
+            transferId: components["schemas"]["Uuid"];
         };
         /** @description Durable account-recipient notification intent; no shipment transfer, device secret or ERP business mutation. Transport is P25. */
         TransferEvent: {
@@ -6329,16 +6836,6 @@ export interface components {
             closure: components["schemas"]["workday-closure.schema_$defs-Record"];
             /** @enum {unknown} */
             disposition: "closed" | "already-closed";
-        };
-        "workday-closure.schema_$defs-Event": {
-            closureId: components["schemas"]["Uuid"];
-            driverId: components["schemas"]["Uuid"];
-            endedRoundId: components["schemas"]["Uuid"] | null;
-            roundEndedAt: components["schemas"]["UtcInstant"] | null;
-            tasks: components["schemas"]["SourceItem"][];
-            time: components["schemas"]["ActionTime"];
-            workdayEndedAt: components["schemas"]["UtcInstant"] | null;
-            workdayId: components["schemas"]["Uuid"];
         };
         "workday-closure.schema_$defs-Record": {
             activityRevision: number;
@@ -7525,7 +8022,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["sender-event.v1.schema"];
+                "application/json": components["schemas"]["sender-event.schema"];
             };
         };
         responses: {
@@ -10228,6 +10725,100 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["RedispatchCommand"];
+            };
+        };
+        responses: {
+            /** @description Canonical response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Retained business rejection or idempotency conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Source validation, authorization or dependency error */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["action-result.v1.schema"] | components["schemas"]["Problem"];
+                    "application/problem+json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "dispatch.relocateBeforeDeparture": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RelocateCommand"];
             };
         };
         responses: {

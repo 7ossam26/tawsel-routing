@@ -9,7 +9,7 @@ export class ReceiverError extends Error {constructor(readonly statusCode:number
 export type ReceiptFaults={beforeInboxCommit?:()=>Promise<void>;afterInboxCommit?:()=>Promise<void>};
 const hash=(v:Uint8Array|string)=>createHash('sha256').update(v).digest('hex');
 export function validateEvent(e:unknown,c:ReceiverConfig):asserts e is Event {
- if(!conforms('events/sender-event.v1.schema.json',e))throw new ReceiverError(422,'unsupported_event');
+ if(!conforms('events/sender-event.schema.json',e))throw new ReceiverError(422,'unsupported_event');
  if(!eventIdentity(e as Event,c))throw new ReceiverError(403,'event_identity_mismatch');
 }
 export async function storeEvent(pool:Pool,c:ReceiverConfig,e:Event,wire:Buffer|null,faults:ReceiptFaults={}){

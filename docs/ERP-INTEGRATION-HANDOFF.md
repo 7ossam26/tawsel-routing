@@ -1,5 +1,7 @@
 # Tawsel → ERP integration handoff
 
+Current amendment — 10 October 2026: [interoperability implementation and adoption](erp/interoperability-2026-10-10.md) supersedes the version inventory below for the current candidate. API/client/reference 0.2.0, envelope 1.0.0, payload readers 1.0.0/2.0.0, migration 0029, 189 catalog entries and 134 HTTP pairs. The [dated conformance ledger](verification/interoperability-ledger-2026-10-10.json) distinguishes public HTTP, generated fixtures, actual producer/consumer evidence and pending native Shahn acceptance. Fixed B2B reasons, cycle-owned A/B branch history, explicit reader-before-writer adoption and the private operator installation helper are included. Automatic subject reservation remains incomplete; exact-subject operator assistance is the shipped mode. No live deployment is claimed. The historical sections retain their original dated meaning.
+
 Current amendment — 3 October 2026: [D-113](phases/decision-map.md) removes bicycle; current contracts, provisioning and planning support car/motorcycle only. The Phase 42 results below retain their dated scope. [Current verification](verification/two-mode-routing-2026-10-03.md) and [ERP package instructions](erp/README.md) require new two-mode checks and a new same-source/runtime proof before treating a regenerated package as verified.
 
 26 September 2026 · Phase 42 · **local handoff candidate, live pilot not approved**.

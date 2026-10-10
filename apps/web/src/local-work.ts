@@ -167,7 +167,7 @@ export class LocalWork extends Dexie {
     return this.transaction('rw', [this.selection, this.partitions, this.downloads, this.actions, this.pending, this.counters, this.acknowledgements], async () => {
       const partition = await this.assertSelected(scope), context = original.context;
       if (context.kind !== 'device' || context.tenantId !== partition.identity.tenantId || context.accountId !== partition.identity.accountId || context.deviceId !== partition.identity.deviceId) throw new Error('لا يمكن حفظ إجراء لحساب أو هاتف آخر.');
-      if (original.schemaVersion !== '1.0.0' || original.payloadVersion !== '1.0.0') throw new Error('نسخة الإجراء غير مدعومة؛ لم يتغير السجل.');
+      if (original.schemaVersion !== '1.0.0' || !supportedLocalVersion(original)) throw new Error('نسخة الإجراء غير مدعومة؛ لم يتغير السجل.');
       const duplicate = await this.actions.get([scope, original.actionId]);
       if (duplicate) {
         if (duplicate.bytes !== JSON.stringify(original)) throw new Error('معرّف الإجراء موجود بمحتوى مختلف.');
@@ -225,6 +225,7 @@ export class LocalWork extends Dexie {
 }
 export const localWork = new LocalWork();
 
+function supportedLocalVersion(c:LocalEnvelope){return c.payloadVersion==='1.0.0'||c.payloadVersion==='2.0.0'&&['outcome.recordFull','outcome.recordPartial','outcome.recordRefusal','outcome.recordNoAnswer','outcome.correct'].includes(c.operationId);}
 export const offlineOperations = new Set(['current.selectHeading', 'current.recordArrival', 'outcome.recordFull', 'outcome.recordPartial', 'outcome.recordRefusal', 'outcome.recordNoAnswer']);
 function assertContinuation(state: S['CurrentSnapshot'], command: LocalEnvelope) {
   const p = command.payload, target = state.targets.find(value => value.taskId === p.taskId && value.attemptId === p.attemptId);
@@ -238,7 +239,7 @@ function assertContinuation(state: S['CurrentSnapshot'], command: LocalEnvelope)
   // Refusal can be reported by phone, without inventing heading/arrival. Match
   // the existing public outcome authority while protecting another current stop.
   const otherCurrent = state.currentActivity && state.currentActivity.attemptId !== target.attemptId;
-  const stageUnavailable = outcome === 'refusal' ? Boolean(otherCurrent) : outcome === 'no-answer' ? stage !== 'heading' : stage !== 'arrived';
+  const stageUnavailable = outcome === 'refusal' ? Boolean(otherCurrent) : outcome === 'no-answer' ? stage !== 'heading'&&stage !== 'arrived' : stage !== 'arrived';
   if (!target.delivery.allowedActions.includes(outcome) || stageUnavailable) throw new Error('النتيجة غير متاحة في حالة المحطة الحالية.');
 }
 /** Pure pending projection. Never write this over the last confirmed snapshot,
@@ -246,7 +247,7 @@ function assertContinuation(state: S['CurrentSnapshot'], command: LocalEnvelope)
 export function projectCurrent(confirmed: S['CurrentSnapshot'], commands: LocalEnvelope[]): S['CurrentSnapshot'] {
   const state = structuredClone(confirmed);
   for (const command of commands) {
-    if (command.schemaVersion !== '1.0.0' || command.payloadVersion !== '1.0.0') throw new Error('نسخة الإجراء المحفوظ غير مدعومة؛ لم تُحذف الأدلة.');
+    if (command.schemaVersion !== '1.0.0' || !supportedLocalVersion(command)) throw new Error('نسخة الإجراء المحفوظ غير مدعومة؛ لم تُحذف الأدلة.');
     if (!offlineOperations.has(command.operationId)) continue;
     assertContinuation(state, command);
     const p = command.payload, time = { actionId: command.actionId, observation: command.observation, recordedAt: command.observation.observedAt! };

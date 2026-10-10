@@ -69,10 +69,12 @@ export async function actions(tx:Transaction,a:AccessSession,rows:TaskRow[]):Pro
  return (await tx.query<{source_id:string;action_id:string;operation_id:string;received_at:Date;accepted_at:Date|null;business_status:Action['businessStatus']}>(`WITH visible AS (
  SELECT * FROM jsonb_to_recordset($2::jsonb) AS v(task uuid,cycle uuid,driver uuid,revision bigint)), links AS (
  SELECT o.source_id,o.action_id FROM tawsel.delivery_outcomes o JOIN visible v ON v.task=o.task_id AND v.cycle IS NOT DISTINCT FROM o.dispatch_cycle_id AND v.driver=o.driver_id WHERE o.tenant_id=$1
- UNION SELECT s.source_id,s.action_id FROM tawsel.b2b_source_snapshots s JOIN visible v ON v.task=s.task_id AND s.source_revision<=v.revision WHERE s.tenant_id=$1
+ UNION SELECT s.source_id,s.action_id FROM tawsel.b2b_source_snapshots s JOIN visible v ON v.task=s.task_id AND s.source_revision<=v.revision
+  JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=s.tenant_id AND c.dispatch_cycle_id=v.cycle AND c.source_dispatch_cycle_id=s.payload->>'sourceDispatchCycleId' WHERE s.tenant_id=$1
  UNION SELECT h.source_id,h.action_id FROM tawsel.b2b_assignment_history h JOIN visible v ON v.cycle=h.dispatch_cycle_id WHERE h.tenant_id=$1
  UNION SELECT h.source_id,h.action_id FROM tawsel.task_intake_events h JOIN visible v ON v.task=h.task_id WHERE h.tenant_id=$1
- UNION SELECT h.source_id,h.action_id FROM tawsel.location_history h JOIN visible v ON v.task=h.task_id AND (h.snapshot->>'sourceRevision')::bigint<=v.revision WHERE h.tenant_id=$1
+ UNION SELECT h.source_id,h.action_id FROM tawsel.location_history h JOIN visible v ON v.task=h.task_id AND (h.snapshot->>'sourceRevision')::bigint<=v.revision
+  WHERE h.tenant_id=$1 AND (v.cycle IS NULL OR EXISTS(SELECT 1 FROM tawsel.b2b_source_snapshots s JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=s.tenant_id AND c.source_dispatch_cycle_id=s.payload->>'sourceDispatchCycleId' WHERE c.dispatch_cycle_id=v.cycle AND s.tenant_id=h.tenant_id AND s.task_id=h.task_id AND s.source_revision=(h.snapshot->>'sourceRevision')::bigint))
  UNION SELECT h.source_id,h.action_id FROM tawsel.current_activity_history h JOIN tawsel.round_admissions d ON d.tenant_id=h.tenant_id AND d.round_id=h.round_id
   AND (d.task_id::text=h.current_activity->>'taskId' OR d.task_id::text=h.previous_activity->>'taskId')
   JOIN visible v ON v.task=d.task_id AND v.cycle IS NOT DISTINCT FROM d.dispatch_cycle_id AND v.driver=d.driver_id WHERE h.tenant_id=$1

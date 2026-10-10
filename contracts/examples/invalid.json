@@ -217,10 +217,10 @@
     "id": "action-future-payload",
     "schema": "action-envelope.v1.schema.json",
     "valid": false,
-    "keyword": "const",
+    "keyword": "enum",
     "data": {
       "schemaVersion": "1.0.0",
-      "payloadVersion": "2.0.0",
+      "payloadVersion": "9.0.0",
       "actionId": "10000000-0000-4000-8000-000000000040",
       "operationId": "outcome.recordPartial",
       "context": {
@@ -7036,7 +7036,7 @@
     "id": "p35-unknown-payload-not-v1",
     "schema": "sync.schema.json#/$defs/Batch",
     "valid": false,
-    "keyword": "const",
+    "keyword": "enum",
     "data": {
       "actions": [
         {
@@ -7280,5 +7280,536 @@
       }
     },
     "keyword": "enum"
+  },
+  {
+    "id": "interop-other-without-detail",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "collected",
+        "reportedCollection": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "rejection": {
+          "catalogVersion": "1.0.0",
+          "code": "other"
+        }
+      }
+    },
+    "keyword": "required"
+  },
+  {
+    "id": "interop-other-whitespace",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "collected",
+        "reportedCollection": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "rejection": {
+          "catalogVersion": "1.0.0",
+          "code": "other",
+          "detail": "   "
+        }
+      }
+    },
+    "keyword": "pattern"
+  },
+  {
+    "id": "interop-unknown-code",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "collected",
+        "reportedCollection": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "rejection": {
+          "catalogVersion": "1.0.0",
+          "code": "unknown"
+        }
+      }
+    },
+    "keyword": "enum"
+  },
+  {
+    "id": "interop-unknown-catalog",
+    "schema": "outcomes.schema.json#/$defs/RefusalCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "operationId": "outcome.recordRefusal",
+      "actionId": "16000000-0000-4000-8000-000000000001",
+      "context": {
+        "kind": "device",
+        "tenantId": "15000000-0000-4000-8000-000000000011",
+        "accountId": "15000000-0000-4000-8000-000000000007",
+        "deviceId": "15000000-0000-4000-8000-000000000003",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {
+        "tripId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003"
+      },
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "15000000-0000-4000-8000-000000000006",
+        "taskId": "16000000-0000-4000-8000-000000000002",
+        "attemptId": "16000000-0000-4000-8000-000000000003",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 0,
+        "expectedPinRevision": 0,
+        "shippingPayment": "collected",
+        "reportedCollection": {
+          "amountMinor": 5000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "rejection": {
+          "catalogVersion": "9.0.0",
+          "code": "missing-pieces"
+        }
+      }
+    },
+    "keyword": "const"
+  },
+  {
+    "id": "interop-transfer-unreceived",
+    "schema": "b2b-intake.schema.json#/$defs/RelocateCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "f1edc804-931c-4438-8113-c3576d2bcade",
+      "operationId": "dispatch.relocateBeforeDeparture",
+      "context": {
+        "kind": "integration",
+        "tenantId": "c88ffdbb-bdc4-4d32-9267-32ab0fd25ee6",
+        "integrationId": "02194869-416d-4e93-8fbe-82c5ffdd8f16"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "move",
+        "previousDispatchCycleId": "e1076cd0-9e25-4d1a-afb7-7b10e65bb062",
+        "snapshot": {
+          "externalId": "move",
+          "sourceDispatchCycleId": "B-1",
+          "sourceRevision": 2,
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch-b",
+          "recipientName": "Recipient",
+          "recipientPhone": "01012345678",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30,
+              "longitude": 31
+            }
+          },
+          "splittingAllowed": true,
+          "allocation": "exact-outstanding-per-unit",
+          "lines": [
+            {
+              "sourceLineId": "pieces",
+              "description": "Pieces",
+              "quantity": 3,
+              "unitDue": {
+                "amountMinor": 10000,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            }
+          ],
+          "shippingDue": {
+            "amountMinor": 5000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "totalDue": {
+            "amountMinor": 35000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "priority": "ordinary"
+        },
+        "transfer": {
+          "sourceBranchExternalId": "branch",
+          "transferId": "81e7ec2d-65d6-4173-bf05-9966a3076516",
+          "destinationReceiptId": "a1af4c35-70e8-4222-bd5b-eb9d80ff8a67",
+          "receivedAtDestination": false
+        }
+      }
+    },
+    "keyword": "const"
+  },
+  {
+    "id": "interop-transfer-no-receipt-id",
+    "schema": "b2b-intake.schema.json#/$defs/RelocateCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "f1edc804-931c-4438-8113-c3576d2bcade",
+      "operationId": "dispatch.relocateBeforeDeparture",
+      "context": {
+        "kind": "integration",
+        "tenantId": "c88ffdbb-bdc4-4d32-9267-32ab0fd25ee6",
+        "integrationId": "02194869-416d-4e93-8fbe-82c5ffdd8f16"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "move",
+        "previousDispatchCycleId": "e1076cd0-9e25-4d1a-afb7-7b10e65bb062",
+        "snapshot": {
+          "externalId": "move",
+          "sourceDispatchCycleId": "B-1",
+          "sourceRevision": 2,
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch-b",
+          "recipientName": "Recipient",
+          "recipientPhone": "01012345678",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30,
+              "longitude": 31
+            }
+          },
+          "splittingAllowed": true,
+          "allocation": "exact-outstanding-per-unit",
+          "lines": [
+            {
+              "sourceLineId": "pieces",
+              "description": "Pieces",
+              "quantity": 3,
+              "unitDue": {
+                "amountMinor": 10000,
+                "currency": "EGP",
+                "exponent": 2
+              }
+            }
+          ],
+          "shippingDue": {
+            "amountMinor": 5000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "totalDue": {
+            "amountMinor": 35000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "priority": "ordinary"
+        },
+        "transfer": {
+          "sourceBranchExternalId": "branch",
+          "transferId": "81e7ec2d-65d6-4173-bf05-9966a3076516",
+          "receivedAtDestination": true
+        }
+      }
+    },
+    "keyword": "required"
+  },
+  {
+    "id": "interop-reason-forbidden-in-closed-v1-event",
+    "schema": "events/sender-event.v1.schema.json",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "1.0.0",
+      "eventId": "a6d1fe32-ff57-4bc7-b54e-8da2c9b7bfdd",
+      "eventType": "outcome.recorded",
+      "eventKind": "transition",
+      "tenantId": "9140febf-35e4-4191-a773-74de1e5b92b4",
+      "recipientIntegrationId": "3ab30343-bf42-4cd1-b35f-b38028b389b9",
+      "aggregate": {
+        "type": "task",
+        "id": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+        "recipientSequence": 3
+      },
+      "resources": {
+        "taskId": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+        "dispatchCycleId": "bb445563-6048-4b99-8c79-081c6ef4de81",
+        "workdayId": "6b7fb34d-6055-4a80-acab-08cf79084106",
+        "attemptId": "4fa391fa-582b-4ff2-87db-c977651ea833",
+        "tripId": "7f6fb57c-4ae2-428a-92da-a9b84c6fe4eb"
+      },
+      "versions": {
+        "sourceRevision": 1,
+        "outcomeRevision": 1
+      },
+      "correlation": {
+        "actionId": "8b57449a-1675-4d6f-baae-429f933eff91",
+        "sourceReference": {
+          "tenantId": "9140febf-35e4-4191-a773-74de1e5b92b4",
+          "externalId": "shipment-0",
+          "integrationId": "3ab30343-bf42-4cd1-b35f-b38028b389b9"
+        }
+      },
+      "committedAt": "2026-10-10T08:20:56.871Z",
+      "payload": {
+        "outcome": {
+          "kind": "company",
+          "time": {
+            "actionId": "8b57449a-1675-4d6f-baae-429f933eff91",
+            "recordedAt": "2026-10-10T08:20:56.807Z",
+            "observation": {
+              "clock": {
+                "quality": "unknown"
+              },
+              "observedAt": null
+            }
+          },
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "delivered": 2,
+              "sourceLineId": "pieces",
+              "sourceQuantity": 3,
+              "heldReturnRequired": 1
+            }
+          ],
+          "taskId": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+          "arrival": null,
+          "heading": null,
+          "outcome": "partial",
+          "roundId": "7f6fb57c-4ae2-428a-92da-a9b84c6fe4eb",
+          "branchId": "bd302112-1aac-47da-9ceb-b107328cf8dc",
+          "driverId": "9d09850f-6348-46e7-9858-a7f4038a2bec",
+          "revision": 1,
+          "attemptId": "4fa391fa-582b-4ff2-87db-c977651ea833",
+          "outcomeId": "a1b7542e-2863-494c-82e6-cccb5814924b",
+          "rejection": {
+            "code": "wrong-product",
+            "catalogVersion": "1.0.0"
+          },
+          "workdayId": "6b7fb34d-6055-4a80-acab-08cf79084106",
+          "collection": {
+            "goods": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 20000
+            },
+            "reported": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 25000
+            },
+            "shipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 5000
+            },
+            "shippingStatus": "collected",
+            "unpaidShipping": {
+              "currency": "EGP",
+              "exponent": 2,
+              "amountMinor": 0
+            }
+          },
+          "recordVersion": "2.0.0",
+          "returnRequired": true,
+          "sourceRevision": 1,
+          "dispatchCycleId": "bb445563-6048-4b99-8c79-081c6ef4de81",
+          "sourceReference": {
+            "tenantId": "9140febf-35e4-4191-a773-74de1e5b92b4",
+            "externalId": "shipment-0",
+            "integrationId": "3ab30343-bf42-4cd1-b35f-b38028b389b9"
+          },
+          "assignmentRevision": 1,
+          "sourceDispatchCycleId": "cycle"
+        }
+      }
+    },
+    "keyword": "additionalProperties"
+  },
+  {
+    "id": "interop-full-irrelevant-rejection",
+    "schema": "outcomes.schema.json#/$defs/FullCommand",
+    "valid": false,
+    "data": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "8b57449a-1675-4d6f-baae-429f933eff91",
+      "operationId": "outcome.recordFull",
+      "context": {
+        "kind": "device",
+        "tenantId": "9140febf-35e4-4191-a773-74de1e5b92b4",
+        "accountId": "9b9e1285-b3c9-4f18-b1ac-df0accc2fb91",
+        "deviceId": "8755d393-8b81-43a1-baf9-28b7911fa038",
+        "deviceGeneration": 1,
+        "deviceSequence": 1
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "roundId": "7f6fb57c-4ae2-428a-92da-a9b84c6fe4eb",
+        "taskId": "2c2cc6c3-f6cd-538d-aa03-b24d9bef2d80",
+        "attemptId": "4fa391fa-582b-4ff2-87db-c977651ea833",
+        "expectedActivityRevision": 0,
+        "expectedCurrentAttemptId": null,
+        "expectedSourceRevision": 1,
+        "expectedAssignmentRevision": 1,
+        "expectedPinRevision": 0,
+        "reportedCollection": {
+          "amountMinor": 25000,
+          "currency": "EGP",
+          "exponent": 2
+        },
+        "rejection": {
+          "catalogVersion": "1.0.0",
+          "code": "wrong-product"
+        }
+      }
+    },
+    "keyword": "additionalProperties"
   }
 ]

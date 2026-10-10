@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {requireInterop} from '../provisioning/interop.js';
 import {compatibleEvidenceDependencies} from './evidence-dependencies.js';
 import type {Pool} from 'pg';
 import type {components} from '@tawsel/api-client';
@@ -99,7 +100,10 @@ export class Corrections {
     }else{
      const amount=(await tx.query('SELECT amount_minor FROM tawsel.task_collection_amounts WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,member.taskId])).rows[0];frozen={kind:'personal',collection:amount?money(Number(amount.amount_minor)):null};
     }
-    const calculation=calculate(op,payload,frozen),now=(await tx.query<{now:Date}>('SELECT clock_timestamp() now')).rows[0]!.now;
+    const version=evidence?.payloadVersion??c.payloadVersion;
+    if(member.integrationId)await requireInterop(tx,r.tenant_id,member.integrationId,version);
+    if(previous?.recordVersion==='2.0.0'&&version==='1.0.0')throw new OutcomeError('lifecycle_forbidden',409,'تصحيح النتيجة الجديدة يتطلب نسخة تدعم سبب الرفض.');
+    const calculation=calculate(op,payload,frozen,version),now=(await tx.query<{now:Date}>('SELECT clock_timestamp() now')).rows[0]!.now;
     const attempt=(await tx.query('SELECT heading,arrival FROM tawsel.execution_attempts WHERE tenant_id=$1 AND round_id=$2 AND attempt_id=$3',[r.tenant_id,r.round_id,target])).rows[0];
     const revision=Number((await tx.query('SELECT COALESCE(max(revision),0)+1 n FROM tawsel.delivery_outcomes WHERE tenant_id=$1 AND task_id=$2',[r.tenant_id,member.taskId])).rows[0].n);
     const outcome={...calculation,outcomeId:randomUUID(),revision,roundId:r.round_id,workdayId:r.workday_id,driverId:driver,taskId:member.taskId,attemptId:target,dispatchCycleId:member.dispatchCycleId,branchId:member.branchId,sourceReference,sourceDispatchCycleId,sourceRevision:member.sourceRevision,assignmentRevision:member.assignmentRevision,time:{actionId:c.actionId,recordedAt:now.toISOString(),observation:evidence?.observation??c.observation},heading:previous?.heading??attempt?.heading??null,arrival:previous?.arrival??attempt?.arrival??null};
@@ -110,7 +114,7 @@ export class Corrections {
     correction={correctionId:randomUUID(),previousOutcomeId:previous?.outcomeId??null,previousRevision:previous?.revision??0,outcome,evidenceActionId:adoption?p.evidenceActionId:null,evidenceReceiptId:adoption?p.evidenceReceiptId:null};requireCorrection('Record',correction);
     await tx.query(`INSERT INTO tawsel.outcome_corrections (tenant_id,correction_id,attempt_id,outcome_id,previous_outcome_id,previous_revision,source_id,action_id,evidence_source_id,evidence_action_id,evidence_receipt_id,record) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,[r.tenant_id,correction.correctionId,target,outcome.outcomeId,correction.previousOutcomeId,correction.previousRevision,a.context.sourceId,c.actionId,adoption?a.context.sourceId:null,correction.evidenceActionId,correction.evidenceReceiptId,correction]);
     const event={correction,previousOutcome:previous};requireCorrection('Event',event);
-    const intents:Extract<Decision,{status:'accepted'}>['intents']=member.integrationId?[{eventId:randomUUID(),recipientId:member.integrationId,eventType:previous?'outcome.corrected':'outcome.recorded',payloadVersion:'1.0.0',payload:previous?event:{outcome}}]:[];
+    const intents:Extract<Decision,{status:'accepted'}>['intents']=member.integrationId?[{eventId:randomUUID(),recipientId:member.integrationId,eventType:previous?'outcome.corrected':'outcome.recorded',payloadVersion:version,payload:previous?event:{outcome}}]:[];
     if(adoption){const payload={evidenceActionId:p.evidenceActionId,evidenceReceiptId:p.evidenceReceiptId,correctionId:correction.correctionId,outcomeId:outcome.outcomeId,outcomeRevision:revision};requireCorrection('AdoptionEvent',payload);intents.push({eventId:randomUUID(),recipientId:device.accountId,recipientKind:'account',eventType:'evidence.adoptionResolved',payloadVersion:'1.0.0',payload});}
     requireCorrection('Result',{correction});
     return {status:'accepted',response:{status:200,body:{correction}},summary:{driverId:driver,roundId:r.round_id,taskId:member.taskId,outcomeId:outcome.outcomeId,outcomeRevision:revision},audit:event,resourceVersions:{outcomeRevision:revision,deviceGeneration:device.deviceGeneration},intents};

@@ -13,17 +13,21 @@ function reported(p:OutcomePayload,amount:number){
 }
 /** Inputs are the immutable outstanding dispatch allocation and accepted ledger.
  * BigInt intermediates; never apportion deposits, quote ERP or use floats. */
-export function calculate(operation:Operation,p:OutcomePayload,frozen:Frozen):Calculation {
+export function calculate(operation:Operation,p:OutcomePayload,frozen:Frozen,version:'1.0.0'|'2.0.0'='1.0.0'):Calculation {
  requireOutcome(operations[operation],p);
  const outcome:Calculation['outcome']=operation==='outcome.recordFull'?'full':operation==='outcome.recordPartial'?'partial':operation==='outcome.recordRefusal'?'refused':'no-answer';
  const collection:Calculation['collection']={reported:null,goods:money(0),shipping:money(0),unpaidShipping:money(0),shippingStatus:'not-applicable'};
  if(frozen.kind==='personal'){
+  if(p.rejection)invalid('أسباب المنتج تخص شحنات الشركة فقط.');
   if(outcome==='partial'||p.pieces||p.shippingPayment)invalid('نتيجة المندوب المستقل لا تتضمن قطعًا أو رسوم شحن.');
   if(outcome==='full'&&frozen.collection){requireOutcome('Money',frozen.collection);collection.reported=reported(p,frozen.collection.amountMinor);collection.goods=frozen.collection;}
   else if(p.reportedCollection)invalid('لا يوجد مبلغ تحصيل لهذه النتيجة.');
-  return {kind:'personal',outcome,lines:[],collection,returnRequired:false};
+  return {kind:'personal',outcome,lines:[],collection,returnRequired:false,...(version==='2.0.0'?{recordVersion:'2.0.0' as const}:{})};
  }
  const s=frozen.snapshot;
+ if(version==='2.0.0'&&['partial','refused'].includes(outcome)&&!p.rejection)invalid('اختر سبب رفض القطع من القائمة المحددة.');
+ if(version==='1.0.0'&&p.rejection)invalid('نسخة الإجراء القديمة لا تتضمن سبب رفض.');
+ if(p.rejection?.code==='other'&&!/[\p{L}\p{N}\p{P}\p{S}]/u.test(p.rejection.detail??''))invalid('اكتب تفاصيل واضحة للسبب الآخر.');
  if(!conforms('SourceSnapshot',s))throw new OutcomeError('unsupported_price_allocation',422,'تخصيص المصدر غير صالح.');
  validateAllocation(s);
  if(!Number.isSafeInteger(frozen.previousShippingCollectedMinor)||frozen.previousShippingCollectedMinor<0||frozen.previousShippingCollectedMinor>s.shippingDue.amountMinor)invalid('سجل تحصيل الشحن غير متوافق.');
@@ -50,5 +54,5 @@ export function calculate(operation:Operation,p:OutcomePayload,frozen:Frozen):Ca
   collection.shipping=money(shipping);collection.shippingStatus=shipping>0?'collected':'not-due';
   collection.reported=reported(p,bounded(BigInt(goods)+BigInt(shipping)));
  }
- return {kind:'company',outcome,lines,collection,returnRequired:lines.some(l=>l.heldReturnRequired>0)};
+ return {kind:'company',outcome,lines,collection,returnRequired:lines.some(l=>l.heldReturnRequired>0),...(version==='2.0.0'?{recordVersion:'2.0.0' as const,...(p.rejection?{rejection:p.rejection}:{})}:{})};
 }

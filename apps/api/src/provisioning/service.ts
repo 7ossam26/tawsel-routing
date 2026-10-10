@@ -101,6 +101,7 @@ async function writeSource(tx: Transaction, b: ServiceBinding, command: ActionEn
     const any = await tx.query("SELECT 1 FROM tawsel.provisioning_records WHERE tenant_id=$1 AND integration_id=$2 AND entity='source'", sourceKey(b));
     if (any.rowCount && !prior) return rejection('idempotency_conflict', command.actionId);
     if (prior && prior.state.companyCode !== p.companyCode) return rejection('forbidden_resource', command.actionId);
+    if (prior?.state.erpCompanyId && p.erpCompanyId !== undefined && prior.state.erpCompanyId !== p.erpCompanyId) return rejection('forbidden_resource', command.actionId);
     await tx.query('INSERT INTO tawsel.company_login_codes VALUES ($1,$2,$3) ON CONFLICT DO NOTHING', [p.companyCode, b.tenantId, p.displayName]);
     for (const subject of p.subjectIds as string[]) {
       // Already bound subjects cannot be acquired by a new source.
@@ -143,7 +144,13 @@ async function writeSource(tx: Transaction, b: ServiceBinding, command: ActionEn
       await tx.query('UPDATE tawsel.service_credentials SET revoked=true WHERE tenant_id=$1 AND integration_id=$2', sourceKey(b));
     }
   }
-  await saveRecord(tx, b, 'source', p, b.integrationId, { companyCode: p.companyCode ?? prior?.state.companyCode }, command.actionId, digest);
+  await saveRecord(tx, b, 'source', p, b.integrationId, {
+    ...prior?.state, companyCode: p.companyCode ?? prior?.state.companyCode,
+    ...(command.operationId === 'integration.bindSource' ? {
+      erpCompanyId: p.erpCompanyId ?? prior?.state.erpCompanyId ?? null,
+      interopVersion: p.interopVersion ?? prior?.state.interopVersion ?? '1.0.0'
+    } : {})
+  }, command.actionId, digest);
   return accepted(b, command, 'source', p.externalId, b.integrationId, p.sourceRevision, 'not-required', true);
 }
 export async function sourceConfiguration(pool: Pool, authorization: string | undefined): Promise<components['schemas']['SourceConfiguration']> {
@@ -158,8 +165,11 @@ export async function sourceConfiguration(pool: Pool, authorization: string | un
       ...(grants.includes('assignment.manage') ? ['assignment.receiveBatch','assignment.withdraw','assignment.reassignBeforeDeparture'] : []),
       ...(grants.some(c=>c==='intake.prepare'||c==='assignment.manage') ? ['intake.getTask','intake.listTasks','intake.getBatchResult'] : [])
     ];
-    return { identity: identityView(b), issuer: source.rows[0]!.issuer as string, supportedVersions: ['1.0.0'],
+    const settings = await record(tx,b,'source',(await tx.query("SELECT external_id FROM tawsel.provisioning_records WHERE tenant_id=$1 AND integration_id=$2 AND entity='source'",sourceKey(b))).rows[0]!.external_id as string);
+    const version = settings?.state.interopVersion === '2.0.0' ? '2.0.0' : '1.0.0';
+      return { identity: identityView(b), issuer: source.rows[0]!.issuer as string, serviceCapabilities:grants, supportedVersions: version === '2.0.0' ? ['1.0.0','2.0.0'] : ['1.0.0'], interopVersion:version, erpCompanyId:settings?.state.erpCompanyId as string ?? null,
       allowedOperations: [...Object.keys(operations).filter(o => o !== 'integration.bindSource'), 'integration.getConfiguration', 'provisioning.getStatus', ...intake,
+        ...(grants.includes('assignment.manage')?['dispatch.createFromReceipt',...(version==='2.0.0'?['dispatch.relocateBeforeDeparture']:[])]:[]),
         ...(grants.includes('return.receive')?['return.confirmSubsetReceipt']:[]),...(grants.includes('return.dispose')?['return.recordDisposition']:[]),
         ...(grants.some(c=>c==='return.receive'||c==='return.dispose')?['return.listPending','return.getNativeRequest','return.getNativeResult']:[])], humanDelegation: false };
   });

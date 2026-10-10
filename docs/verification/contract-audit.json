@@ -3,12 +3,12 @@
   "classification": "Traceability and canonical checks; runtime route/transaction/browser proof is recorded separately in phase-42-evidence.md.",
   "requirements": 65,
   "decisions": 113,
-  "schemas": 31,
+  "schemas": 34,
   "examples": {
-    "valid": 268,
-    "invalid": 171
+    "valid": 279,
+    "invalid": 179
   },
-  "httpOperations": 133,
+  "httpOperations": 134,
   "operations": [
     {
       "id": "session.bootstrap",
@@ -1335,6 +1335,7 @@
         "apps/api/src/outcomes/arithmetic.ts",
         "apps/api/src/outcomes/models.ts",
         "apps/api/src/sync/service.ts",
+        "apps/web/src/action-reader.ts",
         "apps/web/src/conflicts-page.tsx",
         "apps/web/src/current-activity.tsx",
         "apps/web/src/local-status.tsx",
@@ -1366,6 +1367,7 @@
         "apps/api/src/outcomes/arithmetic.ts",
         "apps/api/src/outcomes/models.ts",
         "apps/api/src/sync/service.ts",
+        "apps/web/src/action-reader.ts",
         "apps/web/src/conflicts-page.tsx",
         "apps/web/src/current-activity.tsx",
         "apps/web/src/local-status.tsx",
@@ -1397,6 +1399,7 @@
         "apps/api/src/outcomes/arithmetic.ts",
         "apps/api/src/outcomes/models.ts",
         "apps/api/src/sync/service.ts",
+        "apps/web/src/action-reader.ts",
         "apps/web/src/conflicts-page.tsx",
         "apps/web/src/current-activity.tsx",
         "apps/web/src/local-status.tsx",
@@ -1427,6 +1430,7 @@
         "apps/api/src/devices/service.ts",
         "apps/api/src/outcomes/models.ts",
         "apps/api/src/sync/service.ts",
+        "apps/web/src/action-reader.ts",
         "apps/web/src/conflicts-page.tsx",
         "apps/web/src/current-activity.tsx",
         "apps/web/src/local-status.tsx",
@@ -1611,7 +1615,9 @@
         "apps/api/src/devices/fence.ts",
         "apps/api/src/devices/service.ts",
         "apps/api/src/sync/service.ts",
+        "apps/web/src/action-reader.ts",
         "apps/web/src/correction-page.tsx",
+        "apps/web/src/local-work.ts",
         "packages/api-client/src/projection.ts",
         "packages/api-client/src/schema.d.ts"
       ]
@@ -1835,6 +1841,7 @@
       "literalReferences": [
         "apps/api/src/b2b-intake/schema.ts",
         "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
         "apps/mock-erp/src/source.ts",
         "packages/api-client/src/schema.d.ts"
       ]
@@ -4292,6 +4299,56 @@
       ],
       "evidence": "docs/phase-38-evidence.md",
       "literalReferences": [
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "dispatch.relocateBeforeDeparture",
+      "family": "returns",
+      "kind": "http-command",
+      "lifecycle": "implemented",
+      "ownerPhase": 22,
+      "capability": "assignment.manage",
+      "description": "Create a fresh branch cycle after withdrawal and asserted ERP destination receipt; frozen old cycle remains at its branch.",
+      "method": "POST",
+      "path": "/api/v1/intake/commands/dispatch.relocateBeforeDeparture",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/schema.ts",
+        "apps/api/src/b2b-intake/service.ts",
+        "apps/api/src/provisioning/service.ts",
+        "packages/api-client/src/schema.d.ts"
+      ]
+    },
+    {
+      "id": "dispatch.relocatedBeforeDeparture",
+      "family": "returns",
+      "kind": "event",
+      "lifecycle": "implemented",
+      "ownerPhase": 22,
+      "capability": "recipient-scope",
+      "description": "Retained fresh-cycle and ERP transfer assertion after predeparture relocation.",
+      "payloadSchema": "./b2b-intake.schema.json#/$defs/ChangedEvent",
+      "delivery": "P25 signed sender; P26 durable receiver/projection remains separate",
+      "implementationOwner": [
+        "apps/api/src/branch",
+        "apps/api/src/returns/receiver.ts"
+      ],
+      "tests": [
+        "apps/api/test/integration/branch-interruption.test.ts",
+        "apps/api/test/integration/dispatch-cycle.test.ts"
+      ],
+      "evidence": "docs/phase-22-evidence.md",
+      "literalReferences": [
+        "apps/api/src/b2b-intake/service.ts",
         "packages/api-client/src/schema.d.ts"
       ]
     }

@@ -5,7 +5,7 @@ import type { components } from '@tawsel/api-client';
 export type Money=components['schemas']['OutcomeMoney'];
 export type Calculation=components['schemas']['OutcomeCalculation'];
 export type OutcomeRecord=components['schemas']['OutcomeRecord'];
-export type OutcomePayload=components['schemas']['OutcomeFull'] & Partial<Pick<components['schemas']['OutcomePartial'],'pieces'> & Pick<components['schemas']['OutcomeRefusal'],'shippingPayment'>>;
+export type OutcomePayload=components['schemas']['OutcomeFull'] & Partial<Pick<components['schemas']['OutcomePartial'],'pieces'|'rejection'> & Pick<components['schemas']['OutcomeRefusal'],'shippingPayment'>>;
 export const operations={'outcome.recordFull':'Full','outcome.recordPartial':'Partial','outcome.recordRefusal':'Refusal','outcome.recordNoAnswer':'NoAnswer'} as const;
 export type Operation=keyof typeof operations;
 export class OutcomeError extends Error {

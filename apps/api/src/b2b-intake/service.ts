@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { Pool } from 'pg';
+import type { components } from '@tawsel/api-client';
 import { AccessSession, type ResourcePolicy, type ResourceScope } from '../access/service.js';
 import { canonicalJson, payloadHash } from '../commands/json.js';
 import { executeCommandInTransaction, getCommandResult, type ActionEnvelope, type CommandHooks, type Decision } from '../commands/kernel.js';
@@ -7,20 +8,21 @@ import { lockInvariants } from '../commands/locks.js';
 import { withTransaction, type Transaction } from '../db/transaction.js';
 import { authenticateService, identityView, type ServiceBinding } from '../provisioning/credentials.js';
 import { record } from '../provisioning/service.js';
+import { interopVersion } from '../provisioning/interop.js';
 import { enqueuePlanning } from '../planning/queue.js';
 import { DepartureCapacityError } from '../rounds/departure.js';
 import { SourceError, validateCommand, type Operation, type Snapshot, type Task, type AssignmentReference } from './schema.js';
 
 const policy = (capability: 'intake.prepare' | 'assignment.manage'): ResourcePolicy => [{ capability, ownership: 'assigned-branches' }];
 const readPolicy: ResourcePolicy = [...policy('intake.prepare'), ...policy('assignment.manage')];
-const capability = (operation: string) => (operation.startsWith('assignment.')||operation==='dispatch.createFromReceipt') ? 'assignment.manage' as const : 'intake.prepare' as const;
+const capability = (operation: string) => (operation.startsWith('assignment.')||operation.startsWith('dispatch.')) ? 'assignment.manage' as const : 'intake.prepare' as const;
 export interface TaskRow extends ResourceScope {
   task_id: string; external_id: string; source_revision: string; payload: Snapshot; payload_hash: string;
   dispatch_cycle_id: string; source_dispatch_cycle_id: string; assignment_revision: string; assignment_hash: string | null;
   state: Task['state']; driver_external_id: string | null; received_at: Date | null; departure_at: Date | null;
   latest:boolean; previous_dispatch_cycle_id:string|null; reserved: boolean; planning_pending: boolean; planning_job_status: Task['planningStatus'] | null; execution_confirmed: boolean;
 }
-const select = `SELECT t.*,COALESCE((to_jsonb(c)->>'source_revision')::bigint,t.source_revision) AS source_revision,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
+const select = `SELECT t.*,COALESCE((to_jsonb(c)->>'branch_id')::uuid,t.branch_id) AS branch_id,COALESCE((to_jsonb(c)->>'source_revision')::bigint,t.source_revision) AS source_revision,s.payload,s.payload_hash,c.dispatch_cycle_id,c.source_dispatch_cycle_id,c.assignment_revision,c.assignment_hash,
  c.state,c.driver_id,c.driver_external_id,c.received_at,c.departure_at,COALESCE((to_jsonb(c)->>'latest')::boolean,true) AS latest,(to_jsonb(c)->>'previous_dispatch_cycle_id')::uuid AS previous_dispatch_cycle_id,
  CASE WHEN l.task_id IS NOT NULL THEN l.source_revision=t.source_revision ELSE s.payload->'destination'->>'kind'='confirmed-pin' END AS execution_confirmed,
  EXISTS(SELECT 1 FROM tawsel.driver_planned_stops p WHERE p.tenant_id=t.tenant_id AND p.dispatch_cycle_id=c.dispatch_cycle_id AND p.driver_id=c.driver_id AND p.state='remaining') AS reserved,
@@ -61,11 +63,11 @@ async function branch(tx: Transaction, b: ServiceBinding, access: AccessSession,
 /** Discover holders before sorted driver/task locks, then re-read. An unlocked
  * new holder rejects rather than acquiring another driver out of global order. P15
  * must use these same driver/task locks before setting departure_at. */
-async function lockTasks(tx: Transaction, b: ServiceBinding, externalIds: string[], extraDrivers: string[] = []) {
+async function lockTasks(tx: Transaction, b: ServiceBinding, externalIds: string[], extraDrivers: string[] = [], extraCycles: string[] = []) {
   const before: (TaskRow | undefined)[] = [];
   for(const id of externalIds) before.push(await load(tx,b,id));
   const drivers = [...new Set([...extraDrivers,...before.flatMap(r => r?.driver_id ? [r.driver_id] : [])])];
-  await lockInvariants(tx, b.tenantId, [...drivers.map(id => ({ kind: 'driver' as const, id })), ...externalIds.map(id => ({ kind: 'task' as const, id: stableId(b,id) }))]);
+  await lockInvariants(tx, b.tenantId, [...drivers.map(id => ({ kind: 'driver' as const, id })), ...[...new Set([...extraCycles,...before.flatMap(r=>r?[r.dispatch_cycle_id]:[])])].map(id=>({kind:'assignment' as const,id})), ...externalIds.map(id => ({ kind: 'task' as const, id: stableId(b,id) }))]);
   const rows = [];
   for (let i=0; i<externalIds.length; i++) {
     const row = await load(tx,b,externalIds[i]!,true);
@@ -83,7 +85,7 @@ async function saveSnapshot(tx: Transaction,b: ServiceBinding,command: ActionEnv
   [b.tenantId,taskId,snapshot.sourceRevision,l.sourceLineId,l.quantity,l.unitDue.amountMinor,l.unitDue.currency,l.unitDue.exponent]);
 }
 function accepted(b: ServiceBinding,command: ActionEnvelope,tasks: Task[],eventType: string,changed = true): Decision {
-  return { status: 'accepted', resourceVersions: {}, response: { status:200,body:{ tasks } }, summary: { tasks: tasks.map(t => ({ taskId:t.taskId,externalId:t.externalId,state:t.state,sourceRevision:t.sourceRevision,assignmentRevision:t.assignmentRevision })) },
+  return { status: 'accepted', resourceVersions: {}, response: { status:200,body:{ tasks } }, summary: { tasks: tasks.map(t => ({ taskId:t.taskId,dispatchCycleId:t.dispatchCycleId,externalId:t.externalId,state:t.state,sourceRevision:t.sourceRevision,assignmentRevision:t.assignmentRevision })) },
     audit: { service:identityView(b),credentialId:b.credentialId,changed,taskIds:tasks.map(t=>t.taskId) },
     intents: changed ? tasks.map(task=>({eventId:randomUUID(),recipientId:b.integrationId,eventType,payloadVersion:'1.0.0',payload:{actionId:command.actionId,task}})) : [] };
 }
@@ -237,15 +239,64 @@ async function urgency(tx:Transaction,b:ServiceBinding,access:AccessSession,comm
 
 /** New execution from confirmed stock only. Shipment ID is stable; old holder,
  * outcome, collection, source snapshot and request identities are never edited. */
+type Transfer=components['schemas']['B2bTransfer'];
+async function transferBranch(tx:Transaction,b:ServiceBinding,access:AccessSession,command:ActionEnvelope,donor:TaskRow,s:Snapshot,transfer?:Transfer){
+ const destination=await branch(tx,b,access,s.sourceBranchExternalId,'assignment.manage');
+ access.requireResource(policy('intake.prepare'),{tenant_id:b.tenantId,integration_id:b.integrationId,branch_id:destination,driver_id:null});
+ if(destination===donor.branch_id){if(transfer)fail('validation_failed','Transfer metadata is only applicable to a changed branch.',400);return destination;}
+ access.requireResource(policy('intake.prepare'),donor);
+ if(command.payloadVersion!=='2.0.0'||await interopVersion(tx,b.tenantId,b.integrationId)!=='2.0.0')fail('wrong_source_branch','Changed branch requires the adopted v2 transfer assertion.');
+ if(!transfer||transfer.sourceBranchExternalId!==donor.payload.sourceBranchExternalId)fail('wrong_source_branch','The actual ERP transfer must originate at the frozen donor branch.');
+ if((await tx.query('SELECT 1 FROM tawsel.dispatch_transfer_assertions WHERE tenant_id=$1 AND integration_id=$2 AND task_id=$3 AND destination_receipt_id=$4',[...key(b),donor.task_id,transfer.destinationReceiptId])).rowCount)fail('idempotency_conflict','Destination receipt is already allocated to a dispatch cycle.');
+ return destination;
+}
+async function saveTransfer(tx:Transaction,b:ServiceBinding,c:ActionEnvelope,donor:TaskRow,id:string,destination:string,transfer?:Transfer){
+ if(!transfer)return;
+ await tx.query(`INSERT INTO tawsel.dispatch_transfer_assertions(tenant_id,integration_id,task_id,dispatch_cycle_id,previous_dispatch_cycle_id,source_branch_id,destination_branch_id,transfer_id,destination_receipt_id,assertion,source_id,action_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$2,$11)`,[...key(b),donor.task_id,id,donor.dispatch_cycle_id,donor.branch_id,destination,transfer.transferId,transfer.destinationReceiptId,{...transfer,lines:(c.payload.snapshot as Snapshot).lines},c.actionId]);
+}
+function compatibleLines(old:Snapshot,next:Snapshot,whole:boolean){
+ if(whole&&next.lines.length!==old.lines.length)fail('quantity_exceeded','Relocation must preserve every shipment line.');
+ for(const line of next.lines){const original=old.lines.find(l=>l.sourceLineId===line.sourceLineId);if(!original||line.description!==original.description||canonicalJson(line.unitDue)!==canonicalJson(original.unitDue)||(whole&&line.quantity!==original.quantity))fail('quantity_exceeded','Preserve exact source line identity, captured unit due and whole quantities.');}
+}
+async function relocate(tx:Transaction,b:ServiceBinding,a:AccessSession,c:ActionEnvelope):Promise<Decision>{
+ const p=c.payload as components['schemas']['B2bRelocate'],s=p.snapshot;
+ const [locked]=await lockTasks(tx,b,[p.externalId]);const old=a.requireResource(policy('assignment.manage'),locked);
+ assertEditable(old);
+ if(await interopVersion(tx,b.tenantId,b.integrationId)!=='2.0.0')fail('lifecycle_forbidden','Recipient readers must adopt v2 before branch relocation.');
+ a.requireResource(policy('intake.prepare'),old);
+ if(p.previousDispatchCycleId!==old.dispatch_cycle_id||s.externalId!==p.externalId)fail('wrong_source_branch','Name the current shipment and donor cycle.');
+ if(!['unassigned','withdrawn'].includes(old.state)||old.driver_id||old.departure_at)fail('lifecycle_forbidden','Prepared or held work must be durably withdrawn before physical transfer.');
+ if((await tx.query('SELECT 1 FROM tawsel.planning_attempts WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[b.tenantId,old.dispatch_cycle_id])).rowCount)fail('lifecycle_forbidden','A cycle with execution history requires actual return receipt, not predeparture relocation.');
+ if(s.expectedSourceRevision!==Number(old.source_revision)||s.sourceRevision<=Number(old.source_revision))fail('stale_revision','Advance the current shipment source revision.');
+ if(s.sourceDispatchCycleId===old.source_dispatch_cycle_id||(await tx.query('SELECT 1 FROM tawsel.b2b_dispatch_cycles WHERE tenant_id=$1 AND task_id=$2 AND source_dispatch_cycle_id=$3',[b.tenantId,old.task_id,s.sourceDispatchCycleId])).rowCount)fail('idempotency_conflict','Use a fresh source dispatch cycle.');
+ compatibleLines(old.payload,s,true);
+ if(canonicalJson(s.shippingDue)!==canonicalJson(old.payload.shippingDue)||canonicalJson(s.totalDue)!==canonicalJson(old.payload.totalDue))fail('unsupported_price_allocation','Transfer preserves the captured outstanding price.',422);
+ const destination=await transferBranch(tx,b,a,c,old,s,p.transfer);
+ if(destination===old.branch_id)fail('wrong_source_branch','Relocation requires a different destination branch.');
+ const id=randomUUID();await saveSnapshot(tx,b,c,old.task_id,s,payloadHash({operationId:c.operationId,payload:s}));
+ await tx.query('UPDATE tawsel.b2b_dispatch_cycles SET latest=false WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[b.tenantId,old.dispatch_cycle_id]);
+ await tx.query(`INSERT INTO tawsel.b2b_dispatch_cycles(tenant_id,integration_id,task_id,dispatch_cycle_id,source_dispatch_cycle_id,source_revision,previous_dispatch_cycle_id,branch_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[...key(b),old.task_id,id,s.sourceDispatchCycleId,s.sourceRevision,old.dispatch_cycle_id,destination]);
+ await tx.query('UPDATE tawsel.b2b_tasks SET source_revision=$3 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,old.task_id,s.sourceRevision]);
+ await saveTransfer(tx,b,c,old,id,destination,p.transfer);
+ const task=view((await load(tx,b,p.externalId))!),decision=accepted(b,c,[task],'dispatch.relocatedBeforeDeparture');
+ if(decision.status==='accepted')decision.intents=[{eventId:randomUUID(),recipientId:b.integrationId,eventType:'dispatch.relocatedBeforeDeparture',payloadVersion:'2.0.0',payload:{actionId:c.actionId,task,previousDispatchCycleId:old.dispatch_cycle_id,transfer:p.transfer}}];
+ return decision;
+}
 async function redispatch(tx:Transaction,b:ServiceBinding,access:AccessSession,command:ActionEnvelope):Promise<Decision>{
- const p=command.payload as {externalId:string;previousDispatchCycleId:string;snapshot:Snapshot},s=p.snapshot;
+ const p=command.payload as components['schemas']['B2bRedispatch'],s=p.snapshot;
  const donorBefore=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3 AND c.dispatch_cycle_id=$4`,[...key(b),p.externalId,p.previousDispatchCycleId])).rows[0];
  access.requireResource(policy('assignment.manage'),donorBefore);
- const [current]=await lockTasks(tx,b,[p.externalId],donorBefore?.driver_id?[donorBefore.driver_id]:[]);
+ const [current]=await lockTasks(tx,b,[p.externalId],donorBefore?.driver_id?[donorBefore.driver_id]:[],[p.previousDispatchCycleId]);
  const row=access.requireResource(policy('assignment.manage'),current);
  const donor=access.requireResource(policy('assignment.manage'),(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3 AND c.dispatch_cycle_id=$4`,[...key(b),row.task_id,p.previousDispatchCycleId])).rows[0]);
  if(donor.driver_id!==donorBefore!.driver_id)fail('stale_revision','Original holder changed; reload the receipt.');
- if(s.externalId!==p.externalId||s.sourceBranchExternalId!==donor.payload.sourceBranchExternalId)fail('wrong_source_branch','Preserve the original source shipment and branch.');
+ if(s.externalId!==p.externalId)fail('wrong_source_branch','Preserve the original source shipment.');
+ if(command.payloadVersion==='1.0.0'&&s.sourceBranchExternalId!==donor.payload.sourceBranchExternalId)fail('wrong_source_branch','Changed branch requires the adopted v2 transfer assertion.');
+ const destination=command.payloadVersion==='2.0.0'?await transferBranch(tx,b,access,command,donor,s,p.transfer):donor.branch_id!;
+ if(command.payloadVersion==='2.0.0'&&await interopVersion(tx,b.tenantId,b.integrationId)!=='2.0.0')fail('lifecycle_forbidden','Source has not adopted v2.');
+ compatibleLines(donor.payload,s,false);
+ const priorShipping=Number((await tx.query('SELECT COALESCE(sum(c.shipping_minor),0) paid FROM tawsel.effective_attempt_outcomes o JOIN tawsel.outcome_collections c USING(tenant_id,outcome_id) WHERE o.tenant_id=$1 AND o.dispatch_cycle_id=$2',[b.tenantId,donor.dispatch_cycle_id])).rows[0].paid);
+ if(s.shippingDue.amountMinor>donor.payload.shippingDue.amountMinor-priorShipping)fail('unsupported_price_allocation','Transfer cannot charge previously collected recipient shipping again.',422);
  if(s.expectedSourceRevision!==Number(row.source_revision)||s.sourceRevision<=Number(row.source_revision))fail('stale_revision','A fresh source revision must follow the current shipment revision.');
  if((await tx.query('SELECT 1 FROM tawsel.b2b_dispatch_cycles WHERE tenant_id=$1 AND task_id=$2 AND source_dispatch_cycle_id=$3',[b.tenantId,row.task_id,s.sourceDispatchCycleId])).rowCount)fail('idempotency_conflict','Use a new source dispatch ID; prior cycles are never reopened.');
  // A shipment has one customer execution at a time. Resolved old-cycle held
@@ -257,14 +308,20 @@ async function redispatch(tx:Transaction,b:ServiceBinding,access:AccessSession,c
  const id=randomUUID(),digest=payloadHash({operationId:command.operationId,payload:s});
  await saveSnapshot(tx,b,command,row.task_id,s,digest);
  await tx.query('UPDATE tawsel.b2b_dispatch_cycles SET latest=false WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[b.tenantId,row.dispatch_cycle_id]);
- await tx.query(`INSERT INTO tawsel.b2b_dispatch_cycles (tenant_id,integration_id,task_id,dispatch_cycle_id,source_dispatch_cycle_id,source_revision,previous_dispatch_cycle_id) VALUES ($1,$2,$3,$4,$5,$6,$7)`,[...key(b),row.task_id,id,s.sourceDispatchCycleId,s.sourceRevision,donor.dispatch_cycle_id]);
+ await tx.query(`INSERT INTO tawsel.b2b_dispatch_cycles (tenant_id,integration_id,task_id,dispatch_cycle_id,source_dispatch_cycle_id,source_revision,previous_dispatch_cycle_id,branch_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,[...key(b),row.task_id,id,s.sourceDispatchCycleId,s.sourceRevision,donor.dispatch_cycle_id,destination]);
  await tx.query('UPDATE tawsel.b2b_tasks SET source_revision=$3 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,row.task_id,s.sourceRevision]);
  for(const line of s.lines)await tx.query('INSERT INTO tawsel.redispatch_allocations (tenant_id,dispatch_cycle_id,previous_dispatch_cycle_id,source_line_id,quantity,source_id,action_id) VALUES ($1,$2,$3,$4,$5,$6,$7)',[b.tenantId,id,donor.dispatch_cycle_id,line.sourceLineId,line.quantity,b.integrationId,command.actionId]);
+ await saveTransfer(tx,b,command,donor,id,destination,p.transfer);
  await tx.query("INSERT INTO tawsel.retry_dependencies (tenant_id,dispatch_cycle_id,dependency_id,reason) VALUES ($1,$2,$3,'redispatched')",[b.tenantId,donor.dispatch_cycle_id,id]);
  // Per-task driver choices belong to the old execution, not this ERP snapshot.
  await tx.query('UPDATE tawsel.task_execution_options SET earliest_at=NULL,urgency=NULL,deferred=false,revision=revision+1 WHERE tenant_id=$1 AND task_id=$2',[b.tenantId,row.task_id]);
  for(const driver of [...new Set([row.driver_id,donor.driver_id].filter((x):x is string=>!!x))])await queueReplan(tx,b,command,[driver]);
- return accepted(b,command,[view((await load(tx,b,p.externalId))!)],'dispatch.createdFromReceipt');
+ const decision=accepted(b,command,[view((await load(tx,b,p.externalId))!)],'dispatch.createdFromReceipt');
+ if(decision.status==='accepted')for(const intent of decision.intents){
+  intent.payloadVersion=command.payloadVersion;
+  if(command.payloadVersion==='2.0.0')Object.assign(intent.payload,{previousDispatchCycleId:donor.dispatch_cycle_id,...(p.transfer?{transfer:p.transfer}:{})});
+ }
+ return decision;
 }
 
 export class B2bIntakeService {
@@ -279,6 +336,12 @@ export class B2bIntakeService {
         return executeCommandInTransaction(tx,access.commandScope,command,{
           async authorize() {
             access.requireCapability(policy(capability(operation)));
+            const finalized=(await tx.query('SELECT 1 FROM tawsel.command_identities WHERE tenant_id=$1 AND source_id=$2 AND action_id=$3 AND result_summary IS NOT NULL',[...key(b),command.actionId])).rowCount;
+            const retained=finalized?await getCommandResult(tx,{tenantId:b.tenantId,sourceId:b.integrationId},command.actionId):null;
+            if(retained&&Object.hasOwn(operationsForResult,retained.operationId)){
+              await authorizeResult(tx,b,access,retained);
+              return;
+            }
             if(operation==='intake.submitSnapshot') await branch(tx,b,access,(command.payload as Snapshot).sourceBranchExternalId,'intake.prepare');
             else {
               const ids=Array.isArray(command.payload.items)?(command.payload.items as AssignmentReference[]).map(i=>i.externalId):[command.payload.externalId as string];
@@ -287,6 +350,7 @@ export class B2bIntakeService {
           },
           async writeDomain() {
             try {
+              if(operation==='dispatch.relocateBeforeDeparture')return await relocate(tx,b,access,command);
               if(operation==='dispatch.createFromReceipt')return await redispatch(tx,b,access,command);
               if(operation==='intake.submitSnapshot') return await snapshotCommand(tx,b,access,command);
               if(operation==='intake.prepare' || operation==='assignment.receiveBatch') return await assignmentCommand(tx,b,access,command);
@@ -308,8 +372,9 @@ export class B2bIntakeService {
   async cycles(authorization:string|undefined,externalId:string,cursor?:string){
     if(!externalId||externalId.length>256||(cursor&&!/^[0-9a-f-]{36}$/i.test(cursor)))throw new SourceError('validation_failed',400,'Invalid shipment/cursor.');
     return this.read(authorization,async(tx,b,a)=>{
-      a.requireResource(readPolicy,await load(tx,b,externalId));
-      const rows=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.external_id=$3 AND ($4::uuid IS NULL OR c.dispatch_cycle_id>$4) ORDER BY c.dispatch_cycle_id LIMIT 101`,[...key(b),externalId,cursor??null])).rows;
+      const scoped=a.sqlPredicate(readPolicy,'c');
+      const v=[...scoped.values,externalId,cursor??null];
+      const rows=(await tx.query<TaskRow>(`${select} WHERE ${scoped.text} AND t.external_id=$${v.length-1} AND ($${v.length}::uuid IS NULL OR c.dispatch_cycle_id>$${v.length}) ORDER BY c.dispatch_cycle_id LIMIT 101`,v)).rows;
       return {items:rows.slice(0,100).map(view),nextCursor:rows.length>100?rows[99]!.dispatch_cycle_id:null};
     });
   }
@@ -319,7 +384,7 @@ export class B2bIntakeService {
       || (query.cursor!==undefined&&!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(query.cursor))
       || (query.driverExternalId!==undefined&&(!query.driverExternalId.length||query.driverExternalId.length>256))) throw new SourceError('validation_failed',400,'Invalid intake list filter or cursor.');
     return this.read(authorization,async(tx,_b,access)=>{
-      const scoped=access.sqlPredicate(readPolicy,'t');
+      const scoped=access.sqlPredicate(readPolicy,'c');
       const values:unknown[]=[...scoped.values];
       let where=scoped.text+" AND COALESCE((to_jsonb(c)->>'latest')::boolean,true)";
       const add=(sql:string,value:unknown)=>{values.push(value);where+=` AND ${sql}=$${values.length}`;};
@@ -339,11 +404,7 @@ export class B2bIntakeService {
       if(!result) return {actionId,status:'pending' as const};
       if(!Object.hasOwn(operationsForResult,result.operationId)) throw new SourceError('forbidden_resource',404,'Resource unavailable.');
       access.requireCapability(policy(capability(result.operationId)));
-      const tasks=result.summary.tasks as {taskId:string}[]|undefined;
-      for(const task of tasks??[]) {
-        const row=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3 AND c.latest`,[...key(b),task.taskId])).rows[0];
-        access.requireResource(readPolicy,row);
-      }
+      await authorizeResult(tx,b,access,result);
       return {actionId,status:result.receipt.businessStatus,result};
     });
   }
@@ -357,4 +418,16 @@ export class B2bIntakeService {
     });
   }
 }
-const operationsForResult={'dispatch.createFromReceipt':true,'intake.submitSnapshot':true,'intake.prepare':true,'assignment.receiveBatch':true,'assignment.withdraw':true,'assignment.reassignBeforeDeparture':true,'intake.setUrgencyBeforeDeparture':true};
+async function authorizeResult(tx:Transaction,b:ServiceBinding,access:AccessSession,result:NonNullable<Awaited<ReturnType<typeof getCommandResult>>>){
+ const tasks=result.summary.tasks as {taskId:string;dispatchCycleId?:string}[]|undefined;
+ for(const task of tasks??[]){
+  const cycle=task.dispatchCycleId??((result.response?.body.tasks as Task[]|undefined)?.find(t=>t.taskId===task.taskId)?.dispatchCycleId);
+  // Compact legacy results are linked to their original immutable source or
+  // assignment action. Never infer historical authority from the current cycle.
+  const row=(await tx.query<TaskRow>(`${select} WHERE t.tenant_id=$1 AND t.integration_id=$2 AND t.task_id=$3 AND (c.dispatch_cycle_id=$4 OR ($4::uuid IS NULL AND (EXISTS(SELECT 1 FROM tawsel.b2b_assignment_history h WHERE h.tenant_id=c.tenant_id AND h.dispatch_cycle_id=c.dispatch_cycle_id AND h.action_id=$5 AND h.source_id=$2) OR EXISTS(SELECT 1 FROM tawsel.b2b_source_snapshots s2 WHERE s2.tenant_id=c.tenant_id AND s2.task_id=c.task_id AND s2.payload->>'sourceDispatchCycleId'=c.source_dispatch_cycle_id AND s2.action_id=$5 AND s2.source_id=$2))))`,[...key(b),task.taskId,cycle??null,result.receipt.actionId])).rows[0];
+  access.requireResource(readPolicy,row);
+ }
+ const transfer=await tx.query<TaskRow>(`${select} JOIN tawsel.dispatch_transfer_assertions x ON x.tenant_id=c.tenant_id AND x.previous_dispatch_cycle_id=c.dispatch_cycle_id WHERE x.tenant_id=$1 AND x.integration_id=$2 AND x.action_id=$3`,[...key(b),result.receipt.actionId]);
+ for(const row of transfer.rows)access.requireResource(readPolicy,row);
+}
+const operationsForResult={'dispatch.relocateBeforeDeparture':true,'dispatch.createFromReceipt':true,'intake.submitSnapshot':true,'intake.prepare':true,'assignment.receiveBatch':true,'assignment.withdraw':true,'assignment.reassignBeforeDeparture':true,'intake.setUrgencyBeforeDeparture':true};

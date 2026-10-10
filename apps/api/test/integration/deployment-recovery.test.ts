@@ -27,8 +27,8 @@ test('failed upgrade rolls back DDL and ledger, old service still reads original
     const last = migrations.at(-1)!;
     await writeFile(join(directory, last.name), last.sql + '\nCREATE TABLE tawsel.failed_release_probe(id integer); SELECT 1/0;');
     await expect(migrate(db.pool, url)).rejects.toThrow();
-    expect((await db.pool.query("SELECT to_regclass('tawsel.failed_release_probe') AS p, to_regclass('tawsel.worker_observations') AS w")).rows[0]).toEqual({ p: null, w: null });
-    expect((await db.pool.query('SELECT count(*)::int AS n FROM tawsel.schema_migrations')).rows[0].n).toBe(27);
+    expect((await db.pool.query("SELECT to_regclass('tawsel.failed_release_probe') AS p, to_regclass('tawsel.dispatch_transfer_assertions') AS w")).rows[0]).toEqual({ p: null, w: null });
+    expect((await db.pool.query('SELECT count(*)::int AS n FROM tawsel.schema_migrations')).rows[0].n).toBe(migrations.length-1);
     // Old process can keep serving the old schema after the failed transaction.
     expect(await getCommandResult(db.pool, scopeA, command.actionId)).toEqual(accepted);
     await writeFile(join(directory, last.name), last.sql);

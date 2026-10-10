@@ -8,4 +8,4 @@ function load(dir:URL){for(const entry of readdirSync(dir,{withFileTypes:true}))
 load(new URL('../../../../contracts/',import.meta.url));
 export const outboxConforms=(name:string,value:unknown)=>ajv.validate(`https://schemas.tawsel.invalid/v1/outbox.schema.json#/$defs/${name}`,value);
 export function requireOutbox(name:string,value:unknown){if(!outboxConforms(name,value))throw new ProvisioningError('validation_failed',400,'Invalid delivery request');}
-export function senderEventConforms(value:unknown):boolean{return ajv.validate('https://schemas.tawsel.invalid/v1/events/sender-event.v1.schema.json',value);}
+export function senderEventConforms(value:unknown):boolean{return ajv.validate('https://schemas.tawsel.invalid/v1/events/sender-event.schema.json',value);}

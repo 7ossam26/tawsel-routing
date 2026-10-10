@@ -2,6 +2,7 @@ import type { components } from '@tawsel/api-client';
 import type { Transaction } from '../db/transaction.js';
 import { money } from './arithmetic.js';
 import { OutcomeError } from './models.js';
+import { interopVersion } from '../provisioning/interop.js';
 
 /** Frozen prices and effective prior fees. A correction replaces its own
  * attempt, so that attempt must not be counted as an earlier collection. */
@@ -16,5 +17,7 @@ export async function deliveryFor(tx: Transaction, tenant: string, task: string,
   const goods = source.lines.reduce((sum, line) => sum + BigInt(line.quantity) * BigInt(line.unitDue.amountMinor), 0n);
   const shipping = BigInt(source.shippingDue.amountMinor) - BigInt(prior.shipping);
   if (shipping < 0n || goods + shipping > BigInt(Number.MAX_SAFE_INTEGER)) throw new OutcomeError('validation_failed', 500, 'تعذر حساب مبلغ التحصيل الحالي.');
-  return { kind: 'company', allowedActions: source.splittingAllowed ? ['full', 'partial', 'refusal', 'no-answer'] : ['full', 'refusal', 'no-answer'], fullCollection: money(Number(goods + shipping)), goodsDue: money(Number(goods)), shippingDue: money(Number(shipping)), lines: source.lines.map(({ sourceLineId, description, quantity, unitDue }) => ({ sourceLineId, description, quantity, unitDue })) };
+  const integration=(await tx.query('SELECT integration_id FROM tawsel.b2b_dispatch_cycles WHERE tenant_id=$1 AND dispatch_cycle_id=$2',[tenant,cycle])).rows[0]!.integration_id as string;
+  const adopted=await interopVersion(tx,tenant,integration)==='2.0.0';
+  return { kind: 'company', ...(adopted?{rejectionCatalogVersion:'1.0.0' as const}:{}), allowedActions: source.splittingAllowed ? ['full', 'partial', 'refusal', 'no-answer'] : ['full', 'refusal', 'no-answer'], fullCollection: money(Number(goods + shipping)), goodsDue: money(Number(goods)), shippingDue: money(Number(shipping)), lines: source.lines.map(({ sourceLineId, description, quantity, unitDue }) => ({ sourceLineId, description, quantity, unitDue })) };
 }

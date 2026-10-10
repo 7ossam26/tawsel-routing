@@ -9,6 +9,7 @@ export type Snapshot = components['schemas']['B2bSourceSnapshot'];
 export type AssignmentReference = components['schemas']['B2bAssignmentReference'];
 export type Task = components['schemas']['B2bTask'];
 export const operations = {
+  'dispatch.relocateBeforeDeparture':'Relocate',
   'dispatch.createFromReceipt':'Redispatch', 'intake.submitSnapshot': 'SourceSnapshot', 'intake.prepare': 'Prepare', 'assignment.receiveBatch': 'ReceiveBatch',
   'assignment.withdraw': 'Withdraw', 'assignment.reassignBeforeDeparture': 'Reassign', 'intake.setUrgencyBeforeDeparture': 'Urgency'
 } as const;

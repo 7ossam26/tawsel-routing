@@ -122,7 +122,7 @@ describe('simulated IndexedDB (fake-indexeddb); real Dexie transactions', () => 
     const imported = await db.capture(download.scope, legacy, '/rounds/current', false, true);
     expect(imported.bytes).toBe(JSON.stringify(legacy));
     // Simulates an on-disk envelope written by a newer application, not API input.
-    const newer = { ...legacy, payloadVersion: '2.0.0' } as unknown as typeof legacy;
+    const newer = { ...legacy, payloadVersion: '3.0.0' } as unknown as typeof legacy;
     await db.actions.update([download.scope, legacy.actionId], { envelope: newer });
     await expect(db.preview(download)).rejects.toThrow('غير مدعومة');
     expect(await db.actions.count()).toBe(1); expect(await db.pending.count()).toBe(1);

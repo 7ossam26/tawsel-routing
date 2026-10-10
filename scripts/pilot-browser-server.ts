@@ -16,8 +16,8 @@ import { browserFixtureConfig } from './browser-fixture-config.js';
 const browser = browserFixtureConfig();
 const mode = process.env.TAWSEL_PILOT_ENGINE ?? 'fixture';
 if (!['fixture', 'live'].includes(mode)) throw new Error('TAWSEL_PILOT_ENGINE must be fixture or live');
-const issuer = 'http://localhost:8085/realms/tawsel-personal';
-const secrets = JSON.parse(await readFile('.local/identity/secrets.json', 'utf8')) as { control: string; personal: string; company: string };
+const issuer = `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-personal`;
+const secrets = JSON.parse(await readFile(`${process.env.TAWSEL_TEST_IDENTITY_DIRECTORY??'.local/identity'}/secrets.json`, 'utf8')) as { control: string; personal: string; company: string };
 const cleanup: (() => Promise<unknown>)[] = [];
 const stop = '.local/phase-41-browser.stop';
 async function admin(path: string, init: RequestInit) {
@@ -35,11 +35,11 @@ try {
   const subject = created.headers.get('location')!.split('/').at(-1)!;
   cleanup.push(() => admin(`/${subject}`, { method: 'DELETE' }));
   const db = await createTestDatabase(); cleanup.push(() => db.close());
-  await prepareAccessFixture(db.pool, 'http://localhost:8085/realms/tawsel-company', undefined, { personal: { issuer, subject } });
+  await prepareAccessFixture(db.pool, `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`, undefined, { personal: { issuer, subject } });
   const provider = mode === 'fixture' ? await providerFixture() : null;
   if (provider) cleanup.push(() => provider.close());
   const engine = provider?.engine ?? new RoutingEngine(loadEngineConfig());
-  const app = buildApp(createDatabasePool(db.config), { origin: browser.origin, encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { personal: { issuer, clientId: 'tawsel-web', clientSecret: secrets.personal }, company: { issuer: 'http://localhost:8085/realms/tawsel-company', clientId: 'tawsel-web', clientSecret: secrets.company } } });
+  const app = buildApp(createDatabasePool(db.config), { origin: browser.origin, encryptionKey: randomBytes(32), sessionSeconds: 28800, issuers: { personal: { issuer, clientId: 'tawsel-web', clientSecret: secrets.personal }, company: { issuer: `${process.env.TAWSEL_TEST_IDENTITY_ORIGIN??'http://localhost:8085'}/realms/tawsel-company`, clientId: 'tawsel-web', clientSecret: secrets.company } } });
   cleanup.push(() => app.close());
   const info = { username, password, engine: mode, evidenceClass: 'Local desktop rehearsal; actual OIDC/HTTP/PostgreSQL, synthetic account/tasks. Routing mode is explicit. No physical device/owner approval.' };
   app.get('/__fixture/info', async () => info);
