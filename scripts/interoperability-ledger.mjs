@@ -14,6 +14,7 @@ const tests=[];for(const p of ['apps/api/test/integration','apps/mock-erp/test/i
 const fixtures=id=>valid.filter(v=>v.data?.operationId===id).map(v=>({fixtureId:v.id,schema:v.schema,actionId:v.data.actionId,classification:'generated valid shape; no runtime acceptance inferred'}));
 const witnesses=id=>{
  const result=(source?.sourceCommands??[]).filter(c=>c.operationId===id).map(c=>({classification:'fresh separate-process public HTTP reference source',proof:sourcePath,actionId:c.actionId,status:c.status,receiptId:c.result?.receipt?.receiptId}));
+ if(['integration.getDeliveryStatus','integration.replayEvents','integration.getAppliedCheckpoint'].includes(id))for(const report of source?.appliedReports??[])result.push({classification:'fresh public HTTP read with concrete recipient aggregate; see source runner and recorded signed events/checkpoints',proof:sourcePath,aggregate:report.report?.checkpoint.aggregate,reportedAt:report.report?.reportedAt,status:'read-positive'});
  for(const [proof,p,command] of [[prePath,pre,pre?.request],[returnPath,returned,returned?.requests?.redispatch]])if(command?.operationId===id)result.push({classification:'fresh authenticated public HTTP injection with real PostgreSQL',proof,actionId:command.actionId,receiptId:p.result.receipt.receiptId,status:p.result.receipt.businessStatus});
  return result;
 };

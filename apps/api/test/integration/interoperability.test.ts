@@ -2,6 +2,8 @@ import {beforeEach,afterEach,test,expect} from 'vitest';
 import {randomUUID,randomBytes} from 'node:crypto';
 import {writeFile} from 'node:fs/promises';
 import {Pool} from 'pg';
+import {createServer} from 'node:http';
+import {once} from 'node:events';
 import type {components} from '@tawsel/api-client';
 import {publicValidator} from '@tawsel/api-client/validation';
 import {createTestDatabase} from '../support/database.js';
@@ -147,6 +149,26 @@ test('two independent relocation connections allocate one cycle and original-ID 
  const row=(await db.pool.query<Intent>("SELECT * FROM tawsel.outbox_intents WHERE event_type='dispatch.relocatedBeforeDeparture'")).rows[0]!;expect(publicValidator()('events/sender-event.schema.json',envelope(row))).toBe(true);
 });
 
+test('received held A work cannot relocate until durable withdrawal',async()=>{
+ const f=await predeparture();const received=f.source.command('assignment.receiveBatch',{driverExternalId:'policy-driver',receiptAsserted:true,items:[{externalId:'move',sourceDispatchCycleId:'A-1',expectedSourceRevision:1,expectedAssignmentRevision:0,assignmentRevision:1}]});expect((await f.service.command(f.auth,'assignment.receiveBatch',received)).receipt.businessStatus).toBe('accepted');
+ expect((await f.service.command(f.auth,'dispatch.relocateBeforeDeparture',f.command)).receipt.problem?.code).toBe('lifecycle_forbidden');expect((await f.service.get(f.auth,'move')).state).toBe('held');expect((await db.pool.query('SELECT * FROM tawsel.dispatch_transfer_assertions')).rowCount).toBe(0);
+});
+
+test('new relocation rejects an actually departed A customer cycle without moving custody',async()=>{
+ const f=await outcomeFixture();await branchB(f);const auth=`Bearer ${f.source.token}`,service=new B2bIntakeService(db.pool),old=await service.get(auth,'shipment-0');
+ expect((await db.pool.query('SELECT departure_at FROM tawsel.b2b_dispatch_cycles WHERE dispatch_cycle_id=$1',[old.dispatchCycleId])).rows[0].departure_at).not.toBeNull();
+ const c=f.source.command('dispatch.relocateBeforeDeparture',{externalId:old.externalId,previousDispatchCycleId:old.dispatchCycleId,snapshot:{...old.snapshot,sourceBranchExternalId:'branch-b',sourceDispatchCycleId:'departed-B',sourceRevision:2,expectedSourceRevision:1},transfer:transfer()});c.payloadVersion='2.0.0';
+ expect((await service.command(auth,'dispatch.relocateBeforeDeparture',c)).receipt.problem?.code).toBe('departed_edit_forbidden');expect((await service.get(auth,'shipment-0')).dispatchCycleId).toBe(old.dispatchCycleId);
+});
+
+test('real HTTP commit with dropped relocation response recovers exact result/event under original action',async()=>{
+ const f=await predeparture();const address=await f.app.listen({host:'127.0.0.1',port:0});let committed:S['ActionResult']|undefined;
+ const proxy=createServer(async(req,res)=>{try{const chunks:Buffer[]=[];for await(const b of req)chunks.push(Buffer.from(b));const body=Buffer.concat(chunks);expect(JSON.parse(body.toString()).actionId).toBe(f.command.actionId);const response=await fetch(address+'/api/v1/intake/commands/dispatch.relocateBeforeDeparture',{method:'POST',headers:{authorization:f.auth,'content-type':'application/json'},body});committed=await response.json() as S['ActionResult'];res.destroy();}catch{res.destroy();}});
+ proxy.listen(0,'127.0.0.1');await once(proxy,'listening');const port=(proxy.address() as {port:number}).port;
+ try{await expect(fetch(`http://127.0.0.1:${port}/lost`,{method:'POST',body:JSON.stringify(f.command)})).rejects.toThrow();expect(committed?.receipt.businessStatus).toBe('accepted');const recovered=await f.service.result(f.auth,f.command.actionId);expect(recovered.result).toEqual(committed);expect(await f.service.command(f.auth,'dispatch.relocateBeforeDeparture',f.command)).toEqual(committed);expect((await db.pool.query("SELECT * FROM tawsel.outbox_intents WHERE event_type='dispatch.relocatedBeforeDeparture'")).rowCount).toBe(1);await writeFile('docs/verification/interoperability-lost-response-2026-10-10.json',JSON.stringify({classification:'Actual local HTTP proxy drops response only after Tawsel commit; isolated PostgreSQL and original-ID recovery',request:f.command,committed,recovered,events:(await new OutboxReads(db.pool).replay(f.auth,'task',f.old.taskId,0,100)).events},null,2)+'\n');}
+ finally{proxy.closeAllConnections();await new Promise<void>((ok,fail)=>proxy.close(e=>e?fail(e):ok()));}
+});
+
 async function returned(receive=true){
  const f=await outcomeFixture(),branch=await branchB(f),outcomes=new Outcomes(db.pool);
  const refusal=f.make(0,'outcome.recordRefusal',{shippingPayment:'collected',reportedCollection:money(5000),rejection:{catalogVersion:'1.0.0',code:'missing-pieces'}});refusal.payloadVersion='2.0.0';
@@ -167,6 +189,14 @@ test.each(['offered','lost','damaged','over-received','changed-line','shipping-a
  if(kind==='over-received'){s.lines[0]!.quantity=3;s.totalDue=money(30000);}if(kind==='changed-line')s.lines[0]!.sourceLineId='invented';if(kind==='shipping-again'){s.shippingDue=money(5000);s.totalDue=money(25000);}
  expect((await f.service.command(f.auth,'dispatch.createFromReceipt',f.command)).receipt.businessStatus).toBe('rejected');expect((await db.pool.query('SELECT * FROM tawsel.redispatch_allocations')).rowCount).toBe(0);
 });
+
+test('independent returned A-to-B dispatch connections cannot allocate the same receipt twice',async()=>{
+ const f=await returned(),one=new Pool({connectionString:db.url,max:1}),two=new Pool({connectionString:db.url,max:1});close.push(()=>one.end(),()=>two.end());const holder=Number((await one.query('SELECT pg_backend_pid() pid')).rows[0].pid),waiter=Number((await two.query('SELECT pg_backend_pid() pid')).rows[0].pid),entered=deferred(),release=deferred();
+ const first=new B2bIntakeService(one,{async afterWrite(s){if(s==='domain'){entered.resolve();await release.promise;}}}).command(f.auth,'dispatch.createFromReceipt',f.command);await entered.promise;
+ const rival=structuredClone(f.command);rival.actionId=randomUUID();(rival.payload.snapshot as S['B2bSourceSnapshot']).sourceDispatchCycleId='B-return-rival';const second=new B2bIntakeService(two).command(f.auth,'dispatch.createFromReceipt',rival);
+ try{await observeDatabaseBlock(db.pool,waiter,holder);}finally{release.resolve();}const accepted=await first,rejected=await second;expect(accepted.receipt.businessStatus).toBe('accepted');expect(rejected.receipt.businessStatus).toBe('rejected');expect((await db.pool.query('SELECT sum(quantity)::int n FROM tawsel.redispatch_allocations')).rows[0].n).toBe(2);expect((await db.pool.query("SELECT * FROM tawsel.outbox_intents WHERE event_type='dispatch.createdFromReceipt'")).rowCount).toBe(1);
+ await writeFile('docs/verification/interoperability-return-race-2026-10-10.json',JSON.stringify({classification:'Actual isolated PostgreSQL with independent competing connections, observed lock blocking and one committed winner; no native ERP atomic custody claim',requests:{first:f.command,rival},results:{accepted,rejected},allocatedQuantity:2},null,2)+'\n');
+});
 test('actual returned A goods dispatch at B, historical human scopes stay at A and B return uses B',async()=>{
  const f=await returned(),http=await f.app.inject({method:'POST',url:'/api/v1/intake/commands/dispatch.createFromReceipt',headers:{authorization:f.auth},payload:f.command});expect(http.statusCode).toBe(200);const result=http.json() as S['ActionResult'];expect(result.receipt.businessStatus,JSON.stringify(result)).toBe('accepted');
  expect(await f.service.command(f.auth,'dispatch.createFromReceipt',f.command)).toEqual(result);
@@ -186,6 +216,8 @@ test('actual returned A goods dispatch at B, historical human scopes stay at A a
  const refusal=f.planCommand('outcome.recordRefusal',{roundId:f.round.roundId,taskId:target.taskId,attemptId:target.attemptId,expectedActivityRevision:current.revision,expectedCurrentAttemptId:null,expectedSourceRevision:target.sourceRevision,expectedAssignmentRevision:target.assignmentRevision,expectedPinRevision:target.pinRevision,shippingPayment:'collected',reportedCollection:money(0),rejection:{catalogVersion:'1.0.0',code:'other',detail:'لم يعد يحتاج المنتج'}});delete refusal.payload.driverId;refusal.payloadVersion='2.0.0';
  expect((await f.outcomes.command(f.principal,refusal)).receipt.businessStatus).toBe('accepted');
  const groups=await f.returns.groups(f.principal);expect(groups.groups.find(g=>g.items.some(i=>i.dispatchCycleId===fresh.dispatchCycleId))?.sourceBranchId).toBe(f.branch);
+ const allocated=structuredClone(f.command);allocated.actionId=randomUUID();allocated.payload.snapshot={...(f.command.payload.snapshot as S['B2bSourceSnapshot']),sourceRevision:3,expectedSourceRevision:2,sourceDispatchCycleId:'B-already-allocated',lines:[{...fresh.snapshot.lines[0]!,quantity:1}],totalDue:money(10000)};allocated.payload.transfer=transfer();
+ expect((await f.service.command(f.auth,'dispatch.createFromReceipt',allocated)).receipt.problem?.code).toBe('quantity_exceeded');expect((await db.pool.query('SELECT sum(quantity)::int n FROM tawsel.redispatch_allocations')).rows[0].n).toBe(2);
  const replay=await new OutboxReads(db.pool).replay(f.auth,'task',f.old.taskId,0,100),reconciliation=await new ReconciliationReads(db.pool).snapshot(f.auth,'task',f.old.taskId);
  for(const event of replay.events)expect(publicValidator()('events/sender-event.schema.json',event)).toBe(true);
  const senderWitness=await signedBranchProof(f,'dispatch.createdFromReceipt');

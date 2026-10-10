@@ -1,18 +1,18 @@
 {
   "classification": "Actual disposable PostgreSQL/domain commands; authenticated-principal fixtures, public source HTTP injection/provisioning, actual signed HTTP reference receiver, schema-validated events; no native Shahn or physical custody claim",
-  "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-  "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+  "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+  "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
   "requests": {
     "refusal": {
       "schemaVersion": "1.0.0",
       "payloadVersion": "2.0.0",
-      "actionId": "a78b71a8-4fe8-4315-b88e-7ddd25e4ee22",
+      "actionId": "a6cd18fb-f9e1-4edd-9256-bc2852f781a8",
       "operationId": "outcome.recordRefusal",
       "context": {
         "kind": "device",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "accountId": "8289bd27-3d34-45ae-9ac5-959c68dc1e9b",
-        "deviceId": "39a6b0dd-633c-47d3-81f8-db6fe662ed06",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "accountId": "dd45faf3-6541-43b8-8341-2d9bfba892a6",
+        "deviceId": "2d4eaeab-42ce-4b15-95bc-7bd3dbaadd6e",
         "deviceGeneration": 1,
         "deviceSequence": 1
       },
@@ -26,9 +26,9 @@
         }
       },
       "payload": {
-        "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-        "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-        "attemptId": "f02e03f9-a30b-4381-9276-1ca618fef071",
+        "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+        "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+        "attemptId": "d6668cd9-4166-4b6a-ae5a-3704afb1850e",
         "expectedActivityRevision": 0,
         "expectedCurrentAttemptId": null,
         "expectedSourceRevision": 1,
@@ -49,13 +49,13 @@
     "offer": {
       "schemaVersion": "1.0.0",
       "payloadVersion": "1.0.0",
-      "actionId": "fd93af06-4e5f-4623-8c16-5bb214899377",
+      "actionId": "c7773790-b98e-4159-ae39-7fb5a72564eb",
       "operationId": "return.requestHandover",
       "context": {
         "kind": "device",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "accountId": "8289bd27-3d34-45ae-9ac5-959c68dc1e9b",
-        "deviceId": "39a6b0dd-633c-47d3-81f8-db6fe662ed06",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "accountId": "dd45faf3-6541-43b8-8341-2d9bfba892a6",
+        "deviceId": "2d4eaeab-42ce-4b15-95bc-7bd3dbaadd6e",
         "deviceGeneration": 1,
         "deviceSequence": 1
       },
@@ -69,13 +69,13 @@
         }
       },
       "payload": {
-        "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-        "sourceBranchId": "7f28a166-c1c3-46d0-9f46-02be11c87746",
+        "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+        "sourceBranchId": "fdeed791-cbc2-4da9-9fde-b437acdd8e74",
         "items": [
           {
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-            "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
-            "outcomeId": "eeeafe5f-42f6-4a37-9dff-056dd63413c5",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+            "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
+            "outcomeId": "c755c65f-f237-436e-9b0c-d068ecea6b6d",
             "sourceLineId": "pieces",
             "quantity": 3
           }
@@ -85,12 +85,12 @@
     "receipt": {
       "schemaVersion": "1.0.0",
       "payloadVersion": "1.0.0",
-      "actionId": "a818c021-afac-49de-ab97-0dd58806bd11",
+      "actionId": "af18dc2a-7975-4294-8f6b-38733dc47e17",
       "operationId": "return.confirmSubsetReceipt",
       "context": {
         "kind": "integration",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
       },
       "resources": {},
       "baseVersions": {},
@@ -102,11 +102,11 @@
         }
       },
       "payload": {
-        "requestId": "d0147f36-37cf-4502-a386-a11e2b59eae9",
-        "receivingBranchId": "7f28a166-c1c3-46d0-9f46-02be11c87746",
+        "requestId": "54419500-75b8-4949-89d9-95c537ca4e75",
+        "receivingBranchId": "fdeed791-cbc2-4da9-9fde-b437acdd8e74",
         "items": [
           {
-            "itemId": "9ecdba74-e22f-4cbb-9e71-0e02b9908aad",
+            "itemId": "83f2b502-c15a-4684-87e4-9cf766383add",
             "quantity": 2,
             "expectedRevision": 0
           }
@@ -116,12 +116,12 @@
     "redispatch": {
       "schemaVersion": "1.0.0",
       "payloadVersion": "2.0.0",
-      "actionId": "27ab08dc-eac9-4c54-91a6-af6118513bba",
+      "actionId": "7301f2e8-2afd-4327-969f-eaa84f940614",
       "operationId": "dispatch.createFromReceipt",
       "context": {
         "kind": "integration",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
       },
       "resources": {},
       "baseVersions": {},
@@ -134,7 +134,7 @@
       },
       "payload": {
         "externalId": "shipment-0",
-        "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+        "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
         "snapshot": {
           "lines": [
             {
@@ -178,8 +178,8 @@
         },
         "transfer": {
           "sourceBranchExternalId": "branch",
-          "transferId": "88391643-1c82-4298-a652-5e30052be935",
-          "destinationReceiptId": "7c32edbe-8ae3-4e3f-8b31-2c1b5fd4ebe6",
+          "transferId": "65e1a3ad-850b-4b9d-94bd-3f402b930c29",
+          "destinationReceiptId": "6ffe076c-90c2-47d0-a728-6c0e83afdbe7",
           "receivedAtDestination": true
         }
       }
@@ -187,13 +187,13 @@
     "bRefusal": {
       "schemaVersion": "1.0.0",
       "payloadVersion": "2.0.0",
-      "actionId": "acfa9a7e-9eba-482a-a922-1711af0e8fd5",
+      "actionId": "ccaa3701-34c8-49a3-922f-81649b79035d",
       "operationId": "outcome.recordRefusal",
       "context": {
         "kind": "device",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "accountId": "8289bd27-3d34-45ae-9ac5-959c68dc1e9b",
-        "deviceId": "39a6b0dd-633c-47d3-81f8-db6fe662ed06",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "accountId": "dd45faf3-6541-43b8-8341-2d9bfba892a6",
+        "deviceId": "2d4eaeab-42ce-4b15-95bc-7bd3dbaadd6e",
         "deviceGeneration": 1,
         "deviceSequence": 1
       },
@@ -207,9 +207,9 @@
         }
       },
       "payload": {
-        "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-        "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-        "attemptId": "b4e8b7a6-38d7-406d-96e1-304f898e897b",
+        "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+        "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+        "attemptId": "f535d6fa-b94f-42e5-9478-ab26825c4668",
         "expectedActivityRevision": 1,
         "expectedCurrentAttemptId": null,
         "expectedSourceRevision": 2,
@@ -231,10 +231,10 @@
   },
   "result": {
     "receipt": {
-      "actionId": "27ab08dc-eac9-4c54-91a6-af6118513bba",
-      "receiptId": "6e98d18f-3af3-4644-bed3-ebc23953686d",
-      "receivedAt": "2026-10-10T08:18:37.562Z",
-      "committedAt": "2026-10-10T08:18:37.591Z",
+      "actionId": "7301f2e8-2afd-4327-969f-eaa84f940614",
+      "receiptId": "8fafdbe8-33dd-4631-8c86-6b1974f32e3b",
+      "receivedAt": "2026-10-10T08:30:13.695Z",
+      "committedAt": "2026-10-10T08:30:13.720Z",
       "schemaVersion": "1.0.0",
       "businessStatus": "accepted",
       "evidenceStatus": "received",
@@ -246,10 +246,10 @@
       "tasks": [
         {
           "state": "unassigned",
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "externalId": "shipment-0",
           "sourceRevision": 2,
-          "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+          "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
           "assignmentRevision": 0
         }
       ]
@@ -261,7 +261,7 @@
           {
             "state": "unassigned",
             "latest": true,
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "driverId": null,
             "editable": true,
             "snapshot": {
@@ -309,13 +309,13 @@
             "receivedAt": null,
             "planningStatus": "not-requested",
             "sourceRevision": 2,
-            "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+            "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
             "driverExternalId": null,
             "planningEligible": false,
             "locationReadiness": "confirmed",
             "assignmentRevision": 0,
             "sourceDispatchCycleId": "B-return",
-            "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+            "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
           }
         ]
       }
@@ -325,17 +325,17 @@
     "items": [
       {
         "latest": true,
-        "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
-        "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-        "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+        "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
+        "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+        "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
         "externalId": "shipment-0",
         "sourceDispatchCycleId": "B-return",
         "sourceRevision": 2,
         "assignmentRevision": 1,
         "state": "held",
-        "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+        "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
         "driverExternalId": "policy-driver",
-        "receivedAt": "2026-10-10T08:18:37.764Z",
+        "receivedAt": "2026-10-10T08:30:13.870Z",
         "editable": false,
         "planningEligible": false,
         "planningStatus": "pending",
@@ -385,16 +385,16 @@
       {
         "latest": false,
         "previousDispatchCycleId": null,
-        "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-        "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+        "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+        "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
         "externalId": "shipment-0",
         "sourceDispatchCycleId": "cycle",
         "sourceRevision": 1,
         "assignmentRevision": 1,
         "state": "held",
-        "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+        "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
         "driverExternalId": "policy-driver",
-        "receivedAt": "2026-10-10T08:18:37.189Z",
+        "receivedAt": "2026-10-10T08:30:13.427Z",
         "editable": false,
         "planningEligible": false,
         "planningStatus": "pending",
@@ -449,32 +449,32 @@
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "1.0.0",
-        "eventId": "26ae68cf-82fc-44b5-a58e-384b7c7ff0c1",
+        "eventId": "2008f4a9-6d8d-48de-a895-8f663a149211",
         "eventType": "task.snapshotAccepted",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 1
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
         },
         "versions": {
           "sourceRevision": 1
         },
         "correlation": {
-          "actionId": "1157d963-89f6-4be9-b030-0e58f627083e"
+          "actionId": "db8f15c9-285b-4269-85b6-132ebaa47851"
         },
-        "committedAt": "2026-10-10T08:18:37.169Z",
+        "committedAt": "2026-10-10T08:30:13.416Z",
         "payload": {
           "task": {
             "state": "unassigned",
             "latest": true,
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "driverId": null,
             "editable": true,
             "snapshot": {
@@ -522,7 +522,7 @@
             "receivedAt": null,
             "planningStatus": "not-requested",
             "sourceRevision": 1,
-            "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+            "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
             "driverExternalId": null,
             "planningEligible": false,
             "locationReadiness": "confirmed",
@@ -530,39 +530,39 @@
             "sourceDispatchCycleId": "cycle",
             "previousDispatchCycleId": null
           },
-          "actionId": "1157d963-89f6-4be9-b030-0e58f627083e"
+          "actionId": "db8f15c9-285b-4269-85b6-132ebaa47851"
         }
       },
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "1.0.0",
-        "eventId": "216c7a9d-3ba5-4527-9e4c-6909ffe944d5",
+        "eventId": "100193a2-1455-45c7-a0b1-65605176b59f",
         "eventType": "assignment.received",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 2
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
         },
         "versions": {
           "sourceRevision": 1
         },
         "correlation": {
-          "actionId": "f26fbacd-e82f-422b-b48a-7383bc687288"
+          "actionId": "245ed64b-e21c-4fc5-8f09-170082b5f804"
         },
-        "committedAt": "2026-10-10T08:18:37.217Z",
+        "committedAt": "2026-10-10T08:30:13.449Z",
         "payload": {
           "task": {
             "state": "held",
             "latest": true,
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-            "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+            "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
             "editable": true,
             "snapshot": {
               "lines": [
@@ -606,10 +606,10 @@
               "sourceBranchExternalId": "branch"
             },
             "externalId": "shipment-0",
-            "receivedAt": "2026-10-10T08:18:37.189Z",
+            "receivedAt": "2026-10-10T08:30:13.427Z",
             "planningStatus": "pending",
             "sourceRevision": 1,
-            "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+            "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
             "driverExternalId": "policy-driver",
             "planningEligible": true,
             "locationReadiness": "confirmed",
@@ -617,48 +617,48 @@
             "sourceDispatchCycleId": "cycle",
             "previousDispatchCycleId": null
           },
-          "actionId": "f26fbacd-e82f-422b-b48a-7383bc687288"
+          "actionId": "245ed64b-e21c-4fc5-8f09-170082b5f804"
         }
       },
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "2.0.0",
-        "eventId": "715405f9-1b2f-4593-861b-6556cc7c7916",
+        "eventId": "09f17e63-f722-4ba5-b0e8-6cf41e66554e",
         "eventType": "outcome.recorded",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 3
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
-          "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
-          "attemptId": "f02e03f9-a30b-4381-9276-1ca618fef071",
-          "tripId": "6e032337-3f02-4635-90f1-f4bd1b724277"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
+          "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
+          "attemptId": "d6668cd9-4166-4b6a-ae5a-3704afb1850e",
+          "tripId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796"
         },
         "versions": {
           "sourceRevision": 1,
           "outcomeRevision": 1
         },
         "correlation": {
-          "actionId": "a78b71a8-4fe8-4315-b88e-7ddd25e4ee22",
+          "actionId": "a6cd18fb-f9e1-4edd-9256-bc2852f781a8",
           "sourceReference": {
-            "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+            "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
             "externalId": "shipment-0",
-            "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+            "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
           }
         },
-        "committedAt": "2026-10-10T08:18:37.491Z",
+        "committedAt": "2026-10-10T08:30:13.636Z",
         "payload": {
           "outcome": {
             "kind": "company",
             "time": {
-              "actionId": "a78b71a8-4fe8-4315-b88e-7ddd25e4ee22",
-              "recordedAt": "2026-10-10T08:18:37.470Z",
+              "actionId": "a6cd18fb-f9e1-4edd-9256-bc2852f781a8",
+              "recordedAt": "2026-10-10T08:30:13.618Z",
               "observation": {
                 "clock": {
                   "quality": "unknown"
@@ -679,21 +679,21 @@
                 "heldReturnRequired": 3
               }
             ],
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "arrival": null,
             "heading": null,
             "outcome": "refused",
-            "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-            "branchId": "7f28a166-c1c3-46d0-9f46-02be11c87746",
-            "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+            "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+            "branchId": "fdeed791-cbc2-4da9-9fde-b437acdd8e74",
+            "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
             "revision": 1,
-            "attemptId": "f02e03f9-a30b-4381-9276-1ca618fef071",
-            "outcomeId": "eeeafe5f-42f6-4a37-9dff-056dd63413c5",
+            "attemptId": "d6668cd9-4166-4b6a-ae5a-3704afb1850e",
+            "outcomeId": "c755c65f-f237-436e-9b0c-d068ecea6b6d",
             "rejection": {
               "code": "missing-pieces",
               "catalogVersion": "1.0.0"
             },
-            "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
+            "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
             "collection": {
               "goods": {
                 "currency": "EGP",
@@ -720,11 +720,11 @@
             "recordVersion": "2.0.0",
             "returnRequired": true,
             "sourceRevision": 1,
-            "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+            "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
             "sourceReference": {
-              "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+              "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
               "externalId": "shipment-0",
-              "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+              "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
             },
             "assignmentRevision": 1,
             "sourceDispatchCycleId": "cycle"
@@ -734,32 +734,32 @@
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "2.0.0",
-        "eventId": "2d91ebe9-5aae-49d3-9980-c8e1dd0c6bd0",
+        "eventId": "6dd4430a-9dc2-4baa-ae3f-0794bb4e18fd",
         "eventType": "dispatch.createdFromReceipt",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 4
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34"
         },
         "versions": {
           "sourceRevision": 2
         },
         "correlation": {
-          "actionId": "27ab08dc-eac9-4c54-91a6-af6118513bba"
+          "actionId": "7301f2e8-2afd-4327-969f-eaa84f940614"
         },
-        "committedAt": "2026-10-10T08:18:37.591Z",
+        "committedAt": "2026-10-10T08:30:13.719Z",
         "payload": {
           "task": {
             "state": "unassigned",
             "latest": true,
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "driverId": null,
             "editable": true,
             "snapshot": {
@@ -807,54 +807,54 @@
             "receivedAt": null,
             "planningStatus": "not-requested",
             "sourceRevision": 2,
-            "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+            "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
             "driverExternalId": null,
             "planningEligible": false,
             "locationReadiness": "confirmed",
             "assignmentRevision": 0,
             "sourceDispatchCycleId": "B-return",
-            "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+            "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
           },
-          "actionId": "27ab08dc-eac9-4c54-91a6-af6118513bba",
+          "actionId": "7301f2e8-2afd-4327-969f-eaa84f940614",
           "transfer": {
-            "transferId": "88391643-1c82-4298-a652-5e30052be935",
-            "destinationReceiptId": "7c32edbe-8ae3-4e3f-8b31-2c1b5fd4ebe6",
+            "transferId": "65e1a3ad-850b-4b9d-94bd-3f402b930c29",
+            "destinationReceiptId": "6ffe076c-90c2-47d0-a728-6c0e83afdbe7",
             "receivedAtDestination": true,
             "sourceBranchExternalId": "branch"
           },
-          "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+          "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
         }
       },
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "1.0.0",
-        "eventId": "59b5554f-aaf8-4be2-879f-45e7e8428e51",
+        "eventId": "73d69a5d-394c-4247-b6e6-bef9630c6b8b",
         "eventType": "assignment.received",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 5
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34"
         },
         "versions": {
           "sourceRevision": 2
         },
         "correlation": {
-          "actionId": "9fe09463-ed2e-40e4-a5bd-9e9b7da9b1cc"
+          "actionId": "8920d009-32b9-44fd-8fdc-d40674244179"
         },
-        "committedAt": "2026-10-10T08:18:37.785Z",
+        "committedAt": "2026-10-10T08:30:13.890Z",
         "payload": {
           "task": {
             "state": "held",
             "latest": true,
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-            "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+            "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
             "editable": false,
             "snapshot": {
               "lines": [
@@ -898,59 +898,59 @@
               "sourceBranchExternalId": "branch-b"
             },
             "externalId": "shipment-0",
-            "receivedAt": "2026-10-10T08:18:37.764Z",
+            "receivedAt": "2026-10-10T08:30:13.870Z",
             "planningStatus": "pending",
             "sourceRevision": 2,
-            "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+            "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
             "driverExternalId": "policy-driver",
             "planningEligible": true,
             "locationReadiness": "confirmed",
             "assignmentRevision": 1,
             "sourceDispatchCycleId": "B-return",
-            "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+            "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
           },
-          "actionId": "9fe09463-ed2e-40e4-a5bd-9e9b7da9b1cc"
+          "actionId": "8920d009-32b9-44fd-8fdc-d40674244179"
         }
       },
       {
         "schemaVersion": "1.0.0",
         "payloadVersion": "2.0.0",
-        "eventId": "9ace73c1-cf51-494a-9dce-81e5113a96b1",
+        "eventId": "120a1dd6-8307-4b2b-9e92-6acc1f16ce90",
         "eventType": "outcome.recorded",
         "eventKind": "transition",
-        "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-        "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+        "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+        "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
         "aggregate": {
           "type": "task",
-          "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "recipientSequence": 6
         },
         "resources": {
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-          "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
-          "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
-          "attemptId": "b4e8b7a6-38d7-406d-96e1-304f898e897b",
-          "tripId": "6e032337-3f02-4635-90f1-f4bd1b724277"
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+          "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
+          "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
+          "attemptId": "f535d6fa-b94f-42e5-9478-ab26825c4668",
+          "tripId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796"
         },
         "versions": {
           "sourceRevision": 2,
           "outcomeRevision": 2
         },
         "correlation": {
-          "actionId": "acfa9a7e-9eba-482a-a922-1711af0e8fd5",
+          "actionId": "ccaa3701-34c8-49a3-922f-81649b79035d",
           "sourceReference": {
-            "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+            "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
             "externalId": "shipment-0",
-            "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+            "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
           }
         },
-        "committedAt": "2026-10-10T08:18:37.853Z",
+        "committedAt": "2026-10-10T08:30:13.949Z",
         "payload": {
           "outcome": {
             "kind": "company",
             "time": {
-              "actionId": "acfa9a7e-9eba-482a-a922-1711af0e8fd5",
-              "recordedAt": "2026-10-10T08:18:37.838Z",
+              "actionId": "ccaa3701-34c8-49a3-922f-81649b79035d",
+              "recordedAt": "2026-10-10T08:30:13.937Z",
               "observation": {
                 "clock": {
                   "quality": "unknown"
@@ -971,22 +971,22 @@
                 "heldReturnRequired": 2
               }
             ],
-            "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+            "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
             "arrival": null,
             "heading": null,
             "outcome": "refused",
-            "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-            "branchId": "7bf397ab-b100-44d4-85f2-b5ab174e9f29",
-            "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+            "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+            "branchId": "30fa2868-31cb-487c-8af3-d668e8e26b45",
+            "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
             "revision": 2,
-            "attemptId": "b4e8b7a6-38d7-406d-96e1-304f898e897b",
-            "outcomeId": "d110592b-3a92-445d-86ed-5d63144c86ce",
+            "attemptId": "f535d6fa-b94f-42e5-9478-ab26825c4668",
+            "outcomeId": "81a9edca-248a-486b-b8a2-26bbe4555726",
             "rejection": {
               "code": "other",
               "detail": "لم يعد يحتاج المنتج",
               "catalogVersion": "1.0.0"
             },
-            "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
+            "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
             "collection": {
               "goods": {
                 "currency": "EGP",
@@ -1013,11 +1013,11 @@
             "recordVersion": "2.0.0",
             "returnRequired": true,
             "sourceRevision": 2,
-            "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+            "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
             "sourceReference": {
-              "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+              "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
               "externalId": "shipment-0",
-              "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+              "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
             },
             "assignmentRevision": 1,
             "sourceDispatchCycleId": "B-return"
@@ -1031,20 +1031,20 @@
   },
   "reconciliation": {
     "schemaVersion": "1.0.0",
-    "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
-    "recipientIntegrationId": "44a2541b-9512-448a-84b6-49a97460b27f",
+    "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
+    "recipientIntegrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a",
     "aggregate": {
       "type": "task",
-      "id": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1"
+      "id": "07f956ef-7aa8-556b-af0a-a0e5111ee101"
     },
     "throughSequence": 6,
-    "capturedAt": "2026-10-10T08:18:37.889Z",
+    "capturedAt": "2026-10-10T08:30:13.996Z",
     "state": {
       "task": {
         "state": "held",
         "latest": true,
-        "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
-        "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+        "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
+        "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
         "editable": false,
         "snapshot": {
           "lines": [
@@ -1088,23 +1088,23 @@
           "sourceBranchExternalId": "branch-b"
         },
         "externalId": "shipment-0",
-        "receivedAt": "2026-10-10T08:18:37.764Z",
+        "receivedAt": "2026-10-10T08:30:13.870Z",
         "planningStatus": "pending",
         "sourceRevision": 2,
-        "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+        "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
         "driverExternalId": "policy-driver",
         "planningEligible": true,
         "locationReadiness": "confirmed",
         "assignmentRevision": 1,
         "sourceDispatchCycleId": "B-return",
-        "previousDispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42"
+        "previousDispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b"
       },
       "outcomes": [
         {
           "kind": "company",
           "time": {
-            "actionId": "a78b71a8-4fe8-4315-b88e-7ddd25e4ee22",
-            "recordedAt": "2026-10-10T08:18:37.470Z",
+            "actionId": "a6cd18fb-f9e1-4edd-9256-bc2852f781a8",
+            "recordedAt": "2026-10-10T08:30:13.618Z",
             "observation": {
               "clock": {
                 "quality": "unknown"
@@ -1125,21 +1125,21 @@
               "heldReturnRequired": 3
             }
           ],
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "arrival": null,
           "heading": null,
           "outcome": "refused",
-          "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-          "branchId": "7f28a166-c1c3-46d0-9f46-02be11c87746",
-          "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+          "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+          "branchId": "fdeed791-cbc2-4da9-9fde-b437acdd8e74",
+          "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
           "revision": 1,
-          "attemptId": "f02e03f9-a30b-4381-9276-1ca618fef071",
-          "outcomeId": "eeeafe5f-42f6-4a37-9dff-056dd63413c5",
+          "attemptId": "d6668cd9-4166-4b6a-ae5a-3704afb1850e",
+          "outcomeId": "c755c65f-f237-436e-9b0c-d068ecea6b6d",
           "rejection": {
             "code": "missing-pieces",
             "catalogVersion": "1.0.0"
           },
-          "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
+          "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
           "collection": {
             "goods": {
               "currency": "EGP",
@@ -1166,11 +1166,11 @@
           "recordVersion": "2.0.0",
           "returnRequired": true,
           "sourceRevision": 1,
-          "dispatchCycleId": "da19de52-eda9-4380-9eeb-eda76c496e42",
+          "dispatchCycleId": "8f528f4d-6fb1-4ba4-b83e-71bf40e19d0b",
           "sourceReference": {
-            "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+            "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
             "externalId": "shipment-0",
-            "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+            "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
           },
           "assignmentRevision": 1,
           "sourceDispatchCycleId": "cycle"
@@ -1178,8 +1178,8 @@
         {
           "kind": "company",
           "time": {
-            "actionId": "acfa9a7e-9eba-482a-a922-1711af0e8fd5",
-            "recordedAt": "2026-10-10T08:18:37.838Z",
+            "actionId": "ccaa3701-34c8-49a3-922f-81649b79035d",
+            "recordedAt": "2026-10-10T08:30:13.937Z",
             "observation": {
               "clock": {
                 "quality": "unknown"
@@ -1200,22 +1200,22 @@
               "heldReturnRequired": 2
             }
           ],
-          "taskId": "51e8e1c4-0fa0-55e6-a4cf-c808d6f670b1",
+          "taskId": "07f956ef-7aa8-556b-af0a-a0e5111ee101",
           "arrival": null,
           "heading": null,
           "outcome": "refused",
-          "roundId": "6e032337-3f02-4635-90f1-f4bd1b724277",
-          "branchId": "7bf397ab-b100-44d4-85f2-b5ab174e9f29",
-          "driverId": "ad7f5920-4cb9-40bb-bbc3-a8d5e2f46930",
+          "roundId": "abefadab-2fe0-4ab6-8dcd-02af1f2fc796",
+          "branchId": "30fa2868-31cb-487c-8af3-d668e8e26b45",
+          "driverId": "8693646f-970d-4a18-97d8-61a70d87eafb",
           "revision": 2,
-          "attemptId": "b4e8b7a6-38d7-406d-96e1-304f898e897b",
-          "outcomeId": "d110592b-3a92-445d-86ed-5d63144c86ce",
+          "attemptId": "f535d6fa-b94f-42e5-9478-ab26825c4668",
+          "outcomeId": "81a9edca-248a-486b-b8a2-26bbe4555726",
           "rejection": {
             "code": "other",
             "detail": "لم يعد يحتاج المنتج",
             "catalogVersion": "1.0.0"
           },
-          "workdayId": "e68c2738-3fc6-49be-bcee-ac680270a3a6",
+          "workdayId": "53215d94-c7ff-4724-a158-af6e97613723",
           "collection": {
             "goods": {
               "currency": "EGP",
@@ -1242,11 +1242,11 @@
           "recordVersion": "2.0.0",
           "returnRequired": true,
           "sourceRevision": 2,
-          "dispatchCycleId": "8b426388-d2be-426a-a09d-193e19dea342",
+          "dispatchCycleId": "79502189-b3de-4dc5-ae67-8f705625ca34",
           "sourceReference": {
-            "tenantId": "50a07a69-cfdf-4ee1-bba5-0085975a611d",
+            "tenantId": "110dae35-78eb-41e5-9dcd-baab4d21db15",
             "externalId": "shipment-0",
-            "integrationId": "44a2541b-9512-448a-84b6-49a97460b27f"
+            "integrationId": "9950ec3c-3ece-4a13-bec0-6562762d552a"
           },
           "assignmentRevision": 1,
           "sourceDispatchCycleId": "B-return"
@@ -1263,17 +1263,17 @@
     "classification": "Actual signed local HTTP, separate receiver process and durable database; reference consumer only",
     "events": [
       {
-        "eventId": "715405f9-1b2f-4593-861b-6556cc7c7916",
+        "eventId": "09f17e63-f722-4ba5-b0e8-6cf41e66554e",
         "eventType": "outcome.recorded",
         "payloadVersion": "2.0.0"
       },
       {
-        "eventId": "2d91ebe9-5aae-49d3-9980-c8e1dd0c6bd0",
+        "eventId": "6dd4430a-9dc2-4baa-ae3f-0794bb4e18fd",
         "eventType": "dispatch.createdFromReceipt",
         "payloadVersion": "2.0.0"
       },
       {
-        "eventId": "9ace73c1-cf51-494a-9dce-81e5113a96b1",
+        "eventId": "120a1dd6-8307-4b2b-9e92-6acc1f16ce90",
         "eventType": "outcome.recorded",
         "payloadVersion": "2.0.0"
       }

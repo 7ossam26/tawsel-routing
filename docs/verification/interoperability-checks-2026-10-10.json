@@ -8,11 +8,6 @@
       "privateLogSha256": "0d021ce13e8bc2a39d51febf86ad9e78f4acf2522ed9aee050e7d9e46b01cb30"
     },
     {
-      "command": "interop database/signed receiver suite",
-      "result": "20 passed; all four v2 variants signed across reason and branch fixtures",
-      "privateLogSha256": "a0f6f70d8799ffb3ff28f0606e9a645b01173f7d2d341a827018b5bd834d472f"
-    },
-    {
       "command": "reason signed identity recording",
       "result": "1 passed (focused rerun; 19 unselected tests)",
       "privateLogSha256": "b973d0b4cd1effb897fd81bc411387dfde08367d075c3e91c093889005418826"
@@ -48,6 +43,16 @@
       "privateLogSha256": "58a444a36803a0d779edee032dbc1a0c763fd6a09806aa322c458eab8297f73b"
     },
     {
+      "command": "canonical generation",
+      "result": "34 schemas; 279 valid / 179 invalid fixtures; 189 catalog entries",
+      "privateLogSha256": "25c7120612a33269aeab97dff14b2a6467add466f0b0c7e6bf041e6210c1f803"
+    },
+    {
+      "command": "final interoperability and recovery suite",
+      "result": "24 passed; held/departed, real dropped committed response, already-allocated and independent returned-dispatch race included",
+      "privateLogSha256": "f6fa85abc41ad9d6c861e408c136c52faf98d45b8447b1ebac2624c813718980"
+    },
+    {
       "command": "final typecheck",
       "result": "passed",
       "privateLogSha256": "3f8709c68162b1c265f36976c94863e676ce146cdc9b112549bd1a58fad22c72"
@@ -56,11 +61,6 @@
       "command": "final publisher lint",
       "result": "passed",
       "privateLogSha256": "f83186c50b95aa695b291b60b3c42e41926db1e45ff14f44c6d40127a8672c1a"
-    },
-    {
-      "command": "canonical generation",
-      "result": "34 schemas; 279 valid / 179 invalid fixtures; 189 catalog entries",
-      "privateLogSha256": "25c7120612a33269aeab97dff14b2a6467add466f0b0c7e6bf041e6210c1f803"
     }
   ],
   "earlierFailures": "Resolved: new fixture keywords, migration inventory/table expectations, master-branch scope expectation, pending deferred-FK migration DDL, unknown payload fixture, development duplicate reads and production browser prerequisite race. No failed acceptance was waived.",
@@ -77,5 +77,10 @@
     "manifest": "docs/erp/releases/release-manifest-2026-10-03.json",
     "manifestOriginalByteSha256": "2095f9ecaf0aca1bd70546070060c95263c0541c80789b9aa466399836bd2b20",
     "rule": "Original byte hashes, no line-ending normalization; owner archive and earlier dated proof retained."
-  }
+  },
+  "verificationOrder": "Full check passed 1180 tests before 13 additional canonical fixtures and four new recovery/concurrency tests. Final affected subsets passed 488 contract/queued-action/release tests and 24 interoperability tests, followed by final lint/typecheck. Same-source public clean-consumer proof is generated separately after source pinning.",
+  "recoveryProofs": [
+    "docs/verification/interoperability-lost-response-2026-10-10.json",
+    "docs/verification/interoperability-return-race-2026-10-10.json"
+  ]
 }
