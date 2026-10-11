@@ -1,3 +1,4 @@
+import {authorizeRetainedExecution} from '../current/historical-access.js';
 import {appendOutcome} from './persistence.js';
 import {requireInterop} from '../provisioning/interop.js';
 import {executionFence} from '../devices/fence.js';
@@ -42,7 +43,7 @@ export class Outcomes {
    a.assertScope({tenantId:device.tenantId,accountId:device.accountId});
    let r:RoundRow,accepted:OutcomeRecord,before:Awaited<ReturnType<typeof activity>>,activityRevision:number,time:ActionTime;
    return executeCommandInTransaction(tx,a.commandScope,c,{
-    async authorize(){await authorize(tx,a);r=await round(tx,a,p.roundId);},
+    async authorize(){await authorize(tx,a);r=await round(tx,a,p.roundId);await authorizeRetainedExecution(tx,a,c.actionId);},
     async writeDomain(){try{
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driverId])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
@@ -124,7 +125,7 @@ export class Outcomes {
    await authorize(tx,a);const result=await getCommandResult(tx,a.commandScope,actionId);if(!result)return {actionId,status:'pending'};
    if(!Object.hasOwn(operations,result.operationId)||result.summary.driverId!==ownDriver(a))throw new AccessDenied(true);
    await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:ownDriver(a)}]);await round(tx,a,String(result.summary.roundId));
-   requireOutcome('ActionResult',result);return {actionId,status:result.receipt.businessStatus as 'accepted'|'rejected'|'review-required',result:result as components['schemas']['OutcomeActionResult']};
+   await authorizeRetainedExecution(tx,a,actionId);requireOutcome('ActionResult',result);return {actionId,status:result.receipt.businessStatus as 'accepted'|'rejected'|'review-required',result:result as components['schemas']['OutcomeActionResult']};
   });
  }
 }

@@ -1,3 +1,4 @@
+import {authorizeRetainedExecution} from '../current/historical-access.js';
 import {randomUUID} from 'node:crypto';
 import {requireInterop} from '../provisioning/interop.js';
 import {compatibleEvidenceDependencies} from './evidence-dependencies.js';
@@ -32,7 +33,7 @@ export class Corrections {
    a.assertScope({tenantId:device.tenantId,accountId:device.accountId});
    let evidence:ActionEnvelope|null=null,correction:Correction,state:Awaited<ReturnType<typeof correctionState>>,activityRevision=0,before:Awaited<ReturnType<typeof activity>>=null;
    const authorize=async()=>{
-    a.requireCapability(correctionPolicy);await ownRound(tx,a,p.roundId);
+    a.requireCapability(correctionPolicy);await ownRound(tx,a,p.roundId);await authorizeRetainedExecution(tx,a,c.actionId);
     if(adoption){
      const original=await getCommandResult(tx,a.commandScope,p.evidenceActionId);
      if(!original||original.summary.driverId!==driver||original.summary.roundId!==p.roundId)throw new AccessDenied(true);
@@ -137,6 +138,7 @@ export class Corrections {
    const driver=ownDriver(a),result=await getCommandResult(tx,a.commandScope,actionId);if(!result)return {actionId,status:'pending' as const};
    if(!['outcome.correct','evidence.adoptCompatible'].includes(result.operationId)||result.summary.driverId!==driver)throw new AccessDenied(true);
    await lockDriver(tx,a.context.tenantId,driver);await ownRound(tx,a,String(result.summary.roundId));
+   a.requireCapability(correctionPolicy);await authorizeRetainedExecution(tx,a,actionId);
    return {actionId,status:result.receipt.businessStatus,result};
   });
  }

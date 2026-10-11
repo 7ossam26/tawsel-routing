@@ -76,7 +76,8 @@ export async function actions(tx:Transaction,a:AccessSession,rows:TaskRow[]):Pro
  UNION SELECT h.source_id,h.action_id FROM tawsel.location_history h JOIN visible v ON v.task=h.task_id AND (h.snapshot->>'sourceRevision')::bigint<=v.revision
   WHERE h.tenant_id=$1 AND (v.cycle IS NULL OR EXISTS(SELECT 1 FROM tawsel.b2b_source_snapshots s JOIN tawsel.b2b_dispatch_cycles c ON c.tenant_id=s.tenant_id AND c.source_dispatch_cycle_id=s.payload->>'sourceDispatchCycleId' WHERE c.dispatch_cycle_id=v.cycle AND s.tenant_id=h.tenant_id AND s.task_id=h.task_id AND s.source_revision=(h.snapshot->>'sourceRevision')::bigint))
  UNION SELECT h.source_id,h.action_id FROM tawsel.current_activity_history h JOIN tawsel.round_admissions d ON d.tenant_id=h.tenant_id AND d.round_id=h.round_id
-  AND (d.task_id::text=h.current_activity->>'taskId' OR d.task_id::text=h.previous_activity->>'taskId')
+  AND ((d.task_id::text=h.current_activity->>'taskId' AND d.attempt_id::text=h.current_activity->>'attemptId')
+    OR (d.task_id::text=h.previous_activity->>'taskId' AND d.attempt_id::text=h.previous_activity->>'attemptId'))
   JOIN visible v ON v.task=d.task_id AND v.cycle IS NOT DISTINCT FROM d.dispatch_cycle_id AND v.driver=d.driver_id WHERE h.tenant_id=$1
  UNION SELECT h.source_id,h.action_id FROM tawsel.task_eligibility_history h JOIN visible v ON v.task=h.task_id
   JOIN tawsel.planning_attempts p ON p.tenant_id=h.tenant_id AND p.attempt_id::text=h.record->>'attemptId' AND p.dispatch_cycle_id IS NOT DISTINCT FROM v.cycle WHERE h.tenant_id=$1

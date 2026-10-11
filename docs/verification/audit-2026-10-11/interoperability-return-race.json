@@ -1,0 +1,280 @@
+{
+  "classification": "Actual isolated PostgreSQL with independent competing connections, observed lock blocking and one committed winner; no native ERP atomic custody claim",
+  "requests": {
+    "first": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "af2da6b9-4d82-4f7a-874d-20e42ab43050",
+      "operationId": "dispatch.createFromReceipt",
+      "context": {
+        "kind": "integration",
+        "tenantId": "a3b3b1e1-8a5f-4740-9bf1-a68e9e15d516",
+        "integrationId": "ce41edcf-9b08-4c24-8ad9-f7fe171ff162"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-0",
+        "previousDispatchCycleId": "c97508ff-edb1-4f52-9361-6c60f70be5c4",
+        "snapshot": {
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "quantity": 2,
+              "description": "قطع",
+              "sourceLineId": "pieces"
+            }
+          ],
+          "priority": "ordinary",
+          "totalDue": {
+            "amountMinor": 20000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "allocation": "exact-outstanding-per-unit",
+          "externalId": "shipment-0",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            }
+          },
+          "shippingDue": {
+            "amountMinor": 0,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "sourceRevision": 2,
+          "splittingAllowed": true,
+          "sourceDispatchCycleId": "B-return",
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch-b"
+        },
+        "transfer": {
+          "sourceBranchExternalId": "branch",
+          "transferId": "de2d1e56-41dc-4173-b529-0d71582da0dc",
+          "destinationReceiptId": "66b4a52d-8f1a-4c98-811c-a5a3c07dd075",
+          "receivedAtDestination": true
+        }
+      }
+    },
+    "rival": {
+      "schemaVersion": "1.0.0",
+      "payloadVersion": "2.0.0",
+      "actionId": "9ba30d57-5500-4179-84bc-fd56bf00f2df",
+      "operationId": "dispatch.createFromReceipt",
+      "context": {
+        "kind": "integration",
+        "tenantId": "a3b3b1e1-8a5f-4740-9bf1-a68e9e15d516",
+        "integrationId": "ce41edcf-9b08-4c24-8ad9-f7fe171ff162"
+      },
+      "resources": {},
+      "baseVersions": {},
+      "dependsOnActionIds": [],
+      "observation": {
+        "observedAt": null,
+        "clock": {
+          "quality": "unknown"
+        }
+      },
+      "payload": {
+        "externalId": "shipment-0",
+        "previousDispatchCycleId": "c97508ff-edb1-4f52-9361-6c60f70be5c4",
+        "snapshot": {
+          "lines": [
+            {
+              "unitDue": {
+                "currency": "EGP",
+                "exponent": 2,
+                "amountMinor": 10000
+              },
+              "quantity": 2,
+              "description": "قطع",
+              "sourceLineId": "pieces"
+            }
+          ],
+          "priority": "ordinary",
+          "totalDue": {
+            "amountMinor": 20000,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "allocation": "exact-outstanding-per-unit",
+          "externalId": "shipment-0",
+          "destination": {
+            "kind": "confirmed-pin",
+            "coordinates": {
+              "latitude": 30.05,
+              "longitude": 31.24
+            }
+          },
+          "shippingDue": {
+            "amountMinor": 0,
+            "currency": "EGP",
+            "exponent": 2
+          },
+          "recipientName": "عميل بنفس العنوان",
+          "recipientPhone": "01012345678",
+          "sourceRevision": 2,
+          "splittingAllowed": true,
+          "sourceDispatchCycleId": "B-return-rival",
+          "expectedSourceRevision": 1,
+          "sourceBranchExternalId": "branch-b"
+        },
+        "transfer": {
+          "sourceBranchExternalId": "branch",
+          "transferId": "de2d1e56-41dc-4173-b529-0d71582da0dc",
+          "destinationReceiptId": "66b4a52d-8f1a-4c98-811c-a5a3c07dd075",
+          "receivedAtDestination": true
+        }
+      }
+    }
+  },
+  "results": {
+    "accepted": {
+      "receipt": {
+        "actionId": "af2da6b9-4d82-4f7a-874d-20e42ab43050",
+        "receiptId": "cead6751-06a8-4b5c-82c4-210d1ed85c92",
+        "receivedAt": "2026-10-11T18:37:23.525Z",
+        "committedAt": "2026-10-11T18:37:23.591Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "accepted",
+        "evidenceStatus": "received",
+        "resourceVersions": {}
+      },
+      "operationId": "dispatch.createFromReceipt",
+      "retention": "full",
+      "summary": {
+        "tasks": [
+          {
+            "state": "unassigned",
+            "taskId": "79eb9453-5fd4-5df3-a89c-0164f039c89c",
+            "externalId": "shipment-0",
+            "sourceRevision": 2,
+            "dispatchCycleId": "86071abf-4714-4210-9c28-0008ea0411ec",
+            "assignmentRevision": 0
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "tasks": [
+            {
+              "state": "unassigned",
+              "latest": true,
+              "taskId": "79eb9453-5fd4-5df3-a89c-0164f039c89c",
+              "driverId": null,
+              "editable": true,
+              "snapshot": {
+                "lines": [
+                  {
+                    "unitDue": {
+                      "currency": "EGP",
+                      "exponent": 2,
+                      "amountMinor": 10000
+                    },
+                    "quantity": 2,
+                    "description": "قطع",
+                    "sourceLineId": "pieces"
+                  }
+                ],
+                "priority": "ordinary",
+                "totalDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 20000
+                },
+                "allocation": "exact-outstanding-per-unit",
+                "externalId": "shipment-0",
+                "destination": {
+                  "kind": "confirmed-pin",
+                  "coordinates": {
+                    "latitude": 30.05,
+                    "longitude": 31.24
+                  }
+                },
+                "shippingDue": {
+                  "currency": "EGP",
+                  "exponent": 2,
+                  "amountMinor": 0
+                },
+                "recipientName": "عميل بنفس العنوان",
+                "recipientPhone": "01012345678",
+                "sourceRevision": 2,
+                "splittingAllowed": true,
+                "sourceDispatchCycleId": "B-return",
+                "expectedSourceRevision": 1,
+                "sourceBranchExternalId": "branch-b"
+              },
+              "externalId": "shipment-0",
+              "receivedAt": null,
+              "planningStatus": "not-requested",
+              "sourceRevision": 2,
+              "dispatchCycleId": "86071abf-4714-4210-9c28-0008ea0411ec",
+              "driverExternalId": null,
+              "planningEligible": false,
+              "locationReadiness": "confirmed",
+              "assignmentRevision": 0,
+              "sourceDispatchCycleId": "B-return",
+              "previousDispatchCycleId": "c97508ff-edb1-4f52-9361-6c60f70be5c4"
+            }
+          ]
+        }
+      }
+    },
+    "rejected": {
+      "receipt": {
+        "problem": {
+          "code": "idempotency_conflict",
+          "type": "https://schemas.tawsel.invalid/problems/idempotency-conflict",
+          "title": "Source command rejected",
+          "detail": "Destination receipt is already allocated to a dispatch cycle.",
+          "status": 409,
+          "actionId": "9ba30d57-5500-4179-84bc-fd56bf00f2df",
+          "retryable": false,
+          "correlationId": "b7fd9e7f-5440-432c-bcbd-af86da03fecd"
+        },
+        "actionId": "9ba30d57-5500-4179-84bc-fd56bf00f2df",
+        "receiptId": "2eb9f821-ddb3-453d-89fc-fd2602fd13dd",
+        "receivedAt": "2026-10-11T18:37:23.580Z",
+        "schemaVersion": "1.0.0",
+        "businessStatus": "rejected",
+        "evidenceStatus": "received"
+      },
+      "operationId": "dispatch.createFromReceipt",
+      "retention": "full",
+      "summary": {
+        "code": "idempotency_conflict"
+      },
+      "response": {
+        "status": 409,
+        "body": {
+          "code": "idempotency_conflict",
+          "type": "https://schemas.tawsel.invalid/problems/idempotency-conflict",
+          "title": "Source command rejected",
+          "detail": "Destination receipt is already allocated to a dispatch cycle.",
+          "status": 409,
+          "actionId": "9ba30d57-5500-4179-84bc-fd56bf00f2df",
+          "retryable": false,
+          "correlationId": "b7fd9e7f-5440-432c-bcbd-af86da03fecd"
+        }
+      }
+    }
+  },
+  "allocatedQuantity": 2
+}

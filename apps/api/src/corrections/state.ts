@@ -1,3 +1,4 @@
+import {authorizeHistoricalAttempt} from '../current/historical-access.js';
 import {deliveryFor} from '../outcomes/delivery.js';
 import type {Pool} from 'pg';
 import {AccessDenied,withAccess,type AccessSession,type AuthenticatedPrincipal,type ResourcePolicy} from '../access/service.js';
@@ -27,6 +28,7 @@ export async function correctionState(tx:Transaction,a:AccessSession,attemptId:s
  const admission=(await tx.query(`SELECT d.*,p.latest FROM tawsel.round_admissions d JOIN tawsel.planning_attempts p USING(tenant_id,attempt_id)
  WHERE d.tenant_id=$1 AND d.driver_id=$2 AND d.attempt_id=$3 ORDER BY d.admitted_at DESC LIMIT 1`,[a.context.tenantId,ownDriver(a),attemptId])).rows[0];
  if(!admission)throw new AccessDenied(true);
+ await authorizeHistoricalAttempt(tx,a,attemptId);
  const round=await ownRound(tx,a,admission.round_id);
  const latest=(await tx.query<RoundRow>('SELECT * FROM tawsel.rounds WHERE tenant_id=$1 AND driver_id=$2 ORDER BY device_generation DESC LIMIT 1',[round.tenant_id,round.driver_id])).rows[0]!;
  const effective=(await tx.query<{record:OutcomeRecord}>('SELECT record FROM tawsel.delivery_outcomes WHERE tenant_id=$1 AND attempt_id=$2 ORDER BY revision DESC LIMIT 1',[round.tenant_id,attemptId])).rows[0]?.record??null;

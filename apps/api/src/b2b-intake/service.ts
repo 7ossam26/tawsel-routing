@@ -255,6 +255,7 @@ async function saveTransfer(tx:Transaction,b:ServiceBinding,c:ActionEnvelope,don
  await tx.query(`INSERT INTO tawsel.dispatch_transfer_assertions(tenant_id,integration_id,task_id,dispatch_cycle_id,previous_dispatch_cycle_id,source_branch_id,destination_branch_id,transfer_id,destination_receipt_id,assertion,source_id,action_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$2,$11)`,[...key(b),donor.task_id,id,donor.dispatch_cycle_id,donor.branch_id,destination,transfer.transferId,transfer.destinationReceiptId,{...transfer,lines:(c.payload.snapshot as Snapshot).lines},c.actionId]);
 }
 function compatibleLines(old:Snapshot,next:Snapshot,whole:boolean){
+ if(new Set(next.lines.map(l=>l.sourceLineId)).size!==next.lines.length)fail('quantity_exceeded','Source line identities must be unique.');
  if(whole&&next.lines.length!==old.lines.length)fail('quantity_exceeded','Relocation must preserve every shipment line.');
  for(const line of next.lines){const original=old.lines.find(l=>l.sourceLineId===line.sourceLineId);if(!original||line.description!==original.description||canonicalJson(line.unitDue)!==canonicalJson(original.unitDue)||(whole&&line.quantity!==original.quantity))fail('quantity_exceeded','Preserve exact source line identity, captured unit due and whole quantities.');}
 }

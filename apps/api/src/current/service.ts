@@ -1,3 +1,4 @@
+import {authorizeRetainedExecution} from '../current/historical-access.js';
 import {deliveryFor} from '../outcomes/delivery.js';
 import {branchActivity} from '../branch/state.js';
 import {executionFence} from '../devices/fence.js';
@@ -44,6 +45,7 @@ export class CurrentActivity {
      // Visibility is rechecked even for a retained successful response.
      const rows=(await tx.query('SELECT tenant_id,driver_id,branch_id,integration_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driverId])).rows;
      for(const row of rows)a.requireResource(own,row);
+     await authorizeRetainedExecution(tx,a,c.actionId);
     },
     async writeDomain(){try{
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driverId])).rows;
@@ -137,7 +139,7 @@ export class CurrentActivity {
    if(!result)return {actionId,status:'pending'};
    if(!['current.selectHeading','current.recordArrival','current.correctOrigin'].includes(result.operationId)||result.summary.driverId!==driverId)throw new AccessDenied(true);
    await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driverId}]);await round(tx,a,String(result.summary.roundId));inputAccess(a,await snapshot(tx,await planningState(tx,a.context.tenantId,driverId)));
-   requireCurrent('ActionResult',result);return {actionId,status:result.receipt.businessStatus as 'accepted'|'rejected'|'review-required',result:result as components['schemas']['CurrentActionResult']};
+   await authorizeRetainedExecution(tx,a,actionId);requireCurrent('ActionResult',result);return {actionId,status:result.receipt.businessStatus as 'accepted'|'rejected'|'review-required',result:result as components['schemas']['CurrentActionResult']};
   });
  }
 }

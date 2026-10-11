@@ -2,9 +2,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    // Bound process startup on hosts also running PostgreSQL and the local issuer.
+    // Bound concurrent database catalog/migration work on hosts also running PostgreSQL and the local issuer.
     // Transaction/race tests still create their own independent connections.
-    maxWorkers: 4,
+    maxWorkers: 2,
     projects: [
       {
         extends: true,

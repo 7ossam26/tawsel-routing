@@ -3,6 +3,7 @@ import {execFileSync} from 'node:child_process';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {sha256,verifyRelease} from './verify-erp-release.mjs';
+import {gitSourceIdentity} from './release-source-identity.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 process.chdir(root);
 const target=resolve(root,'dist/erp-handoff'),manifestPath='docs/erp/release-manifest.json';
@@ -11,18 +12,19 @@ const read=path=>readFile(resolve(root,path));
 const json=async path=>JSON.parse(await read(path));
 async function walk(path){const result=[];for(const entry of (await readdir(resolve(root,path),{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){if(entry.isSymbolicLink())throw new Error(`Unexpected source symlink: ${path}/${entry.name}`);if(entry.isDirectory())result.push(...await walk(`${path}/${entry.name}`));else result.push(`${path}/${entry.name}`);}return result;}
 const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024}).trim();
-const sourcePaths=()=>[...new Set(git('ls-files','--cached','--others','--exclude-standard').split('\n'))].filter(p=>/^(apps\/|packages\/|db\/|scripts\/|identity\/|deploy\/|contracts\/|tests\/|package(?:-lock)?\.json$|.*config\.(?:ts|js|json)$)/.test(p)&&!/(?:\/dist\/|\/ui-dist\/|\.md$|\.zip$|\.png$)/.test(p)).sort();
-async function identity(){const files=[];for(const path of sourcePaths())files.push({path,sha256:sha256(await read(path))});return {baseCommit:git('rev-parse','HEAD'),sourceSha256:sha256(JSON.stringify(files)),files};}
+const identity=()=>gitSourceIdentity(root);
 if(process.argv[2]==='check'){
  const result=await verifyRelease(target),recorded=await json(manifestPath),current=await identity();
- if(current.sourceSha256!==recorded.release.sourceSha256||current.baseCommit!==recorded.release.baseCommit)throw new Error('Source changed since package; rebuild and repeat affected evidence');
+ if(current.sourceSha256!==recorded.release.sourceSha256)throw new Error('Source changed since package; rebuild and repeat affected evidence');
+ git('merge-base','--is-ancestor',recorded.release.baseCommit,'HEAD');
  // The tracked canonical manifest and all packaged source inputs must still agree.
  if((await read(manifestPath)).toString()!==await readFile(resolve(target,manifestPath),'utf8'))throw new Error('Tracked manifest differs from bundle');
- for(const entry of recorded.artifacts)if(entry.source){const bytes=await read(entry.source);if(sha256(bytes)!==entry.sha256)throw new Error(`Source artifact drift: ${entry.source}`);}
- const proof=await json('docs/verification/integration-local-2026-10-10.json');
+ for(const entry of recorded.artifacts)if(entry.source){const bytes=current.files.some(f=>f.path===entry.source)?execFileSync('git',['show',`${recorded.release.baseCommit}:${entry.source}`],{cwd:root,maxBuffer:32*1024*1024}):await read(entry.source);if(sha256(bytes)!==entry.sha256)throw new Error(`Source artifact drift: ${entry.source}`);}
+ const proof=await json(recorded.consumerProofPath);
  if(proof.status!=='passed'||proof.sourceSha256!==result.sourceSha256||proof.consumerRuntimeSha256!==result.consumerRuntimeSha256)throw new Error('Clean public consumer proof missing/stale for final code/runtime');
  console.log(JSON.stringify({...result,cleanConsumerProof:'passed'},null,2));
 }else if(process.argv[2]==='build'){
+ const source=await identity();
  // Only the fixed generated handoff directory is replaced.
  if(target!==resolve(root,'dist','erp-handoff'))throw new Error('Invalid generated target');
  await rm(target,{recursive:true,force:true});await mkdir(target,{recursive:true});
@@ -35,15 +37,14 @@ if(process.argv[2]==='check'){
  paths.add('docs/erp/planning-pack/07-ERP-DISCOVERY-AND-CHANGE-CONTROL.md');
  paths.add('scripts/integration-install.mjs');paths.add('scripts/integration-install.ps1');paths.add('scripts/interoperability-ledger.mjs');
  for(const path of await walk('dist/erp-reference'))if(!path.includes('/node_modules/'))paths.add(path);
- for(const path of ['master-plan.md','TAWSEL-DISCOVERY-LOG.md','DESIGN.md','STACK-CONTEXT.md','TAWSEL-ENGINE-CONTEXT.md','.env.example','packages/api-client/package.json','packages/api-client/README.md','apps/mock-erp/package.json','apps/mock-erp/README.md','apps/mock-erp/config.example.json','scripts/verify-erp-release.mjs','scripts/erp-release.mjs','scripts/build-receiver-bundle.mjs','scripts/handoff-audit.mjs'])paths.add(path);
+ for(const path of ['master-plan.md','TAWSEL-DISCOVERY-LOG.md','DESIGN.md','STACK-CONTEXT.md','TAWSEL-ENGINE-CONTEXT.md','.env.example','packages/api-client/package.json','packages/api-client/README.md','apps/mock-erp/package.json','apps/mock-erp/README.md','apps/mock-erp/config.example.json','scripts/verify-erp-release.mjs','scripts/erp-release.mjs','scripts/release-source-identity.mjs','scripts/build-receiver-bundle.mjs','scripts/handoff-audit.mjs'])paths.add(path);
  // Include only checked-in public images/results, never Playwright traces or private logs.
  for(const path of git('ls-files','output/playwright').split('\n'))if(/\.(png|json)$/.test(path))paths.add(path);
  const artifacts=[];
  for(const path of [...paths].sort()){
   if(/(?:^|\/)(?:node_modules|\.local|\.git)(?:\/|$)/.test(path)||/\.(?:env|log|zip|sql\.gz)$/.test(path))throw new Error(`Private/unexpected package input: ${path}`);
-  const bytes=await read(path),output=resolve(target,path);await mkdir(dirname(output),{recursive:true});await writeFile(output,bytes);artifacts.push({path,bytes:bytes.length,sha256:sha256(bytes),source:path});
+  const bytes=source.files.some(f=>f.path===path)?execFileSync('git',['show',`${source.baseCommit}:${path}`],{cwd:root,maxBuffer:32*1024*1024}):await read(path),output=resolve(target,path);await mkdir(dirname(output),{recursive:true});await writeFile(output,bytes);artifacts.push({path,bytes:bytes.length,sha256:sha256(bytes),source:path});
  }
- const source=await identity();
  const generated={
   'metadata/source-identity.json':JSON.stringify(source,null,2)+'\n',
   'metadata/workspace-package.json':(await read('package.json')).toString(),
@@ -52,7 +53,7 @@ if(process.argv[2]==='check'){
  for(const [path,content] of Object.entries(generated)){const bytes=Buffer.from(content);await mkdir(dirname(resolve(target,path)),{recursive:true});await writeFile(resolve(target,path),bytes);artifacts.push({path,bytes:bytes.length,sha256:sha256(bytes)});}
  artifacts.sort((a,b)=>a.path.localeCompare(b.path));
  const api=(await read('contracts/openapi.yaml')).toString(),action=await json('contracts/action-envelope.v1.schema.json'),event=await json('contracts/events/envelope.v1.schema.json');
- const manifest={manifestVersion:1,generatedAt:new Date().toISOString(),release:{name:'tawsel-0.2.0-interop-2026-10-10',status:'local-handoff-candidate',published:false,baseCommit:source.baseCommit,sourceSha256:source.sourceSha256,workingTree:'Source identity lists actual source/config/test bytes at the recorded base commit; generated package/proof remain uncommitted derived artifacts, independent of documentation.'},supportedVersions:{api:api.match(/^ {2}version: (.+)$/m)[1],openapi:api.match(/^openapi: (.+)$/m)[1],client:(await json('packages/api-client/package.json')).version,referenceConsumer:(await json('apps/mock-erp/package.json')).version,action:action.properties.schemaVersion.const,payload:action.properties.payloadVersion.enum??[action.properties.payloadVersion.const],event:event.properties.schemaVersion.const,eventPayload:event.properties.payloadVersion.enum??[event.properties.payloadVersion.const],report:(await json('contracts/reporting.schema.json')).$defs.Workday.properties.definitionVersion.const,jsonSchema:(await json('contracts/common.schema.json')).$schema},observedBuildRuntime:{node:process.version,npm:npmVersion,platform:process.platform,arch:process.arch},configuredImages:await json('deploy/base-images.json'),engine:{runtimeVersion:null,datasetIdentity:null,verification:'not certified by this consumer package; Engine inputs, runtime evidence and build provenance are separate from application release'},migrations:{application:artifacts.filter(e=>e.path.startsWith('db/migrations/')&&e.path.endsWith('.sql')).map(e=>e.path.slice('db/migrations/'.length)),reference:artifacts.filter(e=>e.path.startsWith('apps/mock-erp/migrations/')&&e.path.endsWith('.sql')).map(e=>e.path.slice('apps/mock-erp/migrations/'.length))},consumerRuntimeSha256:sha256(JSON.stringify(artifacts.filter(entry=>/^dist\/erp-reference\/(api-client\/|mock-erp\/|conformance\/|package(?:-lock)?\.json$)/.test(entry.path)))),artifacts};
+ const manifest={manifestVersion:1,consumerProofPath:'docs/verification/integration-clean-consumer-2026-10-11.json',generatedAt:new Date().toISOString(),release:{name:'tawsel-0.2.1-audit-2026-10-11',status:'local-handoff-candidate',published:false,baseCommit:source.baseCommit,sourceSha256:source.sourceSha256,workingTree:'git-blobs-v1: exact immutable Git blob bytes at baseCommit, including source/config/tests. Git checkout EOL filters are not source digests. Later descendant commits may change only documentation/generated proof; source inventory must remain identical. Generated artifacts are independently hashed.'},supportedVersions:{api:api.match(/^ {2}version: (.+)$/m)[1],openapi:api.match(/^openapi: (.+)$/m)[1],client:(await json('packages/api-client/package.json')).version,referenceConsumer:(await json('apps/mock-erp/package.json')).version,action:action.properties.schemaVersion.const,payload:action.properties.payloadVersion.enum??[action.properties.payloadVersion.const],event:event.properties.schemaVersion.const,eventPayload:event.properties.payloadVersion.enum??[event.properties.payloadVersion.const],report:(await json('contracts/reporting.schema.json')).$defs.Workday.properties.definitionVersion.const,jsonSchema:(await json('contracts/common.schema.json')).$schema},observedBuildRuntime:{node:process.version,npm:npmVersion,platform:process.platform,arch:process.arch},configuredImages:await json('deploy/base-images.json'),engine:{runtimeVersion:null,datasetIdentity:null,verification:'not certified by this consumer package; Engine inputs, runtime evidence and build provenance are separate from application release'},migrations:{application:artifacts.filter(e=>e.path.startsWith('db/migrations/')&&e.path.endsWith('.sql')).map(e=>e.path.slice('db/migrations/'.length)),reference:artifacts.filter(e=>e.path.startsWith('apps/mock-erp/migrations/')&&e.path.endsWith('.sql')).map(e=>e.path.slice('apps/mock-erp/migrations/'.length))},consumerRuntimeSha256:sha256(JSON.stringify(artifacts.filter(entry=>/^dist\/erp-reference\/(api-client\/|mock-erp\/|conformance\/|package(?:-lock)?\.json$)/.test(entry.path)))),artifacts};
  const content=JSON.stringify(manifest,null,2)+'\n';await writeFile(manifestPath,content);await writeFile(resolve(target,manifestPath),content);
  console.log(JSON.stringify(await verifyRelease(target),null,2));
 }else throw new Error('Use build or check');

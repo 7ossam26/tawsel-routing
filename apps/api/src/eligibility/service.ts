@@ -1,3 +1,4 @@
+import {authorizeRetainedExecution,authorizeHistoricalAttempt} from '../current/historical-access.js';
 import {executionFence} from '../devices/fence.js';
 import {randomUUID} from 'node:crypto';
 import type {Pool} from 'pg';
@@ -48,7 +49,7 @@ export class Eligibility {
    const driver=ownDriver(a);if(c.context.kind!=='device')throw new AccessDenied();const device=c.context;a.assertScope({tenantId:device.tenantId,accountId:device.accountId});
    let r:RoundRow,change:Change;
    return executeCommandInTransaction(tx,a.commandScope,c,{
-    async authorize(){await authorize(tx,a);r=await round(tx,a,p.roundId);},
+    async authorize(){await authorize(tx,a);r=await round(tx,a,p.roundId);await authorizeRetainedExecution(tx,a,c.actionId);},
     async writeDomain(){try{
      const guards=(await tx.query<{task_id:string;dispatch_cycle_id:string|null}>('SELECT task_id,dispatch_cycle_id FROM tawsel.location_tasks WHERE tenant_id=$1 AND driver_id=$2',[a.context.tenantId,driver])).rows;
      await lockInvariants(tx,a.context.tenantId,[{kind:'driver',id:driver},{kind:'workday',id:r.workday_id},...guards.flatMap(g=>g.dispatch_cycle_id?[{kind:'assignment' as const,id:g.dispatch_cycle_id}]:[]),...guards.map(g=>({kind:'task' as const,id:g.task_id}))]);
@@ -111,13 +112,14 @@ export class Eligibility {
     items.push(state);
    }
    const history=(await tx.query<{record:Change}>("SELECT h.record FROM tawsel.task_eligibility_history h JOIN tawsel.location_tasks t USING(tenant_id,task_id) WHERE h.tenant_id=$1 AND t.driver_id=$2 ORDER BY h.record->'time'->>'recordedAt',h.task_id,h.revision",[r.tenant_id,driver])).rows.map(x=>x.record);
+   for(const change of history)await authorizeHistoricalAttempt(tx,a,change.attemptId);
    const result={roundId,mode:executionMode,activityRevision:Number((await tx.query('SELECT revision FROM tawsel.round_activity_state WHERE tenant_id=$1 AND round_id=$2',[r.tenant_id,roundId])).rows[0]?.revision??0),currentAttemptId:current?.attemptId??null,items,history};requireEligibility('Snapshot',result);return result;
   });
  }
  async result(principal:AuthenticatedPrincipal,actionId:string):Promise<components['schemas']['EligibilityActionStatus']>{
   uuid(actionId);return withAccess(this.pool,principal,async(a,tx)=>{
    await authorize(tx,a);const result=await getCommandResult(tx,a.commandScope,actionId);if(!result)return {actionId,status:'pending'};
-   if(!Object.hasOwn(operations,result.operationId)||result.summary.driverId!==ownDriver(a))throw new AccessDenied(true);await round(tx,a,String(result.summary.roundId));requireEligibility('ActionResult',result);
+   if(!Object.hasOwn(operations,result.operationId)||result.summary.driverId!==ownDriver(a))throw new AccessDenied(true);await round(tx,a,String(result.summary.roundId));await authorizeRetainedExecution(tx,a,actionId);requireEligibility('ActionResult',result);
    return {actionId,status:result.receipt.businessStatus as 'accepted'|'rejected'|'review-required',result:result as components['schemas']['EligibilityActionResult']};
   });
  }

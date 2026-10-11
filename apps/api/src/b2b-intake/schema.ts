@@ -38,7 +38,7 @@ export function validateCommand(operation: Operation, value: unknown): asserts v
     throw new SourceError('validation_failed', 400, `Invalid source command: ${detail ?? 'see schema'}`.slice(0, 900));
   }
   if (operation === 'intake.submitSnapshot') validateAllocation(payload as Snapshot);
-  if(operation==='dispatch.createFromReceipt')validateAllocation(payload.snapshot as Snapshot);
+  if(operation==='dispatch.createFromReceipt'||operation==='dispatch.relocateBeforeDeparture')validateAllocation(payload.snapshot as Snapshot);
   if (Array.isArray(payload.items) && new Set((payload.items as AssignmentReference[]).map(i => i.externalId)).size !== payload.items.length) {
     throw new SourceError('validation_failed', 400, 'Each shipment must occur only once in a batch.');
   }

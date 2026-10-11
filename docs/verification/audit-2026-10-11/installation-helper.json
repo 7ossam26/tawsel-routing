@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "classification": "Protected disposable operator directory; simulated public HTTP responses for retry/lost-response tests; backend import verification with simulated source configuration. No live installation or native Shahn activation.",
+  "setupActions": [
+    "eb57bb09-2d1a-45a1-98e0-c868341d7cee",
+    "e4db0438-8d70-4421-9cd0-21619153b241",
+    "73a53ca4-a214-4f1f-b466-83800b66181f"
+  ],
+  "requests": [
+    "eb57bb09-2d1a-45a1-98e0-c868341d7cee",
+    "eb57bb09-2d1a-45a1-98e0-c868341d7cee",
+    "e4db0438-8d70-4421-9cd0-21619153b241",
+    "73a53ca4-a214-4f1f-b466-83800b66181f"
+  ],
+  "acceptedActions": 3,
+  "originalIdsPreserved": true,
+  "globalOperatorTokenExported": false,
+  "signing": "pending-signed-callback"
+}
