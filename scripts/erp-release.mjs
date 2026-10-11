@@ -25,6 +25,14 @@ if(process.argv[2]==='check'){
  console.log(JSON.stringify({...result,cleanConsumerProof:'passed'},null,2));
 }else if(process.argv[2]==='build'){
  const source=await identity();
+ // Generated portable schema copies use the same immutable Git bytes as the
+ // canonical package inputs; checkout EOL filters must not fork the contract.
+ for(const file of source.files.filter(f=>f.path.startsWith('contracts/'))){
+  const bytes=execFileSync('git',['show',`${source.baseCommit}:${file.path}`],{cwd:root,maxBuffer:32*1024*1024});
+  for(const prefix of ['packages/api-client/dist/contracts/','dist/erp-reference/api-client/dist/contracts/']){
+   const output=resolve(root,prefix+file.path.slice('contracts/'.length));await mkdir(dirname(output),{recursive:true});await writeFile(output,bytes);
+  }
+ }
  // Only the fixed generated handoff directory is replaced.
  if(target!==resolve(root,'dist','erp-handoff'))throw new Error('Invalid generated target');
  await rm(target,{recursive:true,force:true});await mkdir(target,{recursive:true});
